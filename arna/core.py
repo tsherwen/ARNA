@@ -65,7 +65,7 @@ def main():
     # Do analysis for GEOS-CF
 #    do_analysis_of_assimulation_output_JUST_GEOSCF()
     # Do plots for analysis for GEOSCF+GEOS5
-#    do_analysis_of_assimulation_output_GEOSCF_GEOS5()
+#    do_analysis_of_assim_GEOSCF_GEOS5()
 
 
     # - run the extraction of ARNA flights from GEOS-Cf data
@@ -99,7 +99,7 @@ def do_operational_ARNA_forecast_steps(dt=None):
 #    get_latest_GEOS5_fcast_data()
 
     # Check all the files successfully downloaded. if not get missing files.
-    n_failed_doys = check_for_failed_downloads_and_retry(dt=dt)
+    n_failed_doys = check4failed_downloads(dt=dt)
     print(n_failed_doys)
 
     # Process GEOS-5 data - folder currently needs to be provided!
@@ -107,7 +107,7 @@ def do_operational_ARNA_forecast_steps(dt=None):
     regrid_GEOS5_files_in_folder(folder=folder)
 
     # Make 2 layer plots for GEOS5+GEOSCF
-#    mk_core_plots_from_fcast_output_GEOSCF_GEOS5( None )
+#    mk_core_plts4fcast_GEOSCF_GEOS5( None )
 
     # Move plots to <>
     # /GEOS_CF/ARNA/fcast/2019_12_15/plots.incGEOS5
@@ -115,7 +115,7 @@ def do_operational_ARNA_forecast_steps(dt=None):
 
     #
 #    regrid_files_then_do_ind_plots()
-#    mk_individual_plots_from_fcast_output_GEOSCF_GEOS5()
+#    mk_ind_plsts4fcast_GEOSCF_GEOS5()
 
 
     # Animate forecast data to videos.
@@ -134,7 +134,8 @@ def do_operational_ARNA_forecast_steps(dt=None):
     mv_plots2webfiles(dt=dt)
 
 
-def mk_core_plot_folders_then_mv2webfiles(dt=None, mv2webfiles=True, debug=True):
+def mk_core_plot_folders_then_mv2webfiles(dt=None, mv2webfiles=True,
+                                          debug=True):
     """
     Make core folders (+?? hours), then move these to webfiles
     """
@@ -182,17 +183,18 @@ def get_data_for_fcasts4datetimes(dts=None):
     # Loop by date and download data if available and not downloaded.
     for dt in dts:
         dstr = dt.strftime('%Y/%m/%d %H:%M')
-        print('Checking historic GEOS5-CF forecasts are downloaded for {}'.format(dstr))
+        pstr = 'Checking historic GEOS5-CF forecasts are downloaded for {}'
+        print(pstr.format(dstr))
         # Check whether files are available
         # TODO - Add check for GEOS5/CF for a specific date
         # Check if the files have been downloaded
-        n_failed_doys = check_for_failed_downloads_and_retry(dt=dt, retry_download=False,
-                                                             inc_GEOS5_Nv_collection=True)
+        n_failed_doys = check4failed_downloads(dt=dt, retry=False,
+                                               inc_GEOS5_Nv_collection=True)
         print(n_failed_doys)
         # If there files are not present, then download in series
         # TODO: Confirm why this call repeated - does this matter?
-        n_failed_doys = check_for_failed_downloads_and_retry(dt=dt, retry_download=True,
-                                                             inc_GEOS5_Nv_collection=True)
+        n_failed_doys = check4failed_downloads(dt=dt, retry=True,
+                                               inc_GEOS5_Nv_collection=True)
         print(n_failed_doys)
 
 
@@ -294,7 +296,8 @@ def mk_test_plots_from_GMAO_output(dt=None, load_all_dates=True):
             try:
                 LaTeX_spec = AC.latex_spec_name(var2plot)
             except KeyError:
-                print('WARNING: not converted {} to LaTeX form'.format(var2plot))
+                pstr = 'WARNING: not converted {} to LaTeX form'
+                print(pstr.format(var2plot))
                 LaTeX_spec = var2plot
             # Force use of standard name as long name
             attrs = ds[var2plot].attrs
@@ -304,10 +307,11 @@ def mk_test_plots_from_GMAO_output(dt=None, load_all_dates=True):
             title = '[{}] @ level {:0>2} on {}'
             title = title.format(LaTeX_spec, lev2use, title_date)
             # Set extra string for filename
-            extra_str = 'ARNA_lev_{:0>2}_{}'.format(lev2use, 'GMAO_EXPANDED_TEST')
+            extra_str = 'ARNA_lev_{:0>2}_{}'.format(lev2use,
+                                                    'GMAO_EXPANDED_TEST')
             # Now plot
-            quick_map_plot_Cape_Verde_1layer(ds_tmp, var2plot=var2plot,
-                                             use_local_CVAO_region=True,
+            quick_map_plt_CV_1layer(ds_tmp, var2plot=var2plot,
+                                             use_local_CVAO_area=True,
                                              extra_str=extra_str,
                                              extend='both',
                                              title=title,
@@ -375,12 +379,12 @@ def mk_missing_ARNA_plots4dt(dt=None, mk_plots=True):
                 print("Making '{}' plots for '{}'".format(subfolder,dstr ))
                 plot_type = subfolders2check[ subfolder ]
                 # What type of plot is the subfolder for?
-                mk_core_plots_from_fcast_output_GEOSCF_GEOS5(plot_type, dt=dt,
-                                                             do_core_alt_analysis=False,
-                                                             do_zoomed_alt_analysis=False,
-                                                             do_core_lon_analysis=False,
-                                                             do_core_lat_analysis=False,
-                                                             )
+                mk_core_plts4fcast_GEOSCF_GEOS5(plot_type, dt=dt,
+                                                do_core_alt_analysis=False,
+                                                do_zoomed_alt_analysis=False,
+                                                do_core_lon_analysis=False,
+                                                do_core_lat_analysis=False,
+                                                )
         # Make the individual plots too
         subfolder = 'alt_slice.individual'
         if (subfolder in folders2get) and mk_plots:
@@ -633,7 +637,7 @@ def regrid_files_then_do_core_plots(dt=None, plt_in_parallel=False):
         # Use yesterday
         dt =  AC.add_days(dt, -1)
     # Check that the files are all present and correct...
-    n_failed_doys = check_for_failed_downloads_and_retry(dt=dt, retry_download=False)
+    n_failed_doys = check4failed_downloads(dt=dt, retry=False)
     print(n_failed_doys)
     plot_anyway=True
     if (n_failed_doys == 0) or plot_anyway:
@@ -657,7 +661,7 @@ def regrid_files_then_do_core_plots(dt=None, plt_in_parallel=False):
             # Setup this number of pools
             p = Pool(len(plot_type))
             # plot all of the plots types at the same time
-            p.map(partial(mk_core_plots_from_fcast_output_GEOSCF_GEOS5, dt=dt,
+            p.map(partial(mk_core_plts4fcast_GEOSCF_GEOS5, dt=dt,
                           do_core_alt_analysis=False,
                           do_zoomed_alt_analysis=False,
                           do_core_lon_analysis=False,
@@ -666,10 +670,11 @@ def regrid_files_then_do_core_plots(dt=None, plt_in_parallel=False):
             # Close the pool
             p.close()
         else:
-            mk_core_plots_from_fcast_output_GEOSCF_GEOS5(None, dt=dt)
+            mk_core_plts4fcast_GEOSCF_GEOS5(None, dt=dt)
     else:
-        # Print a waring to screen if case failed. 
-        print('WARNING: NOT REGRIDDING/PLOTTING AS NOT ALL FILES PRESENT & CORRECT!')
+        # Print a waring to screen if case failed.
+        pstr = 'WARNING: NO REGRID./PLOTTING AS ALL FILES NOT PRESENT/CORRECT!'
+        print(pstr)
         print(dt)
 
 
@@ -685,7 +690,7 @@ def regrid_files_then_do_ind_plots(dt=None, plt_in_parallel=False):
         # Use yesterday
         dt =  AC.add_days(dt, -1)
     # Check that the files are all present and correct...
-    n_failed_doys = check_for_failed_downloads_and_retry(dt=dt, retry_download=False)
+    n_failed_doys = check4failed_downloads(dt=dt, retry=False)
     print(n_failed_doys)
     plot_anyway=True
     if (n_failed_doys == 0) or plot_anyway:
@@ -704,15 +709,16 @@ def regrid_files_then_do_ind_plots(dt=None, plt_in_parallel=False):
             # Setup this number of pools
             p = Pool(len(vars2use))
             # Now map partially across the pool
-            p.map(partial(mk_individual_plots_from_fcast_output_GEOSCF_GEOS5, dt=dt,
-                      ), vars2use)
+            p.map(partial(mk_ind_plsts4fcast_GEOSCF_GEOS5,
+                          dt=dt,), vars2use)
             # Close the pool
             p.close()
         else:
-            mk_individual_plots_from_fcast_output_GEOSCF_GEOS5(None, dt=dt)
+            mk_ind_plsts4fcast_GEOSCF_GEOS5(None, dt=dt)
     else:
         #
-        print('WARNING: NOT REGRIDDING/PLOTTING AS NOT ALL FILES PRESENT & CORRECT!')
+        pstr = 'WARNING: STOPPED REGRID/PLOT - NOT ALL FILES PRESENT/CORRECT!'
+        print(pstr)
         print(dt)
 
 
@@ -740,9 +746,11 @@ def mv_plots2google_drive(dt=None, verbose=True, debug=False):
         # Use yesterday
         dt =  AC.add_days(dt, -1)
     # Make the datetime string to be used for folders
-    dt_str = '{}_{:0>2}_{:0>2}_{:0>2}z'.format(dt.year, dt.month, dt.day, dt.hour)
+    dt_str = '{}_{:0>2}_{:0>2}_{:0>2}z'
+    dt_str = dt_str.format(dt.year, dt.month, dt.day, dt.hour)
     # What are the root folders for the data/plots
-    folder = get_GEOS_data_folder4dt(dt=dt, product='GEOS_5', inc_collection=False)
+    folder = get_GEOS_data_folder4dt(dt=dt, product='GEOS_5',
+                                     inc_collection=False)
     folder += '/plots/'
     # Set location to store data
     gauth = GoogleAuth()
@@ -818,7 +826,8 @@ def mv_GEOS_data_from_earth2viking(dt=None, user=None):
     # Get the locations on
     host = 'viking'
     collection = 'inst3_3d_aer_Np'
-    folder = get_GEOS_data_folder4dt(dt=dt, product='GEOS_5', collection=collection,
+    folder = get_GEOS_data_folder4dt(dt=dt, product='GEOS_5',
+                                     collection=collection,
                                      host=host )
     # Make the local folder if it is not present
     AC.mk_folder(folder=folder)
@@ -838,7 +847,8 @@ def mv_GEOS_data_from_earth2viking(dt=None, user=None):
     # Get the locations on
     host = 'viking'
     collection = 'chm_inst_1hr_g1440x721_p23'
-    folder = get_GEOS_data_folder4dt(dt=dt, product='GEOS_CF', collection=collection,
+    folder = get_GEOS_data_folder4dt(dt=dt, product='GEOS_CF',
+                                     collection=collection,
                                      host=host )
     # Make the local folder if it is not present
     AC.mk_folder(folder=folder)
@@ -869,9 +879,11 @@ def mv_plots2webfiles(dt=None, debug=True):
         # Use yesterday
         dt =  AC.add_days(dt, -1)
     # Make the datetime string to be used for folders
-    dt_str = '{}_{:0>2}_{:0>2}_{:0>2}z'.format(dt.year, dt.month, dt.day, dt.hour)
+    dt_str = '{}_{:0>2}_{:0>2}_{:0>2}z'
+    dt_str = dt_str.format(dt.year, dt.month, dt.day, dt.hour)
     # What are the root folders for the data/plots
-    folder = get_GEOS_data_folder4dt(dt=dt, product='GEOS_5', inc_collection=False)
+    folder = get_GEOS_data_folder4dt(dt=dt, product='GEOS_5',
+                                     inc_collection=False)
     folder += '/plots/'
     # Define data location and ports etc
     host = "webfiles.york.ac.uk" # hard-coded
@@ -943,7 +955,8 @@ def mk_folder_structure4fcast(dt=None, mode='fcast', verbose=False):
     # Check that the forecast date is for the noon forecast
     assert dt.hour == 12, 'WARNING forecast date not starting at noon!'
     # Make the datetime string to be used for folders
-    dt_str = '{}_{:0>2}_{:0>2}_{:0>2}z'.format(dt.year, dt.month, dt.day, dt.hour)
+    dt_str = '{}_{:0>2}_{:0>2}_{:0>2}z'
+    dt_str = dt_str.format(dt.year, dt.month, dt.day, dt.hour)
     # Also setup datetime objects for the +24 fcast and +48 fcasts
     dt24 = AC.add_days(dt, 1)
     dt30 = AC.add_hrs(dt, 24+6)
@@ -989,10 +1002,8 @@ def mk_folder_structure4fcast(dt=None, mode='fcast', verbose=False):
         AC.mk_folder(folder=folder2mk, verbose=verbose)
 
 
-def mk_individual_plots_from_fcast_output_GEOSCF_GEOS5(vars2use,
-                                                       dt=None,
-                                                       only_plot_where_GEOS5=True
-                                                       ):
+def mk_ind_plsts4fcast_GEOSCF_GEOS5(vars2use, dt=None,
+                                    only_plot_where_GEOS5=True):
     """
     Make alt slice plots on a individual species basis from GEOS-CF output
     """
@@ -1008,19 +1019,23 @@ def mk_individual_plots_from_fcast_output_GEOSCF_GEOS5(vars2use,
         vars2use =  [ 'NOy', 'NO2', 'O3', 'CO', 'Dust']
     # Get GEOS-CF folder for datettime
     collection = 'chm_inst_1hr_g1440x721_p23'
-    G5_data_4dt = get_GEOS_data_folder4dt(dt=dt, product='GEOS_CF', collection=collection)
+    G5_data_4dt = get_GEOS_data_folder4dt(dt=dt, product='GEOS_CF',
+                                          collection=collection)
     # Get GEOS-5 folder for datetime
     collection = 'inst3_3d_aer_Np'
-    G5_data_4dt = get_GEOS_data_folder4dt(dt=dt, product='GEOS_5', collection=collection)
+    G5_data_4dt = get_GEOS_data_folder4dt(dt=dt, product='GEOS_5',
+                                          collection=collection)
     # Get plots folder
-    G5_plots_4dt = get_GEOS_data_folder4dt(dt=dt, product='GEOS_5', inc_collection=False)
+    G5_plots_4dt = get_GEOS_data_folder4dt(dt=dt, product='GEOS_5',
+                                           inc_collection=False)
     G5_plots_4dt += '/plots/'
     # - Get GEOS-CF data
     ds = get_most_recent_GEOSCF_data(dt=dt)
     t0_CF = ds.time.values[0]
     t0_CF_str = AC.dt64_2_dt([t0_CF])[0].strftime('%Y/%m/%d %H:%M')
     # - Get GEOS-5 data
-    files2use = glob.glob('{}/ARNA*_{}_*REGRID*.nc'.format( G5_data_4dt, dt.year ) )
+    fstr = '{}/ARNA*_{}_*REGRID*.nc'
+    files2use = glob.glob(fstr.format( G5_data_4dt, dt.year ) )
     files2use = list(sorted(files2use))
     # Open all the files as a single dataset
     ds5 = xr.open_mfdataset(files2use)
@@ -1327,7 +1342,8 @@ def plot_individual_spec_alt_slices(ds, folder='./',
             ds_tmp = ds[[var2plot]].sel(time=ds.time.values[n_time])
             # Create a date string to use to save file
             date_str = '{}_{:0>2}_{:0>2}_{:0>2}_{:0>2}'
-            date_str = date_str.format(t.year, t.month, t.day, t.hour, t.minute)
+            date_str = date_str.format(t.year, t.month, t.day, t.hour,
+                                       t.minute)
             title_date = t.strftime('%Y/%m/%d %H:%M')
             for lev2use in ds.lev.values:
 #            for lev2use in ds.lev.values[:2]: # unhash if testing
@@ -1345,8 +1361,8 @@ def plot_individual_spec_alt_slices(ds, folder='./',
                 # Set extra string for filename
                 extra_str = 'ARNA_lev_{:.0f}_hPa_{}'.format(lev2use, date_str)
                 # now plot
-                quick_map_plot_Cape_Verde_1layer(ds_tmpII, var2plot=var2plot,
-                                                 use_local_CVAO_region=True,
+                quick_map_plt_CV_1layer(ds_tmpII, var2plot=var2plot,
+                                                 use_local_CVAO_area=True,
                                                  extra_str=extra_str,
                                                  extend='both',
                                                  title=title,
@@ -1357,8 +1373,6 @@ def plot_individual_spec_alt_slices(ds, folder='./',
                 del ds_tmpII
             del ds_tmp
             gc.collect()
-
-
 
 
 def download_GEOSCF_assim_data():
@@ -1383,7 +1397,8 @@ def download_GEOSCF_assim_data():
     #        get_GEOSCF_data_cubes4campaign(year=year, limit_lvls=False)
     #        get_GEOSCF_data_cubes4campaign(year=year, limit_lvls=False)
             # For vertical slices on longitudes
-            get_GEOSCF_data_cubes4campaign(year=year, limit_lvls=False, limit_lons=True)
+            get_GEOSCF_data_cubes4campaign(year=year, limit_lvls=False,
+                                           limit_lons=True)
 
             # - Get 2D data
 #            get_data_surface4campaign(year=year)
@@ -1445,7 +1460,8 @@ def download_GEOS5_assim_data(mode='assim'):
                                          year=year )
 
 
-def regrid_GEOS5_files_in_folder(folder=None, dt=None, doys2use=None, year=None,
+def regrid_GEOS5_files_in_folder(folder=None, dt=None, doys2use=None,
+                                 year=None,
                                  collection='inst3_3d_aer_Np',
                                  remake_files=False, debug=False ):
     """
@@ -1463,7 +1479,8 @@ def regrid_GEOS5_files_in_folder(folder=None, dt=None, doys2use=None, year=None,
             # Use yesterday
             dt =  AC.add_days(dt, -1)
         # Get the GEOS5 folder for a given date
-        folder = get_GEOS_data_folder4dt(dt=dt, product='GEOS_5', collection=collection)
+        folder = get_GEOS_data_folder4dt(dt=dt, product='GEOS_5',
+                                         collection=collection)
 
     # Get current year if a year not specified
     if isinstance(year, type(None)):
@@ -1490,34 +1507,36 @@ def regrid_GEOS5_files_in_folder(folder=None, dt=None, doys2use=None, year=None,
         filename2save = writestr.format( year, doy)
         if os.path.isfile(folder + filename2save) and not remake_files:
             if debug:
-                print('WARNING: not regridding file as regridded file already present')
+                pstr = 'WARNING: not regridding file as file already present'
+                print(pstr)
         else:
             # Open all files as a single xarray dataset
             ds = xr.open_mfdataset(files2use)
             if debug:
                 print([i for i in ds.time.values])
             # Convert files to a single file with variable for dust
-            ds = convert_GEOS5_dust2_single_var_in_ug_m3(ds=ds, rtn_just_new_var=True)
+            ds = convert_GEOS5_dust2_single_var_in_ug_m3(ds=ds,
+                                                         rtn_just_new_var=True)
             # Regridd file to GEOS-CF template file
             # NOTE: this is hardcoded for now
-            template_folder = get_local_folder('NASA_data')
-            template_folder += 'GEOS_CF/ARNA/fcast/2019_11_06/data/'
-            template_filename = 'ARNA_GEOSCF_chm_inst_1hr_g1440x721_p23_Cape_Verde_'
-            template_filename += '2019_315_pm25du_rh35_gcc_lvls_1000_850_500.nc'
+            tplate_folder = get_local_folder('NASA_data')
+            tplate_folder += 'GEOS_CF/ARNA/fcast/2019_11_06/data/'
+            tplate_fname = 'ARNA_GEOSCF_chm_inst_1hr_g1440x721_p23_Cape_Verde_'
+            tplate_fname += '2019_315_pm25du_rh35_gcc_lvls_1000_850_500.nc'
             # Regrid GEOS5 to GEOS-CF
             # TODO: add option to not vertically regrid
             ds = regrid_GEOS52GEOSCF_coordinates(ds, collection=collection,
-                                                 template_folder=template_folder,
-    #                                             vertically_regrid=vertically_regrid,
-                                                 template_filename=template_filename)
+                                                 tplate_folder=tplate_folder,
+                                                 tplate_fname=tplate_fname)
             # Save as a new file
-            ds.to_netcdf( folder + filename2save )
+            ds.to_netcdf(folder+filename2save)
 
 
 def regrid_GEOS52GEOSCF_coordinates(ds=None, collection='inst3_3d_aer_Np',
-                                    template_folder=None, template_filename=None,
+                                    tplate_folder=None, tplate_fname=None,
 #                                    regrid_vertically=False,
-                                    lat_var='lat', lon_var='lon', vars2regrid=None):
+                                    lat_var='lat', lon_var='lon',
+                                    vars2regrid=None):
     """
     Regrid GEOS-5 output to be on the same grid as GEOS-CF
     """
@@ -1527,7 +1546,7 @@ def regrid_GEOS52GEOSCF_coordinates(ds=None, collection='inst3_3d_aer_Np',
 
     # - Regrid horizontally (lat, lon)
     # Get lats and lons to regrid to
-    dsT = xr.open_dataset( template_folder+template_filename )
+    dsT = xr.open_dataset( tplate_folder+tplate_fname )
     lat = dsT[lat_var]
     lon = dsT[lon_var]
     # Create a new dataset to template to from this
@@ -1569,7 +1588,8 @@ def regrid_GEOS52GEOSCF_coordinates(ds=None, collection='inst3_3d_aer_Np',
 #    if regrid_vertically:
     if collection == 'inst3_3d_aer_Nv':
         # use bulk values for altitude
-        lon, lat, alt = AC.get_latlonalt4res(res='4x5', full_vertical_grid=True)
+        lon, lat, alt = AC.get_latlonalt4res(res='4x5',
+                                             full_vertical_grid=True)
         # NOTE: GEOS-5 output has its z axis flipped.
         dsN.lev.values = alt[::-1]
         # Which
@@ -1629,11 +1649,13 @@ def get_most_recent_GEOSCF_data(dt=None,
         dt =  AC.add_days(dt, -1)
     # Get the date/location string for data
     filename = filestr.format( dt.year )
-    folder2use = get_GEOS_data_folder4dt(dt=dt, product='GEOS_CF', collection=collection)
+    folder2use = get_GEOS_data_folder4dt(dt=dt, product='GEOS_CF',
+                                         collection=collection)
     glob_str = '{}/{}'.format( folder2use, filename )
     files2use = glob.glob(glob_str)
     files2use = list(sorted(files2use))
-    assert len(files2use), 'WARNING no files found matching {}'.format(glob_str)
+    asstr = 'WARNING no files found matching {}'
+    assert len(files2use), asstr.format(glob_str)
     # Open all the files as a single dataset
     ds = xr.open_mfdataset(files2use)
     print(ds.time)
@@ -1646,14 +1668,14 @@ def get_most_recent_GEOSCF_data(dt=None,
     return ds
 
 
-def mk_core_plots_from_fcast_output_GEOSCF_GEOS5(plot_type, dt=None,
-                                                 do_core_alt_analysis=True,
-                                                 do_zoomed_alt_analysis=True,
-                                                 do_core_lon_analysis=True,
-                                                 do_core_lat_analysis=True,
-                                                 only_plot_where_GEOS5=True,
-                                                 testing_mode=False,
-                                                 ):
+def mk_core_plts4fcast_GEOSCF_GEOS5(plot_type, dt=None,
+                                    do_core_alt_analysis=True,
+                                    do_zoomed_alt_analysis=True,
+                                    do_core_lon_analysis=True,
+                                    do_core_lat_analysis=True,
+                                    only_plot_where_GEOS5=True,
+                                    testing_mode=False,
+                                    ):
     """
     Do analysis using dust from GEOS-5 and NOy from GEOS-CF
 
@@ -1669,9 +1691,11 @@ def mk_core_plots_from_fcast_output_GEOSCF_GEOS5(plot_type, dt=None,
         dt =  AC.add_days(dt, -1)
     # GEOS-5 folder
     collection = 'inst3_3d_aer_Np'
-    G5_data_4dt = get_GEOS_data_folder4dt(dt=dt, product='GEOS_5', collection=collection)
+    G5_data_4dt = get_GEOS_data_folder4dt(dt=dt, product='GEOS_5',
+                                          collection=collection)
     # Root plot saving folder
-    G5_plot_dir = get_GEOS_data_folder4dt(dt=dt, product='GEOS_5', inc_collection=False)
+    G5_plot_dir = get_GEOS_data_folder4dt(dt=dt, product='GEOS_5',
+                                          inc_collection=False)
     G5_plot_dir += '/plots/'
 
     # - Do analysis on a altitude slice basis
@@ -1681,7 +1705,8 @@ def mk_core_plots_from_fcast_output_GEOSCF_GEOS5(plot_type, dt=None,
         t0_CF = ds.time.values[0]
         t0_CF_str = AC.dt64_2_dt([t0_CF])[0].strftime('%Y/%m/%d %H:%M')
         # - Get GEOS-5 data
-        files2use = glob.glob('{}/ARNA*_{}_*REGRID*.nc'.format( G5_data_4dt, dt.year ))
+        fstr = '{}/ARNA*_{}_*REGRID*.nc'
+        files2use = glob.glob(fstr.format( G5_data_4dt, dt.year ))
         files2use = list(sorted(files2use))
         # Open all the files as a single dataset
         ds5 = xr.open_mfdataset(files2use)#, combine='nested', concat_dim='time')
@@ -1723,7 +1748,8 @@ def mk_core_plots_from_fcast_output_GEOSCF_GEOS5(plot_type, dt=None,
         t0_CF_str = AC.dt64_2_dt([t0_CF])[0].strftime('%Y/%m/%d %H:%M')
         # - Get GEOS-5 data
         # Get data
-        files2use = glob.glob('{}/ARNA*_{}_*REGRID*.nc'.format( G5_data_4dt, dt.year))
+        fstr = '{}/ARNA*_{}_*REGRID*.nc'
+        files2use = glob.glob(fstr.format( G5_data_4dt, dt.year))
         files2use = list(sorted(files2use))
         # Open all the files as a single dataset
         ds5 = xr.open_mfdataset(files2use)#, combine='nested', concat_dim='time')
@@ -1801,11 +1827,12 @@ def mk_core_plots_from_fcast_output_GEOSCF_GEOS5(plot_type, dt=None,
         else:
             folder = G5_plot_dir + 'lon_slice/'
         # GEOS-CF
-        plot_spatial_concs_2layer_vertical_lon(ds, folder=folder,
+        plt_spatial_2layer_vertical_lon(ds, folder=folder,
                                                # Plot NOy, then dust
 #                                               var2plot1='NOy', var2plot2='Dust',
                                                # Plot Dust, the NOy
-                                               var2plot1='Dust', var2plot2='NOy',
+                                               var2plot1='Dust',
+                                               var2plot2='NOy',
                                                testing_mode=testing_mode,
                                                extr_title_str=extr_title_str )
 
@@ -1848,18 +1875,19 @@ def mk_core_plots_from_fcast_output_GEOSCF_GEOS5(plot_type, dt=None,
         else:
             folder = G5_plot_dir + 'lat_slice/'
         # GEOS-CF
-        plot_spatial_concs_2layer_vertical_lat(ds, folder=folder,
+        plt_spatial_2layer_vertical_lat(ds, folder=folder,
                                                # Plot NOy, then dust
 #                                             var2plot1='NOy', var2plot2='Dust',
                                                # Plot Dust, the NOy
-                                               var2plot1='Dust', var2plot2='NOy',
+                                               var2plot1='Dust',
+                                               var2plot2='NOy',
                                                testing_mode=testing_mode,
                                                extr_title_str=extr_title_str )
 
 
-def do_analysis_of_assimulation_output_GEOSCF_GEOS5(do_core_lon_analysis=True,
-                                                    do_horizontal_analysis=False,
-                                                    ):
+def do_analysis_of_assim_GEOSCF_GEOS5(do_core_lon_analysis=True,
+                                      do_horizon_analysis=False,
+                                      ):
     """
     Do analysis using dust from GEOS-5 and NOy from GEOS-CF
     """
@@ -1868,7 +1896,7 @@ def do_analysis_of_assimulation_output_GEOSCF_GEOS5(do_core_lon_analysis=True,
     G5_folder = NASA_data + '/GEOS_5/ARNA/'
     GCF_folder = NASA_data + '/GEOS_CF/ARNA/'
     # - Do analysis on a altitude slice basis
-    if do_horizontal_analysis:
+    if do_horizon_analysis:
         # Do analysis on a year by year basis
         years = (2018, 2019)
 #        years = (2018, )    # For testing.
@@ -1878,7 +1906,7 @@ def do_analysis_of_assimulation_output_GEOSCF_GEOS5(do_core_lon_analysis=True,
             print(year)
             # - Get GEOS-CF data
             folder2use = GCF_folder + '/assim/alt_slice/'
-            files2use = glob.glob('{}/ARNA*{}_0*.nc'.format( folder2use, year ) )
+            files2use = glob.glob('{}/ARNA*{}_0*.nc'.format(folder2use, year))
             files2use = list(sorted(files2use))
             # Open all the files as a single dataset
             ds = xr.open_mfdataset(files2use)
@@ -1892,7 +1920,7 @@ def do_analysis_of_assimulation_output_GEOSCF_GEOS5(do_core_lon_analysis=True,
             # - Get GEOS-5 data
             # Get data
             folder2use = G5_folder + '/assim/cuboids/'
-            files2use = glob.glob('{}/ARNA*{}_0*REGRID*.nc'.format( folder2use, year ) )
+            files2use = glob.glob('{}/ARNA*{}_0*REGRID*.nc'.format(folder2use, year))
             files2use = list(sorted(files2use))
             # Open all the files as a single dataset
             ds5 = xr.open_mfdataset(files2use)
@@ -1904,7 +1932,8 @@ def do_analysis_of_assimulation_output_GEOSCF_GEOS5(do_core_lon_analysis=True,
             # Only plot points where both data sources are present
             only_plot_where_GEOS5 = True
             if only_plot_where_GEOS5:
-                ds = ds.isel(time=[i in ds5.time.values for i in  ds.time.values ] )
+                time_boolean = [i in ds5.time.values for i in ds.time.values]
+                ds = ds.isel(time=time_boolean)
             # Plot and then save together
             folder4plots_str = '{}/GEOS_CF/ARNA/assim/plots_with_GEOS5/alt_slice/'
             folder4plots = folder4plots_str.format(NASA_data)
@@ -1939,7 +1968,8 @@ def do_analysis_of_assimulation_output_GEOSCF_GEOS5(do_core_lon_analysis=True,
             # - Get GEOS-5 data
             # Get data
             folder2use = G5_folder + '/assim/cuboids/'
-            files2use = glob.glob('{}/ARNA*{}_0*REGRID*.nc'.format( folder2use, year ) )
+            fstr = '{}/ARNA*{}_0*REGRID*.nc'
+            files2use = glob.glob(fstr.format( folder2use, year ) )
             files2use = list(sorted(files2use))
             # Open all the files as a single dataset
             ds5 = xr.open_mfdataset(files2use)
@@ -1952,7 +1982,8 @@ def do_analysis_of_assimulation_output_GEOSCF_GEOS5(do_core_lon_analysis=True,
             ds['Dust'].attrs = ds5['Dust'].attrs
             only_plot_where_GEOS5 = True
             if only_plot_where_GEOS5:
-                ds = ds.isel(time=[i in ds5.time.values for i in  ds.time.values ] )
+                time_boolean = [i in ds5.time.values for i in ds.time.values ]
+                ds = ds.isel(time=time_boolean)
             # Attributes
             attrs = ds.lev.attrs
             attrs['units'] = 'millibar'
@@ -1961,14 +1992,14 @@ def do_analysis_of_assimulation_output_GEOSCF_GEOS5(do_core_lon_analysis=True,
             folder4plots_str = '{}/GEOS_CF/ARNA/assim/plots_with_GEOS5/lon_slice/'
             folder4plots = folder4plots_str.format(NASA_data)
             # GEOS-CF
-            plot_spatial_concs_2layer_vertical_lon(ds, folder=folder4plots,
+            plt_spatial_2layer_vertical_lon(ds, folder=folder4plots,
                                                    var2plot1='NOy',
                                                    var2plot2='Dust',)
 
 
 
 def do_analysis_of_assimulation_output_JUST_GEOSCF(do_core_lon_analysis=True,
-                                                   do_horizontal_analysis=False
+                                                   do_horizon_analysis=False
                                                    ):
     """
     Do analysis of assimilation (replay) GEOS-CF product
@@ -1977,7 +2008,7 @@ def do_analysis_of_assimulation_output_JUST_GEOSCF(do_core_lon_analysis=True,
     # Where to look for data
     NASA_data = get_local_folder('NASA_data')
     folder = NASA_data + 'GEOS_CF/ARNA/assim/alt_slice/'
-    if do_horizontal_analysis:
+    if do_horizon_analysis:
         # Do analysis on a year by year basis
     #    years = (2018, 2019)
         years = (2018, )    # For testing.
@@ -2000,7 +2031,7 @@ def do_analysis_of_assimulation_output_JUST_GEOSCF(do_core_lon_analysis=True,
             # Reset the environment to remove sea-born settings
             sns.reset_orig()
             #
-            plot_average_spatial_concs_by_lvl(ds, year, verbose=True)
+            plt_avg_spatial_by_lvl(ds, year, verbose=True)
             # Plot the two layer plot
             plot_spatial_concs_2layer(ds, verbose=True)
 
@@ -2014,7 +2045,8 @@ def do_analysis_of_assimulation_output_JUST_GEOSCF(do_core_lon_analysis=True,
             # ... for a smaller area around Cape Verde
             dsCV = select_smaller_area_around_Cape_Verde(ds.copy())
             region = 'Cape_Verde_LOCAL'
-            summarise_stats_on_species_in_ds4lvls(dsCV, region=region, year=year)
+            summarise_stats_on_species_in_ds4lvls(dsCV, region=region,
+                                                  year=year)
             # - Plot up PDFs of distribution
             # ... for the region
             region = 'Cape_Verde'
@@ -2024,7 +2056,7 @@ def do_analysis_of_assimulation_output_JUST_GEOSCF(do_core_lon_analysis=True,
             PDF_on_species_in_ds4lvls(dsCV, region=region, year=year)
             # NOTE: region is defined as a smaller shape than the whole map
             # Plot up a map to show the subsampled region
-            plot_up_the_smaller_area_subselect_around_CVAO(ds)
+            plt_smaller_area_around_CVAO(ds)
 
             # - Plot up timeseries plots for key species
             #
@@ -2059,11 +2091,11 @@ def do_analysis_of_assimulation_output_JUST_GEOSCF(do_core_lon_analysis=True,
             # - Plot up spatial averages
             # Reset the environment to remove sea-born settings
             sns.reset_orig()
-    #        plot_average_spatial_concs_by_lvl(ds, year, verbose=True)
+    #        plt_avg_spatial_by_lvl(ds, year, verbose=True)
             # Plot NOy and dust separately
             # Plot together
             folder4plots = './'
-            plot_spatial_concs_2layer_vertical_lon(ds, folder=folder4plots)
+            plt_spatial_2layer_vertical_lon(ds, folder=folder4plots)
 
 
 def get_GEOS_data_folder4dt(dt=None, product='GEOS_CF', host=None,
@@ -2184,32 +2216,33 @@ def get_latest_GEOSCF_fcast_data(dt=None, just_check_yesterday=True,
         # Minutes to wait
         times2wait = 30
         min2wait = 4
-        pstr = 'WARNING: data not availible ({}), so trying again every {} minutes ({}x)'
+        pstr = 'WARNING: data not availible ({}), so trying every {} min.({}x)'
         print( pstr.format(dstr, min2wait, times2wait) )
         for time2wait in range(times2wait):
-            pstr = 'WARNING: Waiting for {:>2} min @ {}, then re-attempting download'
+            pstr = 'WARNING: Wait for {:>2} min @ {}, then retrying download'
             TNow = AC.time2datetime( [gmtime()] )[0]
             print( pstr.format(min2wait, TNow.strftime('%Y/%m/%d %H:%M') ) )
             time.sleep(min2wait*60)
-            print('Finished waiting @ {}'.format(TNow.strftime('%Y/%m/%d %H:%M')))
+            pstr = 'Finished waiting @ {}'
+            print(pstr.format(TNow.strftime('%Y/%m/%d %H:%M')))
             # Check if the data is availible
             dt_is_lastest_run = is_dt_latest_GEOSCF(dt)
             if dt_is_lastest_run:
                 print('Data now available! Attempting download.')
                 # - Retrieve the latest GEOS-CF data - sliced by alt, lat, or lon
                 download_GEOSCF_fcast_data4date(dt=dt,
-                                                rm_existing_file=rm_existing_file,
+                                             rm_existing_file=rm_existing_file,
                                                 vars2use=vars2use,
                                                 doys2use=doys2use,
                                                 limit_lvls=limit_lvls,
                                                 limit_lons=limit_lons,
                                                 limit_lats=limit_lats)
-                print('WARNING: Completed attempt at data download, so calling stop.')
+                print('WARNING: Stopping. Completed attempt at data download.')
                 sys.exit()
             else:
                 print('Data still not available...')
     else:
-        print('ERROR: Data not available for datetime so cannot attempt download')
+        print('ERROR: Data not available for date so cannot attempt download')
 
 
 def get_latest_GEOSCF_fcast_data_alt_slice(dt=None, debug=True):
@@ -2227,8 +2260,10 @@ def get_latest_GEOSCF_fcast_data_alt_slice(dt=None, debug=True):
                                  )
 
 
-def check4GEOSCF_failed_downloads(dt=None, folder=None, n_doys=6, var2use='noy',
-                                  limit_lons=False, limit_lvls=False, limit_lats=False,
+def check4GEOSCF_failed_downloads(dt=None, folder=None, n_doys=6,
+                                  var2use='noy',
+                                  limit_lons=False, limit_lvls=False,
+                                  limit_lats=False,
                                   debug=False):
     """
     Check that all the GEOSCF files have downloaded correctly
@@ -2327,13 +2362,14 @@ def check4GEOSCF_failed_downloads(dt=None, folder=None, n_doys=6, var2use='noy',
         # Print a warning if there are doys included that are not expected
         unexpected_doys = [i for i in retrieved_doys if i not in expected_doys]
         if len(unexpected_doys) > 0:
-            print('WARNING: Unexpected doys have been downloaded -', unexpected_doys)
+            pstr = 'WARNING: Unexpected doys have been downloaded -'
+            print(pstr, unexpected_doys)
         # - Return a list of the failed doys
         if debug:
             print(df, failed_doys)
         return list(sorted(set(failed_doys)))
     else:
-        pstr ="WARNING: No files found for '{}' so using expected doys (folder:{})"
+        pstr = "WARNING: No files for '{}'  - using expected doys (folder:{})"
         print(pstr.format(var2use, folder))
         return expected_doys
 
@@ -2420,7 +2456,8 @@ def check4GEOS5_failed_downloads(dt=None, folder=None, n_doys=6, var2use='du',
         # Print a warning if there are days
         unexpected_doys = [i for i in retrieved_doys if i not in expected_doys]
         if len(unexpected_doys) > 0:
-            print('WARNING: Unexpected doys have been downloaded -', unexpected_doys)
+            pstr = 'WARNING: Unexpected doys have been downloaded -'
+            print(pstr, unexpected_doys)
         # - Return a list of the failed doys
         if debug:
             print(failed_doys)
@@ -2483,7 +2520,8 @@ def get_latest_GEOS5_fcast_data(dt=None, mode='fcast',
     dstr = dt.strftime('%Y/%m/%d %H:%M')
     # NOTE: this is current dealt with in get_GEOS5_as_ds_via_OPeNDAP (in fcast mode)
     try:
-        ds = AC.get_GEOS5_as_ds_via_OPeNDAP( dt=dt, mode=mode, collection=collection )
+        ds = AC.get_GEOS5_as_ds_via_OPeNDAP(dt=dt, mode=mode,
+                                            collection=collection )
         # Temporarily do not allow passing of date to OPeNDAP fetcher
 #        ds = AC.get_GEOS5_as_ds_via_OPeNDAP(dt=None, mode=mode, collection=collection)
     # Check it has files...
@@ -2492,18 +2530,20 @@ def get_latest_GEOS5_fcast_data(dt=None, mode='fcast',
         try:
             dt = AC.add_days(dt, -1)
             print('GEOS5 - Looking on the day before', dt )
-            ds = AC.get_GEOS5_as_ds_via_OPeNDAP( dt=dt, mode=mode, collection=collection)
+            ds = AC.get_GEOS5_as_ds_via_OPeNDAP(dt=dt, mode=mode,
+                                                collection=collection)
             # Temporarily do not allow passing of date to OPeNDAP fetcher
 #            ds = AC.get_GEOS5_as_ds_via_OPeNDAP(dt=None, mode=mode, collection=collection)
         except:
-            print( 'WARNING: *FAILURE* to find GEOS5 latest date... stopping now.')
+            print( 'WARNING: FAILED to find GEOS5 latest dt... stopping now.')
     # Get initial date in forecast
     dt = AC.dt64_2_dt( [ds['time'].values[0]])[0]
     # What would the folder be called for this noon forecast?
     NASA_data = get_local_folder('NASA_data')
     folder = NASA_data + 'GEOS_5/ARNA/fcast/'
     folderstr = '{}/{}_{:0>2}_{:0>2}_{:0>2}z/data.{}/'
-    folder = folderstr.format(folder, dt.year, dt.month, dt.day, dt.hour, collection)
+    folder = folderstr.format(folder, dt.year, dt.month, dt.day, dt.hour,
+                              collection)
     # Check if the folder is present, if not create it
     if os.path.isdir(folder):
         print('WARNING: folder already exists')
@@ -2517,11 +2557,13 @@ def get_latest_GEOS5_fcast_data(dt=None, mode='fcast',
         if collection == 'inst3_3d_aer_Np':
             vars2use = ['du']
     # Check if the requested date is present.
-    dt_is_lastest_run = is_dt_latest_GEOS5(dt=dt, collection=collection, mode=mode)
+    dt_is_lastest_run = is_dt_latest_GEOS5(dt=dt, collection=collection,
+                                           mode=mode)
     override_GEOS5_check = True
     if dt_is_lastest_run or override_GEOS5_check:
         # Download this data if not already present
-        get_GEOS5_data_cubes4collection(ds=ds, mode=mode, collection=collection,
+        get_GEOS5_data_cubes4collection(ds=ds, mode=mode,
+                                        collection=collection,
                                         folder=folder,
                                         vars2use=vars2use, doys2use=doys2use,
                                         rm_existing_file=rm_existing_file,
@@ -2544,25 +2586,28 @@ def get_latest_GEOS5_fcast_data(dt=None, mode='fcast',
             if dt_is_lastest_run:
                 print('Data now available! Attempting download.')
                 # Download this data if not already present
-                get_GEOS5_data_cubes4collection(ds=ds, mode=mode, collection=collection,
+                get_GEOS5_data_cubes4collection(ds=ds, mode=mode,
+                                                collection=collection,
                                                 folder=folder,
-                                                vars2use=vars2use, doys2use=doys2use,
+                                                vars2use=vars2use,
+                                                doys2use=doys2use,
                                                 rm_existing_file=True,
                                                 )
 
-                print('WARNING: Completed attempt at data download, so calling stop.')
+                print('WARNING: Stopping. Completed attempt at data download')
                 sys.exit()
             else:
                 print('Data still not available...')
     else:
-        print('ERROR: Data not available for datetime so cannot attempt download')
+        print('ERROR: Data not available for date so cannot attempt download')
 
     # Force a garbage clean up
     gc.collect()
     # - Regrid the files if all are present
-    print( 'Checking if all files sucessfully downloaded. If so, then regridding files!')
+    print( 'Checking if files sucessfully downloaded. If so, regridding them!')
     #
-    folder = get_GEOS_data_folder4dt(dt=dt, product='GEOS_5', collection=collection)
+    folder = get_GEOS_data_folder4dt(dt=dt, product='GEOS_5',
+                                     collection=collection)
     failed_doys = check4GEOS5_failed_downloads(dt=dt, folder=folder)
     # If there are no failed days, then regrid
     if len(failed_doys) == 0:
@@ -2573,9 +2618,9 @@ def get_latest_GEOS5_fcast_data(dt=None, mode='fcast',
         print('Not all files present so, ')
 
 
-def check_for_failed_downloads_and_retry(dt=None, retry_download=True, n_doys=6,
-                                         inc_GEOS5_Nv_collection=False,
-                                         debug=False):
+def check4failed_downloads(dt=None, retry=True, n_doys=6,
+                           inc_GEOS5_Nv_collection=False,
+                           debug=False):
     """
     Check for failed downloads of GEOS-5/GEOS-CF files, then retry getting these
     """
@@ -2594,21 +2639,25 @@ def check_for_failed_downloads_and_retry(dt=None, retry_download=True, n_doys=6,
     expected_doys = list(dfT.index.dayofyear.values)
     # - GEOS5 downloads
     collection = 'inst3_3d_aer_Np'
-    folder = get_GEOS_data_folder4dt(dt=dt, product='GEOS_5', collection=collection)
+    folder = get_GEOS_data_folder4dt(dt=dt, product='GEOS_5',
+                                     collection=collection)
     failed_doys = check4GEOS5_failed_downloads(dt=dt, folder=folder)
     n_failed_doys = len(failed_doys)
     sum_n_failed_doys += n_failed_doys
-    print('GEOS5 - there were {} failed dowloads on {} '.format(n_failed_doys, dt_fmt))
+    pstr = 'GEOS5 - there were {} failed dowloads on {}'
+    print(pstr.format(n_failed_doys, dt_fmt))
     if (n_failed_doys > 0):
         print('The failed days were: ', failed_doys)
-    if (n_failed_doys > 0) and retry_download:
+    if (n_failed_doys > 0) and retry:
         print('')
-        get_latest_GEOS5_fcast_data(dt=dt, doys2use=failed_doys, rm_existing_file=True)
+        get_latest_GEOS5_fcast_data(dt=dt, doys2use=failed_doys,
+                                    rm_existing_file=True)
 
     # Also download the GEOS5 Nv collection
     if inc_GEOS5_Nv_collection:
         collection = 'inst3_3d_aer_Nv'
-        folder = get_GEOS_data_folder4dt(dt=dt, product='GEOS_5', collection=collection)
+        folder = get_GEOS_data_folder4dt(dt=dt, product='GEOS_5',
+                                         collection=collection)
         vars2use = ['du{:0>3}'.format(i) for i in range(1,6)]
         for var2use in vars2use:
             failed_doys = check4GEOS5_failed_downloads(dt=dt, folder=folder,
@@ -2619,15 +2668,17 @@ def check_for_failed_downloads_and_retry(dt=None, retry_download=True, n_doys=6,
             print(pstr.format(n_failed_doys, var2use, dt_fmt))
             if (n_failed_doys > 0):
                 print('The failed days were: ', failed_doys)
-            if (n_failed_doys > 0) and retry_download:
+            if (n_failed_doys > 0) and retry:
                 print('')
                 get_latest_GEOS5_fcast_data(dt=dt, doys2use=failed_doys,
-                                            collection=collection, vars2use=[var2use],
+                                            collection=collection,
+                                            vars2use=[var2use],
                                             rm_existing_file=True)
 
     # - GEOSCF downloads
     collection = 'chm_inst_1hr_g1440x721_p23'
-    folder = get_GEOS_data_folder4dt(dt=dt, product='GEOS_CF', collection=collection)
+    folder = get_GEOS_data_folder4dt(dt=dt, product='GEOS_CF',
+                                     collection=collection)
     vars2use = list(convert_GEOSCF_var2GEOSChem_name(rtn_dict=True).keys())
     # First check for lon_slice
     limit_lats = False
@@ -2643,11 +2694,11 @@ def check_for_failed_downloads_and_retry(dt=None, retry_download=True, n_doys=6,
                                                     debug=debug)
         n_failed_doys = len(failed_doys)
         sum_n_failed_doys += n_failed_doys
-        pstr = "GEOSCF (lon slice) - there were {} failed downloads for '{}' on {}"
+        pstr = "GEOSCF (lon slice): {} failed downloads for '{}' on {}"
         print(pstr.format(n_failed_doys, var2use, dt_fmt))
         if (n_failed_doys > 0):
             print('The failed days were: ', failed_doys)
-        if (n_failed_doys > 0) and retry_download:
+        if (n_failed_doys > 0) and retry:
             print('')
             get_latest_GEOSCF_fcast_data(dt=dt,
                                          vars2use=[var2use],
@@ -2672,14 +2723,14 @@ def check_for_failed_downloads_and_retry(dt=None, retry_download=True, n_doys=6,
                                                     debug=debug)
         n_failed_doys = len(failed_doys)
         sum_n_failed_doys += n_failed_doys
-        pstr = "GEOSCF (lat slice) - there were {} failed downloads for '{}' on {}"
+        pstr = "GEOSCF (lat slice) - {} failed downloads for '{}' on {}"
         print(pstr.format(n_failed_doys, var2use, dt_fmt))
         if (n_failed_doys > 0):
             print('The failed days were: ', failed_doys)
         # If the doys do not line up... delete the files and start again
 
         # Download missing files
-        if (n_failed_doys > 0) and retry_download:
+        if (n_failed_doys > 0) and retry:
             print('')
             get_latest_GEOSCF_fcast_data(dt=dt,
                                          vars2use=[var2use],
@@ -2703,11 +2754,11 @@ def check_for_failed_downloads_and_retry(dt=None, retry_download=True, n_doys=6,
                                                     debug=debug)
         n_failed_doys = len(failed_doys)
         sum_n_failed_doys += n_failed_doys
-        pstr = "GEOSCF (alt slice) - there were {} failed dowloads for '{}' on {}"
+        pstr = "GEOSCF (alt slice) - {} failed dowloads for '{}' on {}"
         print(pstr.format(n_failed_doys, var2use, dt_fmt))
         if (n_failed_doys > 0):
             print('The failed days were: ', failed_doys)
-        if (n_failed_doys > 0) and retry_download:
+        if (n_failed_doys > 0) and retry:
             print('')
             get_latest_GEOSCF_fcast_data(dt=dt,
                                          vars2use=[var2use],
@@ -2722,7 +2773,7 @@ def check_for_failed_downloads_and_retry(dt=None, retry_download=True, n_doys=6,
 
 
 def is_dt_latest_GEOSCF(dt=None, mode='fcast',
-                                         collection='chm_inst_1hr_g1440x721_p23'):
+                        collection='chm_inst_1hr_g1440x721_p23'):
     """
     Check if the latest GEOS-CF run is available on OPeNDAP
     """
@@ -2734,7 +2785,8 @@ def is_dt_latest_GEOSCF(dt=None, mode='fcast',
     # Check  containers
 #    ds = AC.get_GEOSCF_as_ds_via_OPeNDAP(collection=collection, mode=mode, date=dt)
     # Temporarily do not allow passing of date to OPeNDAP fetcher
-    ds = AC.get_GEOSCF_as_ds_via_OPeNDAP(collection=collection, mode=mode, date=None)
+    ds = AC.get_GEOSCF_as_ds_via_OPeNDAP(collection=collection, mode=mode,
+                                         date=None)
     last_start_date = AC.dt64_2_dt( [ds.time.values[0]] )[0]
     # Return check of files
     if last_start_date == dt:
@@ -2743,7 +2795,8 @@ def is_dt_latest_GEOSCF(dt=None, mode='fcast',
         return False
 
 
-def is_dt_latest_GEOS5(dt=None, mode='fcast', collection='chm_inst_1hr_g1440x721_p23'):
+def is_dt_latest_GEOS5(dt=None, mode='fcast',
+                       collection='chm_inst_1hr_g1440x721_p23'):
     """
     Check if the latest GEOS-5 run is available on OPeNDAP
     """
@@ -2754,7 +2807,8 @@ def is_dt_latest_GEOS5(dt=None, mode='fcast', collection='chm_inst_1hr_g1440x721
         dt = datetime.datetime(dt.year, dt.month, dt.day, 12)
     # Check  containers
     # Temporarily do not allow passing of date to OPeNDAP fetcher
-    ds = AC.get_GEOS5_as_ds_via_OPeNDAP(collection=collection, mode=mode, dt=dt)
+    ds = AC.get_GEOS5_as_ds_via_OPeNDAP(collection=collection, mode=mode,
+                                        dt=dt)
     last_start_date = AC.dt64_2_dt( [ds.time.values[0]] )[0]
     # Return check of files
     if last_start_date == dt:
@@ -2775,14 +2829,16 @@ def download_GEOSCF_fcast_data4date(dt=None, ds=None, mode='fcast',
     # Get a pointer at the latest forecast data
     if isinstance(ds, type(None)):
 #        ds = AC.get_GEOSCF_as_ds_via_OPeNDAP(collection=collection, mode=mode, date=dt)
-        ds = AC.get_GEOSCF_as_ds_via_OPeNDAP(collection=collection, mode=mode, date=None)
+        ds = AC.get_GEOSCF_as_ds_via_OPeNDAP(collection=collection, mode=mode,
+                                             date=None)
     # use the latest forecast data in the dataset if one not provided
     if isinstance(dt, type(None)):
         dt = AC.dt64_2_dt( [ds.time.values[0]] )[0]
     pstr = 'Attempting to download GEOS-CF data ({}) starting on {}'
     print( pstr.format( collection, dt.strftime('%Y/%m/%d %H:%M')) )
     # Where to save the data
-    folder = get_GEOS_data_folder4dt(dt=dt, product='GEOS_CF', collection=collection)
+    folder = get_GEOS_data_folder4dt(dt=dt, product='GEOS_CF',
+                                     collection=collection)
     # Check if the folder is present, if not create it
     if os.path.isdir(folder):
         print('WARNING: folder already exists ({})'.format(folder))
@@ -2797,7 +2853,8 @@ def download_GEOSCF_fcast_data4date(dt=None, ds=None, mode='fcast',
     get_GEOSCF_data_cubes4collection(ds=ds, mode=mode, collection=collection,
                                      folder=folder, vars2use=vars2use,
                                      doys2use=doys2use, dt=dt,
-                                     limit_lvls=limit_lvls, limit_lons=limit_lons,
+                                     limit_lvls=limit_lvls,
+                                     limit_lons=limit_lons,
                                      rm_existing_file=rm_existing_file,
                                      limit_lats=limit_lats )
 
@@ -2842,7 +2899,8 @@ def what_is_latest_data_locally(only_check_last5dates=True, debug=True):
     for n_folder, folders in enumerate( subfolders ):
         date = dates4folders[n_folder]
         if debug:
-            print("Checking data in folder for date '{}': {}".format(date, folder))
+            pstr = "Checking data in folder for date '{}': {}"
+            print(pstr.format(date, folder))
         CF_data_present_list += [is_GEOSCF_data_in_folder(folder)]
     #
     set_of_bools = list(set(CF_data_present_list))
@@ -2852,7 +2910,8 @@ def what_is_latest_data_locally(only_check_last5dates=True, debug=True):
                 print('Data present locally for all dates checked!')
             return dates4folders[-1]
         else:
-            print('WARNING: No local data present for the last 5 dates checked!')
+            pstr = 'WARNING: No local data present 4 the last 5 dates checked!'
+            print(pstr)
             return None
 
 
@@ -2860,7 +2919,7 @@ def is_GEOSCF_data_in_folder(folder):
     """
     check if GEOS-CF data is in the folder
     """
-    # TODO - write a checker for GEOS-CF 
+    # TODO - write a checker for GEOS-CF
     return False
 
 
@@ -2920,8 +2979,9 @@ def select_smaller_area_around_Cape_Verde(ds):
     return ds
 
 
-def plot_up_the_smaller_area_subselect_around_CVAO(ds, LonVar='lon', LatVar='lat',
-                                                   use_local_CVAO_region=False):
+def plt_smaller_area_around_CVAO(ds, LonVar='lon',
+                                 LatVar='lat',
+                                 use_local_CVAO_area=False):
     """
     Plot up the area around Cape Verde
     """
@@ -2946,8 +3006,8 @@ def plot_up_the_smaller_area_subselect_around_CVAO(ds, LonVar='lon', LatVar='lat
     dsCV = dsCV.sel(lev=dsCV.lev[0])
     dsCV = dsCV.mean(dim='time')
     # Now plot
-    quick_map_plot_Cape_Verde_1layer(dsCV, var2plot=NewVar, extents=extents,
-                                     use_local_CVAO_region=use_local_CVAO_region,
+    quick_map_plt_CV_1layer(dsCV, var2plot=NewVar, extents=extents,
+                                     use_local_CVAO_area=use_local_CVAO_area,
                                      extra_str='ARNA', save_plot=True)
 
 
@@ -3374,9 +3434,10 @@ def convert_GEOSCF_var2GEOSChem_name(input=None, rtn_dict=False):
         return d[input]
 
 
-def plot_average_spatial_concs_by_lvl(ds, year=2018, vars2use=None, verbose=False,
-                                      use_local_CVAO_region=False,
-                                      show_plot=False, dpi=320):
+def plt_avg_spatial_by_lvl(ds, year=2018, vars2use=None,
+                           verbose=False,
+                           use_local_CVAO_area=False,
+                           show_plot=False, dpi=320):
     """
     Make a PDF of average spatial concentrations by level
     """
@@ -3407,9 +3468,9 @@ def plot_average_spatial_concs_by_lvl(ds, year=2018, vars2use=None, verbose=Fals
             title = 'Average [{}] @ {:.0f}hPa in Feb {}'.format(
                 LaTeX_spec, lev2use, year)
             # Plot up and add title
-            quick_map_plot_Cape_Verde_1layer(ds_tmp, var2plot=var, title=title,
-                                             use_local_CVAO_region=use_local_CVAO_region,
-                                             save_plot=False, units=units)
+            quick_map_plt_CV_1layer(ds_tmp, var2plot=var, title=title,
+                                    use_local_CVAO_area=use_local_CVAO_area,
+                                    save_plot=False, units=units)
             del ds_tmp
             # Save to PDF
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
@@ -3421,9 +3482,10 @@ def plot_average_spatial_concs_by_lvl(ds, year=2018, vars2use=None, verbose=Fals
     plt.close('all')
 
 
-def plot_average_spatial_concs4lon(ds, year=2018, vars2use=None, verbose=False,
-                                   use_local_CVAO_region=False,
-                                   show_plot=False, dpi=320):
+def plot_average_spatial_concs4lon(ds, year=2018, vars2use=None,
+                                   use_local_CVAO_area=False,
+                                   show_plot=False, dpi=320,
+                                   verbose=False,):
     """
     Make a PDF of average spatial concentrations by level
     """
@@ -3456,8 +3518,8 @@ def plot_average_spatial_concs4lon(ds, year=2018, vars2use=None, verbose=False,
             title = 'Average [{}] @ {:.0f}hPa in Feb {}'.format(
                 LaTeX_spec, lev2use, year)
             # Plot up and add title
-#            quick_map_plot_Cape_Verde_1layer(ds_tmp, var2plot=var, title=title,
-#                                             use_local_CVAO_region=use_local_CVAO_region,
+#            quick_map_plt_CV_1layer(ds_tmp, var2plot=var, title=title,
+#                                             use_local_CVAO_area=use_local_CVAO_area,
 #                                             save_plot=False, units=units)
             # vertical plot
             del ds_tmp
@@ -3471,20 +3533,22 @@ def plot_average_spatial_concs4lon(ds, year=2018, vars2use=None, verbose=False,
     plt.close('all')
 
 
-def quick_map_plot_Cape_Verde_1layer(ds, var2plot=None, extra_str='',
-                                     projection=ccrs.PlateCarree(),
-                                     save_plot=True, show_plot=False, savename=None,
-                                     units=None, title=None,
-                                     LatVar='lat', LonVar='lon', fig=None, ax=None,
-                                     extents=None,
-                                     region='Cape_Verde',
-                                     use_local_CVAO_region=True,
-                                     add_flyable_range_as_circle=True,
-                                     add_flyable_range=False,
-                                     add_detailed_map=True,
-                                     add_ARNA_locs=True,
-                                     extend='neither', folder='./',
-                                     dpi=320):
+def quick_map_plt_CV_1layer(ds, var2plot=None, extra_str='',
+                            projection=ccrs.PlateCarree(),
+                            save_plot=True, show_plot=False,
+                            savename=None,
+                            units=None, title=None,
+                            LatVar='lat', LonVar='lon', fig=None,
+                            ax=None,
+                            extents=None,
+                            region='Cape_Verde',
+                            use_local_CVAO_area=True,
+                            add_flyable_range_as_circle=True,
+                            add_flyable_range=False,
+                            add_detailed_map=True,
+                            add_ARNA_locs=True,
+                            extend='neither', folder='./',
+                            dpi=320):
     """
     Plot up a quick spatial plot of data using cartopy
 
@@ -3508,7 +3572,8 @@ def quick_map_plot_Cape_Verde_1layer(ds, var2plot=None, extra_str='',
     """
     # Use the 1st data variable if not variable given
     if isinstance(var2plot, type(None)):
-        print('WARNING: No variable to plot was set (var2plot), trying 1st data_var')
+        pstr = 'WARNING: No variable to plot(var2plot), trying 1st data_var'
+        print(pstr)
         var2plot = list(ds.data_vars)[0]
 
     # Setup figure and axis and plot
@@ -3520,7 +3585,8 @@ def quick_map_plot_Cape_Verde_1layer(ds, var2plot=None, extra_str='',
     # Setup plotted range
     vmin, vmax = set_limits4ar_plotted_range(var2plot)
     # Now plot up
-    ds[var2plot].plot.imshow(x=LonVar, y=LatVar, ax=ax, transform=ccrs.PlateCarree(),
+    ds[var2plot].plot.imshow(x=LonVar, y=LatVar, ax=ax,
+                             transform=ccrs.PlateCarree(),
                              vmin=vmin, vmax=vmax, extend=extend)
     # Add some grid lines
     gl = ax.gridlines(crs=ccrs.PlateCarree(), draw_labels=True,
@@ -3528,7 +3594,7 @@ def quick_map_plot_Cape_Verde_1layer(ds, var2plot=None, extra_str='',
     gl.xlabels_top = False
     gl.ylabels_right = False
     # Limit plot to Cape Verde region
-    if use_local_CVAO_region:
+    if use_local_CVAO_area:
         x0 = -30
         x1 =-10
         y0 = 0
@@ -3706,7 +3772,7 @@ def plot_spatial_concs_2layer(ds, show_plot=False, folder=None,
             title += '\n '+ extr_title_str
             # Save plots
             extra_str = 'lev_{}_dt_{}'.format( lev2use, dstr )
-            quick_map_plot_2layer(ds_tmp, var2plot1=var2plot1,
+            quick_map_plt_2layer(ds_tmp, var2plot1=var2plot1,
                                   folder=folder, region=region,
                                   var2plot2=var2plot2, title=title,
                                   add_max_vals_as_txt=add_max_vals_as_txt,
@@ -3735,11 +3801,12 @@ def set_values_below_range2NaNs4spec(var=None, ds=None):
     return ds
 
 
-def plot_spatial_concs_2layer_vertical_lon(ds, show_plot=False, folder=None,
-                                       var2plot1='NOy', var2plot2='PM2.5(dust)',
-                                       extr_title_str=None,
-                                       testing_mode=False,
-                                       ):
+def plt_spatial_2layer_vertical_lon(ds, show_plot=False, folder=None,
+                                    var2plot1='NOy',
+                                    var2plot2='PM2.5(dust)',
+                                    extr_title_str=None,
+                                    testing_mode=False,
+                                    ):
     """
     Plot up a two layer plot on a single map for given levels
     """
@@ -3797,11 +3864,12 @@ def plot_spatial_concs_2layer_vertical_lon(ds, show_plot=False, folder=None,
             plt.close('all')
 
 
-def plot_spatial_concs_2layer_vertical_lat(ds, show_plot=False, folder=None,
-                                           var2plot1='NOy', var2plot2='PM2.5(dust)',
-                                           extr_title_str=None,
-                                           testing_mode=False,
-                                           ):
+def plt_spatial_2layer_vertical_lat(ds, show_plot=False, folder=None,
+                                    var2plot1='NOy',
+                                    var2plot2='PM2.5(dust)',
+                                    extr_title_str=None,
+                                    testing_mode=False,
+                                    ):
     """
     Plot up a two layer plot on a single map for given levels
     """
@@ -3851,7 +3919,7 @@ def plot_spatial_concs_2layer_vertical_lat(ds, show_plot=False, folder=None,
             attrs['long_name'] = LaTeX_spec2
             ds_tmp[var2plot2].attrs = attrs
             # Now call plotter
-            quick_lat_plot_2layer(ds_tmp, var2plot1=var2plot1,
+            quick_lat_plt_2layer(ds_tmp, var2plot1=var2plot1,
                                   folder=folder,
                                   var2plot2=var2plot2, title=title,
                                   save_plot=True, extra_str=extra_str
@@ -3859,10 +3927,11 @@ def plot_spatial_concs_2layer_vertical_lat(ds, show_plot=False, folder=None,
             plt.close('all')
 
 
-def make_video_from_plots(FileStr='spatial_plot_NOy_PM2_5_dust__lev_1000_0_dt_*.png'):
+def mk_video_from_plts(FileStr=None):
     """
     Convert images frames into videos using ffmpeg
     """
+    FileStr = 'spatial_plot_NOy_PM2_5_dust__lev_1000_0_dt_*.png'
     #
     print('WARNING: ffmpeg calls here have been switched off')
 #    ffmpegstr = "ffmpeg -framerate 3 -pattern_type glob -i '{FileStr}' -c:v libx264 -pix_fmt yuv420p out.mp4"
@@ -3871,7 +3940,7 @@ def make_video_from_plots(FileStr='spatial_plot_NOy_PM2_5_dust__lev_1000_0_dt_*.
     os.system(" ")
 
 
-def plot_CVAO_region_on_global_map(ds, var2use='NOy' ):
+def plot_CVAO_region_on_global_map(ds, var2use='NOy'):
     """
     Plot a global map to show ARNA campaign region
     """
@@ -3938,19 +4007,20 @@ def get_reduced_cmap(cmap='Reds', minval=0.0, maxval=0.75, npoints=100):
     return cmap
 
 
-def quick_map_plot_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
-                          projection=ccrs.PlateCarree(), folder=None,
-                          save_plot=True, show_plot=False, savename=None,
-                          units=None, title=None,
-                          LatVar='lat', LonVar='lon', fig=None, ax=None, extents=None,
-                          add_ARNA_locs=True,
-                          use_local_CVAO_region=True, region='Cape_Verde',
-                          extend='both',
-                          add_flyable_range_as_box=False,
-                          add_flyable_range_as_circle=True,
-                          add_detailed_map=True,
-                          add_max_vals_as_txt=False,
-                          dpi=320):
+def quick_map_plt_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
+                         projection=ccrs.PlateCarree(), folder=None,
+                         save_plot=True, show_plot=False, savename=None,
+                         units=None, title=None,
+                         LatVar='lat', LonVar='lon', fig=None, ax=None,
+                         extents=None,
+                         add_ARNA_locs=True,
+                         use_local_CVAO_area=True, region='Cape_Verde',
+                         extend='both',
+                         add_flyable_range_as_box=False,
+                         add_flyable_range_as_circle=True,
+                         add_detailed_map=True,
+                         add_max_vals_as_txt=False,
+                         dpi=320):
     """
     Plot up a quick spatial plot of data using cartopy
 
@@ -3968,7 +4038,7 @@ def quick_map_plot_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
     fig (figure instance): matplotlib figure instance
     ax (axis instance): axis object to use
     add_ARNA_locs (bool):
-    use_local_CVAO_region (bool):
+    use_local_CVAO_area (bool):
 
     Returns
     -------
@@ -3976,11 +4046,13 @@ def quick_map_plot_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
     """
     # Use the 1st data variable if not variable given
     if isinstance(var2plot1, type(None)):
-        print('WARNING: No variable to plot was set (var2plot), trying 1st data_var')
+        pstr = 'WARNING: No variable to plot (var2plot), trying 1st data_var'
+        print(pstr)
         var2plot1 = list(ds.data_vars)[0]
 #        var2plot1 = 'NOy'
     if isinstance(var2plot2, type(None)):
-        print('WARNING: No variable to plot was set (var2plot), trying 1st data_var')
+        pstr = 'WARNING: No variable to plot (var2plot), trying 1st data_var'
+        print(pstr)
         var2plot2 = list(ds.data_vars)[0]
 #        var2plot2 = 'PM2.5(dust)'
     # Setup figure and axis and plot
@@ -4001,13 +4073,14 @@ def quick_map_plot_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
     else:
         cbar_kwargs  = {'ticks':ticks, 'cmap':cmap, 'extend':extend,  }
     # Now plot up var1
-    ds[var2plot1].plot.imshow(x=LonVar, y=LatVar, ax=ax, transform=ccrs.PlateCarree(),
-                             vmin=vmin1, vmax=vmax1,
-                             zorder=1, alpha=alpha,
-                             cmap=cmap,
-                             cbar_kwargs=cbar_kwargs,
+    ds[var2plot1].plot.imshow(x=LonVar, y=LatVar, ax=ax,
+                              transform=ccrs.PlateCarree(),
+                              vmin=vmin1, vmax=vmax1,
+                              zorder=1, alpha=alpha,
+                              cmap=cmap,
+                              cbar_kwargs=cbar_kwargs,
 #                             extend=extend,
-                             )
+                              )
     # Update the units on the colour bar panel
     im = ax.images
     cb = im[-1].colorbar
@@ -4028,10 +4101,11 @@ def quick_map_plot_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
     else:
         cbar_kwargs  = {'ticks': ticks, 'cmap': cmap, 'extend' : extend, }
     # Now plot up var2
-    ds[var2plot2].plot.imshow(x=LonVar, y=LatVar, ax=ax, transform=ccrs.PlateCarree(),
-                             vmin=vmin2, vmax=vmax2,
-                             zorder=1, alpha=alpha, cmap=cmap,
-                             cbar_kwargs=cbar_kwargs,
+    ds[var2plot2].plot.imshow(x=LonVar, y=LatVar, ax=ax,
+                              transform=ccrs.PlateCarree(),
+                              vmin=vmin2, vmax=vmax2,
+                              zorder=1, alpha=alpha, cmap=cmap,
+                              cbar_kwargs=cbar_kwargs,
 #                             extend=extend,
                               )
     # Update the units on the colour bar panel
@@ -4056,7 +4130,7 @@ def quick_map_plot_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
     gl.xlabels_top = False
     gl.ylabels_right = False
     # Just plot over the CVAO region?
-    if use_local_CVAO_region and (region != 'Cape_Verde_Flying'):
+    if use_local_CVAO_area and (region != 'Cape_Verde_Flying'):
         x0 = -30
         x1 =-10
         y0 = 0
@@ -4256,7 +4330,8 @@ def quick_map_plot_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
             lon_nav_units = convert_decimcal_degress2nav_format([lon*-1])[0]
             lat_nav_units = convert_decimcal_degress2nav_format([lat])[0]
 #            plot_txt = 'NOy*Dust max. @ {}N {}E'.format(lat_nav_units, lon_nav_units)
-            plot_txt = 'NOy*Dust max. @ {}N {}W'.format(lat_nav_units, lon_nav_units)
+            plot_txt = 'NOy*Dust max. @ {}N {}W'.format(lat_nav_units,
+                                                        lon_nav_units)
             # Also add the values for NOy+Dust
             units1 = 'ppbv'
             units2 = '$\mu$g m$^{-3}$'
@@ -4275,7 +4350,8 @@ def quick_map_plot_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
                     )
         except:
             print(ds.data_vars)
-            print('WARNING: not adding waypoint to plot as NOy*Dust variable not present')
+            pstr = 'WARNING: not adding waypoint as NOy*Dust var not present'
+            print(pstr)
     # Add a generic title if one is not provided
     if not isinstance(title, type(None)):
         plt.title(title)
@@ -4383,7 +4459,8 @@ def get_latest_GEOS5_diagnostics(dt=None,
         dt = AC.add_days(TNow, -1)
         dt = datetime.datetime(dt.year, dt.month, dt.day, 12)
     # Folder to dave plots
-    G5_folder = get_GEOS_data_folder4dt(dt=dt, product='GEOS_5', inc_collection=False)
+    G5_folder = get_GEOS_data_folder4dt(dt=dt, product='GEOS_5',
+                                        inc_collection=False)
     folder2save = G5_folder + '/plots/plots.GMAO/'
     # Check the folder exists and create if not
     # Check if the folder is present, if not create it
@@ -4462,7 +4539,7 @@ def quick_lon_plot_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
                           units=None, title=None, folder=None,
                           LatVar='lat', LonVar='lon', LevVar='lev',
                           fig=None, ax=None, extents=None,
-                          add_ARNA_locs=True, use_local_CVAO_region=True,
+                          add_ARNA_locs=True, use_local_CVAO_area=True,
                           extend='both', ylim=(0, 10), xlim=(5, 30),
                           dpi=320):
     """
@@ -4482,7 +4559,7 @@ def quick_lon_plot_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
     fig (figure instance): matplotlib figure instance
     ax (axis instance): axis object to use
     add_ARNA_locs (bool):
-    use_local_CVAO_region (bool):
+    use_local_CVAO_area (bool):
 
     Returns
     -------
@@ -4491,11 +4568,11 @@ def quick_lon_plot_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
     from mpl_toolkits.axes_grid1 import make_axes_locatable
     # Use the 1st data variable if not variable given
     if isinstance(var2plot1, type(None)):
-        print('WARNING: No variable to plot was set (var2plot), trying 1st data_var')
+        print('WARNING: No variable to plot (var2plot), trying 1st data_var')
 #        var2plot1 = list(ds.data_vars)[0]
         var2plot1 = 'NOy'
     if isinstance(var2plot2, type(None)):
-        print('WARNING: No variable to plot was set (var2plot), trying 1st data_var')
+        print('WARNING: No variable to plot (var2plot), trying 1st data_var')
 #        var2plot2 = list(ds.data_vars)[0]
         var2plot2 = 'PM2.5(dust)'
     # Setup figure and axis and plot
@@ -4542,7 +4619,9 @@ def quick_lon_plot_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
     if isinstance(ticks, type(None)):
         cbar_kwargs  = { 'cmap': cmap, 'extend' : extend, 'pad':0.075, }
     else:
-        cbar_kwargs  = {'ticks': ticks, 'cmap': cmap, 'extend' : extend, 'pad':0.075, }
+        cbar_kwargs  = {
+        'ticks': ticks, 'cmap': cmap, 'extend' : extend, 'pad':0.075,
+        }
     # Now plot up var1 - using pcolormesh
     cbar_ax = divider.append_axes("right", "2%", pad="1%")
     # Now plot
@@ -4616,8 +4695,8 @@ def quick_lon_plot_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
         lon_, lat_, NIU = AC.get_loc(loc_)
         # If lat in plotted range, then plot
         if (lat_ > xlim[0]) and (lat_ < xlim[-1]):
-            ax.axvline(x=lat_, linestyle='--', alpha=0.5, color='grey', zorder=100,
-                       linewidth=3.0)
+            ax.axvline(x=lat_, linestyle='--', alpha=0.5, color='grey',
+                       zorder=100, linewidth=3.0)
             # Add label for airports
             if n % 2 == 0:
                 buffer = 0
@@ -4632,7 +4711,8 @@ def quick_lon_plot_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
                 base = base * m2kft
                 buffer = buffer *3*1.5
             # Add label for the airport
-            ax.text(lat_, base+buffer, '{}'.format(loc_), fontsize=10, alpha=0.5,
+            ax.text(lat_, base+buffer, '{}'.format(loc_), fontsize=10,
+                    alpha=0.5,
                     horizontalalignment='center' )
 
     # Add lines for kft heights
@@ -4641,7 +4721,8 @@ def quick_lon_plot_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
         km_heights = AC.hPa_to_Km(hPa_heights)
         kft_heights = [i*m2kft for i in km_heights]
         for n, height_ in enumerate( kft_heights ):
-            ax.axhline(y=height_, linestyle='--', alpha=0.5, color='grey', zorder=100,
+            ax.axhline(y=height_, linestyle='--', alpha=0.5, color='grey',
+                       zorder=100,
                        linewidth=1.0)
             # Add label for heights
             ax.text(xlim[1]-2.5, height_, '{:.0f} hPa'.format(hPa_heights[n]),
@@ -4652,10 +4733,12 @@ def quick_lon_plot_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
         kft_heights = [20000, 15000, 10000, 5000]
         m_heights = [i/m2kft/1E3 for i in kft_heights]
         for n, height_ in enumerate( m_heights ):
-            ax.axhline(y=height_, linestyle='--', alpha=0.5, color='grey', zorder=100,
+            ax.axhline(y=height_, linestyle='--', alpha=0.5, color='grey',
+                       zorder=100,
                        linewidth=1.0)
             # Add label for heights
-            ax.text(xlim[1]-5, height_, '{:.0f} kft'.format(kft_heights[n]/1E3),
+            ax.text(xlim[1]-5, height_,
+                    '{:.0f} kft'.format(kft_heights[n]/1E3),
                     fontsize=10, alpha=0.5 )
 
     # Beautify the figure/plot
@@ -4684,7 +4767,8 @@ def quick_lon_plot_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
     # Save the plot?
     if save_plot:
         if isinstance(savename, type(None)):
-            savename = 'spatial_plot_{}_{}_{}'.format(var2plot1, var2plot2, extra_str)
+            sstr = 'spatial_plot_{}_{}_{}'
+            savename = sstr.format(var2plot1, var2plot2, extra_str)
         savename = AC.rm_spaces_and_chars_from_str(savename)
         if isinstance(folder, type(None)):
             folder = './'
@@ -4739,7 +4823,7 @@ def get_ARNA_flights_as_dfs():
 
 def plt_alt_binned_comparisons4ARNA_flights(dpi=320, show_plot=False):
     """
-    Plot up altitude binned comparisons between core observations and model data
+    Plot up altitude binned comparisons between core obs. and model data
     """
     import seaborn as sns
     sns.set(color_codes=True)
@@ -4853,17 +4937,17 @@ def plt_alt_binned_comparisons4ARNA_flights(dpi=320, show_plot=False):
         color_dict = {'GEOS-CF': 'red', 'Obs.':'k'}
         unit_d = {}
         mod2obs_varnames = {
-        'CO':'CO_AERO', 'O3':'O3_TECO', 'NO2':'no2_mr', 'NO':'no_mr', 
+        'CO':'CO_AERO', 'O3':'O3_TECO', 'NO2':'no2_mr', 'NO':'no_mr',
         'HNO2':'hono_mr',
         'NOx':'NOx'
         }
         units_d = {
-        'CO':'ppbv', 'O3':'ppbv', 'NO2':'pptv', 'NO':'pptv', 'NOx':'pptv', 
+        'CO':'ppbv', 'O3':'ppbv', 'NO2':'pptv', 'NO':'pptv', 'NOx':'pptv',
         'HNO2':'pptv', 'HONO':'pptv',
         }
         range_d = {
         'CO':(50, 400), 'O3':(-10, 100), 'NO2':(-50, 500), 'NO':(-50, 500),
-        'NOx':(-50, 500), 
+        'NOx':(-50, 500),
         'HNO2':(-50, 500), 'HONO':(-50, 500),
         }
         # - by variable
@@ -4872,7 +4956,9 @@ def plt_alt_binned_comparisons4ARNA_flights(dpi=320, show_plot=False):
         vars2plot = mod2obs_varnames.keys()
         print(vars2plot)
         print(df_obs.columns)
-        vars2plot = [i for i in vars2plot if mod2obs_varnames[i] in df_obs.columns]
+        vars2plot = [
+        i for i in vars2plot if mod2obs_varnames[i] in df_obs.columns
+        ]
         # What bins should be used?
         bins = [0.5*i for i in np.arange(15)]
         for var2plot in vars2plot:
@@ -5070,7 +5156,8 @@ def plt_timeseries_comparisons4ARNA_flights(dpi=320, show_plot=False):
         plt.plot(df_obs.index, df_obs[obs_var2plot].values, label='Obs.',
                  color='k' )
         mod_var2plot = 'CO'
-        plt.plot(df_mod.index, df_mod[ mod_var2plot ].values*1E9, label='GEOS-CF',
+        plt.plot(df_mod.index, df_mod[ mod_var2plot ].values*1E9,
+                 label='GEOS-CF',
                  color='red' )
         # Beautify plot
         plt.title(title_str.format(var2plot, units, flight_ID ))
@@ -5096,7 +5183,8 @@ def plt_timeseries_comparisons4ARNA_flights(dpi=320, show_plot=False):
             ax2.set_xticklabels(xticks_labels, rotation=45)
 
         # Save to PDF
-        fig.legend(loc='best', bbox_to_anchor=(1,1), bbox_transform=ax.transAxes)
+        fig.legend(loc='best', bbox_to_anchor=(1,1),
+                   bbox_transform=ax.transAxes)
         plt.tight_layout()
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
         if show_plot:
@@ -5117,8 +5205,9 @@ def plt_timeseries_comparisons4ARNA_flights(dpi=320, show_plot=False):
         ln1 = plt.plot(df_obs.index, df_obs[obs_var2plot].values, label='Obs.',
                        color='k'  )
         mod_var2plot = 'O3'
-        ln2 = plt.plot(df_mod.index, df_mod[ mod_var2plot ].values*1E9, label='GEOS-CF',
-                       color='red' )
+        ln2 = plt.plot(df_mod.index, df_mod[ mod_var2plot ].values*1E9,
+                       label='GEOS-CF', color='red'
+                       )
         # Beautify plot
         title_str = "Timeseries of '{}' ({}) during flight '{}'"
         plt.title(title_str.format(var2plot, units, flight_ID ))
@@ -5143,7 +5232,8 @@ def plt_timeseries_comparisons4ARNA_flights(dpi=320, show_plot=False):
             ax2.set_xticklabels(xticks_labels, rotation=45)
 
         # Save to PDF
-        fig.legend(loc='best', bbox_to_anchor=(1,1), bbox_transform=ax.transAxes)
+        fig.legend(loc='best', bbox_to_anchor=(1,1),
+                   bbox_transform=ax.transAxes)
         plt.tight_layout()
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
         if show_plot:
@@ -5162,9 +5252,11 @@ def plt_timeseries_comparisons4ARNA_flights(dpi=320, show_plot=False):
             units = 'pptv'
             var2plot = 'NO2'
             obs_var2plot = 'no2_mr'
-            plt.plot(df_obs.index, df_obs[obs_var2plot].values, label='Obs.', color='k' )
+            plt.plot(df_obs.index, df_obs[obs_var2plot].values, label='Obs.',
+                     color='k' )
             mod_var2plot = 'NO2'
-            plt.plot(df_mod.index, df_mod[ mod_var2plot ].values*1E12, label='GEOS-CF',
+            plt.plot(df_mod.index, df_mod[ mod_var2plot ].values*1E12,
+                     label='GEOS-CF',
                      color='red' )
             # Beautify plot
             plt.title(title_str.format(var2plot, units, flight_ID ))
@@ -5178,8 +5270,9 @@ def plt_timeseries_comparisons4ARNA_flights(dpi=320, show_plot=False):
             mod_var2plot = 'model-lev'
             # Invert the second y-axis
             if plt_alt_as_shadow:
-                ax2.plot(df_mod.index, df_mod[mod_var2plot].values, label='Altitude',
-                          color='grey', zorder=100, alpha=0.25  )
+                ax2.plot(df_mod.index, df_mod[mod_var2plot].values,
+                         label='Altitude',
+                         color='grey', zorder=100, alpha=0.25  )
                 ax2.set_ylabel('Altitude (hPa)')
                 ax2.grid(None)
                 ax2.invert_yaxis()
@@ -5187,7 +5280,8 @@ def plt_timeseries_comparisons4ARNA_flights(dpi=320, show_plot=False):
                 ax2.set_xticks(xticks)
                 ax2.set_xticklabels(xticks_labels, rotation=45)
             # Save to PDF
-            fig.legend(loc='best', bbox_to_anchor=(1,1), bbox_transform=ax.transAxes)
+            fig.legend(loc='best', bbox_to_anchor=(1,1),
+                       bbox_transform=ax.transAxes)
             plt.tight_layout()
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
             if show_plot:
@@ -5206,9 +5300,11 @@ def plt_timeseries_comparisons4ARNA_flights(dpi=320, show_plot=False):
             units = 'pptv'
             var2plot = 'NO'
             obs_var2plot = 'no_mr'
-            plt.plot(df_obs.index, df_obs[obs_var2plot].values, label='Obs.', color='k' )
+            plt.plot(df_obs.index, df_obs[obs_var2plot].values, label='Obs.',
+                     color='k' )
             mod_var2plot = 'NO'
-            plt.plot(df_mod.index, df_mod[ mod_var2plot ].values*1E12, label='GEOS-CF',
+            plt.plot(df_mod.index, df_mod[ mod_var2plot ].values*1E12,
+                     label='GEOS-CF',
                      color='red' )
             # Beautify plot
             plt.title(title_str.format(var2plot, units, flight_ID ))
@@ -5222,8 +5318,9 @@ def plt_timeseries_comparisons4ARNA_flights(dpi=320, show_plot=False):
             mod_var2plot = 'model-lev'
             # Invert the second y-axis
             if plt_alt_as_shadow:
-                ax2.plot(df_mod.index, df_mod[mod_var2plot].values, label='Altitude',
-                          color='grey', zorder=100, alpha=0.25  )
+                ax2.plot(df_mod.index, df_mod[mod_var2plot].values,
+                         label='Altitude',
+                         color='grey', zorder=100, alpha=0.25  )
                 ax2.set_ylabel('Altitude (hPa)')
                 ax2.grid(None)
                 ax2.invert_yaxis()
@@ -5231,7 +5328,8 @@ def plt_timeseries_comparisons4ARNA_flights(dpi=320, show_plot=False):
                 ax2.set_xticks(xticks)
                 ax2.set_xticklabels(xticks_labels, rotation=45)
             # Save to PDF
-            fig.legend(loc='best', bbox_to_anchor=(1,1), bbox_transform=ax.transAxes)
+            fig.legend(loc='best', bbox_to_anchor=(1,1),
+                       bbox_transform=ax.transAxes)
             plt.tight_layout()
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
             if show_plot:
@@ -5250,10 +5348,11 @@ def plt_timeseries_comparisons4ARNA_flights(dpi=320, show_plot=False):
             units = 'pptv'
             var2plot = 'NOx'
             obs_var2plot = 'NOx'
-            plt.plot(df_obs.index, df_obs[obs_var2plot].values, label='Obs.', color='k' )
+            plt.plot(df_obs.index, df_obs[obs_var2plot].values, label='Obs.',
+                     color='k' )
             mod_var2plot = 'NOx'
-            plt.plot(df_mod.index, df_mod[ mod_var2plot ].values*1E12, label='GEOS-CF',
-                     color='red' )
+            plt.plot(df_mod.index, df_mod[ mod_var2plot ].values*1E12,
+                     label='GEOS-CF', color='red' )
             # Beautify plot
             plt.title(title_str.format(var2plot, units, flight_ID ))
             plt.ylim(-50, 500)
@@ -5266,8 +5365,9 @@ def plt_timeseries_comparisons4ARNA_flights(dpi=320, show_plot=False):
             mod_var2plot = 'model-lev'
             # Invert the second y-axis
             if plt_alt_as_shadow:
-                ax2.plot(df_mod.index, df_mod[mod_var2plot].values, label='Altitude',
-                          color='grey', zorder=100, alpha=0.25  )
+                ax2.plot(df_mod.index, df_mod[mod_var2plot].values,
+                         label='Altitude',
+                         color='grey', zorder=100, alpha=0.25  )
                 ax2.set_ylabel('Altitude (hPa)')
                 ax2.grid(None)
                 ax2.invert_yaxis()
@@ -5275,7 +5375,8 @@ def plt_timeseries_comparisons4ARNA_flights(dpi=320, show_plot=False):
                 ax2.set_xticks(xticks)
                 ax2.set_xticklabels(xticks_labels, rotation=45)
             # Save to PDF
-            fig.legend(loc='best', bbox_to_anchor=(1,1), bbox_transform=ax.transAxes)
+            fig.legend(loc='best', bbox_to_anchor=(1,1),
+                       bbox_transform=ax.transAxes)
             plt.tight_layout()
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
             if show_plot:
@@ -5294,10 +5395,11 @@ def plt_timeseries_comparisons4ARNA_flights(dpi=320, show_plot=False):
             units = 'pptv'
             var2plot = 'HONO'
             obs_var2plot = 'hono_mr'
-            plt.plot(df_obs.index, df_obs[obs_var2plot].values, label='Obs.', color='k' )
+            plt.plot(df_obs.index, df_obs[obs_var2plot].values, label='Obs.',
+                     color='k' )
             mod_var2plot = 'HNO2'
-            plt.plot(df_mod.index, df_mod[ mod_var2plot ].values*1E12, label='GEOS-CF',
-                     color='red' )
+            plt.plot(df_mod.index, df_mod[ mod_var2plot ].values*1E12,
+                     label='GEOS-CF', color='red' )
             # Beautify plot
             plt.title(title_str.format(var2plot, units, flight_ID ))
             plt.ylim(-50, 500)
@@ -5310,8 +5412,9 @@ def plt_timeseries_comparisons4ARNA_flights(dpi=320, show_plot=False):
             mod_var2plot = 'model-lev'
             # Invert the second y-axis
             if plt_alt_as_shadow:
-                ax2.plot(df_mod.index, df_mod[mod_var2plot].values, label='Altitude',
-                          color='grey', zorder=100, alpha=0.25  )
+                ax2.plot(df_mod.index, df_mod[mod_var2plot].values,
+                         label='Altitude', color='grey', zorder=100,
+                         alpha=0.25  )
                 ax2.set_ylabel('Altitude (hPa)')
                 ax2.grid(None)
                 ax2.invert_yaxis()
@@ -5319,7 +5422,8 @@ def plt_timeseries_comparisons4ARNA_flights(dpi=320, show_plot=False):
                 ax2.set_xticks(xticks)
                 ax2.set_xticklabels(xticks_labels, rotation=45)
             # Save to PDF
-            fig.legend(loc='best', bbox_to_anchor=(1,1), bbox_transform=ax.transAxes)
+            fig.legend(loc='best', bbox_to_anchor=(1,1),
+                       bbox_transform=ax.transAxes)
             plt.tight_layout()
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
             if show_plot:
@@ -5338,7 +5442,8 @@ def plt_timeseries_comparisons4ARNA_flights(dpi=320, show_plot=False):
         units = '$^{\circ}$C'
         var2plot = 'Temperature'
         obs_var2plot = 'TAT_DI_R'
-        plt.plot(df_obs.index, df_obs[ obs_var2plot ].values -273.15, label='Obs.',
+        plt.plot(df_obs.index, df_obs[ obs_var2plot ].values -273.15,
+                 label='Obs.',
                  color='k' )
         mod_var2plot = 'T'
         plt.plot(df_mod.index, df_mod[mod_var2plot].values, label='GEOS-CF',
@@ -5355,7 +5460,8 @@ def plt_timeseries_comparisons4ARNA_flights(dpi=320, show_plot=False):
         mod_var2plot = 'model-lev'
         # Invert the second y-axis
         if plt_alt_as_shadow:
-            ax2.plot(df_mod.index, df_mod[mod_var2plot].values, label='Altitude',
+            ax2.plot(df_mod.index, df_mod[mod_var2plot].values,
+                     label='Altitude',
                       color='grey', zorder=100, alpha=0.25  )
             ax2.set_ylabel('Altitude (hPa)')
             ax2.grid(None)
@@ -5364,7 +5470,8 @@ def plt_timeseries_comparisons4ARNA_flights(dpi=320, show_plot=False):
             ax2.set_xticks(xticks)
             ax2.set_xticklabels(xticks_labels, rotation=45)
         # Save to PDF
-        fig.legend(loc='best', bbox_to_anchor=(1,1), bbox_transform=ax.transAxes)
+        fig.legend(loc='best', bbox_to_anchor=(1,1),
+                   bbox_transform=ax.transAxes)
         plt.tight_layout()
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
         if show_plot:
@@ -5397,7 +5504,8 @@ def plt_timeseries_comparisons4ARNA_flights(dpi=320, show_plot=False):
         mod_var2plot = 'model-lev'
         # Invert the second y-axis
         if plt_alt_as_shadow:
-            ax2.plot(df_mod.index, df_mod[mod_var2plot].values, label='Altitude',
+            ax2.plot(df_mod.index, df_mod[mod_var2plot].values,
+                     label='Altitude',
                       color='grey', zorder=100, alpha=0.25  )
             ax2.set_ylabel('Altitude (hPa)')
             ax2.grid(None)
@@ -5406,7 +5514,8 @@ def plt_timeseries_comparisons4ARNA_flights(dpi=320, show_plot=False):
             ax2.set_xticks(xticks)
             ax2.set_xticklabels(xticks_labels, rotation=45)
         # Save to PDF
-        fig.legend(loc='best', bbox_to_anchor=(1,1), bbox_transform=ax.transAxes)
+        fig.legend(loc='best', bbox_to_anchor=(1,1),
+                   bbox_transform=ax.transAxes)
         plt.tight_layout()
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
         if show_plot:
@@ -5440,8 +5549,9 @@ def plt_timeseries_comparisons4ARNA_flights(dpi=320, show_plot=False):
         mod_var2plot = 'model-lev'
         # Invert the second y-axis
         if plt_alt_as_shadow:
-            ax2.plot(df_mod.index, df_mod[mod_var2plot].values, label='Altitude',
-                      color='grey', zorder=100, alpha=0.25  )
+            ax2.plot(df_mod.index, df_mod[mod_var2plot].values,
+                     label='Altitude',
+                     color='grey', zorder=100, alpha=0.25  )
             ax2.set_ylabel('Altitude (hPa)')
             ax2.grid(None)
             ax2.invert_yaxis()
@@ -5449,7 +5559,8 @@ def plt_timeseries_comparisons4ARNA_flights(dpi=320, show_plot=False):
             ax2.set_xticks(xticks)
             ax2.set_xticklabels(xticks_labels, rotation=45)
         # Save to PDF
-        fig.legend(loc='best', bbox_to_anchor=(1,1), bbox_transform=ax.transAxes)
+        fig.legend(loc='best', bbox_to_anchor=(1,1),
+                   bbox_transform=ax.transAxes)
         plt.tight_layout()
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
         if show_plot:
@@ -5469,7 +5580,8 @@ def plt_timeseries_comparisons4ARNA_flights(dpi=320, show_plot=False):
             mod_var2plot = 'model-lat'
             plt.plot(df_obs.index, df_obs[obs_var2plot].values, label='Obs.',
                      color='k' )
-            plt.plot(df_mod.index, df_mod[mod_var2plot].values, label='GEOS-CF',
+            plt.plot(df_mod.index, df_mod[mod_var2plot].values,
+                     label='GEOS-CF',
                      color='red'  )
             # Beautify plot
             plt.ylabel( '{} ({})'.format( var2plot, units) )
@@ -5482,8 +5594,9 @@ def plt_timeseries_comparisons4ARNA_flights(dpi=320, show_plot=False):
             mod_var2plot = 'model-lev'
             # Invert the second y-axis
             if plt_alt_as_shadow:
-                ax2.plot(df_mod.index, df_mod[mod_var2plot].values, label='Altitude',
-                          color='grey', zorder=100, alpha=0.25  )
+                ax2.plot(df_mod.index, df_mod[mod_var2plot].values,
+                         label='Altitude',
+                         color='grey', zorder=100, alpha=0.25  )
                 ax2.set_ylabel('Altitude (hPa)')
                 ax2.grid(None)
                 ax2.invert_yaxis()
@@ -5491,7 +5604,8 @@ def plt_timeseries_comparisons4ARNA_flights(dpi=320, show_plot=False):
                 ax2.set_xticks(xticks)
                 ax2.set_xticklabels(xticks_labels, rotation=45)
             # Save to PDF
-            fig.legend(loc='best', bbox_to_anchor=(1,1), bbox_transform=ax.transAxes)
+            fig.legend(loc='best', bbox_to_anchor=(1,1),
+                       bbox_transform=ax.transAxes)
             plt.tight_layout()
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
             if show_plot:
@@ -5513,7 +5627,8 @@ def plt_timeseries_comparisons4ARNA_flights(dpi=320, show_plot=False):
             mod_var2plot = 'model-lon'
             plt.plot(df_obs.index, df_obs[obs_var2plot].values, label='Obs.',
                      color='k' )
-            plt.plot(df_mod.index, df_mod[mod_var2plot].values, label='GEOS-CF',
+            plt.plot(df_mod.index, df_mod[mod_var2plot].values,
+                     label='GEOS-CF',
                      color='red'  )
             # Beautify plot
             plt.ylabel('{} ({})'.format( var2plot, units) )
@@ -5526,8 +5641,9 @@ def plt_timeseries_comparisons4ARNA_flights(dpi=320, show_plot=False):
             mod_var2plot = 'model-lev'
             # Invert the second y-axis
             if plt_alt_as_shadow:
-                ax2.plot(df_mod.index, df_mod[mod_var2plot].values, label='Altitude',
-                          color='grey', zorder=100, alpha=0.25  )
+                ax2.plot(df_mod.index, df_mod[mod_var2plot].values,
+                         label='Altitude',
+                         color='grey', zorder=100, alpha=0.25  )
                 ax2.set_ylabel('Altitude (hPa)')
                 ax2.grid(None)
                 ax2.invert_yaxis()
@@ -5535,7 +5651,8 @@ def plt_timeseries_comparisons4ARNA_flights(dpi=320, show_plot=False):
                 ax2.set_xticks(xticks)
                 ax2.set_xticklabels(xticks_labels, rotation=45)
             # Save to PDF
-            fig.legend(loc='best', bbox_to_anchor=(1,1), bbox_transform=ax.transAxes)
+            fig.legend(loc='best', bbox_to_anchor=(1,1),
+                       bbox_transform=ax.transAxes)
             plt.tight_layout()
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
             if show_plot:
@@ -5558,7 +5675,8 @@ def plt_timeseries_comparisons4ARNA_flights(dpi=320, show_plot=False):
             # Local variables (metres to kft)
             vals = AC.hPa_to_Km( df_obs['ALT_GIN'].values/1E3, reverse=True )
             plt.plot(df_obs.index, vals, label='Obs.', color='k' )
-            plt.plot(df_mod.index, df_mod[mod_var2plot].values, label='GEOS-CF',
+            plt.plot(df_mod.index, df_mod[mod_var2plot].values,
+                     label='GEOS-CF',
                      color='red'  )
             # Beautify plot
             plt.legend()
@@ -5614,7 +5732,8 @@ def get_FAAM_core4flightnum(flight_ID='C216' ):
 #    ds = xr.open_mfdataset(files2use)
     #
     FAAM_filename = [ i for i in files2use if 'core_faam' in i ]
-    assert len(FAAM_filename) == 1, 'More than one core FAAM file found for flight!'
+    asstr = 'More than one core FAAM file found for flight!'
+    assert len(FAAM_filename) == 1, asstr
     ds = xr.open_dataset(FAAM_filename[0])
     ds = ds.rename({'Time':'time'})
     # Check for the core NOx file
@@ -5628,10 +5747,11 @@ def get_FAAM_core4flightnum(flight_ID='C216' ):
         ds = xr.merge([ds, ds2])
 		# Get the HONO data too
         try:
-            ds3 = xr.open_dataset( Nitrates_filename[0], group='non_core_group')
+            ds3 = xr.open_dataset(Nitrates_filename[0],
+                                 group='non_core_group')
             ds3 = ds3.mean(dim='sps10')
             # Merge the files
-            ds = xr.merge([ds, ds3])		
+            ds = xr.merge([ds, ds3])
         except OSError:
             print('WARNING: no HONO data found for {}'.format(flight_ID))
     # Convert to a dataframe
@@ -5718,7 +5838,8 @@ def extract_GEOS54ARNA_flight(flight_ID='C216'):
     return dfE
 
 
-def extract_ds4df_locs(ds=None, df=None, LonVar='lon', LatVar='lat', TimeVar='time',
+def extract_ds4df_locs(ds=None, df=None, LonVar='lon', LatVar='lat',
+                       TimeVar='time',
                        AltVar='hPa', dsAltVar='hPa',
                        dsLonVar='lon', dsLatVar='lat', dsTimeVar='time',
                        vars2extract=None, debug=False, testing_mode=False):
@@ -5749,7 +5870,8 @@ def extract_ds4df_locs(ds=None, df=None, LonVar='lon', LatVar='lat', TimeVar='ti
             hPa_ = df_tmp[AltVar].values
             lon_ = df_tmp[LonVar].values
             #
-            ds_tmp = ds.sel(lon=lon_, lat=lat_, lev=hPa_, time=dftime, method='nearest')
+            ds_tmp = ds.sel(lon=lon_, lat=lat_, lev=hPa_, time=dftime,
+                            method='nearest')
 
             #
             for data_var in vars2extract:
@@ -5772,7 +5894,8 @@ def extract_ds4df_locs(ds=None, df=None, LonVar='lon', LatVar='lat', TimeVar='ti
             lev_idx = d['hPa'][n]
             time_idx =  d['time'][n]
             #
-            ds_tmp = ds.isel( lat=lat_idx, lon=lon_idx, time=time_idx, lev=lev_idx )
+            ds_tmp = ds.isel(lat=lat_idx, lon=lon_idx, time=time_idx,
+                             lev=lev_idx)
 #            d_tmp = ds_tmp.to_dict()
 #            vals = ds_tmp.to_array().values
             vals = [ ds_tmp[i].data for i in vars2extract ]
@@ -5796,7 +5919,8 @@ def extract_ds4df_locs(ds=None, df=None, LonVar='lon', LatVar='lat', TimeVar='ti
     return dfN
 
 
-def calculate_idx2extract(ds=None, df=None, LonVar='lon', LatVar='lat', TimeVar='time',
+def calculate_idx2extract(ds=None, df=None, LonVar='lon', LatVar='lat',
+                          TimeVar='time',
                           AltVar='hPa', dsAltVar='lev',
                           dsLonVar='lon', dsLatVar='lat', dsTimeVar='time',
                           debug=False, testing_mode=False):
@@ -5821,7 +5945,7 @@ def get_GEOS_assim_expanded_dataset4ARNA( dt=None, update_lvl_units=True ):
     """
     Get GEOS-CF assimilation data (expanded) for the ARNA campaign
     """
-    #
+    # Where is the expanded GEOS-CF data
     NASA_data = get_local_folder('NASA_data')
     folder = NASA_data + 'GEOS_CF/ARNA/assim/expanded_variable_files/'
     file_str = '*.nc4'
@@ -5858,7 +5982,8 @@ def get_GEOS_assim_expanded_dataset4ARNA( dt=None, update_lvl_units=True ):
 
 
 def plot_up_flight_locations_from_FAAM_website(d=None,
-                                               LatVar='latitude', LonVar='longitude',
+                                               LatVar='latitude',
+                                               LonVar='longitude',
                                                folder='./'):
     """
     Plot up flight locations for all ARNA flights on a map
@@ -5905,7 +6030,8 @@ def plot_up_flight_locations_from_FAAM_website(d=None,
         lats = df[LatVar]
         lons = df[LonVar]
         # Now plot locations as scatter points on plot
-        ax.scatter(lons, lats, color=cmap_list[flight_ID_n], s=s, marker=marker,
+        ax.scatter(lons, lats, color=cmap_list[flight_ID_n], s=s,
+                   marker=marker,
                    alpha=alpha,
                    label=flight_ID,
                    transform=projection(), zorder=999
@@ -5936,14 +6062,14 @@ def plot_up_flight_locations_from_FAAM_website(d=None,
     plt.close()
 
 
-def quick_lat_plot_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
-                          save_plot=True, show_plot=False, savename=None,
-                          units=None, title=None, folder=None,
-                          LatVar='lat', LonVar='lon', LevVar='lev',
-                          fig=None, ax=None, extents=None,
-                          add_ARNA_locs=True, use_local_CVAO_region=True,
-                          extend='both', ylim=(0, 10), xlim=(-30, -16.5),
-                          dpi=320):
+def quick_lat_plt_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
+                         save_plot=True, show_plot=False, savename=None,
+                         units=None, title=None, folder=None,
+                         LatVar='lat', LonVar='lon', LevVar='lev',
+                         fig=None, ax=None, extents=None,
+                         add_ARNA_locs=True, use_local_CVAO_area=True,
+                         extend='both', ylim=(0, 10), xlim=(-30, -16.5),
+                         dpi=320):
     """
     Plot up a quick latitude-altitude plot of data using cartopy
 
@@ -5961,7 +6087,7 @@ def quick_lat_plot_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
     fig (figure instance): matplotlib figure instance
     ax (axis instance): axis object to use
     add_ARNA_locs (bool):
-    use_local_CVAO_region (bool):
+    use_local_CVAO_area (bool):
 
     Returns
     -------
@@ -5970,11 +6096,11 @@ def quick_lat_plot_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
     from mpl_toolkits.axes_grid1 import make_axes_locatable
     # Use the 1st data variable if not variable given
     if isinstance(var2plot1, type(None)):
-        print('WARNING: No variable to plot was set (var2plot), trying 1st data_var')
+        print('WARNING: No variable to plot (var2plot), trying 1st data_var')
         var2plot1 = list(ds.data_vars)[0]
         var2plot1 = 'NOy'
     if isinstance(var2plot2, type(None)):
-        print('WARNING: No variable to plot was set (var2plot), trying 1st data_var')
+        print('WARNING: No variable to plot (var2plot), trying 1st data_var')
 #        var2plot2 = list(ds.data_vars)[0]
         var2plot2 = 'PM2.5(dust)'
     # Setup figure and axis and plot
@@ -6031,7 +6157,9 @@ def quick_lat_plot_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
     if isinstance(ticks, type(None)):
         cbar_kwargs  = { 'cmap': cmap, 'extend' : 'both', 'pad':0.075,}
     else:
-        cbar_kwargs  = {'ticks': ticks, 'cmap': cmap, 'extend' : 'both','pad':0.075,}
+        cbar_kwargs  = {
+        'ticks': ticks, 'cmap': cmap, 'extend' : 'both','pad':0.075,
+        }
     # Now plot up var1 - using pcolormesh
     cbar_ax = divider.append_axes("right", "2%", pad="1%")
     # Now plot
@@ -6112,7 +6240,8 @@ def quick_lat_plot_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
         # If lat in plotted range, then plot
         if (lon_ > xlim[0]) and (lon_ < xlim[-1]):
     #        print(lat_)
-            ax.axvline(x=lon_, linestyle='--', alpha=0.5, color='grey', zorder=100,
+            ax.axvline(x=lon_, linestyle='--', alpha=0.5, color='grey',
+                       zorder=100,
                        linewidth=3.0)
             # Add label for airports
     #        if loc_ in ['RAI','DSS' ]:
@@ -6131,7 +6260,8 @@ def quick_lat_plot_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
                 buffer = buffer *3*1.5
 
             # Add label for the airport
-            ax.text(lon_, base+buffer, '{}'.format(loc_), fontsize=10, alpha=0.5,
+            ax.text(lon_, base+buffer, '{}'.format(loc_), fontsize=10,
+                    alpha=0.5,
                     horizontalalignment='center' )
 
     #        ax.annotate(loc_, xy=(lat_, 5), xytext=(lat_+buffer, 5+2),
@@ -6143,7 +6273,8 @@ def quick_lat_plot_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
         km_heights = AC.hPa_to_Km(hPa_heights)
         kft_heights = [i*m2kft for i in km_heights]
         for n, height_ in enumerate( kft_heights ):
-            ax.axhline(y=height_, linestyle='--', alpha=0.5, color='grey', zorder=100,
+            ax.axhline(y=height_, linestyle='--', alpha=0.5, color='grey',
+                       zorder=100,
                        linewidth=1.0)
             # Add label for heights
             ax.text(xlim[1]-3.5, height_, '{:.0f} hPa'.format(hPa_heights[n]),
@@ -6154,10 +6285,12 @@ def quick_lat_plot_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
         kft_heights = [20000, 15000, 10000, 5000]
         m_heights = [i/m2kft/1E3 for i in kft_heights]
         for n, height_ in enumerate( m_heights ):
-            ax.axhline(y=height_, linestyle='--', alpha=0.5, color='grey', zorder=100,
+            ax.axhline(y=height_, linestyle='--', alpha=0.5, color='grey',
+                       zorder=100,
                        linewidth=1.0)
             # Add label for heights
-            ax.text(xlim[1]-5, height_, '{:.0f} kft'.format(kft_heights[n]/1E3),
+            ax.text(xlim[1]-5, height_,
+                    '{:.0f} kft'.format(kft_heights[n]/1E3),
                     fontsize=10, alpha=0.5 )
 
     # Beautify the figure/plot
@@ -6193,7 +6326,8 @@ def quick_lat_plot_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
     # Save the plot?
     if save_plot:
         if isinstance(savename, type(None)):
-            savename = 'spatial_plot_{}_{}_{}'.format(var2plot1, var2plot2, extra_str)
+            sstr = 'spatial_plot_{}_{}_{}'
+            savename = sstr.format(var2plot1, var2plot2, extra_str)
         savename = AC.rm_spaces_and_chars_from_str(savename)
         if isinstance(folder, type(None)):
             folder = './'
@@ -6202,12 +6336,15 @@ def quick_lat_plot_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
         plt.show()
 
 
-def get_GEOSCF_data_cubes4collection(ds=None, region='Cape_Verde', doys2use=None,
-                                     limit_lvls=True, limit_lons=False, limit_lats=True,
+def get_GEOSCF_data_cubes4collection(ds=None, region='Cape_Verde',
+                                     doys2use=None,
+                                     limit_lvls=True, limit_lons=False,
+                                     limit_lats=True,
                                      vars2use=None, dt=None,
                                      collection = 'chm_inst_1hr_g1440x721_p23',
                                      rm_existing_file=False,
-                                     dates2use=None, mode='fcast', folder=None):
+                                     dates2use=None, mode='fcast',
+                                     folder=None):
     """
     Extract cubes of data for region of interest during campaign period
     """
@@ -6221,7 +6358,8 @@ def get_GEOSCF_data_cubes4collection(ds=None, region='Cape_Verde', doys2use=None
     if not isinstance(ds, type(None)):
 #        ds = C2BR2F4CF_as_ds_via_OPeNDAP(collection=collection, mode=mode, date=dt)
         # Temporarily do not allow passing of date to OPeNDAP fetcher
-        ds = AC.get_GEOSCF_as_ds_via_OPeNDAP(collection=collection, mode=mode, date=None)
+        ds = AC.get_GEOSCF_as_ds_via_OPeNDAP(collection=collection, mode=mode,
+                                             date=None)
 
     # - Only consider dates that are in dates2use list (if provided)
     # Use the datetime components via pandas as not yet fully in xarray.
@@ -6310,7 +6448,8 @@ def get_GEOSCF_data_cubes4collection(ds=None, region='Cape_Verde', doys2use=None
         print("Getting data via OPeNDAP for var '{}' - {}".format(var, pstr))
         for doy in doys2use:
             doy_int = int(float(doy))
-            print("Getting data via OPeNDAP for doy '{}' ({})".format(doy_int, var))
+            pstr = "Getting data via OPeNDAP for doy '{}' ({})"
+            print(pstr.format(doy_int, var))
             # Subset for a single day
             ds_tmp = ds[var].sel(time=ds['time.dayofyear'] == doy)
             # If there is data in the dataset, then download then download this
@@ -6318,7 +6457,8 @@ def get_GEOSCF_data_cubes4collection(ds=None, region='Cape_Verde', doys2use=None
                 # Get the year for the doy
                 year = list(set(ds_tmp['time.year'].values))[0]
                 # Set the name of the file to save
-                fname = filestr.format(collection, region, year, doy_int, var, extr_str)
+                fname = filestr.format(collection, region, year, doy_int, var,
+                                       extr_str)
                 # now save this single file
                 if rm_existing_file:
                     AC.rm_file(folder=folder, filename=fname)
@@ -6327,9 +6467,9 @@ def get_GEOSCF_data_cubes4collection(ds=None, region='Cape_Verde', doys2use=None
                 del ds_tmp
                 gc.collect()
             else:
-                pstr = "WARNING: no data found for '{}' on doy ({}) - CALLING STOP!"
+                pstr = "WARNING: no data for '{}' on doy ({}) - CALLING STOP!"
                 print(pstr.format(var, doy_int))
-                pstr = 'Please check are the correct doys being downloaded for {}'
+                pstr = 'Please check the correct doys are downloaded for {}'
                 print( pstr.format( dt_str ) )
                 print( 'doys downloading: ', doys2use )
                 sys.exit()
@@ -6337,7 +6477,8 @@ def get_GEOSCF_data_cubes4collection(ds=None, region='Cape_Verde', doys2use=None
 
 def get_GEOS5_data_cubes4collection(ds=None, region='Cape_Verde',
                                     doys2use=None, mode='fcast',
-                                    vars2use=None, collection='inst3_3d_aer_Nv',
+                                    vars2use=None,
+                                    collection='inst3_3d_aer_Nv',
                                     folder=None, dates2use=None,
 #                                    limit_lvls=False, limit_lons=False
                                     rm_existing_file=False,
@@ -6351,7 +6492,8 @@ def get_GEOS5_data_cubes4collection(ds=None, region='Cape_Verde',
         vars2use = ['du{:0>3}'.format(i) for i in range(1,6)]
     # Get the data as dataset via OPeNDAP
     if isinstance(ds, type(None)):
-        ds = AC.get_GEOS5_as_ds_via_OPeNDAP(collection=collection, mode=mode, date=dt)
+        ds = AC.get_GEOS5_as_ds_via_OPeNDAP(collection=collection, mode=mode,
+                                            date=dt)
         # Temporarily do not allow passing of date to OPeNDAP fetcher
 #        ds = AC.get_GEOS5_as_ds_via_OPeNDAP(collection=collection, mode=mode, date=None)
 
@@ -6398,13 +6540,15 @@ def get_GEOS5_data_cubes4collection(ds=None, region='Cape_Verde',
         print("Getting data via OPeNDAP for var '{}' {}".format(var, pstr))
         for doy in doys2use:
             doy_int = int(float(doy))
-            print("Getting data via OPeNDAP for doy '{}' ({})".format(doy_int, var))
+            pstr = "Getting data via OPeNDAP for doy '{}' ({})"
+            print(pstr.format(doy_int, var))
             # Subset for a single day
             ds_tmp = ds[var].sel(time=ds['time.dayofyear'] == doy)
             # Get the year for the day in the model output
             year = list(set(ds_tmp['time.year'].values))[0]
             # now save this single file
-            savename = filestr.format(collection, region, year, doy_int, var, extr_str)
+            savename = filestr.format(collection, region, year, doy_int, var,
+                                      extr_str)
             print(folder+savename)
             # Remove the file with this name, if it already there
             if rm_existing_file:
@@ -6416,7 +6560,8 @@ def get_GEOS5_data_cubes4collection(ds=None, region='Cape_Verde',
             gc.collect()
 
 
-def get_GEOSCF_data_cubes4campaign(year=2018, region='Cape_Verde', doys2use=None,
+def get_GEOSCF_data_cubes4campaign(year=2018, region='Cape_Verde',
+                                   doys2use=None,
                                    vars2use=None, folder=None,
                                    limit_lvls=True, limit_lons=False):
     """
@@ -6503,7 +6648,8 @@ def get_GEOSCF_data_cubes4campaign(year=2018, region='Cape_Verde', doys2use=None
         print("Getting data via OPeNDAP for var '{}' {}".format(var, pstr))
         for doy in doys2use:
             doy_int = int(float(doy))
-            print("Getting data via OPeNDAP for doy '{}' ({})".format(doy_int, var))
+            pstr = "Getting data via OPeNDAP for doy '{}' ({})"
+            print(pstr.format(doy_int, var))
             # Subset for a single day
             ds_tmp = ds[var].sel(time=ds['time.dayofyear'] == doy)
             # now copy locally the data
@@ -6517,7 +6663,8 @@ def get_GEOSCF_data_cubes4campaign(year=2018, region='Cape_Verde', doys2use=None
             gc.collect()
 
 
-def get_GEOS5_data_cubes4campaign(ds=None, year=2018, region='Cape_Verde', doys2use=None,
+def get_GEOS5_data_cubes4campaign(ds=None, year=2018, region='Cape_Verde',
+                                  doys2use=None,
                                   vars2use=None, collection='inst3_3d_aer_Nv',
                                   limit_lvls=False, limit_lons=False):
     """
@@ -6555,7 +6702,7 @@ def get_GEOS5_data_cubes4campaign(ds=None, year=2018, region='Cape_Verde', doys2
         sys.exit()
     # State that all data (cuboids are being extracted)
     extr_str = 'ALL_lvls'
-    
+
     # -  Save the data by variable and day of year reduce packet size of transfers
     # Where to save?
     if isinstance(folder, type(None)):
@@ -6580,13 +6727,15 @@ def get_GEOS5_data_cubes4campaign(ds=None, year=2018, region='Cape_Verde', doys2
         print("Getting data via OPeNDAP for var '{}' {}".format(var, pstr))
         for doy in doys2use:
             doy_int = int(float(doy))
-            print("Getting data via OPeNDAP for doy '{}' ({})".format(doy_int, var))
+            pstr = "Getting data via OPeNDAP for doy '{}' ({})"
+            print(pstr.format(doy_int, var))
             # Subset for a single day
             ds_tmp = ds[var].sel(time=ds['time.dayofyear'] == doy)
             # Get the year for the day in the model output
             year = list(set(ds_tmp['time.year'].values))[0]
             # now save this single file
-            savename = filestr.format(collection, region, year, doy_int, var, extr_str)
+            savename = filestr.format(collection, region, year, doy_int, var,
+                                      extr_str)
             print(folder+savename)
             ds_tmp.to_netcdf(folder+savename)
             # Do some memory management
@@ -6672,7 +6821,8 @@ def get_data_surface4campaign(year=2018, region='Cape_Verde', doys=None):
         gc.collect()
 
 
-def get_dates4campaigns(year=2018, all_dates=False, ground_CVAO_campaign=False):
+def get_dates4campaigns(year=2018, all_dates=False,
+                        ground_CVAO_campaign=False):
     """
     Get a list of dates for campaigns
     """
@@ -6693,7 +6843,8 @@ def get_dates4campaigns(year=2018, all_dates=False, ground_CVAO_campaign=False):
     return dates2use
 
 
-def get_GEOSCF_assimlation_ds(collection='chm_inst_1hr_g1440x721_p23', mode='assim'):
+def get_GEOSCF_assimlation_ds(collection='chm_inst_1hr_g1440x721_p23',
+                              mode='assim'):
     """
     Wrapper to get the GEOS-CF assimilation data
     """
@@ -6729,7 +6880,7 @@ def get_GEOSCF_vertical_levels(print_equivalents=False, native_levels=False):
         for HPa in HPa_l:
             print(pstr.format(HPa, Alt_dict[HPa]))
         # Also for kft
-        pstr = 'A pressure {:>4} HPa of is equiv to {:>4,.3f} km ({:>4,.3f} kft)'
+        pstr = 'A press. {:>4} HPa of is equiv to {:>4,.3f} km ({:>4,.3f} kft)'
         for HPa in HPa_l:
             print(pstr.format(HPa, Alt_dict[HPa], Alt_dict[HPa]/304.8))
     return HPa_l
