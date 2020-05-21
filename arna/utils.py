@@ -852,7 +852,7 @@ def extract_ds4df_locs(ds=None, df=None, LonVar='lon', LatVar='lat',
             del ds_tmp, df_tmp
     else:
         # get indexes =en masse then extract with these
-        d = calculate_idx2extract(ds=ds, df=df)
+        d = AC.calc_4D_idx_in_ds(ds=ds, df=df)
         #
         if testing_mode:
             times2use = df.index.values[:10]
@@ -889,28 +889,6 @@ def extract_ds4df_locs(ds=None, df=None, LonVar='lon', LatVar='lat',
         # Update the model datetime to be in datetime units
         dfN['model-time'] = pd.to_datetime(dfN['model-time'].values)
     return dfN
-
-
-def calculate_idx2extract(ds=None, df=None, LonVar='lon', LatVar='lat',
-                          TimeVar='time',
-                          AltVar='hPa', dsAltVar='lev',
-                          dsLonVar='lon', dsLatVar='lat', dsTimeVar='time',
-                          debug=False, testing_mode=False):
-    """
-    Calculated the indexes to extract of a dataset from a dataframe.
-    """
-    # Get arrays of the coordinate variables in the dataset
-    ds_lat = ds[dsLatVar].values
-    ds_lon = ds[dsLonVar].values
-    ds_hPa = ds[dsAltVar].values
-    ds_time = ds[dsTimeVar].values
-    # Calculate the index individually by coordinate
-    lat_idx = [AC.find_nearest(ds_lat, i) for i in df[LatVar].values]
-    lon_idx = [AC.find_nearest(ds_lon, i) for i in df[LonVar].values]
-    hPa_idx = [AC.find_nearest(ds_hPa, i) for i in df[AltVar].values]
-    time_idx = [AC.find_nearest(ds_time, i) for i in df.index.values]
-    # Return a dictionary of the values
-    return {LatVar:lat_idx, LonVar:lon_idx, TimeVar:time_idx, AltVar:hPa_idx}
 
 
 def get_local_folder(key, host=None, rtn_dict=False):
