@@ -40,6 +40,7 @@ from multiprocessing import Pool
 from functools import partial
 import matplotlib
 
+
 def get_visibility_reports( dts=None, folder='./', debug=False  ):
     """
     Get the visibility reports from SDS-WAS
