@@ -40,8 +40,13 @@ from multiprocessing import Pool
 from functools import partial
 import matplotlib
 
+# Import from elsewhere in ARNA module
+from . core import *
+from . utils import *
+
+
 def get_coordinates_from_NetCDF_file(ds=None, folder=None, filename=None,
-                                    falt_var='ALT_GIN',
+                                    falt_var='PS_RVSM',
                                     flat_var='LAT_GIN', flon_var='LON_GIN',
                                     AltVar='hPa', LonVar='lon', LatVar='lat',
                                     ftime_var='Time', TimeVar='time',
@@ -59,6 +64,8 @@ def get_coordinates_from_NetCDF_file(ds=None, folder=None, filename=None,
     df[LatVar] = ds[flat_var].values
     df.index = ds[ftime_var].values
     # Convert metres of height to hPa
+    # NOTE: The below conversion is not advised.
+    #       Use the external pressure variable instead (PS_RVSM).
     if convert_m2hPa:
         df.loc[:,AltVar] = AC.hPa_to_Km(df[AltVar].values/1E3, reverse=True, )
     # Drop where there are not values for all coordinates
@@ -130,3 +137,4 @@ def get_FAAM_core4flightnum(flight_ID='C216' ):
     if resample_data:
         df = df.resample('1T' ).mean()
     return df
+

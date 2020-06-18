@@ -1,5 +1,5 @@
 """
-Utility functions for ARNA campaign work
+Utility functions for ARNA campaign/project work
 """
 
 import os

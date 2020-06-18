@@ -59,7 +59,7 @@ def main():
     #
 #    do_analysis_of_assimulation_output_JUST_GEOSCF()
 
-    # --- Assimulation
+    # --- Assimilation
     # Get the assimulation data
 #    download_GEOSCF_assim_data()
     # Do analysis for GEOS-CF

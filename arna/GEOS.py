@@ -40,6 +40,11 @@ from multiprocessing import Pool
 from functools import partial
 import matplotlib
 
+# Import from elsewhere in ARNA module
+from . core import *
+from . utils import *
+from . observations import *
+
 
 def get_data_for_fcasts4datetimes(dts=None):
     """
@@ -1308,23 +1313,30 @@ def get_GEOSCF_output4flightnum( flight_ID='C216' ):
     return df
 
 
-def extract_GEOS54all_ARNA_flights():
+def extract_GEOS54all_ARNA_flights(debug=True):
     """
     Extract GEOS-CF model data for all ARNA flights
     """
     # Which flights to plot
 #    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
 	# Just use non-transit ARNA flights
-    flights_nums = [ 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
+    flights_nums = [
+    217, 218, 219, 220, 221, 222, 223, 224, 225
+    ]
     flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
     # Loop by flight and extract the files
     for flight_ID in flight_IDs:
+        if debug:
+            print( flight_ID )
         # Extract data for flight
         df = extract_GEOS54ARNA_flight(flight_ID=flight_ID)
         # Save to csv.
-        filename = 'ARNA_flightpath_extracted_from_GEOSCF_{}.csv'.format(flight_ID)
+        filename = 'ARNA_flightpath_extracted_from_GEOSCF_{}.csv'
+        filename = filename.format(flight_ID)
         folder = './'
         df.to_csv(folder+filename)
+        del df
+        gc.collect()
 
 
 def extract_GEOS54ARNA_flight(flight_ID='C216'):
@@ -1338,8 +1350,9 @@ def extract_GEOS54ARNA_flight(flight_ID='C216'):
     file2use = glob.glob(folder+filename)
     assert len(file2use) == 1, 'WARNING: more that one file found!'
     ds = xr.open_dataset( file2use[0] )
-    #
-    df = get_coordinates_from_NetCDF_file(ds=ds, convert_m2hPa=True)
+    # Get a dataframe of the coordinates to extract
+    df = get_coordinates_from_NetCDF_file(ds=ds, falt_var='PS_RVSM',
+                                          convert_m2hPa=False)
     dt = AC.dt64_2_dt([df.index.values[0]])[0]
     # - Extract the flight tracks from the model
     #  Get the model data for the days near the flight
@@ -1370,11 +1383,10 @@ def get_GEOS_assim_expanded_dataset4ARNA( dt=None, update_lvl_units=True ):
         # Limit data to one day before or after
         bool1 = (df.index >=sdate) & (df.index <= edate)
         df = df.loc[bool1, :]
-    # get a list of those to extract
+    # Get a list of those to extract
     files = df['files'].values.astype(list)
-    #
+    # Open the NetCDF files as a xr.Dataset
     ds = xr.open_mfdataset(files)
-    #
     # Update the units for lev
     update_lvl_units = True
     if update_lvl_units:
@@ -1384,7 +1396,10 @@ def get_GEOS_assim_expanded_dataset4ARNA( dt=None, update_lvl_units=True ):
         attrs['standard_name'] = 'Pressure'
         attrs['long_name'] = 'Pressure'
         ds.lev.attrs = attrs
-        ds.lev.values = [ HPa_l[int(i)] for i in ds.lev.values -1]
+        # NOTE: Only 39 levels were saved offline
+        #       so we're extracting these using there pythonic (-1) index
+#        ds.lev.values = [ HPa_l[int(i)] for i in ds.lev.values -1]
+        ds = ds.assign( lev= [ HPa_l[int(i)] for i in ds.lev.values -1] )
     # Return the updated ds
     return ds
 
