@@ -48,7 +48,6 @@ from arna import plot_spatial_concs_2layer, plt_spatial_2layer_vertical_lat
 from arna import plt_spatial_2layer_vertical_lon
 
 
-
 def main():
     """
     Main driver for analysis for the ARNA campaign
@@ -66,6 +65,8 @@ def main():
 #    build_diagnostic_plots_4fcast()
     #
 #    do_analysis_of_assimulation_output_JUST_GEOSCF()
+    pass
+
 
 def do_operational_ARNA_forecast_steps(dt=None):
     """

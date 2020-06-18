@@ -40,6 +40,11 @@ from multiprocessing import Pool
 from functools import partial
 import matplotlib
 
+# import local ARNA module functions
+from . GEOS import *
+from . core import *
+from . utils import *
+
 
 def set_limits4ar_plotted_range(var, verbose=False):
     """
@@ -172,8 +177,9 @@ def plt_smaller_area_around_CVAO(ds, LonVar='lon',
     dsCV = dsCV.mean(dim='time')
     # Now plot
     quick_map_plt_CV_1layer(dsCV, var2plot=NewVar, extents=extents,
-                                     use_local_CVAO_area=use_local_CVAO_area,
-                                     extra_str='ARNA', save_plot=True)
+                            use_local_CVAO_area=use_local_CVAO_area,
+                            extra_str='ARNA', save_plot=True)
+
 
 def plot_individual_spec_alt_slices(ds, folder='./',
                                     extr_title_str=None,
@@ -220,12 +226,10 @@ def plot_individual_spec_alt_slices(ds, folder='./',
                 extra_str = 'ARNA_lev_{:.0f}_hPa_{}'.format(lev2use, date_str)
                 # now plot
                 quick_map_plt_CV_1layer(ds_tmpII, var2plot=var2plot,
-                                                 use_local_CVAO_area=True,
-                                                 extra_str=extra_str,
-                                                 extend='both',
-                                                 title=title,
-                                                 folder=folder,
-                                                 save_plot=True )
+                                        use_local_CVAO_area=True,
+                                        extra_str=extra_str, extend='both',
+                                        title=title, folder=folder,
+                                        save_plot=True )
                 # Do some clean up
                 plt.close('all')
                 del ds_tmpII
@@ -367,7 +371,6 @@ def plot_up_longitudinally_sampled_locs(ds, var2use='noy', extents=None,
         filename = 'ARNA_GEOSCF_chm_inst_1hr_g1440x721_p23_Cape_Verde_2019_353_noy_'
         filename += 'lvls_1000_900_800_700_600_500.nc'
         ds = xr.open_dataset( folder + filename )
-
     # Local area analysed as Cape Verde
     x0 = -30
     x1 =-10
@@ -397,7 +400,7 @@ def plot_up_longitudinally_sampled_locs(ds, var2use='noy', extents=None,
     LatVar = 'lat'
     LonVar = 'lon'
     ds[var2use].plot.imshow(x=LonVar, y=LatVar, ax=ax,
-                             transform=ccrs.PlateCarree())
+                            transform=ccrs.PlateCarree())
     # Now plot as a linear ring
     lats = (5, 35, 35, 5)
     lons2plot = [-18 ,-19.5, -21, -22.5, -24, -25.5]
@@ -472,8 +475,6 @@ def plot_up_longitudinally_sampled_locs(ds, var2use='noy', extents=None,
     savename = 'spatial_plot_Cape_Verde_plotted_data_lons'
     savename = AC.rm_spaces_and_chars_from_str(savename)
     plt.savefig(savename+'.png', dpi=dpi)
-
-
 
 
 def plt_timeseries4ds(ds, region='Cape_Verde', extr_str='',
@@ -628,8 +629,8 @@ def PDF_on_species_in_ds4lvls(ds, region='Cape_Verde', extr_str='',
         for lev2use in lvls:
             levstr = '{:.0f}hPa'.format(lev2use)
             var2plot = [i for i in vars2plot if levstr in i]
-            assert len(
-                var2plot) == 1, 'ERROR: There must only be one variable per level!'
+            ass_str = 'ERROR: There must only be one variable per level!'
+            assert len(var2plot) == 1, ass_str
             if verbose:
                 print(var, lev2use, var2plot)
             # Retrieve the data
@@ -760,19 +761,14 @@ def plot_average_spatial_concs4lon(ds, year=2018, vars2use=None,
 def quick_map_plt_CV_1layer(ds, var2plot=None, extra_str='',
                             projection=ccrs.PlateCarree(),
                             save_plot=True, show_plot=False,
-                            savename=None,
-                            units=None, title=None,
+                            savename=None, units=None, title=None,
                             LatVar='lat', LonVar='lon', fig=None,
-                            ax=None,
-                            extents=None,
-                            region='Cape_Verde',
+                            ax=None, extents=None, region='Cape_Verde',
                             use_local_CVAO_area=True,
                             add_flyable_range_as_circle=True,
                             add_flyable_range=False,
-                            add_detailed_map=True,
-                            add_ARNA_locs=True,
-                            extend='neither', folder='./',
-                            dpi=320):
+                            add_detailed_map=True, add_ARNA_locs=True,
+                            extend='neither', folder='./', dpi=320):
     """
     Plot up a quick spatial plot of data using cartopy
 
@@ -1775,8 +1771,13 @@ def plt_alt_binned_comparisons4ARNA_flights(dpi=320, show_plot=False):
     import seaborn as sns
     sns.set(color_codes=True)
     sns.set_context("paper", font_scale=0.75)
-    # Which flights to plot
-    flights_nums = [ 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
+    # Which flights to plot?
+#    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
+    # Just use non-transit ARNA flights
+    flights_nums = [
+    217, 218, 219, 220, 221, 222, 223, 224,
+#	225, # Kludge - reprocessing file, so temporarily hashed out.
+    ]
     flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
     # plot the altitude as a shadow on top of the plots
     plt_alt_as_shadow =  True
@@ -1985,9 +1986,13 @@ def plt_timeseries_comparisons4ARNA_flights(dpi=320, show_plot=False):
     # Now use Seaborn settings
     sns.set(color_codes=True)
     sns.set_context("paper", font_scale=0.75)
-    # Which flights to plot
+    # Which flights to plot?
 #    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
-    flights_nums = [ 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
+	# Just use non-transit ARNA flights
+    flights_nums = [
+    217, 218, 219, 220, 221, 222, 223, 224,
+#	225, # Kludge - reprocessing file, so temporarily hashed out.
+    ]
     flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
     # plot the altitude as a shadow on top of the plots
     plt_alt_as_shadow =  True
