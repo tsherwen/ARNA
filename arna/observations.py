@@ -91,12 +91,12 @@ def get_ARNA_flights_as_dfs():
     return dfs
 
 
-def get_FAAM_core4flightnum(flight_ID='C216' ):
+def get_FAAM_core4flightnum(flight_ID='C216', version='v2020_05'):
     """
     Get the core FAAM flight data for a specific flight
     """
 	# Where are the files? Which files to use?
-    folder = '/users/ts551/scratch/data/ARNA/CEDA/v1/'
+    folder = '{}/CEDA/{}/'.format( get_local_folder('ARNA_data'), version)
     files2use = glob.glob( folder + '*_{}*'.format(flight_ID.lower()) )
     # Open all the files together
     # Cannot as time is not capitalised in both

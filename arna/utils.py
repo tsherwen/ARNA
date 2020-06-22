@@ -901,13 +901,16 @@ def get_local_folder(key, host=None, rtn_dict=False):
     # - Set locations of York HPC
     if ('viking' in host):
         NASA_data = '/mnt/lustre/groups/chem-acm-2018/earth0_data/NASA/'
+        ARNA_data = '/users/ts551/scratch/data/ARNA/'
     elif ('earth0' in host):
         NASA_data = '/work/data/NASA/'
+        ARNA_data = ''
     else:
         print( 'NASA folder loction not known' )
     # - Setup a dictionary for the variables
     d = {
     'NASA_data': NASA_data,
 #    'folder4plots': folder4plots,
+    'ARNA_data' : ARNA_data,
     }
     return d[key]

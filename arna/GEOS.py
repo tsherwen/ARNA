@@ -1321,7 +1321,8 @@ def extract_GEOS54all_ARNA_flights(debug=True):
 #    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
 	# Just use non-transit ARNA flights
     flights_nums = [
-    217, 218, 219, 220, 221, 222, 223, 224, 225
+#    217, 218, 219, 220, 221, 222, 223, 224,
+    225
     ]
     flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
     # Loop by flight and extract the files
@@ -1346,7 +1347,7 @@ def extract_GEOS54ARNA_flight(flight_ID='C216'):
     # -  Get the measurement flight tracks
     # Manually set FAAM flight file to use for now...
     filename = 'core_faam_*_*_r*_{}_1hz.nc'.format(flight_ID.lower())
-    folder = '/users/ts551/scratch/data/ARNA/CEDA/v1/'
+    folder = get_local_folder('ARNA_data') + '/CEDA/v2020_05/'
     file2use = glob.glob(folder+filename)
     assert len(file2use) == 1, 'WARNING: more that one file found!'
     ds = xr.open_dataset( file2use[0] )
