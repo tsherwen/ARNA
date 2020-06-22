@@ -1775,8 +1775,7 @@ def plt_alt_binned_comparisons4ARNA_flights(dpi=320, show_plot=False):
 #    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
     # Just use non-transit ARNA flights
     flights_nums = [
-    217, 218, 219, 220, 221, 222, 223, 224,
-#	225, # Kludge - reprocessing file, so temporarily hashed out.
+    217, 218, 219, 220, 221, 222, 223, 224, 225,
     ]
     flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
     # plot the altitude as a shadow on top of the plots
@@ -1804,73 +1803,11 @@ def plt_alt_binned_comparisons4ARNA_flights(dpi=320, show_plot=False):
         pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
 
         # - Plot up location of flights
-        # Reset sns for spatial plot
-#        sns.reset_orig()
-        # New figure
-        fig = plt.figure()
-        # Get lat and lons
-        lons = df_obs['LON_GIN'].values
-        lats = df_obs['LAT_GIN'].values
-        # Get dates of flight
-        sdate_str = df_obs.index.min().strftime('%x %H:%M').strip()
-        edate_str = df_obs.index.max().strftime('%x %H:%M').strip()
-        # Make title
-        title_str = 'Flight track for ARNA flight {} ({}-{})'
-        title4plot = title_str.format(flight_ID, sdate_str, edate_str)
-        #
-        projection=ccrs.PlateCarree
-        central_longitude = 0
-        fig = plt.figure(dpi=dpi, facecolor='w', edgecolor='k')
-        # Setup a cartopy projection for plotting
-        ax = fig.add_subplot(111,
-                             projection=projection(
-                                 central_longitude=central_longitude)
-                             )
-        # Beautify
-        ax.gridlines()
-        # Add borders for countries
-        ax.add_feature(cfeature.BORDERS, edgecolor='grey',
-                       facecolor='none', zorder=50)
-        # Also add minor islands (inc. Cape Verde)
-        land_10m = cfeature.NaturalEarthFeature('physical', 'land', '10m',
-                                                edgecolor=None,
-                                                facecolor='none')
-        ax.add_feature(land_10m, edgecolor='grey', facecolor='none', zorder=50)
-        # Plot settings
-        marker='o'
-        s=2
-        alpha = 0.75
-        cmap_list = AC.get_CB_color_cycle()
-        # Now plot locations as scatter points on plot
-        ax.scatter(lons, lats, color=cmap_list[0], s=s, marker=marker,
-                   alpha=alpha,
-                   label=flight_ID,
-                   transform=projection(), zorder=999
-                   )
-        # Local area analysed as Cape Verde
-        x0 = -30
-        x1 =-10
-        y0 = 0
-        y1 = 25
-        extents = (x0, x1, y0, y1)
-        # Get limits of plotting data
-        if isinstance(extents, type(None)):
-            x0 = float(ds[LonVar].min())
-            x1 = float(ds[LonVar].max())
-            y0 = float(ds[LatVar].min())
-            y1 = float(ds[LatVar].max())
-            extents = (x0, x1, y0, y1)
-        ax.set_extent(extents, crs=ccrs.PlateCarree())
-        # Add a title to the plot
-        plt.title(title4plot)
-        plt.tight_layout()
-        # Save to PDF
-        if show_plot:
-            plt.show()
+        plt_flightpath_spatially_over_CVAO(df=df_obs, flight_ID=flight_ID)
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
         plt.close()
 
-        # - put observations and vars to plot into a dictionary
+        # - Put observations and vars to plot into a dictionary
         # Force alt to be in units of km
         ALT_var = 'Altitude (km)'
         Y_unit = ALT_var
@@ -1978,25 +1915,169 @@ def plt_alt_binned_comparisons4ARNA_flights(dpi=320, show_plot=False):
         plt.close('all')
 
 
+def plt_flightpath_spatially_over_CVAO(df, LatVar='LAT_GIN', LonVar='LON_GIN',
+                                       flight_ID='', dpi=320):
+    """
+    Plot flightpath spatially in CVAO region
+    """
+    # Reset sns for spatial plot
+    sns.reset_orig()
+    # New figure
+    fig = plt.figure()
+    # Get lat and lons
+    lons = df[LonVar].values
+    lats = df[LatVar].values
+    # Get dates/datetimes of flight
+    sdate_str = df.index.min().strftime('%x').strip()
+    edate_str = df.index.max().strftime('%x').strip()
+    stime_str = df.index.min().strftime('%H:%M').strip()
+    etime_str = df.index.max().strftime('%H:%M').strip()
+    # Make title string
+    if sdate_str != edate_str:
+        title_str = 'Flight track for ARNA flight {} ({} {}-{} {})'
+        title = title_str.format(flight_ID, sdate_str, stime_str, edate_str,
+                                 etime_str)
+    else:
+        title_str = 'Flight track for ARNA flight {} ({}, {}-{})'
+        title = title_str.format(flight_ID, sdate_str, stime_str, etime_str)
+    # Setup projection for plotting
+    projection = ccrs.PlateCarree
+    central_longitude = 0
+    fig = plt.figure(dpi=dpi, facecolor='w', edgecolor='k')
+    # Setup a cartopy projection for plotting
+    ax = fig.add_subplot(111,
+                         projection=projection(
+                         central_longitude=central_longitude)
+                         )
+    # Beautify
+    ax.gridlines()
+    # Add borders for countries
+    ax.add_feature(cfeature.BORDERS, edgecolor='grey',
+                   facecolor='none', zorder=50)
+    # Also add minor islands (inc. Cape Verde)
+    land_10m = cfeature.NaturalEarthFeature('physical', 'land', '10m',
+                                            edgecolor=None,
+                                            facecolor='none')
+    ax.add_feature(land_10m, edgecolor='grey', facecolor='none', zorder=50)
+    # Plot settings
+    marker='o'
+    s=2
+    alpha = 0.75
+    cmap_list = AC.get_CB_color_cycle()
+    # Now plot locations as scatter points on plot
+    ax.scatter(lons, lats, color=cmap_list[0], s=s, marker=marker,
+               alpha=alpha,
+               label=flight_ID,
+               transform=projection(), zorder=999
+               )
+    # Local area analysed as Cape Verde
+    x0 = -30
+    x1 =-10
+    y0 = 0
+    y1 = 25
+    extents = (x0, x1, y0, y1)
+    # Get limits of plotting data
+    if isinstance(extents, type(None)):
+        x0 = float(ds[LonVar].min())
+        x1 = float(ds[LonVar].max())
+        y0 = float(ds[LatVar].min())
+        y1 = float(ds[LatVar].max())
+        extents = (x0, x1, y0, y1)
+    ax.set_extent(extents, crs=ccrs.PlateCarree())
+    # Add a title to the plot
+    plt.title(title)
+    plt.tight_layout()
+
+
+def plt_timeseries4ARNA_flight(df_obs=None, df_mod=None,
+                               obs_label='Obs.',
+                               mod_scale=1, obs_adjustby=0,
+                               ylim=(None, None),
+                               units='ppbv', var2plot='CO',
+                               obs_var2plot='CO_AERO',
+                               mod_var2plot='CO',
+                               mod_label='GEOS-CF',
+                               plt_alt_as_shadow=True,
+                               aspect_ratio=0.25,
+                               flight_ID='C216',
+                               yscale='linear',
+                               invert_yaxis=False,
+                               ):
+    """
+    Plot up a timeseries of observations and model for a given flight
+    """
+    # Get the beginning and end of the flight from the extracted model times
+    xylim_min = AC.add_minutes( df_mod.index.min(), -15)
+    xylim_max = AC.add_minutes( df_mod.index.max(), 15 )
+    xticks = df_mod.resample('15T' ).mean().index.values
+    xticks = AC.dt64_2_dt( xticks )
+    xticks_labels = [ i.strftime('%H:%M') for i in xticks]
+    # Get dates/datetimes of flight
+    sdate_str = df_obs.index.min().strftime('%x').strip()
+    edate_str = df_obs.index.max().strftime('%x').strip()
+    stime_str = df_obs.index.min().strftime('%H:%M').strip()
+    etime_str = df_obs.index.max().strftime('%H:%M').strip()
+    # Now use Seaborn settings
+    sns.set(color_codes=True)
+    sns.set_context("paper", font_scale=0.75)
+    # Set a shared title string
+    title_str =  "Timeseries of '{}' ({}) during flight '{}' on {}"
+    # Setup the figure
+    w, h = matplotlib.figure.figaspect(aspect_ratio)
+    fig = plt.figure(figsize=(w, h))
+    ax = fig.add_subplot(111)
+    # Plot up the observations and model...
+    plt.plot(df_obs.index, df_obs[obs_var2plot].values+obs_adjustby,
+             label=obs_label, color='k' )
+    plt.plot(df_mod.index, df_mod[ mod_var2plot ].values*mod_scale,
+             label=mod_label, color='red' )
+    # Beautify plot
+    plt.title(title_str.format(var2plot, units, flight_ID, sdate_str ))
+    plt.yscale(yscale)
+    plt.ylim(ylim)
+    plt.ylabel( '{} ({})'.format( var2plot, units) )
+    plt.xlim(xylim_min, xylim_max)
+    ax.set_xticks(xticks)
+    ax.set_xticklabels(xticks_labels, rotation=45)
+    print(xticks_labels)
+    # Invert the second y-axis
+    if plt_alt_as_shadow:
+        # Add a shadow of the altitude
+        ax2 = ax.twinx()
+        mod_var2plot = 'model-lev'
+        ax2.plot(df_mod.index, df_mod[ mod_var2plot ].values,
+                 label='Altitude',
+                 color='grey', zorder=100, alpha=0.25  )
+        ax2.set_ylabel('Altitude (hPa)')
+        ax2.grid(None)
+        ax2.invert_yaxis()
+        # Force use of the same ticks
+        ax2.set_xticks(xticks)
+        ax2.set_xticklabels(xticks_labels, rotation=45)
+    # Invert the y-xais?
+    if invert_yaxis:
+        plt.gca().invert_yaxis()
+    # Save to PDF
+    fig.legend(loc='best', bbox_to_anchor=(1,1),
+               bbox_transform=ax.transAxes)
+    plt.tight_layout()
+
+
 def plt_timeseries_comparisons4ARNA_flights(dpi=320, show_plot=False):
     """
     Plot up timeseries comparisons between core observations and model data
     """
     import seaborn as sns
-    # Now use Seaborn settings
-    sns.set(color_codes=True)
-    sns.set_context("paper", font_scale=0.75)
     # Which flights to plot?
 #    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
 	# Just use non-transit ARNA flights
     flights_nums = [
-    217, 218, 219, 220, 221, 222, 223, 224,
-#	225, # Kludge - reprocessing file, so temporarily hashed out.
+    217, 218, 219, 220, 221, 222, 223, 224, 225,
     ]
     flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
     # plot the altitude as a shadow on top of the plots
-    plt_alt_as_shadow =  True
-    aspect_ratio = 0.25
+#    plt_alt_as_shadow =  True
+#    aspect_ratio = 0.25
     # - Loop by flight and retrieve the files as dataframes (mod + obs)
     # Model
     dfs_mod = {}
@@ -2007,643 +2088,312 @@ def plt_timeseries_comparisons4ARNA_flights(dpi=320, show_plot=False):
     for flight_ID in flight_IDs:
         dfs_obs[flight_ID] = get_FAAM_core4flightnum(flight_ID=flight_ID )
 
+
+
     # -  Now plot up
     for flight_ID in flight_IDs:
         print(flight_ID)
         # Get observations and model timeseries data as a DataFrame
         df_obs = dfs_obs[flight_ID]
         df_mod = dfs_mod[flight_ID]
-        # get the begining and end of the flight from the extracted model times
-        xylim_min = AC.add_minutes( df_mod.index.min(), -15)
-        xylim_max = AC.add_minutes( df_mod.index.max(), 15 )
-        xticks = df_mod.resample('15T' ).mean().index.values
-        xticks = AC.dt64_2_dt( xticks )
-        xticks_labels = [ i.strftime('%Y/%m/%d %H:%M') for i in xticks]
-
-        # Setup a file
         # Setup PDF to save PDF plots to
         savetitle = 'ARNA_timeseries_flighttrack_{}'.format(flight_ID)
         pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
-
         # - Plot up location of flights
-        # Reset sns for spatial plot
-#        sns.reset_orig()
-        # New figure
-        fig = plt.figure()
-        # Get lat and lons
-        lons = df_obs['LON_GIN'].values
-        lats = df_obs['LAT_GIN'].values
-        # Get dates of flight
-        sdate_str = df_obs.index.min().strftime('%x %H:%M').strip()
-        edate_str = df_obs.index.max().strftime('%x %H:%M').strip()
-        # Make title
-        title_str = 'Flight track for ARNA flight {} ({}-{})'
-        title4plot = title_str.format(flight_ID, sdate_str, edate_str)
-        #
-        projection=ccrs.PlateCarree
-        central_longitude = 0
-        fig = plt.figure(dpi=dpi, facecolor='w', edgecolor='k')
-        # Setup a cartopy projection for plotting
-        ax = fig.add_subplot(111,
-                             projection=projection(
-                                 central_longitude=central_longitude)
-                             )
-        # Beautify
-        ax.gridlines()
-        # Add borders for countries
-        ax.add_feature(cfeature.BORDERS, edgecolor='grey',
-                       facecolor='none', zorder=50)
-        # Also add minor islands (inc. Cape Verde)
-        land_10m = cfeature.NaturalEarthFeature('physical', 'land', '10m',
-                                                edgecolor=None,
-                                                facecolor='none')
-        ax.add_feature(land_10m, edgecolor='grey', facecolor='none', zorder=50)
-        # Plot settings
-        marker='o'
-        s=2
-        alpha = 0.75
-        cmap_list = AC.get_CB_color_cycle()
-        # Now plot locations as scatter points on plot
-        ax.scatter(lons, lats, color=cmap_list[0], s=s, marker=marker,
-                   alpha=alpha,
-                   label=flight_ID,
-                   transform=projection(), zorder=999
-                   )
-        # Local area analysed as Cape Verde
-        x0 = -30
-        x1 =-10
-        y0 = 0
-        y1 = 25
-        extents = (x0, x1, y0, y1)
-        # Get limits of plotting data
-        if isinstance(extents, type(None)):
-            x0 = float(ds[LonVar].min())
-            x1 = float(ds[LonVar].max())
-            y0 = float(ds[LatVar].min())
-            y1 = float(ds[LatVar].max())
-            extents = (x0, x1, y0, y1)
-        ax.set_extent(extents, crs=ccrs.PlateCarree())
-        # Add a title to the plot
-        plt.title(title4plot)
-        plt.tight_layout()
+        plt_flightpath_spatially_over_CVAO(df=df_obs, flight_ID=flight_ID)
         # Save to PDF
-        if show_plot:
-            plt.show()
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
         plt.close()
 
         # - Now plot up flight time series plots by variable
-        title_str =  "Timeseries of '{}' ({}) during flight '{}'"
-        # Now use Seaborn settings
-        sns.set(color_codes=True)
-        sns.set_context("paper", font_scale=0.75)
-
         # - Plot up carbon monoxide
-        w, h = matplotlib.figure.figaspect(aspect_ratio)
-        fig = plt.figure(figsize=(w, h))
-        ax = fig.add_subplot(111)
         units = 'ppbv'
         var2plot = 'CO'
         obs_var2plot = 'CO_AERO'
-        plt.plot(df_obs.index, df_obs[obs_var2plot].values, label='Obs.',
-                 color='k' )
         mod_var2plot = 'CO'
-        plt.plot(df_mod.index, df_mod[ mod_var2plot ].values*1E9,
-                 label='GEOS-CF',
-                 color='red' )
-        # Beautify plot
-        plt.title(title_str.format(var2plot, units, flight_ID ))
-        plt.ylim(50, 400)
-        plt.ylabel( '{} ({})'.format( var2plot, units) )
-        plt.xlim(xylim_min, xylim_max)
-        ax.set_xticks(xticks)
-        ax.set_xticklabels(xticks_labels, rotation=45)
-        print(xticks_labels)
-        # Add a shadow of the altitude
-        ax2 = ax.twinx()
-        mod_var2plot = 'model-lev'
-        # Invert the second y-axis
-        if plt_alt_as_shadow:
-            ax2.plot(df_mod.index, df_mod[ mod_var2plot ].values,
-                     label='Altitude',
-                     color='grey', zorder=100, alpha=0.25  )
-            ax2.set_ylabel('Altitude (hPa)')
-            ax2.grid(None)
-            ax2.invert_yaxis()
-            # Force use of the same ticks
-            ax2.set_xticks(xticks)
-            ax2.set_xticklabels(xticks_labels, rotation=45)
-
-        # Save to PDF
-        fig.legend(loc='best', bbox_to_anchor=(1,1),
-                   bbox_transform=ax.transAxes)
-        plt.tight_layout()
+        mod_label = 'GEOS-CF'
+        mod_scale = 1E9
+        ylim = (50, 400)
+        # Call timeseries plotter function
+        plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                   obs_var2plot=obs_var2plot,
+                                   mod_scale=mod_scale, mod_label=mod_label,
+                                   mod_var2plot=mod_var2plot,
+                                   ylim=ylim,
+                                   df_mod=df_mod, df_obs=df_obs,
+                                   flight_ID=flight_ID,
+                                   )
+        # Save to PDF and close the plot
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
-        if show_plot:
-            plt.show()
         plt.close()
 
         # - Plot up ozone
-        w, h = matplotlib.figure.figaspect(aspect_ratio)
-        fig = plt.figure(figsize=(w, h))
-        #adjustFigAspect(fig, aspect=7.0)
-        ax = fig.add_subplot(111)
-#         xleft, xright = ax.get_xlim()
-#         ybottom, ytop = ax.get_ylim()
-#         ax.set_aspect(abs((xright-xleft)/(ybottom-ytop))*aspect_ratio)
         units = 'ppbv'
         var2plot = 'Ozone'
         obs_var2plot = 'O3_TECO'
-        ln1 = plt.plot(df_obs.index, df_obs[obs_var2plot].values, label='Obs.',
-                       color='k'  )
         mod_var2plot = 'O3'
-        ln2 = plt.plot(df_mod.index, df_mod[ mod_var2plot ].values*1E9,
-                       label='GEOS-CF', color='red'
-                       )
-        # Beautify plot
-        title_str = "Timeseries of '{}' ({}) during flight '{}'"
-        plt.title(title_str.format(var2plot, units, flight_ID ))
-        plt.ylim(-10, 100)
-        plt.ylabel( '{} ({})'.format( var2plot, units) )
-        plt.xlim(xylim_min, xylim_max)
-        ax.set_xticks(xticks)
-        ax.set_xticklabels(xticks_labels, rotation=45)
-        # Add a shadow of the altitude
-        ax2 = ax.twinx()
-        mod_var2plot = 'model-lev'
-        # Invert the second y-axis
-        if plt_alt_as_shadow:
-            ax2.plot(df_mod.index, df_mod[ mod_var2plot ].values,
-                     label='Altitude',
-                      color='grey', zorder=100, alpha=0.25  )
-            ax2.set_ylabel('Altitude (hPa)')
-            ax2.grid(None)
-            ax2.invert_yaxis()
-            # Force use of the same ticks
-            ax2.set_xticks(xticks)
-            ax2.set_xticklabels(xticks_labels, rotation=45)
-
-        # Save to PDF
-        fig.legend(loc='best', bbox_to_anchor=(1,1),
-                   bbox_transform=ax.transAxes)
-        plt.tight_layout()
+        mod_label = 'GEOS-CF'
+        mod_scale = 1E9
+        ylim = (10, 100)
+        # Call timeseries plotter function
+        plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                   obs_var2plot=obs_var2plot,
+                                   mod_scale=mod_scale, mod_label=mod_label,
+                                   mod_var2plot=mod_var2plot,
+                                   ylim=ylim,
+                                   df_mod=df_mod, df_obs=df_obs,
+                                   flight_ID=flight_ID,
+                                   )
+        # Save to PDF and close the plot
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
-        if show_plot:
-            plt.show()
         plt.close()
 
         # - Plot up NO2
         try:
-            # Setup for plot
-            fig = plt.figure()
-            w, h = matplotlib.figure.figaspect(aspect_ratio)
-            fig = plt.figure(figsize=(w, h))
-            #adjustFigAspect(fig, aspect=7.0)
-            ax = fig.add_subplot(111)
-            # Setup for specific variable
             units = 'pptv'
             var2plot = 'NO2'
             obs_var2plot = 'no2_mr'
-            plt.plot(df_obs.index, df_obs[obs_var2plot].values, label='Obs.',
-                     color='k' )
             mod_var2plot = 'NO2'
-            plt.plot(df_mod.index, df_mod[ mod_var2plot ].values*1E12,
-                     label='GEOS-CF',
-                     color='red' )
-            # Beautify plot
-            plt.title(title_str.format(var2plot, units, flight_ID ))
-            plt.ylim(-50, 500)
-            plt.xlim(xylim_min, xylim_max)
-            plt.ylabel( '{} ({})'.format( var2plot, units) )
-            ax.set_xticks(xticks)
-            ax.set_xticklabels(xticks_labels, rotation=45)
-            # Add a shadow of the altitude
-            ax2 = ax.twinx()
-            mod_var2plot = 'model-lev'
-            # Invert the second y-axis
-            if plt_alt_as_shadow:
-                ax2.plot(df_mod.index, df_mod[mod_var2plot].values,
-                         label='Altitude',
-                         color='grey', zorder=100, alpha=0.25  )
-                ax2.set_ylabel('Altitude (hPa)')
-                ax2.grid(None)
-                ax2.invert_yaxis()
-                # Force use of the same ticks
-                ax2.set_xticks(xticks)
-                ax2.set_xticklabels(xticks_labels, rotation=45)
-            # Save to PDF
-            fig.legend(loc='best', bbox_to_anchor=(1,1),
-                       bbox_transform=ax.transAxes)
-            plt.tight_layout()
+            mod_label = 'GEOS-CF'
+            mod_scale = 1E12
+            ylim = (0.3, 300)
+            yscale = 'log'
+            # Call timeseries plotter function
+            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                       obs_var2plot=obs_var2plot,
+                                       mod_scale=mod_scale,
+                                       mod_label=mod_label,
+                                       mod_var2plot=mod_var2plot,
+                                       ylim=ylim,
+                                       df_mod=df_mod, df_obs=df_obs,
+                                       flight_ID=flight_ID,
+                                       yscale=yscale,
+                                       )
+            # Save to PDF and close the plot
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
-            if show_plot:
-                plt.show()
             plt.close()
         except:
             print('Failed to plot NO2')
 
         # - Plot up NO
         try:
-            # Setup for plot
-            w, h = matplotlib.figure.figaspect(aspect_ratio)
-            fig = plt.figure(figsize=(w, h))
-            ax = fig.add_subplot(111)
-            # Setup for specific variable
             units = 'pptv'
             var2plot = 'NO'
             obs_var2plot = 'no_mr'
-            plt.plot(df_obs.index, df_obs[obs_var2plot].values, label='Obs.',
-                     color='k' )
             mod_var2plot = 'NO'
-            plt.plot(df_mod.index, df_mod[ mod_var2plot ].values*1E12,
-                     label='GEOS-CF',
-                     color='red' )
-            # Beautify plot
-            plt.title(title_str.format(var2plot, units, flight_ID ))
-            plt.ylim(-50, 500)
-            plt.xlim(xylim_min, xylim_max)
-            plt.ylabel( '{} ({})'.format( var2plot, units) )
-            ax.set_xticks(xticks)
-            ax.set_xticklabels(xticks_labels, rotation=45)
-            # Add a shadow of the altitude
-            ax2 = ax.twinx()
-            mod_var2plot = 'model-lev'
-            # Invert the second y-axis
-            if plt_alt_as_shadow:
-                ax2.plot(df_mod.index, df_mod[mod_var2plot].values,
-                         label='Altitude',
-                         color='grey', zorder=100, alpha=0.25  )
-                ax2.set_ylabel('Altitude (hPa)')
-                ax2.grid(None)
-                ax2.invert_yaxis()
-                # Force use of the same ticks
-                ax2.set_xticks(xticks)
-                ax2.set_xticklabels(xticks_labels, rotation=45)
-            # Save to PDF
-            fig.legend(loc='best', bbox_to_anchor=(1,1),
-                       bbox_transform=ax.transAxes)
-            plt.tight_layout()
+            mod_label = 'GEOS-CF'
+            mod_scale = 1E12
+            ylim = (0.3, 300)
+            yscale = 'log'
+            # Call timeseries plotter function
+            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                       obs_var2plot=obs_var2plot,
+                                       mod_scale=mod_scale,
+                                       mod_label=mod_label,
+                                       mod_var2plot=mod_var2plot,
+                                       ylim=ylim,
+                                       df_mod=df_mod, df_obs=df_obs,
+                                       flight_ID=flight_ID,
+                                       yscale=yscale,
+                                       )
+            # Save to PDF and close the plot
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
-            if show_plot:
-                plt.show()
             plt.close()
         except:
             print('Failed to plot NO')
 
         # - Plot up NOx
         try:
-            # Setup for plot
-            w, h = matplotlib.figure.figaspect(aspect_ratio)
-            fig = plt.figure(figsize=(w, h))
-            ax = fig.add_subplot(111)
-            # Setup for specific variable
             units = 'pptv'
             var2plot = 'NOx'
-            obs_var2plot = 'NOx'
-            plt.plot(df_obs.index, df_obs[obs_var2plot].values, label='Obs.',
-                     color='k' )
             mod_var2plot = 'NOx'
-            plt.plot(df_mod.index, df_mod[ mod_var2plot ].values*1E12,
-                     label='GEOS-CF', color='red' )
-            # Beautify plot
-            plt.title(title_str.format(var2plot, units, flight_ID ))
-            plt.ylim(-50, 500)
-            plt.xlim(xylim_min, xylim_max)
-            plt.ylabel( '{} ({})'.format( var2plot, units) )
-            ax.set_xticks(xticks)
-            ax.set_xticklabels(xticks_labels, rotation=45)
-            # Add a shadow of the altitude
-            ax2 = ax.twinx()
-            mod_var2plot = 'model-lev'
-            # Invert the second y-axis
-            if plt_alt_as_shadow:
-                ax2.plot(df_mod.index, df_mod[mod_var2plot].values,
-                         label='Altitude',
-                         color='grey', zorder=100, alpha=0.25  )
-                ax2.set_ylabel('Altitude (hPa)')
-                ax2.grid(None)
-                ax2.invert_yaxis()
-                # Force use of the same ticks
-                ax2.set_xticks(xticks)
-                ax2.set_xticklabels(xticks_labels, rotation=45)
-            # Save to PDF
-            fig.legend(loc='best', bbox_to_anchor=(1,1),
-                       bbox_transform=ax.transAxes)
-            plt.tight_layout()
+            obs_var2plot = mod_var2plot
+            mod_label = 'GEOS-CF'
+            mod_scale = 1E12
+            ylim = (0.3, 300)
+            yscale = 'log'
+            # Call timeseries plotter function
+            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                       obs_var2plot=obs_var2plot,
+                                       mod_scale=mod_scale,
+                                       mod_label=mod_label,
+                                       mod_var2plot=mod_var2plot,
+                                       ylim=ylim,
+                                       df_mod=df_mod, df_obs=df_obs,
+                                       flight_ID=flight_ID,
+                                       yscale=yscale,
+                                       )
+            # Save to PDF and close the plot
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
-            if show_plot:
-                plt.show()
             plt.close()
         except:
             print('Failed to plot NOx')
 
         # - Plot up HNO2
         try:
-            # Setup for plot
-            w, h = matplotlib.figure.figaspect(aspect_ratio)
-            fig = plt.figure(figsize=(w, h))
-            ax = fig.add_subplot(111)
-            # Setup for specific variable
             units = 'pptv'
-            var2plot = 'HONO'
+            var2plot = 'NOx'
             obs_var2plot = 'hono_mr'
-            plt.plot(df_obs.index, df_obs[obs_var2plot].values, label='Obs.',
-                     color='k' )
-            mod_var2plot = 'HNO2'
-            plt.plot(df_mod.index, df_mod[ mod_var2plot ].values*1E12,
-                     label='GEOS-CF', color='red' )
-            # Beautify plot
-            plt.title(title_str.format(var2plot, units, flight_ID ))
-            plt.ylim(-50, 500)
-            plt.xlim(xylim_min, xylim_max)
-            plt.ylabel( '{} ({})'.format( var2plot, units) )
-            ax.set_xticks(xticks)
-            ax.set_xticklabels(xticks_labels, rotation=45)
-            # Add a shadow of the altitude
-            ax2 = ax.twinx()
-            mod_var2plot = 'model-lev'
-            # Invert the second y-axis
-            if plt_alt_as_shadow:
-                ax2.plot(df_mod.index, df_mod[mod_var2plot].values,
-                         label='Altitude', color='grey', zorder=100,
-                         alpha=0.25  )
-                ax2.set_ylabel('Altitude (hPa)')
-                ax2.grid(None)
-                ax2.invert_yaxis()
-                # Force use of the same ticks
-                ax2.set_xticks(xticks)
-                ax2.set_xticklabels(xticks_labels, rotation=45)
-            # Save to PDF
-            fig.legend(loc='best', bbox_to_anchor=(1,1),
-                       bbox_transform=ax.transAxes)
-            plt.tight_layout()
+            mod_var2plot = 'HONO'
+            mod_label = 'GEOS-CF'
+            mod_scale = 1E12
+            ylim = (0.3, 300)
+            yscale = 'log'
+            # Call timeseries plotter function
+            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                       obs_var2plot=obs_var2plot,
+                                       mod_scale=mod_scale,
+                                       mod_label=mod_label,
+                                       mod_var2plot=mod_var2plot,
+                                       ylim=ylim,
+                                       df_mod=df_mod, df_obs=df_obs,
+                                       flight_ID=flight_ID,
+                                       yscale=yscale,
+                                       )
+            # Save to PDF and close the plot
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
-            if show_plot:
-                plt.show()
             plt.close()
         except:
-            print('Failed to plot NOx')
+            print('Failed to plot HONO')
 
         # - Plot up temperature
-        # Setup for plot
-        w, h = matplotlib.figure.figaspect(aspect_ratio)
-        fig = plt.figure(figsize=(w, h))
-        #adjustFigAspect(fig, aspect=7.0)
-        ax = fig.add_subplot(111)
-        # Setup for specific variable
         units = '$^{\circ}$C'
         var2plot = 'Temperature'
         obs_var2plot = 'TAT_DI_R'
-        plt.plot(df_obs.index, df_obs[ obs_var2plot ].values -273.15,
-                 label='Obs.',
-                 color='k' )
         mod_var2plot = 'T'
-        plt.plot(df_mod.index, df_mod[mod_var2plot].values, label='GEOS-CF',
-                 color='red'  )
-        # Beautify plot
-        plt.title(title_str.format(var2plot, units, flight_ID ))
-        plt.ylim(-30, 30)
-        plt.ylabel( '{} ({})'.format( var2plot, units) )
-        plt.xlim(xylim_min, xylim_max)
-        ax.set_xticks(xticks)
-        ax.set_xticklabels(xticks_labels, rotation=45)
-        # Add a shadow of the altitude
-        ax2 = ax.twinx()
-        mod_var2plot = 'model-lev'
-        # Invert the second y-axis
-        if plt_alt_as_shadow:
-            ax2.plot(df_mod.index, df_mod[mod_var2plot].values,
-                     label='Altitude',
-                      color='grey', zorder=100, alpha=0.25  )
-            ax2.set_ylabel('Altitude (hPa)')
-            ax2.grid(None)
-            ax2.invert_yaxis()
-            # Force use of the same ticks
-            ax2.set_xticks(xticks)
-            ax2.set_xticklabels(xticks_labels, rotation=45)
-        # Save to PDF
-        fig.legend(loc='best', bbox_to_anchor=(1,1),
-                   bbox_transform=ax.transAxes)
-        plt.tight_layout()
+        mod_label = 'GEOS-CF'
+        mod_scale = 1
+        ylim = (-25, 35)
+        obs_adjustby = -273.15
+        # Call timeseries plotter function
+        plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                   obs_var2plot=obs_var2plot,
+                                   mod_scale=mod_scale,
+                                   mod_label=mod_label,
+                                   mod_var2plot=mod_var2plot,
+                                   ylim=ylim,
+                                   df_mod=df_mod, df_obs=df_obs,
+                                   flight_ID=flight_ID,
+                                   obs_adjustby=obs_adjustby,
+                                   )
+        # Save to PDF and close the plot
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
-        if show_plot:
-            plt.show()
         plt.close()
 
+
         # - Plot up Eastward wind
-        # Setup for plot
-        w, h = matplotlib.figure.figaspect(aspect_ratio)
-        fig = plt.figure(figsize=(w, h))
-        ax = fig.add_subplot(111)
-        # Setup for specific variable
         units = 'm s$^{-1}$'
         var2plot = 'Eastward wind'
         obs_var2plot = 'U_C'
-        plt.plot(df_obs.index, df_obs[obs_var2plot].values, label='Obs.',
-                 color='k' )
         mod_var2plot = 'U'
-        plt.plot(df_mod.index, df_mod[mod_var2plot].values, label='GEOS-CF',
-                 color='red'  )
-        # Beautify plot
-        plt.title(title_str.format(var2plot, units, flight_ID ))
-        plt.ylim(-25, 25)
-        plt.ylabel( '{} ({})'.format( var2plot, units) )
-        plt.xlim(xylim_min, xylim_max)
-        ax.set_xticks(xticks)
-        ax.set_xticklabels(xticks_labels, rotation=45)
-        # Add a shadow of the altitude
-        ax2 = ax.twinx()
-        mod_var2plot = 'model-lev'
-        # Invert the second y-axis
-        if plt_alt_as_shadow:
-            ax2.plot(df_mod.index, df_mod[mod_var2plot].values,
-                     label='Altitude',
-                      color='grey', zorder=100, alpha=0.25  )
-            ax2.set_ylabel('Altitude (hPa)')
-            ax2.grid(None)
-            ax2.invert_yaxis()
-            # Force use of the same ticks
-            ax2.set_xticks(xticks)
-            ax2.set_xticklabels(xticks_labels, rotation=45)
-        # Save to PDF
-        fig.legend(loc='best', bbox_to_anchor=(1,1),
-                   bbox_transform=ax.transAxes)
-        plt.tight_layout()
+        mod_label = 'GEOS-CF'
+        mod_scale = 1
+        ylim = (-15, 15)
+        # Call timeseries plotter function
+        plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                   obs_var2plot=obs_var2plot,
+                                   mod_scale=mod_scale,
+                                   mod_label=mod_label,
+                                   mod_var2plot=mod_var2plot,
+                                   ylim=ylim,
+                                   df_mod=df_mod, df_obs=df_obs,
+                                   flight_ID=flight_ID,
+                                   )
+        # Save to PDF and close the plot
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
-        if show_plot:
-            plt.show()
         plt.close()
 
-        # - Plot up Eastward wind
-        # Setup for plot
-        w, h = matplotlib.figure.figaspect(aspect_ratio)
-        fig = plt.figure(figsize=(w, h))
-        ax = fig.add_subplot(111)
-        # Setup for specific variable
+        # - Plot up Northward wind
         units = 'm s$^{-1}$'
         var2plot = 'Northward wind'
         obs_var2plot = 'V_C'
         mod_var2plot = 'V'
-        plt.plot(df_obs.index, df_obs[obs_var2plot].values, label='Obs.',
-                 color='k' )
-        plt.plot(df_mod.index, df_mod[mod_var2plot].values, label='GEOS-CF',
-                 color='red'  )
-        # Beautify plot
-        plt.legend()
-        plt.title(title_str.format(var2plot, units, flight_ID ))
-        plt.ylim(-25, 25)
-        plt.ylabel( '{} ({})'.format( var2plot, units) )
-        plt.xlim(xylim_min, xylim_max)
-        ax.set_xticks(xticks)
-        ax.set_xticklabels(xticks_labels, rotation=45)
-        # Add a shadow of the altitude
-        ax2 = ax.twinx()
-        mod_var2plot = 'model-lev'
-        # Invert the second y-axis
-        if plt_alt_as_shadow:
-            ax2.plot(df_mod.index, df_mod[mod_var2plot].values,
-                     label='Altitude',
-                     color='grey', zorder=100, alpha=0.25  )
-            ax2.set_ylabel('Altitude (hPa)')
-            ax2.grid(None)
-            ax2.invert_yaxis()
-            # Force use of the same ticks
-            ax2.set_xticks(xticks)
-            ax2.set_xticklabels(xticks_labels, rotation=45)
-        # Save to PDF
-        fig.legend(loc='best', bbox_to_anchor=(1,1),
-                   bbox_transform=ax.transAxes)
-        plt.tight_layout()
+        mod_label = 'GEOS-CF'
+        mod_scale = 1
+        ylim = (-15, 15)
+        # Call timeseries plotter function
+        plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                   obs_var2plot=obs_var2plot,
+                                   mod_scale=mod_scale,
+                                   mod_label=mod_label,
+                                   mod_var2plot=mod_var2plot,
+                                   ylim=ylim,
+                                   df_mod=df_mod, df_obs=df_obs,
+                                   flight_ID=flight_ID,
+                                   )
+        # Save to PDF and close the plot
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
-        if show_plot:
-            plt.show()
         plt.close()
 
         # - Plot up Latitude
         try:
-            # Setup for plot
-            w, h = matplotlib.figure.figaspect(aspect_ratio)
-            fig = plt.figure(figsize=(w, h))
-            ax = fig.add_subplot(111)
-            # Setup for specific variable
             units = '$^{\circ}$N'
             var2plot = 'Latitude'
             obs_var2plot = 'LAT_GIN'
             mod_var2plot = 'model-lat'
-            plt.plot(df_obs.index, df_obs[obs_var2plot].values, label='Obs.',
-                     color='k' )
-            plt.plot(df_mod.index, df_mod[mod_var2plot].values,
-                     label='GEOS-CF',
-                     color='red'  )
-            # Beautify plot
-            plt.ylabel( '{} ({})'.format( var2plot, units) )
-            plt.title(title_str.format(var2plot, units, flight_ID ))
-            plt.xlim(xylim_min, xylim_max)
-            ax.set_xticks(xticks)
-            ax.set_xticklabels(xticks_labels, rotation=45)
-            # Add a shadow of the altitude
-            ax2 = ax.twinx()
-            mod_var2plot = 'model-lev'
-            # Invert the second y-axis
-            if plt_alt_as_shadow:
-                ax2.plot(df_mod.index, df_mod[mod_var2plot].values,
-                         label='Altitude',
-                         color='grey', zorder=100, alpha=0.25  )
-                ax2.set_ylabel('Altitude (hPa)')
-                ax2.grid(None)
-                ax2.invert_yaxis()
-                # Force use of the same ticks
-                ax2.set_xticks(xticks)
-                ax2.set_xticklabels(xticks_labels, rotation=45)
-            # Save to PDF
-            fig.legend(loc='best', bbox_to_anchor=(1,1),
-                       bbox_transform=ax.transAxes)
-            plt.tight_layout()
+            mod_label = 'GEOS-CF'
+            mod_scale = 1
+            # Call timeseries plotter function
+            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                       obs_var2plot=obs_var2plot,
+                                       mod_scale=mod_scale,
+                                       mod_label=mod_label,
+                                       mod_var2plot=mod_var2plot,
+                                       df_mod=df_mod, df_obs=df_obs,
+                                       flight_ID=flight_ID,
+                                       )
+            # Save to PDF and close the plot
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
-            if show_plot:
-                plt.show()
             plt.close()
         except:
             print('Failed to plot Latitude')
 
         # - Plot up Longitude
         try:
-            # Setup for plot
-            w, h = matplotlib.figure.figaspect(aspect_ratio)
-            fig = plt.figure(figsize=(w, h))
-            ax = fig.add_subplot(111)
-            # Setup for specific variable
             units = '$^{\circ}$E'
             var2plot = 'Longitude'
             obs_var2plot = 'LON_GIN'
             mod_var2plot = 'model-lon'
-            plt.plot(df_obs.index, df_obs[obs_var2plot].values, label='Obs.',
-                     color='k' )
-            plt.plot(df_mod.index, df_mod[mod_var2plot].values,
-                     label='GEOS-CF',
-                     color='red'  )
-            # Beautify plot
-            plt.ylabel('{} ({})'.format( var2plot, units) )
-            plt.title(title_str.format(var2plot, units, flight_ID ))
-            plt.xlim(xylim_min, xylim_max)
-            ax.set_xticks(xticks)
-            ax.set_xticklabels(xticks_labels, rotation=45)
-            # Add a shadow of the altitude
-            ax2 = ax.twinx()
-            mod_var2plot = 'model-lev'
-            # Invert the second y-axis
-            if plt_alt_as_shadow:
-                ax2.plot(df_mod.index, df_mod[mod_var2plot].values,
-                         label='Altitude',
-                         color='grey', zorder=100, alpha=0.25  )
-                ax2.set_ylabel('Altitude (hPa)')
-                ax2.grid(None)
-                ax2.invert_yaxis()
-                # Force use of the same ticks
-                ax2.set_xticks(xticks)
-                ax2.set_xticklabels(xticks_labels, rotation=45)
-            # Save to PDF
-            fig.legend(loc='best', bbox_to_anchor=(1,1),
-                       bbox_transform=ax.transAxes)
-            plt.tight_layout()
+            mod_label = 'GEOS-CF'
+            mod_scale = 1
+            # Call timeseries plotter function
+            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                       obs_var2plot=obs_var2plot,
+                                       mod_scale=mod_scale,
+                                       mod_label=mod_label,
+                                       mod_var2plot=mod_var2plot,
+                                       df_mod=df_mod, df_obs=df_obs,
+                                       flight_ID=flight_ID,
+                                       )
+            # Save to PDF and close the plot
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
-            if show_plot:
-                plt.show()
             plt.close()
         except:
             print('Failed to plot Longitude')
 
         # - Plot up altitude
         try:
-            # Setup for plot
-            w, h = matplotlib.figure.figaspect(aspect_ratio)
-            fig = plt.figure(figsize=(w, h))
-            ax = fig.add_subplot(111)
-            # Setup for specific variable
             units = 'hPa'
             var2plot = 'Altitude'
-            obs_var2plot = 'ALT_GIN'
             mod_var2plot = 'model-lev'
-            # Local variables (metres to kft)
-            vals = AC.hPa_to_Km( df_obs['ALT_GIN'].values/1E3, reverse=True )
-            plt.plot(df_obs.index, vals, label='Obs.', color='k' )
-            plt.plot(df_mod.index, df_mod[mod_var2plot].values,
-                     label='GEOS-CF',
-                     color='red'  )
-            # Beautify plot
-            plt.legend()
-            plt.ylabel( '{} ({})'.format( var2plot, units) )
-            plt.title(title_str.format(var2plot, units, flight_ID ))
-            plt.xlim(xylim_min, xylim_max)
-            ax.set_xticks(xticks)
-            ax.set_xticklabels(xticks_labels, rotation=45)
-            # Invert the y-axis
-            plt.gca().invert_yaxis()
-            # Save to PDF
-            plt.tight_layout()
+            obs_var2plot = 'PS_RVSM' # Use pressure measurement
+#            obs_var2plot = 'ALT_GIN' # Use GPS altitude?
+#            vals = AC.hPa_to_Km( df_obs['ALT_GIN'].values/1E3, reverse=True )
+            mod_label = 'GEOS-CF'
+            mod_scale = 1
+            # Call timeseries plotter function
+            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                       obs_var2plot=obs_var2plot,
+                                       mod_scale=mod_scale,
+                                       mod_label=mod_label,
+                                       mod_var2plot=mod_var2plot,
+                                       df_mod=df_mod, df_obs=df_obs,
+                                       flight_ID=flight_ID,
+                                       invert_yaxis=True,
+                                       plt_alt_as_shadow=False,
+                                       )
+            # Save to PDF and close the plot
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
-            if show_plot:
-                plt.show()
             plt.close()
         except:
             print('Failed to plot altitude')

@@ -1,5 +1,5 @@
 """
-Driver script do miscellaneous pieces of post campaign analysis
+Driver script to do miscellaneous pieces of post campaign analysis
 """
 
 #!/usr/bin/python

@@ -1,5 +1,5 @@
 """
-
+Driver script to do NOx/HONO (post campaign) analysis
 """
 #!/usr/bin/python
 # - Packages
@@ -20,7 +20,11 @@ def main():
     """
     Main driver function
     """
-#    pass
+    # Get the core FAAM data
+#    xr.get_FAAM_core4flightnum()
+    # Get the ToF-CIMS data
+    ds2 = xr.get_CIMS_data4flight()
+
 
 
 
