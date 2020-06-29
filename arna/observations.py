@@ -4,41 +4,17 @@ Functions for processing/analysing ARNA campaign observations
 
 import os
 import sys
-import xarray as xr
+import gc
 import glob
+import xarray as xr
 import numpy as np
 import AC_tools as AC
 import pandas as pd
 from netCDF4 import Dataset
 from datetime import datetime as datetime_
-#import matplotlib.dates as mdates
-#import time
 import datetime as datetime
 import time
 from time import gmtime, strftime
-import matplotlib.pyplot as plt
-import seaborn as sns
-import gc
-#import matplotlib
-import cartopy.crs as ccrs
-import cartopy.feature as cfeature
-import matplotlib.patches as mpatches
-import seaborn as sns
-import matplotlib.ticker as mticker
-import cartopy.crs as ccrs
-from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
-#from cartopy.mpl.ticker import LatitudeFormatter, LongitudeFormatter
-#from cartopy.mpl.ticker import LatitudeLocator, LongitudeLocator
-from shapely.geometry.polygon import LinearRing
-import xesmf as xe
-import os
-#from bs4 import BeautifulSoup
-import requests
-from PIL import Image, ImageDraw
-import PIL
-from multiprocessing import Pool
-from functools import partial
-import matplotlib
 
 # Import from elsewhere in ARNA module
 from . core import *
@@ -109,7 +85,141 @@ def set_flagged_data2NaNs(ds, VarName='no_mr', flag2use=0,
     return ds
 
 
-def get_CIMS_data4flight(flight_ID='C216', resample_data=True):
+def get_SWAS_data4flight(flight_ID=None):
+    """
+    Retrieve SWAS data for ARNA flights
+    """
+    # Where is the data?
+    folder = '{}/{}/'.format(get_local_folder('ARNA_data'), 'SWAS')
+    filename = 'ARNA-FIRSTLOOK-SWAS_JDL_typo_fix.csv'
+    var2use = 'comments4'
+    format = '%d/%m/%Y %H:%M:%S'
+    # Or use latest file (NOTE: issue with column formating)
+#    filename = 'ARNA-SECONDLOOK-SWAS.csv'
+    df = pd.read_csv(folder+filename)
+    # Get a
+    print('TODO: Speak to Jimmy to confirm the datetime columns!')
+#    var2use = 'SAMPLE START TIME'
+#    format = '%d/%m/%Y %H:%M:%S'
+    df.index =  pd.to_datetime(df[var2use].values, format=format)
+    # If a flight ID stated, then only return points for that flight
+    if isinstance(flight_ID, type(None)):
+        pass
+    else:
+        # Get the beginning and end of the flight
+        dfS = get_summary4flight(flight_ID=flight_ID)
+        sdate = dfS.index.min()
+        edate = dfS.index.max()
+        # Only consider samples within this time
+        df = df.loc[df.index >= sdate, :]
+        df = df.loc[df.index <= edate, :]
+    return df
+
+
+def map_SWAS_var2GEOS_var(var, invert=False):
+    """
+    Map variables names from SWAS to GEOS variable names
+    """
+    d = {
+#    '1_3_butadiene':,
+#    '1_butene':,
+#    '2_3_methylpentane':,
+#    '224_tmp':,
+    'acetaldehyde': 'ALD2',
+    'acetone': 'ACET',
+#    'acetylene':,
+    'benzene': 'BENZ', # GEOSChem, but not GEOS-CF output
+#    'benzenechb':,
+    'cis_2_butene': 'PRPE', #  NOTE: lumped tracer for >= C3 alkenes
+    'cyclo_pentane': 'ALK4', #  NOTE: lumped tracer for >= C4 Alkanes
+    'dms': 'DMS', # GEOSChem, but not GEOS-CF output
+#    'dmschb':,
+    'ethane': 'C2H6',
+#    'ethene':,
+#    'ethylbenzene':,
+#    'extra_1':,
+#    'extra_2':,
+#    'extra_3':,
+#    'extra_4':,
+#    'extra_5':,
+#    'extra_l2':,
+    'iso_butane': 'ALK4', #  NOTE: lumped tracer for >= C4 Alkanes
+    'iso_butene': 'PRPE', #  NOTE: lumped tracer for >= C3 alkenes
+    'iso_pentane': 'ALK4', #  NOTE: lumped tracer for >= C4 Alkanes
+    'isoprene': 'PRPE', #  NOTE: lumped tracer for >= C3 alkenes
+    'methanol': 'MOH',
+    'mp_xylene': 'XYLE',
+    'n_butane': 'ALK4', #  NOTE: lumped tracer for >= C4 Alkanes
+    'n_heptane': 'ALK4', #  NOTE: lumped tracer for >= C4 Alkanes
+    'n_hexane': 'ALK4', #  NOTE: lumped tracer for >= C4 Alkanes
+    'n_octane': 'ALK4', #  NOTE: lumped tracer for >= C4 Alkanes
+    'n_pentane': 'ALK4', #  NOTE: lumped tracer for >= C4 Alkanes
+    'o_xylene': 'XYLE',
+    'pent_1_ene':  'PRPE', #  NOTE: lumped tracer for >= C3 alkenes
+    'propane': 'C3H8',
+    'propene': 'PRPE', #  NOTE: lumped tracer for >= C3 alkenes
+    'toluene': 'TOLU',
+#    'toluenechb':,
+    'trans_2_butene': 'PRPE', #  NOTE: lumped tracer for >= C3 alkenes
+    'trans_2_pentene':'PRPE', #  NOTE: lumped tracer for >= C3 alkenes
+    }
+    # Invert the dictionary?
+    if invert:
+        d = {v: k for k, v in list(d.items())}
+    return d[var]
+
+
+def get_ARNA_flight_log_as_df():
+    """
+    Make a single pd.DataFrame with all flight summaries
+    """
+    flights_nums = [
+#    216,
+    217, 218, 219, 220, 221, 222, 223, 224, 225
+    ]
+    flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
+    dfs = []
+    for flight_ID in flight_IDs:
+        dfs += [get_summary4flight( flight_ID=flight_ID )]
+    # Combine and return as a single dataframe sorted by time
+    df = pd.concat(dfs)
+    df = df.sort_index()
+    return df
+
+
+def get_summary4flight(flight_ID='C217'):
+    """
+    retrieve a FAAM flight summary as a dataframe
+    """
+    folder = '{}/{}/'.format(get_local_folder('ARNA_data'), 'CEDA/v2020_06')
+    filename = 'flight-sum_faam_*_*_{}.csv'.format(flight_ID.lower())
+    file2use = glob.glob( folder+filename )
+    ass_str = 'WARNING: {} flight summaries found present for flight {}!'
+    assert len(file2use) == 1, ass_str.format(file2use, flight_ID)
+    # Add Gotcha for missing header in FAAM file archived at CEDA
+    columns = [
+    'Event', 'Start', 'Start Hdg / °', 'Start Hgt / kft', 'Start Lat / °',
+    'Start Long / °', 'Stop', 'Stop Hdg / °', 'Stop Hgt / kft',
+    'Stop Lat / °', ' Stop Long / °', 'Comment',
+    ]
+    if flight_ID=='C217':
+        header = None
+        names = columns
+    else:
+        header = 0
+        names = None
+    # read file
+    df = pd.read_csv(file2use[0], header=header, names=names)
+    # Add a flight ID column
+    df['flight_ID'] = flight_ID
+    # Update start column to be in datatime format
+    var2use = 'Start'
+    format = '%Y-%m-%d %H:%M:%S'
+    df.index = pd.to_datetime( df[var2use].values, format=format)
+    return df
+
+
+def get_CIMS_data4flight(flight_ID='C216', resample_data=True, debug=False):
     """
     Retrieve ToF-CIMS data from ARNA flights
     """
@@ -119,18 +229,39 @@ def get_CIMS_data4flight(flight_ID='C216', resample_data=True):
     sheet_name = flight_ID
     # Retrive the core CIMS observations (use the time coordinate for index)
     filename = 'ACSIS6_0.1hz_Bromine.xlsx'
-    df = pd.read_excel( folder + filename, sheet_name=sheet_name)
+    format='%m/%d/%Y %H:%M:%S'
+    df = pd.read_excel(folder + filename, sheet_name=sheet_name,
+                       date_parser=format)
+    xl = pd.ExcelFile( folder + filename)
+    if debug:
+        print(xl.sheet_names)
     dt_var = 'Date:Time'
-    df.index = pd.to_datetime( df[dt_var].values )
+    dates = AC.dt64_2_dt(df[dt_var].values )
+    dates = [i.strftime(format) for i in dates ]
+    dates = [datetime.datetime.strptime(i,'%d/%m/%Y %H:%M:%S') for i in dates]
+    df.index = dates
     del df[dt_var]
     # Also get HNO3 / HONO (use the time coordinate for index)
     filename = 'ACSIS6_ARNA_1hz_HNO3_HONO_ToSend.xlsx'
     df2 = pd.read_excel( folder + filename, sheet_name=sheet_name)
+    xl = pd.ExcelFile( folder + filename)
+    if debug:
+        print(xl.sheet_names)
     dt_var = 'date'
-    df2.index = pd.to_datetime( df2[dt_var].values )
+#    df2.index = pd.to_datetime( df2[dt_var].values, format='%m/%d/%Y %H:%M:%S')
+    dates = AC.dt64_2_dt(df2[dt_var].values )
+    dates = [i.strftime(format) for i in dates ]
+    dates = [datetime.datetime.strptime(i,'%d/%m/%Y %H:%M:%S') for i in dates]
+    df2.index = dates
     del df2[dt_var]
     # Merge the files
     df = pd.concat([df,df2], axis="index")
+    # Update the variable names
+    VarNameDict = {
+    'BrO (ppt*)':'BrO', 'Br2 + HOBr (ppt*)':'Br2+HOBr', 'HONO (ppt*)':'HONO',
+    'HNO3 (ppt*) ':'HNO3',  'HNO3 (ppt*)' : 'HNO3',
+    }
+    df = df.rename(columns=VarNameDict)
 	# Resample the data?
     if resample_data:
         df = df.resample('1T' ).mean()

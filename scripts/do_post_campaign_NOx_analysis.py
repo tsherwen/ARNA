@@ -21,9 +21,9 @@ def main():
     Main driver function
     """
     # Get the core FAAM data
-#    xr.get_FAAM_core4flightnum()
+#    ar.get_FAAM_core4flightnum()
     # Get the ToF-CIMS data
-    ds2 = xr.get_CIMS_data4flight()
+    ds2 = ar.get_CIMS_data4flight()
 
 
 

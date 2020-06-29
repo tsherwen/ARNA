@@ -1764,13 +1764,11 @@ def quick_lon_plot_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
         plt.show()
 
 
-def plt_alt_binned_comparisons4ARNA_flights(dpi=320, show_plot=False):
+def plt_comp_by_alt_4ARNA_flights(dpi=320, show_plot=False):
     """
     Plot up altitude binned comparisons between core obs. and model data
     """
     import seaborn as sns
-    sns.set(color_codes=True)
-    sns.set_context("paper", font_scale=0.75)
     # Which flights to plot?
 #    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
     # Just use non-transit ARNA flights
@@ -1778,9 +1776,6 @@ def plt_alt_binned_comparisons4ARNA_flights(dpi=320, show_plot=False):
     217, 218, 219, 220, 221, 222, 223, 224, 225,
     ]
     flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
-    # plot the altitude as a shadow on top of the plots
-    plt_alt_as_shadow =  True
-
     # - Loop by flight and retrieve the files as dataframes (mod + obs)
     # Model
     dfs_mod = {}
@@ -1808,6 +1803,8 @@ def plt_alt_binned_comparisons4ARNA_flights(dpi=320, show_plot=False):
         plt.close()
 
         # - Put observations and vars to plot into a dictionary
+        sns.set(color_codes=True)
+        sns.set_context("paper", font_scale=0.75)
         # Force alt to be in units of km
         ALT_var = 'Altitude (km)'
         Y_unit = ALT_var
@@ -1833,7 +1830,169 @@ def plt_alt_binned_comparisons4ARNA_flights(dpi=320, show_plot=False):
         range_d = {
         'CO':(50, 400), 'O3':(-10, 100), 'NO2':(-50, 500), 'NO':(-50, 500),
         'NOx':(-50, 500),
-        'HNO2':(-50, 500), 'HONO':(-50, 500),
+        'HNO2':(-60, 60), 'HONO':(-60, 60),
+        }
+        # - by variable
+        runs = list(sorted(data_d.keys()))
+		# Which variables to use?
+        vars2plot = mod2obs_varnames.keys()
+        print(vars2plot)
+        print(df_obs.columns)
+        vars2plot = [
+        i for i in vars2plot if mod2obs_varnames[i] in df_obs.columns
+        ]
+        # What bins should be used?
+        bins = [0.5*i for i in np.arange(15)]
+        for var2plot in vars2plot:
+            fig = plt.figure()
+            ax = plt.gca()
+            # Now loop data
+            for n_key, key_ in enumerate(runs):
+                print(n_key, key_, var2plot )
+                #
+                if key_ == 'Obs.':
+                    varname = mod2obs_varnames[var2plot]
+                else:
+                    varname = var2plot
+                # Setup an axis label
+                units = units_d[var2plot]
+                xlabel = '{} ({})'.format( var2plot, units )
+                # Add alt to DataFrame
+                df = pd.DataFrame({
+                var2plot: data_d[key_][varname], ALT_var: data_d[key_][ALT_var]
+                })
+                #
+                if key_ != 'Obs.':
+                    scaleby = AC.get_unit_scaling(units)
+                    df[var2plot] = df[var2plot].values * scaleby
+
+                # drop any NaNs from the DataFrame
+                s_shape = df.shape
+                df.dropna(axis=0, how='any', inplace=True)
+                if s_shape != df.shape:
+                    pcent = (float(df.shape[0]) - s_shape[0])/s_shape[0] * 100.
+                    pstr_dtr = 'WANRING dropped values - shape {}=>{} ({:.2f})'
+                    print(pstr_dtr.format(s_shape, df.shape, pcent))
+                # Plot up as binned boxplots using existing function
+                try:
+                    AC.binned_boxplots_by_altitude(df=df, fig=fig, ax=ax,
+                                                   var2bin_by=ALT_var,
+                                                   label=key_, xlabel=xlabel,
+                                                   binned_var=var2plot,
+                                                   num_of_datasets=len(runs),
+                                                   bins=bins,
+                                                   widths = 0.15,
+                                                   dataset_num=n_key,
+                                                   color=color_dict[key_])
+                # Make NOx species be on a log scale
+#                 if spec in NOx_specs:
+#                     ax.set_xscale('log')
+#                     ax.set_xlim( (1E-5, 1E3) )
+#                 else:
+                    ax.set_xscale('linear')
+                except:
+                    pass
+
+                # Beautify plot
+                plt.legend()
+                plt.title(title_str.format(var2plot, units, flight_ID ))
+                plt.xlim(range_d[var2plot])
+
+            # Save to PDF
+        #        fig.legend(loc='best', bbox_to_anchor=(1,1), bbox_transform=ax.transAxes)
+        #        plt.legend()
+        #        plt.tight_layout()
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+            if show_plot:
+                plt.show()
+            plt.close()
+
+        # - Save entire pdf
+        AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
+        plt.close('all')
+
+
+def plt_comp_by_alt_4ARNA_flights_CIMS(dpi=320, show_plot=False):
+    """
+    Plot up altitude binned comparisons between core obs. and model data
+    """
+    import seaborn as sns
+    sns.set(color_codes=True)
+    sns.set_context("paper", font_scale=0.75)
+    # Which flights to plot?
+#    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
+    # Just use non-transit ARNA flights
+    flights_nums = [
+#    217, # Missing data for C217 (NOy)
+    218, 219, 220,
+#    221, # Missing data for C221 (NOy)
+    222, 223,
+#    224,  # Missing data for C221 (BrO... )
+#    225,  # Missing data for C221 (BrO... )
+    ]
+    flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
+
+    # - Loop by flight and retrieve the files as dataframes (mod + obs)
+    # Model
+    dfs_mod = {}
+    for flight_ID in flight_IDs:
+        dfs_mod[flight_ID] = get_GEOSCF_output4flightnum(flight_ID=flight_ID )
+    # Observations
+    dfs_obs = {}
+    for flight_ID in flight_IDs:
+        dfs_obs[flight_ID] = get_FAAM_core4flightnum(flight_ID=flight_ID )
+
+    # -  Now plot up
+    for flight_ID in flight_IDs:
+        print(flight_ID)
+        # Get observations and model timeseries data as a DataFrame
+        df_obs = dfs_obs[flight_ID]
+        df_mod = dfs_mod[flight_ID]
+
+        # Setup PDF to save PDF plots to
+        savetitle = 'ARNA_altitude_binned_{}_CIMS'.format(flight_ID)
+        pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
+
+        # - Plot up location of flights
+        plt_flightpath_spatially_over_CVAO(df=df_obs, flight_ID=flight_ID)
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+        plt.close()
+
+        # - Put observations and vars to plot into a dictionary
+        sns.set(color_codes=True)
+        sns.set_context("paper", font_scale=0.75)
+        # Force alt to be in units of km
+        ALT_var = 'Altitude (km)'
+        Y_unit = ALT_var
+        df_mod[ALT_var] = AC.hPa_to_Km( df_mod['model-lev'].values )
+        df_obs[ALT_var] = df_obs['ALT_GIN'].values / 1E3
+        #
+        data_d = {'GEOS-CF': df_mod, 'Obs.':df_obs}
+
+        # - Now plot up flight time series plots by variable
+        title_str =  "Altitude binned '{}' ({}) during flight '{}'"
+        # Setup color dictinoary
+        color_dict = {'GEOS-CF': 'red', 'Obs.':'k'}
+        unit_d = {}
+        mod2obs_varnames = {
+        'BrO':'BrO',
+        'HNO3':'HNO3',
+        'HNO2':'HONO',
+#        'CO':'CO_AERO', 'O3':'O3_TECO', 'NO2':'no2_mr', 'NO':'no_mr',
+#        'HNO2':'hono_mr',
+#        'NOx':'NOx'
+        }
+        units_d = {
+#        'CO':'ppbv', 'O3':'ppbv', 'NO2':'pptv', 'NO':'pptv', 'NOx':'pptv',
+        'BrO':'pptv', 'HNO3':'pptv', 'HNO2':'pptv', 'HONO':'pptv',
+        }
+        range_d = {
+#        'CO':(50, 400), 'O3':(-10, 100), 'NO2':(-50, 500), 'NO':(-50, 500),
+#        'NOx':(-50, 500),
+        'HNO2':(-10, 60),
+        'HNO3':(-30, 1500),
+        'BrO':(-0.2, 1.0),
+        'HONO':(-10, 60),
         }
         # - by variable
         runs = list(sorted(data_d.keys()))
@@ -2027,6 +2186,7 @@ def plt_timeseries4ARNA_flight(df_obs=None, df_mod=None,
     fig = plt.figure(figsize=(w, h))
     ax = fig.add_subplot(111)
     # Plot up the observations and model...
+    df_obs = df_obs[[obs_var2plot]].dropna()
     plt.plot(df_obs.index, df_obs[obs_var2plot].values+obs_adjustby,
              label=obs_label, color='k' )
     plt.plot(df_mod.index, df_mod[ mod_var2plot ].values*mod_scale,
@@ -2039,7 +2199,7 @@ def plt_timeseries4ARNA_flight(df_obs=None, df_mod=None,
     plt.xlim(xylim_min, xylim_max)
     ax.set_xticks(xticks)
     ax.set_xticklabels(xticks_labels, rotation=45)
-    print(xticks_labels)
+#    print(xticks_labels)
     # Invert the second y-axis
     if plt_alt_as_shadow:
         # Add a shadow of the altitude
@@ -2063,7 +2223,222 @@ def plt_timeseries4ARNA_flight(df_obs=None, df_mod=None,
     plt.tight_layout()
 
 
-def plt_timeseries_comparisons4ARNA_flights(dpi=320, show_plot=False):
+def plt_timeseries4ARNA_flight_point_obs(df_obs=None, df_mod=None,
+                                         obs_label='Obs.',
+                                         mod_scale=1, obs_adjustby=0,
+                                         ylim=(None, None),
+                                         units='ppbv', var2plot='CO',
+                                         obs_var2plot='CO_AERO',
+                                         mod_var2plot='CO',
+                                         mod_label='GEOS-CF',
+                                         plt_alt_as_shadow=True,
+                                         aspect_ratio=0.25,
+                                         flight_ID='C216',
+                                         yscale='linear',
+                                         invert_yaxis=False,
+                                         plt_errorbar=False,
+                                         obs_var2plot_err='',
+                                         ):
+    """
+    Plot up a timeseries of observations and model for a given flight
+    """
+    # Get the beginning and end of the flight from the extracted model times
+    xylim_min = AC.add_minutes( df_mod.index.min(), -15)
+    xylim_max = AC.add_minutes( df_mod.index.max(), 15 )
+    xticks = df_mod.resample('15T' ).mean().index.values
+    xticks = AC.dt64_2_dt( xticks )
+    xticks_labels = [ i.strftime('%H:%M') for i in xticks]
+    # Get dates/datetimes of flight
+    sdate_str = df_mod.index.min().strftime('%x').strip()
+    edate_str = df_mod.index.max().strftime('%x').strip()
+    stime_str = df_mod.index.min().strftime('%H:%M').strip()
+    etime_str = df_mod.index.max().strftime('%H:%M').strip()
+    # Now use Seaborn settings
+    sns.set(color_codes=True)
+    sns.set_context("paper", font_scale=0.75)
+    # Set a shared title string
+    title_str =  "Timeseries of '{}' ({}) during flight '{}' on {}"
+    # Setup the figure
+    w, h = matplotlib.figure.figaspect(aspect_ratio)
+    fig = plt.figure(figsize=(w, h))
+    ax = fig.add_subplot(111)
+    # Plot up the model data...
+    plt.plot(df_mod.index, df_mod[ mod_var2plot ].values*mod_scale,
+             label=mod_label, color='red' )
+    # Now plot up the observations
+    if plt_errorbar:
+        ax = plt.gca()
+        ax.errorbar(df_obs.index, df_obs[obs_var2plot].values+obs_adjustby,
+                    yerr=df_obs[obs_var2plot_err].values, fmt='-o',
+                    color='k', capsize=3.0, label=obs_label)
+    else:
+#        df_obs = df_obs[[obs_var2plot]].dropna()
+        plt.scatter(df_obs.index, df_obs[obs_var2plot].values+obs_adjustby,
+                    label=obs_label, color='k' )
+
+    # Beautify plot
+    plt.title(title_str.format(var2plot, units, flight_ID, sdate_str ))
+    plt.yscale(yscale)
+    plt.ylim(ylim)
+    plt.ylabel( '{} ({})'.format( var2plot, units) )
+    plt.xlim(xylim_min, xylim_max)
+    ax.set_xticks(xticks)
+    ax.set_xticklabels(xticks_labels, rotation=45)
+#    print(xticks_labels)
+    # Invert the second y-axis
+    if plt_alt_as_shadow:
+        # Add a shadow of the altitude
+        ax2 = ax.twinx()
+        mod_var2plot = 'model-lev'
+        ax2.plot(df_mod.index, df_mod[ mod_var2plot ].values,
+                 label='Altitude',
+                 color='grey', zorder=100, alpha=0.25  )
+        ax2.set_ylabel('Altitude (hPa)')
+        ax2.grid(None)
+        ax2.invert_yaxis()
+        # Force use of the same ticks
+        ax2.set_xticks(xticks)
+        ax2.set_xticklabels(xticks_labels, rotation=45)
+    # Invert the y-xais?
+    if invert_yaxis:
+        plt.gca().invert_yaxis()
+    # Save to PDF
+    fig.legend(loc='best', bbox_to_anchor=(1,1),
+               bbox_transform=ax.transAxes)
+    plt.tight_layout()
+
+
+def add_deriv_vars2df(df):
+    """
+    Add derived/combined model variables to dataframe
+    """
+    # Add HOBr+Br2 (measured by the ToF-CIMS)
+    try:
+        df['Br2+HOBr'] = df['Br2']+df['HOBr']
+    except KeyError:
+        print("Derived variable not added to dataframe ('Br2+HOBr')")
+    return df
+
+
+def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, show_plot=False):
+    """
+    Plot up timeseries comparisons between core observations and model data
+    """
+    import seaborn as sns
+    # Which flights to plot?
+#    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
+	# Just use non-transit ARNA flights
+    flights_nums = [
+#    217, # Missing data for C217 (NOy)
+    218, 219, 220,
+#    221, # Missing data for C221 (NOy)
+    222, 223,
+#    224,  # Missing data for C221 (BrO... )
+#    225,  # Missing data for C221 (BrO... )
+    ]
+    flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
+    # - Loop by flight and retrieve the files as dataframes (mod + obs)
+    # Model
+    dfs_mod = {}
+    for flight_ID in flight_IDs:
+        df = get_GEOSCF_output4flightnum(flight_ID=flight_ID )
+        # Add the derived variables to the dataframe
+        df = add_deriv_vars2df(df=df)
+        dfs_mod[flight_ID] = df
+
+    # Observations
+    dfs_obs = {}
+    for flight_ID in flight_IDs:
+        dfs_obs[flight_ID] = get_CIMS_data4flight(flight_ID=flight_ID)
+
+    # -  Now plot up
+    for flight_ID in flight_IDs:
+        print(flight_ID)
+        # Get observations and model timeseries data as a DataFrame
+        df_obs = dfs_obs[flight_ID]
+        df_mod = dfs_mod[flight_ID]
+        # Setup PDF to save PDF plots to
+        savetitle = 'ARNA_timeseries_flighttrack_{}_CIMS'.format(flight_ID)
+        pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
+        # - Plot up location of flights
+        plt_flightpath_spatially_over_CVAO(df=df_obs, flight_ID=flight_ID)
+        # Save to PDF
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+        plt.close()
+
+        # - Now plot up flight time series plots by variable
+        # - Plot up Bromine monoxide
+        units = 'ppt'
+        var2plot = 'BrO'
+        obs_var2plot = 'BrO'
+        mod_var2plot = 'BrO'
+        mod_label = 'GEOS-CF'
+        mod_scale = 1E12
+        ylim = (-0.2, 1)
+        # Call timeseries plotter function
+        plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                   obs_var2plot=obs_var2plot,
+                                   mod_scale=mod_scale, mod_label=mod_label,
+                                   mod_var2plot=mod_var2plot,
+                                   ylim=ylim,
+                                   df_mod=df_mod, df_obs=df_obs,
+                                   flight_ID=flight_ID,
+                                   )
+        # Save to PDF and close the plot
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+        plt.close()
+
+        # - Now plot up flight time series plots by variable
+        # - Plot up Nitric acid
+        units = 'ppt'
+        var2plot = 'HNO3'
+        obs_var2plot = 'HNO3'
+        mod_var2plot = 'HNO3'
+        mod_label = 'GEOS-CF'
+        mod_scale = 1E12
+        ylim = (-30, 1500)
+        # Call timeseries plotter function
+        plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                   obs_var2plot=obs_var2plot,
+                                   mod_scale=mod_scale, mod_label=mod_label,
+                                   mod_var2plot=mod_var2plot,
+                                   ylim=ylim,
+                                   df_mod=df_mod, df_obs=df_obs,
+                                   flight_ID=flight_ID,
+                                   )
+        # Save to PDF and close the plot
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+        plt.close()
+
+
+        # - Now plot up flight time series plots by variable
+        # - Plot up Nitrous acid
+        units = 'ppt'
+        var2plot = 'HONO'
+        obs_var2plot = 'HONO'
+        mod_var2plot = 'HNO2'
+        mod_label = 'GEOS-CF'
+        mod_scale = 1E12
+        ylim = (-10, 60)
+        # Call timeseries plotter function
+        plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                   obs_var2plot=obs_var2plot,
+                                   mod_scale=mod_scale, mod_label=mod_label,
+                                   mod_var2plot=mod_var2plot,
+                                   ylim=ylim,
+                                   df_mod=df_mod, df_obs=df_obs,
+                                   flight_ID=flight_ID,
+                                   )
+        # Save to PDF and close the plot
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+        plt.close()
+
+        # - Save entire pdf
+        AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
+        plt.close('all')
+
+
+def plt_timeseries_comp4ARNA_flights_SWAS(dpi=320, show_plot=False):
     """
     Plot up timeseries comparisons between core observations and model data
     """
@@ -2075,9 +2450,161 @@ def plt_timeseries_comparisons4ARNA_flights(dpi=320, show_plot=False):
     217, 218, 219, 220, 221, 222, 223, 224, 225,
     ]
     flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
-    # plot the altitude as a shadow on top of the plots
-#    plt_alt_as_shadow =  True
-#    aspect_ratio = 0.25
+    # - Loop by flight and retrieve the files as dataframes (mod + obs)
+    # Model
+    dfs_mod = {}
+    for flight_ID in flight_IDs:
+        df = get_GEOSCF_output4flightnum(flight_ID=flight_ID )
+        # Add the derived variables to the dataframe
+        df = add_deriv_vars2df(df=df)
+        dfs_mod[flight_ID] = df
+
+    # Observations
+    dfs_obs = {}
+    for flight_ID in flight_IDs:
+        dfs_obs[flight_ID] = get_SWAS_data4flight(flight_ID=flight_ID)
+
+    # -  Now plot up
+    for flight_ID in flight_IDs:
+        print(flight_ID)
+        # Get observations and model timeseries data as a DataFrame
+        df_obs = dfs_obs[flight_ID]
+        df_mod = dfs_mod[flight_ID]
+        # Setup PDF to save PDF plots to
+        savetitle = 'ARNA_timeseries_flighttrack_{}_SWAS'.format(flight_ID)
+        pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
+        # - Plot up location of flights
+        plt_flightpath_spatially_over_CVAO(df=df_mod, flight_ID=flight_ID,
+                                           LatVar='model-lat',
+                                           LonVar='model-lon',
+                                           )
+        # Save to PDF
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+        plt.close()
+        # - Now plot up flight time series plots by variable
+        vars2plot =  'ALD2', 'ACET', 'C2H6', 'C3H8'
+
+        # - Plot up acetone
+        units = 'ppt'
+        var2plot = 'ACET'
+        mod_var2plot = 'ACET'
+        obs_var2plot = map_SWAS_var2GEOS_var(mod_var2plot, invert=True)
+        mod_label = 'GEOS-CF'
+        mod_scale = 1E9
+        obs_var2plot_err = obs_var2plot+'_uncertainty'
+#        ylim = (-0.2, 1)
+        ylim = None
+        # Call timeseries plotter function
+        plt_timeseries4ARNA_flight_point_obs(var2plot=var2plot, units=units,
+                                             obs_var2plot=obs_var2plot,
+                                             mod_scale=mod_scale,
+                                             mod_label=mod_label,
+                                             mod_var2plot=mod_var2plot,
+                                             ylim=ylim,
+                                             df_mod=df_mod, df_obs=df_obs,
+                                             flight_ID=flight_ID,
+                                             obs_var2plot_err=obs_var2plot_err,
+                                             plt_errorbar=True
+                                             )
+        # Save to PDF and close the plot
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+        plt.close()
+
+        # - Plot up acetaldehyde
+        units = 'ppt'
+        var2plot = 'ALD2'
+        mod_var2plot = 'ALD2'
+        obs_var2plot = map_SWAS_var2GEOS_var(mod_var2plot, invert=True)
+        mod_label = 'GEOS-CF'
+        mod_scale = 1E9
+        obs_var2plot_err = obs_var2plot+'_uncertainty'
+#        ylim = (-0.2, 1)
+        ylim = None
+        # Call timeseries plotter function
+        plt_timeseries4ARNA_flight_point_obs(var2plot=var2plot, units=units,
+                                             obs_var2plot=obs_var2plot,
+                                             mod_scale=mod_scale,
+                                             mod_label=mod_label,
+                                             mod_var2plot=mod_var2plot,
+                                             ylim=ylim,
+                                             df_mod=df_mod, df_obs=df_obs,
+                                             flight_ID=flight_ID,
+                                             obs_var2plot_err=obs_var2plot_err,
+                                             plt_errorbar=True
+                                             )
+        # Save to PDF and close the plot
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+        plt.close()
+
+        # - Plot up ethane
+        units = 'ppt'
+        var2plot = 'C2H6'
+        mod_var2plot = 'C2H6'
+        obs_var2plot = map_SWAS_var2GEOS_var(mod_var2plot, invert=True)
+        mod_label = 'GEOS-CF'
+        mod_scale = 1E9
+        obs_var2plot_err = obs_var2plot+'_uncertainty'
+#        ylim = (-0.2, 1)
+        ylim = None
+        # Call timeseries plotter function
+        plt_timeseries4ARNA_flight_point_obs(var2plot=var2plot, units=units,
+                                             obs_var2plot=obs_var2plot,
+                                             mod_scale=mod_scale,
+                                             mod_label=mod_label,
+                                             mod_var2plot=mod_var2plot,
+                                             ylim=ylim,
+                                             df_mod=df_mod, df_obs=df_obs,
+                                             flight_ID=flight_ID,
+                                             obs_var2plot_err=obs_var2plot_err,
+                                             plt_errorbar=True
+                                             )
+        # Save to PDF and close the plot
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+        plt.close()
+
+        # - Plot up propane
+        units = 'ppt'
+        var2plot = 'C3H8'
+        mod_var2plot = 'C3H8'
+        obs_var2plot = map_SWAS_var2GEOS_var(mod_var2plot, invert=True)
+        mod_label = 'GEOS-CF'
+        mod_scale = 1E9
+        obs_var2plot_err = obs_var2plot+'_uncertainty'
+#        ylim = (-0.2, 1)
+        ylim = None
+        # Call timeseries plotter function
+        plt_timeseries4ARNA_flight_point_obs(var2plot=var2plot, units=units,
+                                             obs_var2plot=obs_var2plot,
+                                             mod_scale=mod_scale,
+                                             mod_label=mod_label,
+                                             mod_var2plot=mod_var2plot,
+                                             ylim=ylim,
+                                             df_mod=df_mod, df_obs=df_obs,
+                                             flight_ID=flight_ID,
+                                             obs_var2plot_err=obs_var2plot_err,
+                                             plt_errorbar=True
+                                             )
+        # Save to PDF and close the plot
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+        plt.close()
+
+        # - Save entire pdf
+        AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
+        plt.close('all')
+
+
+def plt_timeseries_comp4ARNA_flights(dpi=320, show_plot=False):
+    """
+    Plot up timeseries comparisons between core observations and model data
+    """
+    import seaborn as sns
+    # Which flights to plot?
+#    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
+	# Just use non-transit ARNA flights
+    flights_nums = [
+    217, 218, 219, 220, 221, 222, 223, 224, 225,
+    ]
+    flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
     # - Loop by flight and retrieve the files as dataframes (mod + obs)
     # Model
     dfs_mod = {}
@@ -2087,8 +2614,6 @@ def plt_timeseries_comparisons4ARNA_flights(dpi=320, show_plot=False):
     dfs_obs = {}
     for flight_ID in flight_IDs:
         dfs_obs[flight_ID] = get_FAAM_core4flightnum(flight_ID=flight_ID )
-
-
 
     # -  Now plot up
     for flight_ID in flight_IDs:
@@ -2288,7 +2813,7 @@ def plt_timeseries_comparisons4ARNA_flights(dpi=320, show_plot=False):
         mod_var2plot = 'U'
         mod_label = 'GEOS-CF'
         mod_scale = 1
-        ylim = (-15, 15)
+        ylim = (-25, 25)
         # Call timeseries plotter function
         plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
                                    obs_var2plot=obs_var2plot,
@@ -2310,7 +2835,7 @@ def plt_timeseries_comparisons4ARNA_flights(dpi=320, show_plot=False):
         mod_var2plot = 'V'
         mod_label = 'GEOS-CF'
         mod_scale = 1
-        ylim = (-15, 15)
+        ylim = (-25, 25)
         # Call timeseries plotter function
         plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
                                    obs_var2plot=obs_var2plot,
