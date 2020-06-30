@@ -2317,6 +2317,16 @@ def add_deriv_vars2df(df):
         df['Br2+HOBr'] = df['Br2']+df['HOBr']
     except KeyError:
         print("Derived variable not added to dataframe ('Br2+HOBr')")
+    # total SO4
+    try:
+        df['SO4.total'] = df['SO4']+df['SO4s']
+    except KeyError:
+        print("Derived variable not added to dataframe ('SO4.total')")
+    # total NIT
+    try:
+        df['NIT.total'] = df['NIT']+df['NITs']
+    except KeyError:
+        print("Derived variable not added to dataframe ('NIT.total')")
     return df
 
 
@@ -2438,9 +2448,125 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, show_plot=False):
         plt.close('all')
 
 
-def plt_timeseries_comp4ARNA_flights_SWAS(dpi=320, show_plot=False):
+def plt_timeseries_comp4ARNA_flights_filters():
     """
-    Plot up timeseries comparisons between core observations and model data
+    Plot up timeseries comparisons between filter samples and model data
+    """
+    import seaborn as sns
+    # Which flights to plot?
+#    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
+	# Just use non-transit ARNA flights
+    flights_nums = [
+#    217,
+    218, 219, 220, 221, 222, 223, 224, 225,
+    ]
+    flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
+    # - Loop by flight and retrieve the files as dataframes (mod + obs)
+    # Model
+    dfs_mod = {}
+    for flight_ID in flight_IDs:
+        if debug:
+            print(flight_ID)
+        df = get_GEOSCF_output4flightnum(flight_ID=flight_ID )
+        # Add the derived variables to the dataframe
+        df = add_deriv_vars2df(df=df)
+        dfs_mod[flight_ID] = df
+    # Observations
+    dfs_obs = get_filters_data4flight()
+
+    # Convert observation units into model units
+    # unit on recipt were 'nanomoles/m3', which were updated to ug/m3
+    # model units? 'pptv'
+    NIT_obs_var = 'NO3.total'
+    data =  dfs_obs[NIT_obs_var].values
+    dfs_obs[NIT_obs_var] = AC.convert_ug_per_m3_2_ppbv(data, spec='NIT') *1E3
+    SO4_obs_var = 'SO4.total'
+    data =  dfs_obs[SO4_obs_var].values
+    dfs_obs[SO4_obs_var] = AC.convert_ug_per_m3_2_ppbv(data, spec='SO4') *1E3
+
+    # -  Now plot up
+    for flight_ID in flight_IDs:
+        print(flight_ID)
+        # Get observations and model timeseries data as a DataFrame
+        df_obs = dfs_obs.loc[ dfs_obs['Flight']==flight_ID, :]
+        df_mod = dfs_mod[flight_ID]
+        # Setup PDF to save PDF plots to
+        savetitle = 'ARNA_timeseries_flighttrack_{}_FILTERS'.format(flight_ID)
+        pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
+        # - Plot up location of flights
+        plt_flightpath_spatially_over_CVAO(df=df_mod, flight_ID=flight_ID,
+                                           LatVar='model-lat',
+                                           LonVar='model-lon',
+                                           )
+        # Save to PDF
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+        plt.close()
+        # - Now plot up flight time series plots by variable
+        vars2plot =  'SO4', 'NIT'
+
+        # - Plot up nitrate
+        units = 'pptv'
+        var2plot = 'NO3'
+        mod_var2plot = 'NIT.total'
+        obs_var2plot = NIT_obs_var
+        mod_label = 'GEOS-CF'
+        mod_scale = 1E12
+        obs_var2plot_err = None
+        plt_errorbar = False
+#        ylim = (-0.2, 1)
+        ylim = None
+        # Call timeseries plotter function
+        plt_timeseries4ARNA_flight_point_obs(var2plot=var2plot, units=units,
+                                             obs_var2plot=obs_var2plot,
+                                             mod_scale=mod_scale,
+                                             mod_label=mod_label,
+                                             mod_var2plot=mod_var2plot,
+                                             ylim=ylim,
+                                             df_mod=df_mod, df_obs=df_obs,
+                                             flight_ID=flight_ID,
+                                             obs_var2plot_err=obs_var2plot_err,
+                                             plt_errorbar=plt_errorbar,
+                                             )
+        # Save to PDF and close the plot
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+        plt.close()
+
+        # - Plot up sulfate
+        units = 'pptv'
+        var2plot = 'SO4'
+        mod_var2plot = 'SO4.total'
+        obs_var2plot = SO4_obs_var
+        mod_label = 'GEOS-CF'
+        mod_scale = 1E12
+        obs_var2plot_err = None
+        plt_errorbar = False
+#        ylim = (-0.2, 1)
+        ylim = None
+        # Call timeseries plotter function
+        plt_timeseries4ARNA_flight_point_obs(var2plot=var2plot, units=units,
+                                             obs_var2plot=obs_var2plot,
+                                             mod_scale=mod_scale,
+                                             mod_label=mod_label,
+                                             mod_var2plot=mod_var2plot,
+                                             ylim=ylim,
+                                             df_mod=df_mod, df_obs=df_obs,
+                                             flight_ID=flight_ID,
+                                             obs_var2plot_err=obs_var2plot_err,
+                                             plt_errorbar=plt_errorbar,
+                                             )
+        # Save to PDF and close the plot
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+        plt.close()
+
+        # - Save entire pdf
+        AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
+        plt.close('all')
+
+
+def plt_timeseries_comp4ARNA_flights_SWAS(dpi=320, show_plot=False,
+                                          debug=False):
+    """
+    Plot up timeseries comparisons between SWAS observations and model data
     """
     import seaborn as sns
     # Which flights to plot?
@@ -2454,6 +2580,8 @@ def plt_timeseries_comp4ARNA_flights_SWAS(dpi=320, show_plot=False):
     # Model
     dfs_mod = {}
     for flight_ID in flight_IDs:
+        if debug:
+            print(flight_ID)
         df = get_GEOSCF_output4flightnum(flight_ID=flight_ID )
         # Add the derived variables to the dataframe
         df = add_deriv_vars2df(df=df)

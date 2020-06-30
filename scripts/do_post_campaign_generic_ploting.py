@@ -19,6 +19,7 @@ def main():
     ar.plt_timeseries_comp4ARNA_flights_CIMS()
 
     # Plot up nitrate aerosol data
+    ar.plt_timeseries_comp4ARNA_flights_filters()
 
     #  Plot up PCASP/CDP date
     # NOTE: CAS data being ignored currently due to issue with mirror window
@@ -30,7 +31,6 @@ def main():
 
     # Plot up the temperature data from Hannah Price
     # N/A? this is only for 2019. Emailed to check.
-
 
 
     # -

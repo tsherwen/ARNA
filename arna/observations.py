@@ -91,16 +91,18 @@ def get_SWAS_data4flight(flight_ID=None):
     """
     # Where is the data?
     folder = '{}/{}/'.format(get_local_folder('ARNA_data'), 'SWAS')
-    filename = 'ARNA-FIRSTLOOK-SWAS_JDL_typo_fix.csv'
-    var2use = 'comments4'
-    format = '%d/%m/%Y %H:%M:%S'
+#    filename = 'ARNA-FIRSTLOOK-SWAS_JDL_typo_fix.csv'
+#    var2use = 'comments4'
+#    format = '%d/%m/%Y %H:%M:%S'
     # Or use latest file (NOTE: issue with column formating)
 #    filename = 'ARNA-SECONDLOOK-SWAS.csv'
+    # Use the updated second look file
+    filename = 'ARNA-SECONDLOOK-SWAS_v2.csv'
     df = pd.read_csv(folder+filename)
-    # Get a
-    print('TODO: Speak to Jimmy to confirm the datetime columns!')
-#    var2use = 'SAMPLE START TIME'
-#    format = '%d/%m/%Y %H:%M:%S'
+    print(filename)
+    # Update the index to use the SWAS fire fime
+    var2use = 'SAMPLE START TIME'
+    format = '%d/%m/%Y %H:%M:%S'
     df.index =  pd.to_datetime(df[var2use].values, format=format)
     # If a flight ID stated, then only return points for that flight
     if isinstance(flight_ID, type(None)):
@@ -217,6 +219,111 @@ def get_summary4flight(flight_ID='C217'):
     format = '%Y-%m-%d %H:%M:%S'
     df.index = pd.to_datetime( df[var2use].values, format=format)
     return df
+
+
+def get_filters_data4flight(flight_ID='C217', all_flights=True):
+    """
+    Retrieve filters data from ARNA flights
+    """
+    # Where is the data?
+    folder = '{}/{}/'.format(get_local_folder('ARNA_data'), 'Filters')
+    # What is the name of the sheet in the excel file?
+#    filename = 'Overview_all_filters_ACSIS_5_and_ARNA-1.xlsx'
+#    filename = 'Overview_filters_ARNA_2.xlsx'
+    filename = 'Overview_filters_ARNA_2_TMS_edits.xlsx'
+    sheet_name = 'Sheet1'
+    dfFULL = pd.read_excel(folder + filename, sheet_name=sheet_name)
+    # Now Just look at core data of interest
+    CoreCols = [
+    'Day', 'Flight', 'Filter', 'height', 'Time on', 'Time off',
+    'Airflow (stL)',
+    ]
+    # - Select nitrate data
+    # Yes, GEOS-CF has sulfate variables output - 'NIT', 'NITs'
+    NO3cols = [i for i in dfFULL.columns if 'NO3' in i]
+    dfN = dfFULL[CoreCols + NO3cols]
+    #
+#    NO3_var = 'NO3.total'
+    NO3_var2use = ['NO3.2', 'NO3.5']
+    units = 'nanomoles/m3'
+#    NO3_idx = [list(dfFULL.columns).index(i) for i in var2inc]
+
+    # - Also save sulfate?
+    # Yes, GEOS-CF has sulfate variables output - 'SO4', 'SO4s'
+#    SO4cols = [i for i in dfFULL.columns if 'SO4' in i]
+#    dfS = dfFULL[CoreCols + SO4cols]
+    SO4_var2use = ['SO4.2', 'SO4.5']
+    units = 'nanomoles/m3'
+#    SO4_idx = [list(dfFULL.columns).index(i) for i in SO4_var2use]
+
+    # - Now chop off excess headers and make sure formats are correct
+    df = dfFULL.loc[dfFULL.index[2:],:]
+    #
+#    idx2use = [list(dfFULL.columns).index(i) for i in CoreCols]
+#    idx2use += NO3_idx + SO4_idx
+#    cols2use = [list(dfFULL.columns)[i] for i in idx2use ]
+    df = df[ CoreCols + NO3_var2use + SO4_var2use ]
+    # Replace values less than black/NaNs with np.NaN
+    df = df.replace('lower than blank', np.NaN)
+    df = df.replace('NaN', np.NaN)
+    # Remove blanks (as these are NaNs)
+    df = df.rename_axis(None)
+    df = df.loc[ (df['height'] != 'blank').values,:]
+    # Update sampling times to date times
+    # Start time
+    TimeOnVar = 'Time on'
+    sdate_var = 'Sample Start'
+    df[sdate_var] = df['Day'].astype(str) + ' ' +df[TimeOnVar].astype(str)
+    format = '%Y-%m-%d %H:%M:%S'
+    df[sdate_var] = pd.to_datetime( df[sdate_var].values, format=format)
+    del df[TimeOnVar]
+    # End time
+    TimeOffVar = 'Time off'
+    edate_var = 'Sample End'
+    df[edate_var] = df['Day'].astype(str) + ' ' +df[TimeOffVar].astype(str)
+    format = '%Y-%m-%d %H:%M:%S'
+    df[edate_var] = pd.to_datetime( df[edate_var].values, format=format)
+    del df[TimeOffVar]
+    # calculate mid point of sampling and set this as index
+    mdate_var = 'Sample Mid'
+#     df[edate_var] - df[sdate_var]
+#     def calc_mid_point_as_dt(sdate, edate):
+#         print(sdate, edate)
+# #        sdate = sdate.astype(numpy.datetime64)
+# #        edate = edate.astype(numpy.datetime64)
+#         sdate = sdate.datetime()
+#         edate = edate.datetime()
+#         print([type(i) for i in (sdate, edate)])
+#         sdate, edate = AC.dt64_2_dt([sdate, edate])
+#         print(sdate, edate)
+#         interval = (edate - sdate).total_seconds()
+#         assert interval > 0, 'WARNING: filter internval <0!'
+#         half_interval = interval/2
+#         return AC.add_secs(sdate, half_interval )
+#     df[mdate_var] = df.apply(lambda x: calc_mid_point_as_dt(
+#                              sdate=x[sdate_var],
+#                              edate=x[edate_var],
+#                              ), axis=1)
+    # TODO - check dates (as some sample times are implausible)
+    df[mdate_var] = df[edate_var] - df[sdate_var]
+
+    # Just use the start time for now
+    df.index = df[sdate_var]
+    df = df.rename_axis(None)
+    # - Just consider totals for species of interest
+    NO3_var = 'NO3.total'
+    df[NO3_var] = df[ NO3_var2use ].sum(axis=1)
+    SO4_var = 'SO4.total'
+    df[SO4_var] = df[ SO4_var2use ].sum(axis=1)
+    del dfFULL
+    # Convert to ug/m3 from 'nanomoles/m3'
+    df[NO3_var] = df[NO3_var].values / 1E9 * AC.species_mass('NIT') * 1E6
+    df[SO4_var] = df[SO4_var].values / 1E9 * AC.species_mass('SO4') * 1E6
+    # Return all flights unless a specific flight requested
+    if all_flights:
+        return df
+    else:
+        return df.loc[ df['Flight']==flight_ID, :]
 
 
 def get_CIMS_data4flight(flight_ID='C216', resample_data=True, debug=False):
