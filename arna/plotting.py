@@ -1832,6 +1832,7 @@ def plt_comp_by_alt_4ARNA_flights(dpi=320, show_plot=False):
         'NOx':(-50, 500),
         'HNO2':(-60, 60), 'HONO':(-60, 60),
         }
+        NOx_specs = ['HNO2', 'NOx', 'NO', 'NO2', 'HONO']
         # - by variable
         runs = list(sorted(data_d.keys()))
 		# Which variables to use?
@@ -1884,24 +1885,21 @@ def plt_comp_by_alt_4ARNA_flights(dpi=320, show_plot=False):
                                                    widths = 0.15,
                                                    dataset_num=n_key,
                                                    color=color_dict[key_])
-                # Make NOx species be on a log scale
-#                 if spec in NOx_specs:
-#                     ax.set_xscale('log')
-#                     ax.set_xlim( (1E-5, 1E3) )
-#                 else:
-                    ax.set_xscale('linear')
                 except:
                     pass
-
+                # Make NOx species be on a log scale
+                if (var2plot in NOx_specs):
+                    ax.set_xscale('log')
+                #                     ax.set_xlim( (1E-5, 1E3) )
+                    ax.set_xlim( (0.3, 400) )
+                else:
+                    ax.set_xscale('linear')
                 # Beautify plot
                 plt.legend()
                 plt.title(title_str.format(var2plot, units, flight_ID ))
                 plt.xlim(range_d[var2plot])
 
             # Save to PDF
-        #        fig.legend(loc='best', bbox_to_anchor=(1,1), bbox_transform=ax.transAxes)
-        #        plt.legend()
-        #        plt.tight_layout()
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
             if show_plot:
                 plt.show()
@@ -2809,7 +2807,7 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, show_plot=False):
             mod_var2plot = 'NO2'
             mod_label = 'GEOS-CF'
             mod_scale = 1E12
-            ylim = (0.3, 300)
+            ylim = (0.3, 400)
             yscale = 'log'
             # Call timeseries plotter function
             plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
@@ -2836,7 +2834,7 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, show_plot=False):
             mod_var2plot = 'NO'
             mod_label = 'GEOS-CF'
             mod_scale = 1E12
-            ylim = (0.3, 300)
+            ylim = (0.3, 400)
             yscale = 'log'
             # Call timeseries plotter function
             plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
@@ -2863,7 +2861,7 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, show_plot=False):
             obs_var2plot = mod_var2plot
             mod_label = 'GEOS-CF'
             mod_scale = 1E12
-            ylim = (0.3, 300)
+            ylim = (0.3, 400)
             yscale = 'log'
             # Call timeseries plotter function
             plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
@@ -2885,12 +2883,12 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, show_plot=False):
         # - Plot up HNO2
         try:
             units = 'pptv'
-            var2plot = 'NOx'
+            var2plot = 'HONO'
             obs_var2plot = 'hono_mr'
-            mod_var2plot = 'HONO'
+            mod_var2plot = 'HNO2'
             mod_label = 'GEOS-CF'
             mod_scale = 1E12
-            ylim = (0.3, 300)
+            ylim = (0.3, 400)
             yscale = 'log'
             # Call timeseries plotter function
             plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
