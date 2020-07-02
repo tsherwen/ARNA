@@ -2184,11 +2184,13 @@ def plt_timeseries4ARNA_flight(df_obs=None, df_mod=None,
     fig = plt.figure(figsize=(w, h))
     ax = fig.add_subplot(111)
     # Plot up the observations and model...
-    df_obs = df_obs[[obs_var2plot]].dropna()
-    plt.plot(df_obs.index, df_obs[obs_var2plot].values+obs_adjustby,
-             label=obs_label, color='k' )
-    plt.plot(df_mod.index, df_mod[ mod_var2plot ].values*mod_scale,
-             label=mod_label, color='red' )
+    if not isinstance(mod_var2plot, type(None)):
+        df_obs = df_obs[[obs_var2plot]].dropna()
+        plt.plot(df_obs.index, df_obs[obs_var2plot].values+obs_adjustby,
+                 label=obs_label, color='k' )
+    if not isinstance(mod_var2plot, type(None)):
+        plt.plot(df_mod.index, df_mod[ mod_var2plot ].values*mod_scale,
+                 label=mod_label, color='red' )
     # Beautify plot
     plt.title(title_str.format(var2plot, units, flight_ID, sdate_str ))
     plt.yscale(yscale)
@@ -2719,6 +2721,265 @@ def plt_timeseries_comp4ARNA_flights_SWAS(dpi=320, show_plot=False,
         plt.close('all')
 
 
+def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False):
+    """
+    Plot up timeseries comparisons between physical variables and model data
+    """
+    import seaborn as sns
+    # Which flights to plot?
+#    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
+	# Just use non-transit ARNA flights
+    flights_nums = [
+    217, 218, 219, 220, 221, 222, 223, 224, 225,
+    ]
+    flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
+    # - Loop by flight and retrieve the files as dataframes (mod + obs)
+    # Model
+    dfs_mod = {}
+    for flight_ID in flight_IDs:
+        dfs_mod[flight_ID] = get_GEOSCF_output4flightnum(flight_ID=flight_ID )
+    # Observations
+    dfs_obs = {}
+    for flight_ID in flight_IDs:
+        dfs_obs[flight_ID] = get_FAAM_core4flightnum(flight_ID=flight_ID )
+
+    # -  Now plot up
+    for flight_ID in flight_IDs:
+        print(flight_ID)
+        # Get observations and model timeseries data as a DataFrame
+        df_obs = dfs_obs[flight_ID]
+        df_mod = dfs_mod[flight_ID]
+        # Setup PDF to save PDF plots to
+        savetitle = 'ARNA_timeseries_flighttrack_{}_PHYSICAL_VARS'.format(flight_ID)
+        pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
+        # - Plot up location of flights
+        plt_flightpath_spatially_over_CVAO(df=df_obs, flight_ID=flight_ID)
+        # Save to PDF
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+        plt.close()
+
+        # - Plot up ROLL_GIN
+        units = 'ADD THIS'
+#        VarName = 'PCAS2CON'
+#        FlagName = 'PCAS2_FLAG'
+        var2plot = 'ROLL_GIN'
+        obs_var2plot = 'ROLL_GIN'
+        mod_var2plot = None
+        mod_label = 'GEOS-CF'
+        mod_scale = None
+#        ylim = (10, 100)
+#        ylim = None
+        # Call timeseries plotter function
+        plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                   obs_var2plot=obs_var2plot,
+                                   mod_scale=mod_scale, mod_label=mod_label,
+                                   mod_var2plot=mod_var2plot,
+#                                   ylim=ylim,
+                                   df_mod=df_mod, df_obs=df_obs,
+                                   flight_ID=flight_ID,
+                                   )
+        # Save to PDF and close the plot
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+        plt.close()
+
+        # - Plot up VELD_GIN
+        units = 'ADD THIS'
+#        VarName = 'PCAS2CON'
+#        FlagName = 'PCAS2_FLAG'
+        var2plot = 'VELD_GIN'
+        obs_var2plot = 'VELD_GIN'
+        mod_var2plot = None
+        mod_label = 'GEOS-CF'
+        mod_scale = None
+#        ylim = (10, 100)
+        ylim = None
+        # Call timeseries plotter function
+        plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                   obs_var2plot=obs_var2plot,
+                                   mod_scale=mod_scale, mod_label=mod_label,
+                                   mod_var2plot=mod_var2plot,
+                                   ylim=ylim,
+                                   df_mod=df_mod, df_obs=df_obs,
+                                   flight_ID=flight_ID,
+                                   )
+        # Save to PDF and close the plot
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+        plt.close()
+
+        # - Plot up PCASP
+        units = '# cm$^{-1}$'
+#        VarName = 'PCAS2CON'
+#        FlagName = 'PCAS2_FLAG'
+        var2plot = 'PCAS'
+        obs_var2plot = 'PCAS2CON'
+        mod_var2plot = None
+        mod_label = 'GEOS-CF'
+        mod_scale = None
+#        ylim = (10, 100)
+        ylim = None
+        # Call timeseries plotter function
+        plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                   obs_var2plot=obs_var2plot,
+                                   mod_scale=mod_scale, mod_label=mod_label,
+                                   mod_var2plot=mod_var2plot,
+                                   ylim=ylim,
+                                   df_mod=df_mod, df_obs=df_obs,
+                                   flight_ID=flight_ID,
+                                   )
+        # Save to PDF and close the plot
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+        plt.close()
+
+
+
+        # - Plot up temperature
+        units = '$^{\circ}$C'
+        var2plot = 'Temperature'
+        obs_var2plot = 'TAT_DI_R'
+        mod_var2plot = 'T'
+        mod_label = 'GEOS-CF'
+        mod_scale = 1
+        ylim = (-25, 35)
+        obs_adjustby = -273.15
+        # Call timeseries plotter function
+        plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                   obs_var2plot=obs_var2plot,
+                                   mod_scale=mod_scale,
+                                   mod_label=mod_label,
+                                   mod_var2plot=mod_var2plot,
+                                   ylim=ylim,
+                                   df_mod=df_mod, df_obs=df_obs,
+                                   flight_ID=flight_ID,
+                                   obs_adjustby=obs_adjustby,
+                                   )
+        # Save to PDF and close the plot
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+        plt.close()
+
+
+        # - Plot up Eastward wind
+        units = 'm s$^{-1}$'
+        var2plot = 'Eastward wind'
+        obs_var2plot = 'U_C'
+        mod_var2plot = 'U'
+        mod_label = 'GEOS-CF'
+        mod_scale = 1
+        ylim = (-25, 25)
+        # Call timeseries plotter function
+        plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                   obs_var2plot=obs_var2plot,
+                                   mod_scale=mod_scale,
+                                   mod_label=mod_label,
+                                   mod_var2plot=mod_var2plot,
+                                   ylim=ylim,
+                                   df_mod=df_mod, df_obs=df_obs,
+                                   flight_ID=flight_ID,
+                                   )
+        # Save to PDF and close the plot
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+        plt.close()
+
+        # - Plot up Northward wind
+        units = 'm s$^{-1}$'
+        var2plot = 'Northward wind'
+        obs_var2plot = 'V_C'
+        mod_var2plot = 'V'
+        mod_label = 'GEOS-CF'
+        mod_scale = 1
+        ylim = (-25, 25)
+        # Call timeseries plotter function
+        plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                   obs_var2plot=obs_var2plot,
+                                   mod_scale=mod_scale,
+                                   mod_label=mod_label,
+                                   mod_var2plot=mod_var2plot,
+                                   ylim=ylim,
+                                   df_mod=df_mod, df_obs=df_obs,
+                                   flight_ID=flight_ID,
+                                   )
+        # Save to PDF and close the plot
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+        plt.close()
+
+        # - Plot up Latitude
+        try:
+            units = '$^{\circ}$N'
+            var2plot = 'Latitude'
+            obs_var2plot = 'LAT_GIN'
+            mod_var2plot = 'model-lat'
+            mod_label = 'GEOS-CF'
+            mod_scale = 1
+            # Call timeseries plotter function
+            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                       obs_var2plot=obs_var2plot,
+                                       mod_scale=mod_scale,
+                                       mod_label=mod_label,
+                                       mod_var2plot=mod_var2plot,
+                                       df_mod=df_mod, df_obs=df_obs,
+                                       flight_ID=flight_ID,
+                                       )
+            # Save to PDF and close the plot
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+            plt.close()
+        except:
+            print('Failed to plot Latitude')
+
+        # - Plot up Longitude
+        try:
+            units = '$^{\circ}$E'
+            var2plot = 'Longitude'
+            obs_var2plot = 'LON_GIN'
+            mod_var2plot = 'model-lon'
+            mod_label = 'GEOS-CF'
+            mod_scale = 1
+            # Call timeseries plotter function
+            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                       obs_var2plot=obs_var2plot,
+                                       mod_scale=mod_scale,
+                                       mod_label=mod_label,
+                                       mod_var2plot=mod_var2plot,
+                                       df_mod=df_mod, df_obs=df_obs,
+                                       flight_ID=flight_ID,
+                                       )
+            # Save to PDF and close the plot
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+            plt.close()
+        except:
+            print('Failed to plot Longitude')
+
+        # - Plot up altitude
+        try:
+            units = 'hPa'
+            var2plot = 'Altitude'
+            mod_var2plot = 'model-lev'
+            obs_var2plot = 'PS_RVSM' # Use pressure measurement
+#            obs_var2plot = 'ALT_GIN' # Use GPS altitude?
+#            vals = AC.hPa_to_Km( df_obs['ALT_GIN'].values/1E3, reverse=True )
+            mod_label = 'GEOS-CF'
+            mod_scale = 1
+            # Call timeseries plotter function
+            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                       obs_var2plot=obs_var2plot,
+                                       mod_scale=mod_scale,
+                                       mod_label=mod_label,
+                                       mod_var2plot=mod_var2plot,
+                                       df_mod=df_mod, df_obs=df_obs,
+                                       flight_ID=flight_ID,
+                                       invert_yaxis=True,
+                                       plt_alt_as_shadow=False,
+                                       )
+            # Save to PDF and close the plot
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+            plt.close()
+        except:
+            print('Failed to plot altitude')
+
+
+        # - Save entire pdf
+        AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
+        plt.close('all')
+
+
 def plt_timeseries_comp4ARNA_flights(dpi=320, show_plot=False):
     """
     Plot up timeseries comparisons between core observations and model data
@@ -2906,148 +3167,6 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, show_plot=False):
             plt.close()
         except:
             print('Failed to plot HONO')
-
-        # - Plot up temperature
-        units = '$^{\circ}$C'
-        var2plot = 'Temperature'
-        obs_var2plot = 'TAT_DI_R'
-        mod_var2plot = 'T'
-        mod_label = 'GEOS-CF'
-        mod_scale = 1
-        ylim = (-25, 35)
-        obs_adjustby = -273.15
-        # Call timeseries plotter function
-        plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                   obs_var2plot=obs_var2plot,
-                                   mod_scale=mod_scale,
-                                   mod_label=mod_label,
-                                   mod_var2plot=mod_var2plot,
-                                   ylim=ylim,
-                                   df_mod=df_mod, df_obs=df_obs,
-                                   flight_ID=flight_ID,
-                                   obs_adjustby=obs_adjustby,
-                                   )
-        # Save to PDF and close the plot
-        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
-        plt.close()
-
-
-        # - Plot up Eastward wind
-        units = 'm s$^{-1}$'
-        var2plot = 'Eastward wind'
-        obs_var2plot = 'U_C'
-        mod_var2plot = 'U'
-        mod_label = 'GEOS-CF'
-        mod_scale = 1
-        ylim = (-25, 25)
-        # Call timeseries plotter function
-        plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                   obs_var2plot=obs_var2plot,
-                                   mod_scale=mod_scale,
-                                   mod_label=mod_label,
-                                   mod_var2plot=mod_var2plot,
-                                   ylim=ylim,
-                                   df_mod=df_mod, df_obs=df_obs,
-                                   flight_ID=flight_ID,
-                                   )
-        # Save to PDF and close the plot
-        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
-        plt.close()
-
-        # - Plot up Northward wind
-        units = 'm s$^{-1}$'
-        var2plot = 'Northward wind'
-        obs_var2plot = 'V_C'
-        mod_var2plot = 'V'
-        mod_label = 'GEOS-CF'
-        mod_scale = 1
-        ylim = (-25, 25)
-        # Call timeseries plotter function
-        plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                   obs_var2plot=obs_var2plot,
-                                   mod_scale=mod_scale,
-                                   mod_label=mod_label,
-                                   mod_var2plot=mod_var2plot,
-                                   ylim=ylim,
-                                   df_mod=df_mod, df_obs=df_obs,
-                                   flight_ID=flight_ID,
-                                   )
-        # Save to PDF and close the plot
-        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
-        plt.close()
-
-        # - Plot up Latitude
-        try:
-            units = '$^{\circ}$N'
-            var2plot = 'Latitude'
-            obs_var2plot = 'LAT_GIN'
-            mod_var2plot = 'model-lat'
-            mod_label = 'GEOS-CF'
-            mod_scale = 1
-            # Call timeseries plotter function
-            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       obs_var2plot=obs_var2plot,
-                                       mod_scale=mod_scale,
-                                       mod_label=mod_label,
-                                       mod_var2plot=mod_var2plot,
-                                       df_mod=df_mod, df_obs=df_obs,
-                                       flight_ID=flight_ID,
-                                       )
-            # Save to PDF and close the plot
-            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
-            plt.close()
-        except:
-            print('Failed to plot Latitude')
-
-        # - Plot up Longitude
-        try:
-            units = '$^{\circ}$E'
-            var2plot = 'Longitude'
-            obs_var2plot = 'LON_GIN'
-            mod_var2plot = 'model-lon'
-            mod_label = 'GEOS-CF'
-            mod_scale = 1
-            # Call timeseries plotter function
-            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       obs_var2plot=obs_var2plot,
-                                       mod_scale=mod_scale,
-                                       mod_label=mod_label,
-                                       mod_var2plot=mod_var2plot,
-                                       df_mod=df_mod, df_obs=df_obs,
-                                       flight_ID=flight_ID,
-                                       )
-            # Save to PDF and close the plot
-            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
-            plt.close()
-        except:
-            print('Failed to plot Longitude')
-
-        # - Plot up altitude
-        try:
-            units = 'hPa'
-            var2plot = 'Altitude'
-            mod_var2plot = 'model-lev'
-            obs_var2plot = 'PS_RVSM' # Use pressure measurement
-#            obs_var2plot = 'ALT_GIN' # Use GPS altitude?
-#            vals = AC.hPa_to_Km( df_obs['ALT_GIN'].values/1E3, reverse=True )
-            mod_label = 'GEOS-CF'
-            mod_scale = 1
-            # Call timeseries plotter function
-            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       obs_var2plot=obs_var2plot,
-                                       mod_scale=mod_scale,
-                                       mod_label=mod_label,
-                                       mod_var2plot=mod_var2plot,
-                                       df_mod=df_mod, df_obs=df_obs,
-                                       flight_ID=flight_ID,
-                                       invert_yaxis=True,
-                                       plt_alt_as_shadow=False,
-                                       )
-            # Save to PDF and close the plot
-            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
-            plt.close()
-        except:
-            print('Failed to plot altitude')
 
         # - Save entire pdf
         AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)

@@ -395,32 +395,76 @@ def get_FAAM_core4flightnum(flight_ID='C216', version='v2020_06',
     # Set flagged data to NaNs
     ds = set_flagged_data2NaNs(ds, VarName='O3_TECO', FlagName='O3_TECO_FLAG')
     ds = set_flagged_data2NaNs(ds, VarName='CO_AERO', FlagName='CO_AERO_FLAG')
+    # do the same for vertical velocity and roll
+    # 'Roll angle from POS AV 510 GPS-aided Inertial Nav. unit (positive for left wing up)'
+    VarName = 'ROLL_GIN'
+    FlagName = 'ROLL_GIN_FLAG'
+    ds = set_flagged_data2NaNs(ds, VarName=VarName, FlagName=FlagName)
+    # 'Aircraft velocity down from POS AV 510 GPS-aided Inertial Navigation     # 'Aircraft velocity down from POS AV 510 GPS-aided Inertial Navigation unit'
+    VarName = 'VELD_GIN'
+    FlagName = 'VELD_GIN_FLAG'
+    ds = set_flagged_data2NaNs(ds, VarName=VarName, FlagName=FlagName)
+    # Convert to a dataframe
+    df = ds.to_dataframe()
+    df.index.rename(None)
+    del ds
     # Check for the core NOx file
     Nitrates_filename = [ i for i in files2use if 'core-nitrates' in i ]
     if len(Nitrates_filename) >=1:
         ass_str = 'More than one nitrates file found for flight!'
         assert len(Nitrates_filename) == 1, ass_str
-        ds2 = xr.open_dataset(Nitrates_filename[0])
-        ds2 = ds2.mean(dim='sps10')
+        ds = xr.open_dataset(Nitrates_filename[0])
+        ds = ds.mean(dim='sps10')
         # Remove flagged values for NO and NO2
-        ds2 = set_flagged_data2NaNs(ds2, VarName='no_mr', FlagName='no_flag')
-        ds2 = set_flagged_data2NaNs(ds2, VarName='no2_mr', FlagName='no2_flag')
+        ds = set_flagged_data2NaNs(ds, VarName='no_mr', FlagName='no_flag')
+        ds = set_flagged_data2NaNs(ds, VarName='no2_mr', FlagName='no2_flag')
         # Merge the files
-        ds = xr.merge([ds, ds2])
+        df2 = ds.to_dataframe()
+        vars2use = [i for i in df2.columns if 'no' in i]
+        df = pd.concat([df, df2[vars2use]], axis=1)
+        del ds, df2
 		# Get the HONO data too (if it is present)
         try:
-            ds3 = xr.open_dataset(Nitrates_filename[0],
-                                 group='non_core_group')
-            ds3 = ds3.mean(dim='sps10')
+            ds = xr.open_dataset(Nitrates_filename[0], group='non_core_group')
+            ds = ds.mean(dim='sps10')
             # Remove flagged values for NO and NO2
-            ds3 = set_flagged_data2NaNs(ds3, VarName='hono_mr',
-                                        FlagName='hono_flag')
+            ds = set_flagged_data2NaNs(ds, VarName='hono_mr',
+                                       FlagName='hono_flag')
             # Merge the files
-            ds = xr.merge([ds, ds3])
+            df2 = ds.to_dataframe()
+            # Use the same main time index as rest of file
+            df2.index = df.index.values
+            df2.index.rename(None)
+            df = pd.concat([df, df2], axis=1)
+            del ds, df2
         except OSError:
             print('WARNING: no HONO data found for {}'.format(flight_ID))
-    # Convert to a dataframe
-    df = ds.to_dataframe()
+    # Check for cloud physics file
+    cloud_phy_filenames = [ i for i in files2use if 'cloud-phy' in i ]
+    # Just include the main file that ends "<flight_ID>.nc"
+    suffix = '{}.nc'.format( flight_ID.lower() )
+    cloud_phy_filename = [i for i in cloud_phy_filenames if i.endswith(suffix)]
+    if len(cloud_phy_filename) >=1:
+        ass_str = 'More than one main cloud phys file found for flight!'
+        assert len(cloud_phy_filename) == 1, ass_str
+        try:
+            ds = xr.open_dataset(cloud_phy_filename[0])
+            # Remove flagged values for PCASP
+            VarName = 'PCAS2CON'
+            FlagName = 'PCAS2_FLAG'
+            ds = set_flagged_data2NaNs(ds, VarName=VarName, FlagName=FlagName)
+            # Just include PCASP concentration and a flag for this.
+            df2 = ds[ [VarName, FlagName] ].to_dataframe()
+            df2.index = df2.index.floor('S')
+            df2.index = df2.index.values # rm naming of time coord 'PCAS2TSPM'
+            # The index is not immediately equivalent - index duplicates
+            # Just use the first value if index duplicated for now.
+            df2 = df2.loc[~df2.index.duplicated(keep='first')]
+            # Merge the files
+            df = pd.concat([df, df2], axis=1)
+        except KeyError:
+            print('WARNING: no PCAS data found for {}'.format(flight_ID))
+
     # Add NOx as combined NO and NO2
     try:
         df['NOx'] = df['no_mr'].values + df['no2_mr'].values

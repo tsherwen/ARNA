@@ -23,18 +23,16 @@ def main():
 
     #  Plot up PCASP/CDP date
     # NOTE: CAS data being ignored currently due to issue with mirror window
-
+#    ar.plt_timeseries_comp4ARNA_flights_PCASP()
 
     # Plot up SWAS data
     ar.plt_timeseries_comp4ARNA_flights_SWAS()
 
+    # Plot up vertical velocity and Roll, amongst other core physical vars
+    ar.plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS()
 
     # Plot up the temperature data from Hannah Price
     # N/A? this is only for 2019. Emailed to check.
-
-
-    # -
-
 
 
 if __name__ == "__main__":
