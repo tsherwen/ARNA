@@ -1764,7 +1764,538 @@ def quick_lon_plot_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
         plt.show()
 
 
-def plt_comp_by_alt_4ARNA_flights(dpi=320, show_plot=False):
+def plt_comp_by_alt_4ARNA_all(dpi=320, just_SLR=True, show_plot=False):
+    """
+    Plot up altitude binned comparisons between core obs. and model data
+    """
+    import seaborn as sns
+    # Which flights to plot?
+#    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
+    # Just use non-transit ARNA flights
+    flights_nums = [
+#    217,
+    218, 219, 220, 221, 222, 223, 224, 225,
+    ]
+    flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
+    # - Loop by flight and retrieve the files as dataframes (mod + obs)
+    # Model
+    dfs_obs = {}
+    for flight_ID in flight_IDs:
+        df = get_FAAM_core4flightnum(flight_ID=flight_ID)
+#        df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
+        df['flight_ID'] = flight_ID
+        dfs_obs[flight_ID] = df
+    # Observations
+    dfs_mod = {}
+    for flight_ID in flight_IDs:
+        df = get_GEOSCF_output4flightnum(flight_ID=flight_ID )
+        df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
+        df['flight_ID'] = flight_ID
+        dfs_mod[flight_ID] = df
+    # Combine to a single dataframe
+    df_mod = pd.concat([dfs_mod[i] for i in dfs_mod.keys()], axis=0)
+    df_obs = pd.concat([dfs_obs[i] for i in dfs_obs.keys()], axis=0)
+    # Only consider data during SLRs?
+    if just_SLR:
+        df_obs = df_obs.loc[df_obs['IS_SLR'] == True, :]
+        df_mod = df_mod.loc[df_mod['IS_SLR'] == True, :]
+        extr_str = '_JUST_SLR'
+    else:
+        extr_str = ''
+    # Setup PDF to save PDF plots to
+    savetitle = 'ARNA_altitude_binned_{}{}'.format('ALL', extr_str)
+    pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
+
+    # - Plot up location of flights
+    if just_SLR:
+        title = "Flight tracks for 'Straight and Level' Runs during ARNA"
+    else:
+        title = 'Flight tracks for all flights during ARNA'
+    plt_flightpath_spatially_over_CVAO(df=df_obs, flight_ID=flight_ID,
+                                       title=title)
+    AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+    plt.close()
+
+    # - Put observations and vars to plot into a dictionary
+    sns.set(color_codes=True)
+    sns.set_context("paper", font_scale=0.75)
+    # Force alt to be in units of km
+    ALT_var = 'Altitude (km)'
+    Y_unit = ALT_var
+    df_mod[ALT_var] = AC.hPa_to_Km( df_mod['model-lev'].values )
+    df_obs[ALT_var] = df_obs['ALT_GIN'].values / 1E3
+    #
+    data_d = {'GEOS-CF': df_mod, 'Obs.':df_obs}
+
+    # - Now plot up flight time series plots by variable
+    if just_SLR:
+        title_str = "Altitude binned '{}' ({}) for all 'Straight and Level Runs'"
+    else:
+        title_str =  "Altitude binned '{}' ({}) for all flights"
+    # Setup color dictinoary
+    color_dict = {'GEOS-CF': 'red', 'Obs.':'k'}
+    unit_d = {}
+    mod2obs_varnames = {
+    'CO':'CO_AERO', 'O3':'O3_TECO', 'NO2':'no2_mr', 'NO':'no_mr',
+    'HNO2':'hono_mr',
+    'NOx':'NOx'
+    }
+    units_d = {
+    'CO':'ppbv', 'O3':'ppbv', 'NO2':'pptv', 'NO':'pptv', 'NOx':'pptv',
+    'HNO2':'pptv', 'HONO':'pptv',
+    }
+    range_d = {
+    'CO':(50, 400), 'O3':(-10, 100), 'NO2':(-50, 500), 'NO':(-50, 500),
+    'NOx':(-50, 500),
+    'HNO2':(-60, 60), 'HONO':(-60, 60),
+    }
+    NOx_specs = ['HNO2', 'NOx', 'NO', 'NO2', 'HONO']
+    # - by variable
+    runs = list(sorted(data_d.keys()))
+    # Which variables to use?
+    vars2plot = list(sorted(mod2obs_varnames.keys()))[::-1]
+    vars2plot = ['CO', 'O3', 'NOx', 'NO2', 'NO', 'HNO2']
+    print(vars2plot)
+    print(df_obs.columns)
+    vars2plot = [
+    i for i in vars2plot if mod2obs_varnames[i] in df_obs.columns
+    ]
+    # What bins should be used?
+    bins = [0.5*i for i in np.arange(15)]
+    for var2plot in vars2plot:
+        fig = plt.figure()
+        ax = plt.gca()
+        # Now loop data
+        for n_key, key_ in enumerate(runs):
+            print(n_key, key_, var2plot )
+            #
+            if key_ == 'Obs.':
+                varname = mod2obs_varnames[var2plot]
+            else:
+                varname = var2plot
+            # Setup an axis label
+            units = units_d[var2plot]
+            xlabel = '{} ({})'.format( var2plot, units )
+            # Add alt to DataFrame
+            df = pd.DataFrame({
+            var2plot: data_d[key_][varname], ALT_var: data_d[key_][ALT_var]
+            })
+            #
+            if key_ != 'Obs.':
+                scaleby = AC.get_unit_scaling(units)
+                df[var2plot] = df[var2plot].values * scaleby
+
+            # drop any NaNs from the DataFrame
+            s_shape = df.shape
+            df.dropna(axis=0, how='any', inplace=True)
+            if s_shape != df.shape:
+                pcent = (float(df.shape[0]) - s_shape[0])/s_shape[0] * 100.
+                pstr_dtr = 'WANRING dropped values - shape {}=>{} ({:.2f})'
+                print(pstr_dtr.format(s_shape, df.shape, pcent))
+            # Plot up as binned boxplots using existing function
+            try:
+                AC.binned_boxplots_by_altitude(df=df, fig=fig, ax=ax,
+                                               var2bin_by=ALT_var,
+                                               label=key_, xlabel=xlabel,
+                                               binned_var=var2plot,
+                                               num_of_datasets=len(runs),
+                                               bins=bins,
+                                               widths = 0.15,
+                                               dataset_num=n_key,
+                                               color=color_dict[key_])
+            except:
+                pass
+            # Make NOx species be on a log scale
+            if (var2plot in NOx_specs):
+                ax.set_xscale('log')
+            #                     ax.set_xlim( (1E-5, 1E3) )
+                ax.set_xlim( (0.3, 400) )
+            else:
+                ax.set_xscale('linear')
+            # Beautify plot
+            plt.legend()
+            plt.title(title_str.format(var2plot, units, flight_ID ))
+            plt.xlim(range_d[var2plot])
+
+        # Save to PDF
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+        if show_plot:
+            plt.show()
+        plt.close()
+
+    # - Save entire pdf
+    AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
+    plt.close('all')
+
+
+def plt_comp_by_alt_4ARNA_all_DUST(dpi=320, just_SLR=True,
+                                   plt_model=False, show_plot=False):
+    """
+    Plot up altitude binned comparisons between core obs. and model data
+    """
+    import seaborn as sns
+    # Which flights to plot?
+#    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
+    # Just use non-transit ARNA flights
+    flights_nums = [
+#    217,
+    218, 219, 220, 221, 222, 223, 224, 225,
+    ]
+    flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
+    # - Loop by flight and retrieve the files as dataframes (mod + obs)
+    # Model
+    dfs_obs = {}
+    for flight_ID in flight_IDs:
+        df = get_FAAM_core4flightnum(flight_ID=flight_ID)
+#        df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
+        df['flight_ID'] = flight_ID
+        dfs_obs[flight_ID] = df
+    # Observations
+    dfs_mod = {}
+    for flight_ID in flight_IDs:
+        df = get_GEOSCF_output4flightnum(flight_ID=flight_ID )
+        df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
+        df['flight_ID'] = flight_ID
+        dfs_mod[flight_ID] = df
+    # Combine to a single dataframe
+    df_mod = pd.concat([dfs_mod[i] for i in dfs_mod.keys()], axis=0)
+    df_obs = pd.concat([dfs_obs[i] for i in dfs_obs.keys()], axis=0)
+    # Only consider data during SLRs?
+    if just_SLR:
+        df_obs = df_obs.loc[df_obs['IS_SLR'] == True, :]
+        df_mod = df_mod.loc[df_mod['IS_SLR'] == True, :]
+        extr_str = '_JUST_SLR_DUST'
+    else:
+        extr_str = '_DUST'
+    # - Setup data objects or plotting
+    # Force alt to be in units of km
+    ALT_var = 'Altitude (km)'
+    Y_unit = ALT_var
+    df_mod[ALT_var] = AC.hPa_to_Km( df_mod['model-lev'].values )
+    df_obs[ALT_var] = df_obs['ALT_GIN'].values / 1E3
+    # Plot up just observations? Or model too?
+    data_d = {
+    'Obs.':  df_obs.loc[df_obs['IS_DUST'] == False, :],
+    'Obs. (Dust)': df_obs.loc[df_obs['IS_DUST'] == True, :],
+    }
+    if plt_model:
+        data_d['GEOS-CF'] = df_mod.loc[df_mod['IS_DUST'] == False, :]
+        data_d['GEOS-CF (dust)'] = df_mod.loc[df_mod['IS_DUST'] == True, :]
+        extr_str += '_inc_MODEL'
+
+    # Setup PDF to save PDF plots to
+    savetitle = 'ARNA_altitude_binned_{}{}'.format('ALL', extr_str)
+    pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
+
+    # - Plot up location of flights
+    if just_SLR:
+        title = "Flight tracks for 'Straight and Level Runs' during ARNA"
+    else:
+        title = 'Flight tracks for all flights during ARNA'
+    plt_flightpath_spatially_over_CVAO(df=df_obs, flight_ID=flight_ID,
+                                       title=title)
+    AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+    plt.close()
+
+    # - Put observations and vars to plot into a dictionary
+    sns.set(color_codes=True)
+    sns.set_context("paper", font_scale=0.75)
+
+    # - Now plot up flight time series plots by variable
+    if just_SLR:
+        title_str = "Altitude binned '{}' ({}) for all 'Straight and Level Runs'"
+    else:
+        title_str =  "Altitude binned '{}' ({}) for all flights"
+    # Setup color dictinoary
+    color_dict = {'GEOS-CF': 'red', 'Obs.':'k'}
+    colors2use = AC.get_CB_color_cycle()
+    runs2color = [i for i in data_d.keys() if i not in color_dict.keys()]
+    for n_run, run in enumerate( runs2color ):
+        color_dict[run] = colors2use[n_run]
+    unit_d = {}
+    mod2obs_varnames = {
+    'CO':'CO_AERO', 'O3':'O3_TECO', 'NO2':'no2_mr', 'NO':'no_mr',
+    'HNO2':'hono_mr',
+    'NOx':'NOx'
+    }
+    units_d = {
+    'CO':'ppbv', 'O3':'ppbv', 'NO2':'pptv', 'NO':'pptv', 'NOx':'pptv',
+    'HNO2':'pptv', 'HONO':'pptv',
+    }
+    range_d = {
+    'CO':(50, 400), 'O3':(-10, 100), 'NO2':(-50, 500), 'NO':(-50, 500),
+    'NOx':(-50, 500),
+    'HNO2':(-60, 60), 'HONO':(-60, 60),
+    }
+    NOx_specs = ['HNO2', 'NOx', 'NO', 'NO2', 'HONO']
+    # - by variable
+    runs = list(sorted(data_d.keys()))
+    # Which variables to use?
+    vars2plot = list(sorted(mod2obs_varnames.keys()))[::-1]
+    vars2plot = ['CO', 'O3', 'NOx', 'NO2', 'NO', 'HNO2']
+    print(vars2plot)
+    print(df_obs.columns)
+    vars2plot = [
+    i for i in vars2plot if mod2obs_varnames[i] in df_obs.columns
+    ]
+    # What bins should be used?
+    bins = [0.5*i for i in np.arange(15)]
+    for var2plot in vars2plot:
+        fig = plt.figure()
+        ax = plt.gca()
+        # Now loop data
+        for n_key, key_ in enumerate(runs):
+            print(n_key, key_, var2plot )
+            #
+            if ('Obs.' in key_):
+                varname = mod2obs_varnames[var2plot]
+            else:
+                varname = var2plot
+            # Setup an axis label
+            units = units_d[var2plot]
+            xlabel = '{} ({})'.format( var2plot, units )
+            # Add alt to DataFrame
+            df = pd.DataFrame({
+            var2plot: data_d[key_][varname], ALT_var: data_d[key_][ALT_var]
+            })
+            print(df.describe())
+            # Scale the model values to pptv/ppbv
+            if ('Obs.' not in key_):
+                scaleby = AC.get_unit_scaling(units)
+                df[var2plot] = df[var2plot].values * scaleby
+
+            # drop any NaNs from the DataFrame
+            s_shape = df.shape
+            df.dropna(axis=0, how='any', inplace=True)
+            if s_shape != df.shape:
+                pcent = (float(df.shape[0]) - s_shape[0])/s_shape[0] * 100.
+                pstr_dtr = 'WANRING dropped values - shape {}=>{} ({:.2f} %)'
+                print(pstr_dtr.format(s_shape, df.shape, pcent))
+            # Plot up as binned boxplots using existing function
+            try:
+                AC.binned_boxplots_by_altitude(df=df, fig=fig, ax=ax,
+                                               var2bin_by=ALT_var,
+                                               label=key_, xlabel=xlabel,
+                                               binned_var=var2plot,
+                                               num_of_datasets=len(runs),
+                                               bins=bins,
+                                               widths=0.15,
+                                               dataset_num=n_key,
+                                               color=color_dict[key_])
+            except:
+                pass
+            # Make NOx species be on a log scale
+            if (var2plot in NOx_specs):
+                ax.set_xscale('log')
+            #                     ax.set_xlim( (1E-5, 1E3) )
+                ax.set_xlim( (0.3, 400) )
+            else:
+                ax.set_xscale('linear')
+            # Beautify plot
+            plt.legend()
+            plt.title(title_str.format(var2plot, units, flight_ID ))
+            plt.xlim(range_d[var2plot])
+
+        # Save to PDF
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+        if show_plot:
+            plt.show()
+        plt.close()
+
+    # - Save entire pdf
+    AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
+    plt.close('all')
+
+
+def plt_comp_by_alt_4ARNA_CIMS_all_DUST(dpi=320, just_SLR=True,
+                                        plt_model=False, show_plot=False):
+    """
+    Plot up altitude binned comparisons between core obs. and model data
+    """
+    import seaborn as sns
+    # Which flights to plot?
+#    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
+    # Just use non-transit ARNA flights
+    flights_nums = [
+#    217, # Missing data for C217 (NOy)
+    218, 219, 220,
+#    221, # Missing data for C221 (NOy)
+    222, 223,
+#    224,  # Missing data for C221 (BrO... )
+#    225,  # Missing data for C221 (BrO... )
+    ]
+    flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
+    # - Loop by flight and retrieve the files as dataframes (mod + obs)
+    # Model
+    dfs_obs = {}
+    for flight_ID in flight_IDs:
+        df = get_CIMS_data4flight(flight_ID=flight_ID)
+        df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
+        df['flight_ID'] = flight_ID
+        dfs_obs[flight_ID] = df
+    # Observations
+    dfs_mod = {}
+    for flight_ID in flight_IDs:
+        df = get_GEOSCF_output4flightnum(flight_ID=flight_ID )
+        df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
+        df['flight_ID'] = flight_ID
+        dfs_mod[flight_ID] = df
+    # Combine to a single dataframe
+    df_mod = pd.concat([dfs_mod[i] for i in dfs_mod.keys()], axis=0)
+    df_obs = pd.concat([dfs_obs[i] for i in dfs_obs.keys()], axis=0)
+    # Only consider data during SLRs?
+    if just_SLR:
+        df_obs = df_obs.loc[df_obs['IS_SLR'] == True, :]
+        df_mod = df_mod.loc[df_mod['IS_SLR'] == True, :]
+        extr_str = '_JUST_SLR_DUST'
+    else:
+        extr_str = '_DUST'
+    # - Setup data objects or plotting
+    # Force alt to be in units of km
+    ALT_var = 'Altitude (km)'
+    Y_unit = ALT_var
+    df_mod[ALT_var] = AC.hPa_to_Km( df_mod['model-lev'].values )
+    df_obs[ALT_var] = df_obs['ALT_GIN'].values / 1E3
+    # Plot up just observations? Or model too?
+    data_d = {
+    'Obs.':  df_obs.loc[df_obs['IS_DUST'] == False, :],
+    'Obs. (Dust)': df_obs.loc[df_obs['IS_DUST'] == True, :],
+    }
+    if plt_model:
+        data_d['GEOS-CF'] = df_mod.loc[df_mod['IS_DUST'] == False, :]
+        data_d['GEOS-CF (dust)'] = df_mod.loc[df_mod['IS_DUST'] == True, :]
+        extr_str += '_inc_MODEL'
+
+    # Setup PDF to save PDF plots to
+    savetitle = 'ARNA_altitude_binned_{}_CIMS_{}'.format('ALL', extr_str)
+    pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
+
+    # - Plot up location of flights
+    if just_SLR:
+        title = "Flight tracks for 'Straight and Level Runs' during ARNA"
+    else:
+        title = 'Flight tracks for all flights during ARNA'
+    plt_flightpath_spatially_over_CVAO(df=df_obs, flight_ID=flight_ID,
+                                       title=title)
+    AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+    plt.close()
+
+    # - Put observations and vars to plot into a dictionary
+    sns.set(color_codes=True)
+    sns.set_context("paper", font_scale=0.75)
+
+    # - Now plot up flight time series plots by variable
+    if just_SLR:
+        title_str = "Altitude binned '{}' ({}) for all 'Straight and Level Runs'"
+    else:
+        title_str =  "Altitude binned '{}' ({}) for all flights"
+    # Setup color dictinoary
+    color_dict = {'GEOS-CF': 'red', 'Obs.':'k'}
+    colors2use = AC.get_CB_color_cycle()
+    runs2color = [i for i in data_d.keys() if i not in color_dict.keys()]
+    for n_run, run in enumerate( runs2color ):
+        color_dict[run] = colors2use[n_run]
+    NOx_specs = ['HNO2', 'NOx', 'NO', 'NO2', 'HONO']
+    mod2obs_varnames = {
+    'BrO':'BrO',
+    'HNO3':'HNO3',
+    'HNO2':'HONO',
+#        'CO':'CO_AERO', 'O3':'O3_TECO', 'NO2':'no2_mr', 'NO':'no_mr',
+#        'HNO2':'hono_mr',
+#        'NOx':'NOx'
+    }
+    units_d = {
+#        'CO':'ppbv', 'O3':'ppbv', 'NO2':'pptv', 'NO':'pptv', 'NOx':'pptv',
+    'BrO':'pptv', 'HNO3':'pptv', 'HNO2':'pptv', 'HONO':'pptv',
+    }
+    range_d = {
+#        'CO':(50, 400), 'O3':(-10, 100), 'NO2':(-50, 500), 'NO':(-50, 500),
+#        'NOx':(-50, 500),
+    'HNO2':(-10, 60),
+    'HNO3':(-30, 1500),
+    'BrO':(-0.2, 1.0),
+    'HONO':(-10, 60),
+    }
+    # - by variable
+    runs = list(sorted(data_d.keys()))
+    # Which variables to use?
+    vars2plot = list(sorted(mod2obs_varnames.keys()))[::-1]
+#    vars2plot = ['CO', 'O3', 'NOx', 'NO2', 'NO', 'HNO2']
+    print(vars2plot)
+    print(df_obs.columns)
+    vars2plot = [
+    i for i in vars2plot if mod2obs_varnames[i] in df_obs.columns
+    ]
+    # What bins should be used?
+    bins = [0.5*i for i in np.arange(15)]
+    for var2plot in vars2plot:
+        fig = plt.figure()
+        ax = plt.gca()
+        # Now loop data
+        for n_key, key_ in enumerate(runs):
+            print(n_key, key_, var2plot )
+            #
+            if ('Obs.' in key_):
+                varname = mod2obs_varnames[var2plot]
+            else:
+                varname = var2plot
+            # Setup an axis label
+            units = units_d[var2plot]
+            xlabel = '{} ({})'.format( var2plot, units )
+            # Add alt to DataFrame
+            df = pd.DataFrame({
+            var2plot: data_d[key_][varname], ALT_var: data_d[key_][ALT_var]
+            })
+            print(df.describe())
+            # Scale the model values to pptv/ppbv
+            if ('Obs.' not in key_):
+                scaleby = AC.get_unit_scaling(units)
+                df[var2plot] = df[var2plot].values * scaleby
+
+            # drop any NaNs from the DataFrame
+            s_shape = df.shape
+            df.dropna(axis=0, how='any', inplace=True)
+            if s_shape != df.shape:
+                pcent = (float(df.shape[0]) - s_shape[0])/s_shape[0] * 100.
+                pstr_dtr = 'WANRING dropped values - shape {}=>{} ({:.2f} %)'
+                print(pstr_dtr.format(s_shape, df.shape, pcent))
+            # Plot up as binned boxplots using existing function
+            try:
+                AC.binned_boxplots_by_altitude(df=df, fig=fig, ax=ax,
+                                               var2bin_by=ALT_var,
+                                               label=key_, xlabel=xlabel,
+                                               binned_var=var2plot,
+                                               num_of_datasets=len(runs),
+                                               bins=bins,
+                                               widths=0.15,
+                                               dataset_num=n_key,
+                                               color=color_dict[key_])
+            except:
+                pass
+            # Make NOx species be on a log scale
+            if (var2plot in NOx_specs):
+                ax.set_xscale('log')
+            #                     ax.set_xlim( (1E-5, 1E3) )
+                ax.set_xlim( (0.3, 400) )
+            else:
+                ax.set_xscale('linear')
+            # Beautify plot
+            plt.legend()
+            plt.title(title_str.format(var2plot, units, flight_ID ))
+            plt.xlim(range_d[var2plot])
+
+        # Save to PDF
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+        if show_plot:
+            plt.show()
+        plt.close()
+
+    # - Save entire pdf
+    AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
+    plt.close('all')
+
+
+def plt_comp_by_alt_4ARNA_flights(dpi=320, just_SLR=True, show_plot=False):
     """
     Plot up altitude binned comparisons between core obs. and model data
     """
@@ -1778,13 +2309,17 @@ def plt_comp_by_alt_4ARNA_flights(dpi=320, show_plot=False):
     flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
     # - Loop by flight and retrieve the files as dataframes (mod + obs)
     # Model
-    dfs_mod = {}
-    for flight_ID in flight_IDs:
-        dfs_mod[flight_ID] = get_GEOSCF_output4flightnum(flight_ID=flight_ID )
-    # Observations
     dfs_obs = {}
     for flight_ID in flight_IDs:
-        dfs_obs[flight_ID] = get_FAAM_core4flightnum(flight_ID=flight_ID )
+        df = get_FAAM_core4flightnum(flight_ID=flight_ID)
+#        df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
+        dfs_obs[flight_ID] = df
+    # Observations
+    dfs_mod = {}
+    for flight_ID in flight_IDs:
+        df = get_GEOSCF_output4flightnum(flight_ID=flight_ID )
+        df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
+        dfs_mod[flight_ID] = df
 
     # -  Now plot up
     for flight_ID in flight_IDs:
@@ -1792,7 +2327,13 @@ def plt_comp_by_alt_4ARNA_flights(dpi=320, show_plot=False):
         # Get observations and model timeseries data as a DataFrame
         df_obs = dfs_obs[flight_ID]
         df_mod = dfs_mod[flight_ID]
-
+        # Only consider data during SLRs?
+        if just_SLR:
+            df_obs = df_obs.loc[df_obs['IS_SLR'] == True, :]
+            df_mod = df_mod.loc[df_mod['IS_SLR'] == True, :]
+            extr_str = '_JUST_SLR'
+        else:
+            extr_str = ''
         # Setup PDF to save PDF plots to
         savetitle = 'ARNA_altitude_binned_{}'.format(flight_ID)
         pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
@@ -1836,7 +2377,8 @@ def plt_comp_by_alt_4ARNA_flights(dpi=320, show_plot=False):
         # - by variable
         runs = list(sorted(data_d.keys()))
 		# Which variables to use?
-        vars2plot = mod2obs_varnames.keys()
+#        vars2plot = list(sorted(mod2obs_varnames.keys()))[::-1]
+        vars2plot = ['CO', 'O3', 'NOx', 'NO2', 'NO', 'HNO2']
         print(vars2plot)
         print(df_obs.columns)
         vars2plot = [
@@ -1910,7 +2452,8 @@ def plt_comp_by_alt_4ARNA_flights(dpi=320, show_plot=False):
         plt.close('all')
 
 
-def plt_comp_by_alt_4ARNA_flights_CIMS(dpi=320, show_plot=False):
+def plt_comp_by_alt_4ARNA_flights_CIMS(dpi=320, just_SLR=False,
+                                       show_plot=False):
     """
     Plot up altitude binned comparisons between core obs. and model data
     """
@@ -1934,11 +2477,16 @@ def plt_comp_by_alt_4ARNA_flights_CIMS(dpi=320, show_plot=False):
     # Model
     dfs_mod = {}
     for flight_ID in flight_IDs:
-        dfs_mod[flight_ID] = get_GEOSCF_output4flightnum(flight_ID=flight_ID )
+        df = get_GEOSCF_output4flightnum(flight_ID=flight_ID )
+#        df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
+        dfs_mod[flight_ID] = df
+
     # Observations
     dfs_obs = {}
     for flight_ID in flight_IDs:
-        dfs_obs[flight_ID] = get_FAAM_core4flightnum(flight_ID=flight_ID )
+        df = get_CIMS_data4flight(flight_ID=flight_ID)
+        df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
+        dfs_obs[flight_ID] = df
 
     # -  Now plot up
     for flight_ID in flight_IDs:
@@ -1946,9 +2494,16 @@ def plt_comp_by_alt_4ARNA_flights_CIMS(dpi=320, show_plot=False):
         # Get observations and model timeseries data as a DataFrame
         df_obs = dfs_obs[flight_ID]
         df_mod = dfs_mod[flight_ID]
-
+        # Only consider data during SLRs?
+        if just_SLR:
+            df_obs = df_obs.loc[df_obs['IS_SLR'] == True, :]
+            df_mod = df_mod.loc[df_mod['IS_SLR'] == True, :]
+            extr_str = '_JUST_SLR'
+        else:
+            extr_str = ''
         # Setup PDF to save PDF plots to
-        savetitle = 'ARNA_altitude_binned_{}_CIMS'.format(flight_ID)
+        savetitle_str = 'ARNA_altitude_binned_{}_CIMS{}'
+        savetitle = savetitle_str.format(flight_ID, extr_str)
         pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
 
         # - Plot up location of flights
@@ -2073,7 +2628,7 @@ def plt_comp_by_alt_4ARNA_flights_CIMS(dpi=320, show_plot=False):
 
 
 def plt_flightpath_spatially_over_CVAO(df, LatVar='LAT_GIN', LonVar='LON_GIN',
-                                       flight_ID='', dpi=320):
+                                       title=None, flight_ID='', dpi=320):
     """
     Plot flightpath spatially in CVAO region
     """
@@ -2090,13 +2645,15 @@ def plt_flightpath_spatially_over_CVAO(df, LatVar='LAT_GIN', LonVar='LON_GIN',
     stime_str = df.index.min().strftime('%H:%M').strip()
     etime_str = df.index.max().strftime('%H:%M').strip()
     # Make title string
-    if sdate_str != edate_str:
-        title_str = 'Flight track for ARNA flight {} ({} {}-{} {})'
-        title = title_str.format(flight_ID, sdate_str, stime_str, edate_str,
-                                 etime_str)
-    else:
-        title_str = 'Flight track for ARNA flight {} ({}, {}-{})'
-        title = title_str.format(flight_ID, sdate_str, stime_str, etime_str)
+    if isinstance(title, type(None)):
+        if sdate_str != edate_str:
+            title_str = 'Flight track for ARNA flight {} ({} {}-{} {})'
+            title = title_str.format(flight_ID, sdate_str, stime_str,
+                                     edate_str, etime_str)
+        else:
+            title_str = 'Flight track for ARNA flight {} ({}, {}-{})'
+            title = title_str.format(flight_ID, sdate_str, stime_str,
+                                     etime_str)
     # Setup projection for plotting
     projection = ccrs.PlateCarree
     central_longitude = 0
@@ -2155,6 +2712,7 @@ def plt_timeseries4ARNA_flight(df_obs=None, df_mod=None,
                                mod_var2plot='CO',
                                mod_label='GEOS-CF',
                                plt_alt_as_shadow=True,
+                               plt_dust_as_backfill=True,
                                aspect_ratio=0.25,
                                flight_ID='C216',
                                yscale='linear',
@@ -2183,8 +2741,15 @@ def plt_timeseries4ARNA_flight(df_obs=None, df_mod=None,
     w, h = matplotlib.figure.figaspect(aspect_ratio)
     fig = plt.figure(figsize=(w, h))
     ax = fig.add_subplot(111)
+    # Plot up where
+    if plt_dust_as_backfill:
+        colour_plot_background_by_bool(df=df_obs, ax=ax,
+                                       bool2use='IS_DUST',
+                                       color='sandybrown',
+                                       alpha=0.25,
+                                       label='Dust (non-MBL)')
     # Plot up the observations and model...
-    if not isinstance(mod_var2plot, type(None)):
+    if not isinstance(obs_var2plot, type(None)):
         df_obs = df_obs[[obs_var2plot]].dropna()
         plt.plot(df_obs.index, df_obs[obs_var2plot].values+obs_adjustby,
                  label=obs_label, color='k' )
@@ -2236,6 +2801,7 @@ def plt_timeseries4ARNA_flight_point_obs(df_obs=None, df_mod=None,
                                          flight_ID='C216',
                                          yscale='linear',
                                          invert_yaxis=False,
+                                         plt_dust_as_backfill=True,
                                          plt_errorbar=False,
                                          obs_var2plot_err='',
                                          ):
@@ -2263,8 +2829,17 @@ def plt_timeseries4ARNA_flight_point_obs(df_obs=None, df_mod=None,
     fig = plt.figure(figsize=(w, h))
     ax = fig.add_subplot(111)
     # Plot up the model data...
-    plt.plot(df_mod.index, df_mod[ mod_var2plot ].values*mod_scale,
-             label=mod_label, color='red' )
+    if not isinstance(mod_var2plot, type(None)):
+        plt.plot(df_mod.index, df_mod[ mod_var2plot ].values*mod_scale,
+                 label=mod_label, color='red' )
+
+    # Plot up where
+    if plt_dust_as_backfill:
+        colour_plot_background_by_bool(df=df_obs, ax=ax,
+                                       bool2use='IS_DUST',
+                                       color='sandybrown',
+                                       alpha=0.25,
+                                       label='Dust (non-MBL)')
     # Now plot up the observations
     if plt_errorbar:
         ax = plt.gca()
@@ -2330,6 +2905,63 @@ def add_deriv_vars2df(df):
     return df
 
 
+def colour_plot_background_by_bool(df, ax=None, bool2use=None, color='grey',
+                                   alpha=0.25, label=None):
+    """
+    Colour background of plot for boolean locations on axis
+    """
+#    ymin, ymax = ax.get_ylim()
+    ymin, ymax = 0, 1
+    x = df.index
+    ax.fill_between(x, ymin, ymax, where=df[bool2use].values,
+                    color=color, alpha=alpha, label=label,
+                    transform=ax.get_xaxis_transform())
+#    ax.axvspan(1.25, 1.55, facecolor='#2ca02c', alpha=0.5)
+#ax.fill_between(data.index, 0,1, where=data['USREC'], transform=ax.get_xaxis_transform())
+
+    return ax
+
+
+def add_derived_FAAM_flags2df4flight(df=None, df_FAAM=None, flight_ID='C217'):
+    """
+    Add the derived FAAM variables to dataframe (e.g. IS_DUST)
+    """
+    # Get the relevant FAAM dataframe is not provided
+    if isinstance(df_FAAM, type(None)):
+#        df = get_GEOSCF_output4flightnum(flight_ID=flight_ID )
+        df_FAAM = get_FAAM_core4flightnum(flight_ID=flight_ID,
+                                          resample_data=True )
+    # Just add is the "is dust" and "is SLR"
+    vars2use = ['IS_DUST', 'IS_SLR']
+    df = pd.concat([df, df_FAAM[vars2use]],  axis=1)
+    return df
+
+
+def add_secs2duplicate_index_values(df):
+    """
+    duplicate values for index are not limit panadas operations
+    """
+    # Add a number to each ro
+    RowVar = 'Row'
+    df[RowVar] = np.arange(df.shape[0])
+    # Loop index and add a second to any duplicates
+    NewIndex = []
+    last_index = None
+    penultimate_index = None
+    for Row in df[RowVar].values:
+        index_val = df.loc[df[RowVar]== Row, :].index.values[0]
+        index_val = AC.dt64_2_dt([index_val])[0]
+        duplicates = df.loc[ df.index == index_val,:].shape[0]
+        if duplicates >1:
+            print(Row, df.loc[df[RowVar]==Row, : ])
+            index_val = AC.add_secs(index_val, 1)
+            # Update the index
+            index_values =  df.index.values
+            index_values[Row] = index_val
+            df.index = index_values
+    return df
+
+
 def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, show_plot=False):
     """
     Plot up timeseries comparisons between core observations and model data
@@ -2359,7 +2991,9 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, show_plot=False):
     # Observations
     dfs_obs = {}
     for flight_ID in flight_IDs:
-        dfs_obs[flight_ID] = get_CIMS_data4flight(flight_ID=flight_ID)
+        df = get_CIMS_data4flight(flight_ID=flight_ID)
+        df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
+        dfs_obs[flight_ID] = df
 
     # -  Now plot up
     for flight_ID in flight_IDs:
@@ -2448,7 +3082,8 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, show_plot=False):
         plt.close('all')
 
 
-def plt_timeseries_comp4ARNA_flights_filters():
+def plt_timeseries_comp4ARNA_flights_filters(dpi=320, show_plot=False,
+                                             debug=False):
     """
     Plot up timeseries comparisons between filter samples and model data
     """
@@ -2473,6 +3108,7 @@ def plt_timeseries_comp4ARNA_flights_filters():
         dfs_mod[flight_ID] = df
     # Observations
     dfs_obs = get_filters_data4flight()
+    dfs_obs = add_secs2duplicate_index_values(dfs_obs)
 
     # Convert observation units into model units
     # unit on recipt were 'nanomoles/m3', which were updated to ug/m3
@@ -2490,6 +3126,9 @@ def plt_timeseries_comp4ARNA_flights_filters():
         # Get observations and model timeseries data as a DataFrame
         df_obs = dfs_obs.loc[ dfs_obs['Flight']==flight_ID, :]
         df_mod = dfs_mod[flight_ID]
+        # add the dust and SLR flags to the core dataframe
+        df_obs = add_derived_FAAM_flags2df4flight(df=df_obs,
+                                                  flight_ID=flight_ID)
         # Setup PDF to save PDF plots to
         savetitle = 'ARNA_timeseries_flighttrack_{}_FILTERS'.format(flight_ID)
         pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
@@ -2590,7 +3229,9 @@ def plt_timeseries_comp4ARNA_flights_SWAS(dpi=320, show_plot=False,
     # Observations
     dfs_obs = {}
     for flight_ID in flight_IDs:
-        dfs_obs[flight_ID] = get_SWAS_data4flight(flight_ID=flight_ID)
+        df = get_SWAS_data4flight(flight_ID=flight_ID)
+        df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
+        dfs_obs[flight_ID] = df
 
     # -  Now plot up
     for flight_ID in flight_IDs:
@@ -2759,77 +3400,101 @@ def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False):
         plt.close()
 
         # - Plot up ROLL_GIN
-        units = 'ADD THIS'
-#        VarName = 'PCAS2CON'
-#        FlagName = 'PCAS2_FLAG'
-        var2plot = 'ROLL_GIN'
-        obs_var2plot = 'ROLL_GIN'
-        mod_var2plot = None
-        mod_label = 'GEOS-CF'
-        mod_scale = None
-#        ylim = (10, 100)
-#        ylim = None
-        # Call timeseries plotter function
-        plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                   obs_var2plot=obs_var2plot,
-                                   mod_scale=mod_scale, mod_label=mod_label,
-                                   mod_var2plot=mod_var2plot,
-#                                   ylim=ylim,
-                                   df_mod=df_mod, df_obs=df_obs,
-                                   flight_ID=flight_ID,
-                                   )
-        # Save to PDF and close the plot
-        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
-        plt.close()
+        try:
+            units = 'ADD THIS'
+    #        VarName = 'PCAS2CON'
+    #        FlagName = 'PCAS2_FLAG'
+            var2plot = 'ROLL_GIN'
+            obs_var2plot = 'ROLL_GIN'
+            mod_var2plot = None
+            mod_label = 'GEOS-CF'
+            mod_scale = None
+    #        ylim = (10, 100)
+    #        ylim = None
+            # Call timeseries plotter function
+            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                       obs_var2plot=obs_var2plot,
+                                       mod_scale=mod_scale,
+                                       mod_label=mod_label,
+                                       mod_var2plot=mod_var2plot,
+    #                                   ylim=ylim,
+                                       df_mod=df_mod, df_obs=df_obs,
+                                       flight_ID=flight_ID,
+                                       )
+            # Colour in SLRs
+            ax = plt.gca()
+            colour_plot_background_by_bool(df=df_obs, ax=ax, bool2use='IS_SLR',
+                                           color='blue', alpha=0.25,
+                                           label='SLR')
+            plt.legend()
+            # Save to PDF and close the plot
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+            plt.close()
+        except:
+            print('Failed to plot ROLL_GIN')
 
         # - Plot up VELD_GIN
-        units = 'ADD THIS'
-#        VarName = 'PCAS2CON'
-#        FlagName = 'PCAS2_FLAG'
-        var2plot = 'VELD_GIN'
-        obs_var2plot = 'VELD_GIN'
-        mod_var2plot = None
-        mod_label = 'GEOS-CF'
-        mod_scale = None
-#        ylim = (10, 100)
-        ylim = None
-        # Call timeseries plotter function
-        plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                   obs_var2plot=obs_var2plot,
-                                   mod_scale=mod_scale, mod_label=mod_label,
-                                   mod_var2plot=mod_var2plot,
-                                   ylim=ylim,
-                                   df_mod=df_mod, df_obs=df_obs,
-                                   flight_ID=flight_ID,
-                                   )
-        # Save to PDF and close the plot
-        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
-        plt.close()
+        try:
+            units = 'ADD THIS'
+    #        VarName = 'PCAS2CON'
+    #        FlagName = 'PCAS2_FLAG'
+            var2plot = 'VELD_GIN'
+            obs_var2plot = 'VELD_GIN'
+            mod_var2plot = None
+            mod_label = 'GEOS-CF'
+            mod_scale = None
+    #        ylim = (10, 100)
+            ylim = None
+            # Call timeseries plotter function
+            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                       obs_var2plot=obs_var2plot,
+                                       mod_scale=mod_scale,
+                                       mod_label=mod_label,
+                                       mod_var2plot=mod_var2plot,
+                                       ylim=ylim,
+                                       df_mod=df_mod, df_obs=df_obs,
+                                       flight_ID=flight_ID,
+                                       )
+            # Colour in SLRs
+            ax = plt.gca()
+            colour_plot_background_by_bool(df=df_obs, ax=ax, bool2use='IS_SLR',
+                                           color='blue', alpha=0.25,
+                                           label='SLR')
+            plt.legend()
+
+            # Save to PDF and close the plot
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+            plt.close()
+        except:
+            print('Failed to plot VELD_GIN')
 
         # - Plot up PCASP
-        units = '# cm$^{-1}$'
-#        VarName = 'PCAS2CON'
-#        FlagName = 'PCAS2_FLAG'
-        var2plot = 'PCAS'
-        obs_var2plot = 'PCAS2CON'
-        mod_var2plot = None
-        mod_label = 'GEOS-CF'
-        mod_scale = None
-#        ylim = (10, 100)
-        ylim = None
-        # Call timeseries plotter function
-        plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                   obs_var2plot=obs_var2plot,
-                                   mod_scale=mod_scale, mod_label=mod_label,
-                                   mod_var2plot=mod_var2plot,
-                                   ylim=ylim,
-                                   df_mod=df_mod, df_obs=df_obs,
-                                   flight_ID=flight_ID,
-                                   )
-        # Save to PDF and close the plot
-        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
-        plt.close()
-
+        try:
+            units = '# cm$^{-1}$'
+    #        VarName = 'PCAS2CON'
+    #        FlagName = 'PCAS2_FLAG'
+            var2plot = 'PCAS'
+            obs_var2plot = 'PCAS2CON'
+            mod_var2plot = None
+            mod_label = 'GEOS-CF'
+            mod_scale = None
+    #        ylim = (10, 100)
+            ylim = None
+            # Call timeseries plotter function
+            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                       obs_var2plot=obs_var2plot,
+                                       mod_scale=mod_scale,
+                                       mod_label=mod_label,
+                                       mod_var2plot=mod_var2plot,
+                                       ylim=ylim,
+                                       df_mod=df_mod, df_obs=df_obs,
+                                       flight_ID=flight_ID,
+                                       )
+            # Save to PDF and close the plot
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+            plt.close()
+        except:
+            print('Failed to plot PCASP')
 
 
         # - Plot up temperature
@@ -2971,6 +3636,12 @@ def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False):
             # Save to PDF and close the plot
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
             plt.close()
+            # Colour in SLRs
+            ax = plt.gca()
+            colour_plot_background_by_bool(df=df_obs, ax=ax, bool2use='IS_SLR',
+                                           color='blue', alpha=0.25,
+                                           label='SLR')
+            plt.legend()
         except:
             print('Failed to plot altitude')
 

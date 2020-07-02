@@ -375,6 +375,41 @@ def get_CIMS_data4flight(flight_ID='C216', resample_data=True, debug=False):
     return df
 
 
+def add_derived_variables2FAAM_data(df):
+    """
+    Add variables derived from other variables
+    """
+    # A metric for dust
+    try:
+        VarName = 'IS_DUST'
+        df[VarName] = False
+        # PCASP total above
+        PCASP_threshold = 200
+        bool = df['PCAS2CON'] >= PCASP_threshold
+        df.loc[bool, VarName] = True
+        # Above the boundary layer - just set as 900 hPa for now
+        hPa_threshold = 900
+        bool = df['PS_RVSM'] >= hPa_threshold
+        df.loc[bool ,VarName] = False
+    except KeyError:
+        print("Derived variable not added to dataframe ({})".format(VarName))
+    # A indicator for straight and level runs (SLR)
+    try:
+        VarName = 'IS_SLR'
+        df[VarName] = False
+        # PCASP total above
+        var2use = 'VELD_GIN'
+        threshold = 1
+        bool1 = (df[var2use] <= threshold) & (df[var2use] >= -threshold)
+        var2use = 'ROLL_GIN'
+        threshold = 2.5
+        bool2 = (df[var2use] <= threshold) & (df[var2use] >= -threshold)
+        df.loc[bool1 & bool2, VarName] = True
+    except KeyError:
+        print("Derived variable not added to dataframe ({})".format(VarName))
+    return df
+
+
 def get_FAAM_core4flightnum(flight_ID='C216', version='v2020_06',
                             resample_data=True):
     """
@@ -473,5 +508,7 @@ def get_FAAM_core4flightnum(flight_ID='C216', version='v2020_06',
 	# Resample the data?
     if resample_data:
         df = df.resample('1T' ).mean()
+    # Add derived variables
+    df = add_derived_variables2FAAM_data(df)
     return df
 

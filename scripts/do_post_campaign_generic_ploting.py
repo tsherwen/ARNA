@@ -35,5 +35,13 @@ def main():
     # N/A? this is only for 2019. Emailed to check.
 
 
+    # Plot up data for SLRs with and without dust
+    ar.plt_comp_by_alt_4ARNA_all(just_SLR=False)
+    ar.plt_comp_by_alt_4ARNA_all(just_SLR=True)
+    ar.plt_comp_by_alt_4ARNA_all_DUST(plt_model=False)
+    ar.plt_comp_by_alt_4ARNA_all_DUST(plt_model=True)
+    ar.plt_comp_by_alt_4ARNA_CIMS_all_DUST()
+
+
 if __name__ == "__main__":
     main()
