@@ -334,45 +334,89 @@ def get_CIMS_data4flight(flight_ID='C216', resample_data=True, debug=False):
     folder = '{}/{}/'.format(get_local_folder('ARNA_data'), 'CIMS')
     # What is the name of the sheet in the excel file?
     sheet_name = flight_ID
-    # Retrive the core CIMS observations (use the time coordinate for index)
-    filename = 'ACSIS6_0.1hz_Bromine.xlsx'
-    format='%m/%d/%Y %H:%M:%S'
-    df = pd.read_excel(folder + filename, sheet_name=sheet_name,
-                       date_parser=format)
-    xl = pd.ExcelFile( folder + filename)
-    if debug:
-        print(xl.sheet_names)
-    dt_var = 'Date:Time'
-    dates = AC.dt64_2_dt(df[dt_var].values )
-    dates = [i.strftime(format) for i in dates ]
-    dates = [datetime.datetime.strptime(i,'%d/%m/%Y %H:%M:%S') for i in dates]
-    df.index = dates
-    del df[dt_var]
-    # Also get HNO3 / HONO (use the time coordinate for index)
-    filename = 'ACSIS6_ARNA_1hz_HNO3_HONO_ToSend.xlsx'
-    df2 = pd.read_excel( folder + filename, sheet_name=sheet_name)
-    xl = pd.ExcelFile( folder + filename)
-    if debug:
-        print(xl.sheet_names)
-    dt_var = 'date'
-#    df2.index = pd.to_datetime( df2[dt_var].values, format='%m/%d/%Y %H:%M:%S')
-    dates = AC.dt64_2_dt(df2[dt_var].values )
-    dates = [i.strftime(format) for i in dates ]
-    dates = [datetime.datetime.strptime(i,'%d/%m/%Y %H:%M:%S') for i in dates]
-    df2.index = dates
-    del df2[dt_var]
-    # Merge the files
-    df = pd.concat([df,df2], axis="index")
+    # - Setup a shared (1Hz) time axis to merge onto
+    # Use time index for timings of flight, then add a 2 hour buffer
+    dfS = get_summary4flight(flight_ID=flight_ID)
+    sdate = dfS.index.values.min()
+    edate = dfS.index.values.max()
+    sdate, edate = AC.dt64_2_dt([sdate, edate])
+    sdate = AC.add_hrs(sdate, -2)
+    edate = AC.add_hrs(sdate, 2)
+    index = pd.date_range(start=sdate, end=edate, freq='1S')
+    dfM = pd.DataFrame(index=index)
+    # - Retrive the core CIMS observations (use the time coordinate for index)
+    try:
+        filename = 'ACSIS6_0.1hz_Bromine.xlsx'
+        format = '%m/%d/%Y %H:%M:%S'
+        df = pd.read_excel(folder + filename, sheet_name=sheet_name,
+                           date_parser=format)
+        xl = pd.ExcelFile( folder + filename)
+        if debug:
+            print(xl.sheet_names)
+        dt_var = 'Date:Time'
+        dates = AC.dt64_2_dt(df[dt_var].values )
+        dates = [i.strftime(format) for i in dates ]
+        dates = [datetime_.strptime(i,'%d/%m/%Y %H:%M:%S') for i in dates]
+        df.index = dates
+        del df[dt_var]
+        # Merge the files
+        dfM = pd.concat([dfM, df], axis="index")
+    except:
+        pstr = "WARNING: failed to include CIMS halogen data for '{}' in df"
+        print(pstr.format(flight_ID))
+    # - Also get HNO3 / HONO (use the time coordinate for index)
+    try:
+        filename = 'ACSIS6_ARNA_1hz_HNO3_HONO_ToSend.xlsx'
+        df2 = pd.read_excel( folder + filename, sheet_name=sheet_name)
+        xl = pd.ExcelFile( folder + filename)
+        if debug:
+            print(xl.sheet_names)
+        dt_var = 'date'
+    #    df2.index = pd.to_datetime( df2[dt_var].values, format='%m/%d/%Y %H:%M:%S')
+        dates = AC.dt64_2_dt(df2[dt_var].values )
+        dates = [i.strftime(format) for i in dates ]
+        dates = [datetime_.strptime(i,'%d/%m/%Y %H:%M:%S') for i in dates]
+        df2.index = dates
+        del df2[dt_var]
+        # Merge the files
+        dfM = pd.concat([dfM, df2], axis="index")
+    except:
+        pstr = "WARNING: failed to include CIMS NOy data for '{}' in df"
+        print(pstr.format(flight_ID))
+
+    # - Also include HCN data
+    try:
+        filename = 'ACSIS6_ARNA2_HCN_James_TMS_Update.xlsx'
+        df = pd.read_excel( folder + filename, sheet_name=sheet_name)
+        xl = pd.ExcelFile( folder + filename)
+        if debug:
+            print(xl.sheet_names)
+        dt_var = 'date_time'
+    #    df2.index = pd.to_datetime( df2[dt_var].values, format='%m/%d/%Y %H:%M:%S')
+        dates = AC.dt64_2_dt(df[dt_var].values )
+        dates = [i.strftime(format) for i in dates ]
+        dates = [datetime_.strptime(i,'%d/%m/%Y %H:%M:%S') for i in dates]
+        df.index = dates
+        del df[dt_var]
+        # Merge the files
+        dfM = pd.concat([dfM, df], axis="index")
+    except:
+        pstr = "WARNING: failed to include CIMS HCN data for '{}' in df"
+        print(pstr.format(flight_ID))
+
     # Update the variable names
     VarNameDict = {
     'BrO (ppt*)':'BrO', 'Br2 + HOBr (ppt*)':'Br2+HOBr', 'HONO (ppt*)':'HONO',
     'HNO3 (ppt*) ':'HNO3',  'HNO3 (ppt*)' : 'HNO3',
+    'HCN (ppt*)': 'HCN',
     }
-    df = df.rename(columns=VarNameDict)
+    dfM = dfM.rename(columns=VarNameDict)
+    # Include a flag for flight ID
+    dfM['flight_ID'] = flight_ID
 	# Resample the data?
     if resample_data:
-        df = df.resample('1T' ).mean()
-    return df
+        dfM = dfM.resample('1T' ).mean()
+    return dfM
 
 
 def add_derived_variables2FAAM_data(df):
@@ -407,6 +451,28 @@ def add_derived_variables2FAAM_data(df):
         df.loc[bool1 & bool2, VarName] = True
     except KeyError:
         print("Derived variable not added to dataframe ({})".format(VarName))
+    return df
+
+
+def add_biomass_flag2df(df, CIMSdf=None, flight_ID='C216', threshold=None):
+    """
+    Add a flag for biomass burning to dataframe using CIMs HCN data
+    """
+    # Retrieve the CIMS HCN data if not provided
+    if isinstance(CIMSdf, type(None)):
+        df = get_CIMS_data4flight(flight_ID=flight_ID)
+    # What Criterion to use for biomass burning?
+    # 3 sigma enhancement over the background, and 10 sigma for a direct plume.
+    var2use = 'HCN'
+    NewVar = 'IS_BB'
+    if isinstance(threshold, type(None)):
+        background = 10
+        stats = df[var2use].describe()
+        sigma = stats.loc[ stats.index=='std'].values[0]
+        threshold = background + (sigma*3)
+    # Add a boolean for biomass burning (BB)
+    df[NewVar] = False
+    df.loc[df[var2use]>=threshold,  NewVar] = True
     return df
 
 

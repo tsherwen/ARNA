@@ -2713,10 +2713,13 @@ def plt_timeseries4ARNA_flight(df_obs=None, df_mod=None,
                                mod_label='GEOS-CF',
                                plt_alt_as_shadow=True,
                                plt_dust_as_backfill=True,
+                               plt_BB_as_backfill=False,
                                aspect_ratio=0.25,
                                flight_ID='C216',
                                yscale='linear',
                                invert_yaxis=False,
+                               title=None,
+                               plt_legend=True,
                                ):
     """
     Plot up a timeseries of observations and model for a given flight
@@ -2736,7 +2739,6 @@ def plt_timeseries4ARNA_flight(df_obs=None, df_mod=None,
     sns.set(color_codes=True)
     sns.set_context("paper", font_scale=0.75)
     # Set a shared title string
-    title_str =  "Timeseries of '{}' ({}) during flight '{}' on {}"
     # Setup the figure
     w, h = matplotlib.figure.figaspect(aspect_ratio)
     fig = plt.figure(figsize=(w, h))
@@ -2748,6 +2750,10 @@ def plt_timeseries4ARNA_flight(df_obs=None, df_mod=None,
                                        color='sandybrown',
                                        alpha=0.25,
                                        label='Dust (non-MBL)')
+    if plt_BB_as_backfill:
+        # TODO add plotting of biomass as backfill too
+        pass
+
     # Plot up the observations and model...
     if not isinstance(obs_var2plot, type(None)):
         df_obs = df_obs[[obs_var2plot]].dropna()
@@ -2757,7 +2763,13 @@ def plt_timeseries4ARNA_flight(df_obs=None, df_mod=None,
         plt.plot(df_mod.index, df_mod[ mod_var2plot ].values*mod_scale,
                  label=mod_label, color='red' )
     # Beautify plot
-    plt.title(title_str.format(var2plot, units, flight_ID, sdate_str ))
+    if isinstance(title, str):
+        plt.title(title)
+#    elif isinstance(title, type(None)):
+    else:
+        title_str =  "Timeseries of '{}' ({}) during flight '{}' on {}"
+        plt.title(title_str.format(var2plot, units, flight_ID, sdate_str ))
+
     plt.yscale(yscale)
     plt.ylim(ylim)
     plt.ylabel( '{} ({})'.format( var2plot, units) )
@@ -2783,8 +2795,9 @@ def plt_timeseries4ARNA_flight(df_obs=None, df_mod=None,
     if invert_yaxis:
         plt.gca().invert_yaxis()
     # Save to PDF
-    fig.legend(loc='best', bbox_to_anchor=(1,1),
-               bbox_transform=ax.transAxes)
+    if plt_legend:
+        fig.legend(loc='best', bbox_to_anchor=(1,1),
+                   bbox_transform=ax.transAxes)
     plt.tight_layout()
 
 
@@ -2910,15 +2923,12 @@ def colour_plot_background_by_bool(df, ax=None, bool2use=None, color='grey',
     """
     Colour background of plot for boolean locations on axis
     """
-#    ymin, ymax = ax.get_ylim()
+    # fill between plot max and min Y coordinate, for locations bool==True
     ymin, ymax = 0, 1
     x = df.index
     ax.fill_between(x, ymin, ymax, where=df[bool2use].values,
                     color=color, alpha=alpha, label=label,
                     transform=ax.get_xaxis_transform())
-#    ax.axvspan(1.25, 1.55, facecolor='#2ca02c', alpha=0.5)
-#ax.fill_between(data.index, 0,1, where=data['USREC'], transform=ax.get_xaxis_transform())
-
     return ax
 
 
@@ -2971,13 +2981,18 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, show_plot=False):
 #    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
 	# Just use non-transit ARNA flights
     flights_nums = [
+#    217,
+    218, 219, 220, 221, 222, 223, 224, 225,
+    ]
+    # Use flightnumbers with both NOy and halogens data
+#    flights_nums = [
 #    217, # Missing data for C217 (NOy)
-    218, 219, 220,
+#    218, 219, 220,
 #    221, # Missing data for C221 (NOy)
-    222, 223,
+#    222, 223,
 #    224,  # Missing data for C221 (BrO... )
 #    225,  # Missing data for C221 (BrO... )
-    ]
+#    ]
     flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
     # - Loop by flight and retrieve the files as dataframes (mod + obs)
     # Model
@@ -3005,78 +3020,263 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, show_plot=False):
         savetitle = 'ARNA_timeseries_flighttrack_{}_CIMS'.format(flight_ID)
         pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
         # - Plot up location of flights
-        plt_flightpath_spatially_over_CVAO(df=df_obs, flight_ID=flight_ID)
-        # Save to PDF
-        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
-        plt.close()
-
+        try:
+            plt_flightpath_spatially_over_CVAO(df=df_obs, flight_ID=flight_ID)
+            # Save to PDF
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+            plt.close()
+        except KeyError:
+            pstr = "WARNING: '{}' not plotted for '{}' - not in DataDrame"
+            print(pstr.format('spatial', flight_ID))
         # - Now plot up flight time series plots by variable
         # - Plot up Bromine monoxide
-        units = 'ppt'
-        var2plot = 'BrO'
-        obs_var2plot = 'BrO'
-        mod_var2plot = 'BrO'
-        mod_label = 'GEOS-CF'
-        mod_scale = 1E12
-        ylim = (-0.2, 1)
-        # Call timeseries plotter function
-        plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                   obs_var2plot=obs_var2plot,
-                                   mod_scale=mod_scale, mod_label=mod_label,
-                                   mod_var2plot=mod_var2plot,
-                                   ylim=ylim,
-                                   df_mod=df_mod, df_obs=df_obs,
-                                   flight_ID=flight_ID,
-                                   )
-        # Save to PDF and close the plot
-        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
-        plt.close()
+        try:
+            units = 'ppt'
+            var2plot = 'BrO'
+            obs_var2plot = 'BrO'
+            mod_var2plot = 'BrO'
+            mod_label = 'GEOS-CF'
+            mod_scale = 1E12
+            ylim = (-0.2, 1)
+            # Call timeseries plotter function
+            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                       obs_var2plot=obs_var2plot,
+                                       mod_scale=mod_scale,
+                                       mod_label=mod_label,
+                                       mod_var2plot=mod_var2plot,
+                                       ylim=ylim,
+                                       df_mod=df_mod, df_obs=df_obs,
+                                       flight_ID=flight_ID,
+                                       )
+            # Save to PDF and close the plot
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+            plt.close()
+        except KeyError:
+            pstr = "WARNING: '{}' not plotted for '{}' - not in DataDrame"
+            print(pstr.format(var2plot, flight_ID))
 
-        # - Now plot up flight time series plots by variable
         # - Plot up Nitric acid
-        units = 'ppt'
-        var2plot = 'HNO3'
-        obs_var2plot = 'HNO3'
-        mod_var2plot = 'HNO3'
-        mod_label = 'GEOS-CF'
-        mod_scale = 1E12
-        ylim = (-30, 1500)
-        # Call timeseries plotter function
-        plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                   obs_var2plot=obs_var2plot,
-                                   mod_scale=mod_scale, mod_label=mod_label,
-                                   mod_var2plot=mod_var2plot,
-                                   ylim=ylim,
-                                   df_mod=df_mod, df_obs=df_obs,
-                                   flight_ID=flight_ID,
-                                   )
-        # Save to PDF and close the plot
-        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
-        plt.close()
+        try:
+            units = 'ppt'
+            var2plot = 'HNO3'
+            obs_var2plot = 'HNO3'
+            mod_var2plot = 'HNO3'
+            mod_label = 'GEOS-CF'
+            mod_scale = 1E12
+            ylim = (-30, 1500)
+            # Call timeseries plotter function
+            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                       obs_var2plot=obs_var2plot,
+                                       mod_scale=mod_scale,
+                                       mod_label=mod_label,
+                                       mod_var2plot=mod_var2plot,
+                                       ylim=ylim,
+                                       df_mod=df_mod, df_obs=df_obs,
+                                       flight_ID=flight_ID,
+                                       )
+            # Save to PDF and close the plot
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+            plt.close()
+        except KeyError:
+            pstr = "WARNING: '{}' not plotted for '{}' - not in DataDrame"
+            print(pstr.format(var2plot, flight_ID))
 
-
-        # - Now plot up flight time series plots by variable
         # - Plot up Nitrous acid
-        units = 'ppt'
-        var2plot = 'HONO'
-        obs_var2plot = 'HONO'
-        mod_var2plot = 'HNO2'
-        mod_label = 'GEOS-CF'
-        mod_scale = 1E12
-        ylim = (-10, 60)
-        # Call timeseries plotter function
-        plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                   obs_var2plot=obs_var2plot,
-                                   mod_scale=mod_scale, mod_label=mod_label,
-                                   mod_var2plot=mod_var2plot,
-                                   ylim=ylim,
-                                   df_mod=df_mod, df_obs=df_obs,
-                                   flight_ID=flight_ID,
-                                   )
-        # Save to PDF and close the plot
-        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
-        plt.close()
+        try:
+            units = 'ppt'
+            var2plot = 'HONO'
+            obs_var2plot = 'HONO'
+            mod_var2plot = 'HNO2'
+            mod_label = 'GEOS-CF'
+            mod_scale = 1E12
+            ylim = (-10, 60)
+            # Call timeseries plotter function
+            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                       obs_var2plot=obs_var2plot,
+                                       mod_scale=mod_scale,
+                                       mod_label=mod_label,
+                                       mod_var2plot=mod_var2plot,
+                                       ylim=ylim,
+                                       df_mod=df_mod, df_obs=df_obs,
+                                       flight_ID=flight_ID,
+                                       )
+            # Save to PDF and close the plot
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+            plt.close()
+        except KeyError:
+            pstr = "WARNING: '{}' not plotted for '{}' - not in DataDrame"
+            print(pstr.format(var2plot, flight_ID))
 
+        # - Plot up HCN
+        try:
+            units = 'ppt'
+            var2plot = 'HCN'
+            obs_var2plot = 'HCN'
+            mod_var2plot = None
+            mod_label = 'GEOS-CF'
+            mod_scale = None
+            ylim = (-10, 120)
+            # Call timeseries plotter function
+            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                       obs_var2plot=obs_var2plot,
+                                       mod_scale=mod_scale,
+                                       mod_label=mod_label,
+                                       mod_var2plot=mod_var2plot,
+                                       ylim=ylim,
+                                       df_mod=df_mod, df_obs=df_obs,
+                                       flight_ID=flight_ID,
+                                       )
+            # Save to PDF and close the plot
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+            plt.close()
+        except KeyError:
+            pstr = "WARNING: '{}' not plotted for '{}' - not in DataDrame"
+            print(pstr.format(var2plot, flight_ID))
+
+        # - Add a plot with masking for biomass burning.
+        try:
+            #
+            units = 'ppt'
+            var2plot = 'HCN'
+            obs_var2plot = 'HCN'
+            mod_var2plot = None
+            mod_label = 'GEOS-CF'
+            mod_scale = None
+            ylim = (-10, 120)
+            title_str =  "Timeseries of '{}' ({}) during flight '{}' - {}"
+            ext_str = 'Biomass flagged as HCN @ background+3$\sigma$'
+            title = title_str.format(var2plot, units, flight_ID, ext_str )
+            # Call timeseries plotter function
+            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                       obs_var2plot=obs_var2plot,
+                                       mod_scale=mod_scale,
+                                       mod_label=mod_label,
+                                       mod_var2plot=mod_var2plot,
+                                       ylim=ylim,
+                                       df_mod=df_mod, df_obs=df_obs,
+                                       flight_ID=flight_ID,
+                                       plt_legend=False,
+                                       title=title,
+                                       )
+            # Add a flat for biomass burning
+            # hardware the stats for now
+            sigma = 20.082764920179258
+            background = 7.5
+            threshold = background+(3*sigma)
+            df_obs = add_biomass_flag2df(df_obs, CIMSdf=df_obs,
+                                         threshold=threshold,
+                                         flight_ID=flight_ID)
+            # Colour background based on this
+            bool2use = 'IS_BB'
+            ax = plt.gca()
+            colour_plot_background_by_bool(df=df_obs, ax=ax, bool2use=bool2use,
+                                           color='firebrick', alpha=0.25,
+                                           label='Biomass Burning')
+            fig = plt.gcf()
+            fig.legend(loc='best', bbox_to_anchor=(1,1),
+                       bbox_transform=ax.transAxes)
+            # Save to PDF and close the plot
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+            plt.close()
+        except KeyError:
+            pstr = "WARNING: '{}' not plotted for '{}' - not in DataDrame"
+            print(pstr.format(var2plot, flight_ID))
+        # - Add a plot with masking for biomass burning.
+        try:
+            #
+            units = 'ppt'
+            var2plot = 'HCN'
+            obs_var2plot = 'HCN'
+            mod_var2plot = None
+            mod_label = 'GEOS-CF'
+            mod_scale = None
+            ylim = (-10, 120)
+            title_str =  "Timeseries of '{}' ({}) during flight '{}' - {}"
+            ext_str = 'Biomass flagged as HCN @ background+2$\sigma$'
+            title = title_str.format(var2plot, units, flight_ID, ext_str )
+            # Call timeseries plotter function
+            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                       obs_var2plot=obs_var2plot,
+                                       mod_scale=mod_scale,
+                                       mod_label=mod_label,
+                                       mod_var2plot=mod_var2plot,
+                                       ylim=ylim,
+                                       df_mod=df_mod, df_obs=df_obs,
+                                       flight_ID=flight_ID,
+                                       plt_legend=False,
+                                       title=title,
+                                       )
+            # Add a flat for biomass burning
+            # hardware the stats for now
+            sigma = 20.082764920179258
+            background = 7.5
+            threshold = background+(2*sigma)
+            df_obs = add_biomass_flag2df(df_obs, CIMSdf=df_obs,
+                                         threshold=threshold,
+                                         flight_ID=flight_ID)
+            # Colour background based on this
+            bool2use = 'IS_BB'
+            ax = plt.gca()
+            colour_plot_background_by_bool(df=df_obs, ax=ax, bool2use=bool2use,
+                                           color='firebrick', alpha=0.25,
+                                           label='Biomass Burning')
+            fig = plt.gcf()
+            fig.legend(loc='best', bbox_to_anchor=(1,1),
+                       bbox_transform=ax.transAxes)
+            # Save to PDF and close the plot
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+            plt.close()
+        except KeyError:
+            pstr = "WARNING: '{}' not plotted for '{}' - not in DataDrame"
+            print(pstr.format(var2plot, flight_ID))
+        # - Add a plot with masking for biomass burning.
+        try:
+            #
+            units = 'ppt'
+            var2plot = 'HCN'
+            obs_var2plot = 'HCN'
+            mod_var2plot = None
+            mod_label = 'GEOS-CF'
+            mod_scale = None
+            ylim = (-10, 120)
+            title_str =  "Timeseries of '{}' ({}) during flight '{}' - {}"
+            ext_str = 'Biomass flagged as HCN @ background+1$\sigma$'
+            title = title_str.format(var2plot, units, flight_ID, ext_str )
+            # Call timeseries plotter function
+            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                       obs_var2plot=obs_var2plot,
+                                       mod_scale=mod_scale,
+                                       mod_label=mod_label,
+                                       mod_var2plot=mod_var2plot,
+                                       ylim=ylim,
+                                       df_mod=df_mod, df_obs=df_obs,
+                                       flight_ID=flight_ID,
+                                       plt_legend=False,
+                                       title=title,
+                                       )
+            # Add a flat for biomass burning
+            # hardware the stats for now
+            sigma = 20.082764920179258
+            background = 7.5
+            threshold = background+(1*sigma)
+            df_obs = add_biomass_flag2df(df_obs, CIMSdf=df_obs,
+                                         threshold=threshold,
+                                         flight_ID=flight_ID)
+            # Colour background based on this
+            bool2use = 'IS_BB'
+            ax = plt.gca()
+            colour_plot_background_by_bool(df=df_obs, ax=ax, bool2use=bool2use,
+                                           color='firebrick', alpha=0.25,
+                                           label='Biomass Burning')
+            fig = plt.gcf()
+            fig.legend(loc='best', bbox_to_anchor=(1,1),
+                       bbox_transform=ax.transAxes)
+            # Save to PDF and close the plot
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+            plt.close()
+        except KeyError:
+            pstr = "WARNING: '{}' not plotted for '{}' - not in DataDrame"
+            print(pstr.format(var2plot, flight_ID))
         # - Save entire pdf
         AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
         plt.close('all')
