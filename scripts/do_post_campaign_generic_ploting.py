@@ -32,7 +32,7 @@ def main():
     ar.plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS()
 
     # Plot up the temperature data from Hannah Price
-    # N/A? this is only for 2019. Emailed to check.
+    # N/A? this is only for 2019. Data to be worked up for 2020.
 
 
     # Plot up data for SLRs with and without dust

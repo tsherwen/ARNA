@@ -285,30 +285,10 @@ def get_filters_data4flight(flight_ID='C217', all_flights=True):
     df[edate_var] = pd.to_datetime( df[edate_var].values, format=format)
     del df[TimeOffVar]
     # calculate mid point of sampling and set this as index
-    mdate_var = 'Sample Mid'
-#     df[edate_var] - df[sdate_var]
-#     def calc_mid_point_as_dt(sdate, edate):
-#         print(sdate, edate)
-# #        sdate = sdate.astype(numpy.datetime64)
-# #        edate = edate.astype(numpy.datetime64)
-#         sdate = sdate.datetime()
-#         edate = edate.datetime()
-#         print([type(i) for i in (sdate, edate)])
-#         sdate, edate = AC.dt64_2_dt([sdate, edate])
-#         print(sdate, edate)
-#         interval = (edate - sdate).total_seconds()
-#         assert interval > 0, 'WARNING: filter internval <0!'
-#         half_interval = interval/2
-#         return AC.add_secs(sdate, half_interval )
-#     df[mdate_var] = df.apply(lambda x: calc_mid_point_as_dt(
-#                              sdate=x[sdate_var],
-#                              edate=x[edate_var],
-#                              ), axis=1)
-    # TODO - check dates (as some sample times are implausible)
-    df[mdate_var] = df[edate_var] - df[sdate_var]
-
-    # Just use the start time for now
-    df.index = df[sdate_var]
+    interval_var = 'Sample interval'
+    df[interval_var] = df[edate_var] - df[sdate_var]
+    # Just use the middle of the timestep
+    df.index = df[sdate_var] + (df[interval_var]/2)
     df = df.rename_axis(None)
     # - Just consider totals for species of interest
     NO3_var = 'NO3.total'
@@ -571,10 +551,48 @@ def get_FAAM_core4flightnum(flight_ID='C216', version='v2020_06',
         df['NOx'] = df['no_mr'].values + df['no2_mr'].values
     except:
         print('WARNING: failed to add NOx to flight {}'.format(flight_ID))
+    # Include flight_ID
+    df['flight_ID'] =  flight_ID
 	# Resample the data?
     if resample_data:
         df = df.resample('1T' ).mean()
     # Add derived variables
     df = add_derived_variables2FAAM_data(df)
     return df
+
+
+def mk_file_of_flags():
+    """
+    Make csv files of flagging (e.g. SLR, dust) for ARNA flights
+    """
+    # Which flights to plot?
+#    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
+	# Just use non-transit ARNA flights
+    flights_nums = [
+    217,
+    218, 219, 220, 221, 222, 223, 224, 225,
+    ]
+    flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
+    # Loop by flight and retrieve flights
+    dfs_obs = {}
+    for flight_ID in flight_IDs:
+        df = get_FAAM_core4flightnum(flight_ID=flight_ID )
+        df['flight_ID'] = flight_ID
+        dfs_obs[flight_ID] = df
+
+    # Only include a few variables for spaces
+    vars2use = [
+    'IS_DUST', 'IS_SLR', 'PS_RVSM', 'PS_RVSM_FLAG',
+    'LAT_GIN', 'LAT_GIN_FLAG',
+    'LON_GIN', 'LON_GIN_FLAG',
+    'ALT_GIN', 'ALT_GIN_FLAG', 'flight_ID',
+    ]
+    version = 'v1_0'
+    filename = 'ARNA_FAAM_flightpath_flagging_{}_{}.csv'
+    for flight_ID in flight_IDs:
+        df = dfs_obs[flight_ID]
+        df[vars2use].to_csv(filename.format(flight_ID, version))
+    # Save all the values together
+    df = pd.concat([dfs_obs[i] for i in dfs_obs.keys()], axis=1)
+    df[vars2use].to_csv(filename.format('ALL', version))
 
