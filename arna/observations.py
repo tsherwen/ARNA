@@ -306,7 +306,7 @@ def get_filters_data4flight(flight_ID='C217', all_flights=True):
         return df.loc[ df['Flight']==flight_ID, :]
 
 
-def get_CIMS_data4flight(flight_ID='C216', resample_data=True, debug=False):
+def get_CIMS_data4flight(flight_ID='C225', resample_data=True, debug=False):
     """
     Retrieve ToF-CIMS data from ARNA flights
     """
@@ -434,7 +434,7 @@ def add_derived_variables2FAAM_data(df):
     return df
 
 
-def add_biomass_flag2df(df, CIMSdf=None, flight_ID='C216', threshold=None):
+def add_biomass_flag2df(df, CIMSdf=None, flight_ID='C225', threshold=None):
     """
     Add a flag for biomass burning to dataframe using CIMs HCN data
     """
@@ -456,7 +456,7 @@ def add_biomass_flag2df(df, CIMSdf=None, flight_ID='C216', threshold=None):
     return df
 
 
-def get_FAAM_core4flightnum(flight_ID='C216', version='v2020_06',
+def get_FAAM_core4flightnum(flight_ID='C225', version='v2020_06',
                             resample_data=True):
     """
     Get the core FAAM flight data for a specific flight
@@ -534,17 +534,32 @@ def get_FAAM_core4flightnum(flight_ID='C216', version='v2020_06',
             VarName = 'PCAS2CON'
             FlagName = 'PCAS2_FLAG'
             ds = set_flagged_data2NaNs(ds, VarName=VarName, FlagName=FlagName)
-            # Just include PCASP concentration and a flag for this.
-            df2 = ds[ [VarName, FlagName] ].to_dataframe()
+            # Get values for surface area too (CDP/PCASP)
+            ds = get_surface_area4flight(flight_ID=flight_ID, ds=ds,
+                                         instrument='PCASP' )
+            PCASPvar = 'PCASP-total-surface'
+            ds = get_surface_area4flight(flight_ID=flight_ID, ds=ds,
+                                         instrument='CDP' )
+            CDPvar = 'CDP-total-surface'
+            # Just include PCASP/CDP variables and a flag for PCASP
+            df2 = ds[ [VarName, FlagName, PCASPvar] ].to_dataframe()
             df2.index = df2.index.floor('S')
             df2.index = df2.index.values # rm naming of time coord 'PCAS2TSPM'
             # The index is not immediately equivalent - index duplicates
             # Just use the first value if index duplicated for now.
             df2 = df2.loc[~df2.index.duplicated(keep='first')]
+            # Repeat the process for the CDP time index
+            # TODO: Find why 3 time indexes are used that are meant to be the same
+            df3 = ds[ [CDPvar] ].to_dataframe()
+            df3.index = df3.index.floor('S')
+            df3.index = df3.index.values # rm naming of time coord 'PCAS2TSPM'
+            # The index is not immediately equivalent - index duplicates
+            # Just use the first value if index duplicated for now.
+            df3 = df3.loc[~df3.index.duplicated(keep='first')]
             # Merge the files
-            df = pd.concat([df, df2], axis=1)
+            df = pd.concat([df, df2, df3], axis=1)
         except KeyError:
-            print('WARNING: no PCAS data found for {}'.format(flight_ID))
+            print('WARNING: no PCASP data found for {}'.format(flight_ID))
 
     # Add NOx as combined NO and NO2
     try:
@@ -559,6 +574,141 @@ def get_FAAM_core4flightnum(flight_ID='C216', version='v2020_06',
     # Add derived variables
     df = add_derived_variables2FAAM_data(df)
     return df
+
+
+def explore_FAAM_aerosol_data():
+    """
+    Explore the FAAM aerosol data (CDP, PCASP) from ARNA-2 campaign
+    """
+    # -- PCASP
+    dsPCASP = get_FAAM_mineral_dust_calibration(instrument='PCASP',
+                                                rtn_values=False)
+    # -- CDP
+    dsCDP = get_FAAM_mineral_dust_calibration(instrument='CDP',
+                                              rtn_values=False)
+    # only consider "potential dust" above a certain size?
+    # Use 100 um for now
+
+
+def get_FAAM_mineral_dust_calibration(instrument='PCASP', rtn_values=True):
+    """
+    Retrieve FAAM mineral dust calibration
+    """
+    # Location and name of calibration files?
+    folder = '{}/FAAM/'.format( get_local_folder('ARNA_data'))
+    if instrument == 'PCASP':
+        #  NOTE: range ~0.1-4 microns
+        filename = 'PCASP1_faam_20200128_v001_r000_cal.nc'
+        # NOTE: dust values are a nc subgroup!
+    #    group = 'bin_cal'
+        group = 'bin_cal/mineral_dust'
+    #    group = 'flow_cal'
+       # The real part of the refractive index was taken as 1.53 which is a common value and is in the OPAC database. It is quite a bit smaller than the 1.547 that was reported by Weinzierl et al. [2011] but has been shown to have a relatively weak effect on the instrument response. The values of the imaginary part were based on references in  Ryder et al. [2019] along with the frequency distribution of k(550nm) presented in fig 9 of Ryder et al. [2013]. So the minimum value was extended from 0.0015i to 0.001i. Calculating the bin boundaries with these multiple Mie curves was done with Gaussian centre-weighted averaging with 0.001i and 0.0024i being +/-2 sigma extreme values.
+    elif instrument == 'CDP':
+        #  NOTE: range ~4-120 microns
+        filename = 'CDP1_faam_20200208_v001_r000_cal.nc'
+        # NOTE: dust values are a nc subgroup!
+        group = 'master_cal/mineral_dust'
+    # Open and return the widths and
+    ds = xr.open_dataset( folder+filename, group=group )
+    # Get values for bin centres and widths in microns (1E-6 metres)
+    BinWidths = ds['dia_width'].values.flatten()
+    BinCentres = ds['dia_centre'].values.flatten()
+    d = {'BinWidths': BinWidths, 'BinCentres': BinCentres}
+    if rtn_values:
+        return d
+    else:
+        return ds
+
+
+def get_surface_area4flight(flight_ID='C225', instrument='PCASP',
+                            plt_up_values=False, ds=None):
+    """
+    Assuming spherical shape, calculate surface area
+    """
+    # - Consider the surface area Exclude the first channel
+    # Retrieve calibration for mineral dust
+    d = get_FAAM_mineral_dust_calibration(instrument=instrument)
+    # Get the bin widths and centres (and convert to in metres)
+    BinWidths = d['BinWidths'] *1E-6
+    BinCentres = d['BinCentres'] *1E-6
+    # What is the (max) radius of something in a given bin
+#    R = BinCentres + BinWidths/2 # Assume all max radius of bin?
+    R = BinCentres # assume all have same radius as middle of bin
+    # Surface area (units microns^2 / binned particule)
+    S = 4*np.pi*R**2
+
+    # Get the FAAM dataset for specific flight if not provided
+    if isinstance(ds, type(None)):
+        folder = '{}/CEDA/{}/'.format( get_local_folder('ARNA_data'), version)
+        files2use = glob.glob( folder + '*_{}*'.format(flight_ID.lower()) )
+        cloud_phy_fnames = [ i for i in files2use if 'cloud-phy' in i ]
+        # Just include the main file that ends "<flight_ID>.nc"
+        suffix = '{}.nc'.format( flight_ID.lower() )
+        cloud_phy_fname = [i for i in cloud_phy_fnames if i.endswith(suffix)]
+        if len(cloud_phy_fname) >=1:
+            ass_str = 'More than one main cloud phys file found for flight!'
+            assert len(cloud_phy_filename) == 1, ass_str
+        try:
+            ds = xr.open_dataset(cloud_phy_filename[0])
+        except KeyError:
+            pstr = 'WARNING: no {} data found for {}'
+            print(pstr.format(instrument, flight_ID))
+    # Now extract PCASP/CDP data
+    # Variable prefix?
+    if instrument == 'PCASP':
+        # ‘corrected’ for aspiration efficiency of particles entering the inlet based on some broad assumptions
+        VarStr = 'PCAS2_{:0>2}'
+        # not corrected for aspiration efficiency
+#        VarStr = 'PCAS_{}_u'
+        FlagName = 'PCAS2_FLAG'
+        TimeVar = 'PCAS2TSPM'
+    elif instrument == 'CDP':
+        VarStr = 'CDP_{:0>2}'
+        TimeVar = 'CDP_TSPM'
+        FlagName = 'CDP_FLAG'
+    # "It is traditional to skip bin 1 as the lower boundary is ‘undefined’, it is also where all the electronic noise ends up."
+    # Values to use?
+    range2use = np.arange(2, 31)
+    vars2use = [VarStr.format(i) for i in range2use]
+    # Remove flagged values for PCASP
+    for var in vars2use:
+        ds = set_flagged_data2NaNs(ds, VarName=var, FlagName=FlagName)
+    # Now apply to get surface area by bin
+    suffix = 'surface'
+    for n_channel, channel in enumerate(range2use):
+        Python_idx = channel-1
+        ChannelName = vars2use[n_channel]
+        VarName = '{}_{}'.format(vars2use[n_channel], suffix)
+        surface = S[Python_idx]
+        ds[VarName] = ds[ChannelName]*surface
+        attrs = {
+        'units': 'm3/cm-3',
+        'long_name': 'Surface area of {}'.format(ChannelName),
+        }
+        ds[VarName].attrs = attrs
+    # Plot this up to sanity check
+    if plt_up_values:
+        vars2plt = ['{}_{}'.format(i, suffix) for i in vars2use]
+        vals2plt = ds[vars2plt].copy().mean(dim=TimeVar).to_array().values
+        plt.bar(BinCentres[1:], vals2plt, width=BinWidths[1:] )
+        ax = plt.gca()
+        plt.yscale('log')
+        units = 'm${^3}$/cm$^{-3}$'
+        plt.ylabel( 'Binned surface area ({})'.format(units) )
+        plt.title('Surface Area during ARNA-2')
+        AC.save_plot('ARNA_aerosol_area_{}'.format(instrument))
+        plt.close()
+    # Then give a total and bin this value by <2.5um and >2.5um
+    VarName = '{}-total-surface'.format(instrument)
+    vars2use = ['{}_{}'.format(i, suffix) for i in vars2use]
+    ds[VarName] = ds[vars2use[0]].copy()
+    for var2use in vars2use[1:]:
+        ds[VarName].values = ds[VarName].values + ds[var2use].values
+
+    #
+#    vars2rtn = ['{}-total-surface'.format(instrument)]
+    return ds
 
 
 def mk_file_of_flags():

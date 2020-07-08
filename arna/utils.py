@@ -1,43 +1,21 @@
 """
 Utility functions for ARNA campaign/project work
 """
-
 import os
 import sys
-import xarray as xr
 import glob
+import gc
 import numpy as np
-import AC_tools as AC
 import pandas as pd
+import xarray as xr
+import xesmf as xe
+import AC_tools as AC
 from netCDF4 import Dataset
 from datetime import datetime as datetime_
-#import matplotlib.dates as mdates
-#import time
 import datetime as datetime
 import time
 from time import gmtime, strftime
 import matplotlib.pyplot as plt
-import seaborn as sns
-import gc
-#import matplotlib
-import cartopy.crs as ccrs
-import cartopy.feature as cfeature
-import matplotlib.patches as mpatches
-import seaborn as sns
-import matplotlib.ticker as mticker
-import cartopy.crs as ccrs
-from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
-#from cartopy.mpl.ticker import LatitudeFormatter, LongitudeFormatter
-#from cartopy.mpl.ticker import LatitudeLocator, LongitudeLocator
-from shapely.geometry.polygon import LinearRing
-import xesmf as xe
-import os
-#from bs4 import BeautifulSoup
-import requests
-from PIL import Image, ImageDraw
-import PIL
-from multiprocessing import Pool
-from functools import partial
 import matplotlib
 
 
@@ -670,7 +648,6 @@ def get_reduced_cmap(cmap='Reds', minval=0.0, maxval=0.75, npoints=100):
     """
     Get a reduced colormap object (cmap)
     """
-    import matplotlib
     # Load color map
     if isinstance(cmap, str):
         cmap = plt.get_cmap(cmap)

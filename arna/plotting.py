@@ -4,22 +4,20 @@ Plotting functions for ARNA campaign work
 
 import os
 import sys
-import xarray as xr
 import glob
+import gc
 import numpy as np
-import AC_tools as AC
 import pandas as pd
+import xarray as xr
+import xesmf as xe
+import AC_tools as AC
 from netCDF4 import Dataset
 from datetime import datetime as datetime_
-#import matplotlib.dates as mdates
-#import time
 import datetime as datetime
 import time
 from time import gmtime, strftime
 import matplotlib.pyplot as plt
 import seaborn as sns
-import gc
-#import matplotlib
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 import matplotlib.patches as mpatches
@@ -30,14 +28,6 @@ from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 #from cartopy.mpl.ticker import LatitudeFormatter, LongitudeFormatter
 #from cartopy.mpl.ticker import LatitudeLocator, LongitudeLocator
 from shapely.geometry.polygon import LinearRing
-import xesmf as xe
-import os
-#from bs4 import BeautifulSoup
-import requests
-from PIL import Image, ImageDraw
-import PIL
-from multiprocessing import Pool
-from functools import partial
 import matplotlib
 
 # import local ARNA module functions
@@ -2705,7 +2695,8 @@ def plt_flightpath_spatially_over_CVAO(df, LatVar='LAT_GIN', LonVar='LON_GIN',
 
 def plt_timeseries4ARNA_flight(df_obs=None, df_mod=None,
                                obs_label='Obs.',
-                               mod_scale=1, obs_adjustby=0,
+                               mod_scale=1, obs_scale=1,
+                               obs_adjustby=0, mod_adjustby=0,
                                ylim=(None, None),
                                units='ppbv', var2plot='CO',
                                obs_var2plot='CO_AERO',
@@ -2757,10 +2748,12 @@ def plt_timeseries4ARNA_flight(df_obs=None, df_mod=None,
     # Plot up the observations and model...
     if not isinstance(obs_var2plot, type(None)):
         df_obs = df_obs[[obs_var2plot]].dropna()
-        plt.plot(df_obs.index, df_obs[obs_var2plot].values+obs_adjustby,
+        plt.plot(df_obs.index,
+                 (df_obs[obs_var2plot].values+obs_adjustby)*obs_scale,
                  label=obs_label, color='k' )
     if not isinstance(mod_var2plot, type(None)):
-        plt.plot(df_mod.index, df_mod[ mod_var2plot ].values*mod_scale,
+        plt.plot(df_mod.index,
+                 (df_mod[ mod_var2plot ].values+mod_adjustby)*mod_scale,
                  label=mod_label, color='red' )
     # Beautify plot
     if isinstance(title, str):
@@ -3620,13 +3613,16 @@ def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False):
     #                                   ylim=ylim,
                                        df_mod=df_mod, df_obs=df_obs,
                                        flight_ID=flight_ID,
+                                       plt_legend=False,
                                        )
             # Colour in SLRs
             ax = plt.gca()
             colour_plot_background_by_bool(df=df_obs, ax=ax, bool2use='IS_SLR',
                                            color='blue', alpha=0.25,
                                            label='SLR')
-            plt.legend()
+            fig = plt.gcf()
+            fig.legend(loc='best', bbox_to_anchor=(1,1),
+                       bbox_transform=ax.transAxes)
             # Save to PDF and close the plot
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
             plt.close()
@@ -3654,13 +3650,16 @@ def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False):
                                        ylim=ylim,
                                        df_mod=df_mod, df_obs=df_obs,
                                        flight_ID=flight_ID,
+                                       plt_legend=False,
                                        )
             # Colour in SLRs
             ax = plt.gca()
             colour_plot_background_by_bool(df=df_obs, ax=ax, bool2use='IS_SLR',
                                            color='blue', alpha=0.25,
                                            label='SLR')
-            plt.legend()
+            fig = plt.gcf()
+            fig.legend(loc='best', bbox_to_anchor=(1,1),
+                       bbox_transform=ax.transAxes)
 
             # Save to PDF and close the plot
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
@@ -3694,8 +3693,65 @@ def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False):
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
             plt.close()
         except:
-            print('Failed to plot PCASP')
+            print('Failed to plot {}'.format(var2plot))
 
+        # - Plot up PCASP surface area
+        try:
+            units = 'x10$^{-12}$ m${^3}$/cm$^{-3}$'
+    #        VarName = 'PCAS2CON'
+    #        FlagName = 'PCAS2_FLAG'
+            var2plot = 'PCASP (total surface area)'
+            obs_var2plot = 'PCASP-total-surface'
+            mod_var2plot = None
+            mod_label = 'GEOS-CF'
+            obs_scale = 1E12
+            mod_scale = None
+    #        ylim = (10, 100)
+            ylim = None
+            # Call timeseries plotter function
+            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                       obs_var2plot=obs_var2plot,
+                                       obs_scale=obs_scale,
+                                       mod_scale=mod_scale,
+                                       mod_label=mod_label,
+                                       mod_var2plot=mod_var2plot,
+                                       ylim=ylim,
+                                       df_mod=df_mod, df_obs=df_obs,
+                                       flight_ID=flight_ID,
+                                       )
+            # Save to PDF and close the plot
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+            plt.close()
+        except:
+            print('Failed to plot {}'.format(var2plot))
+
+        # - Plot up PCASP surface area
+        try:
+            units = 'x10$^{-9}$ m${^3}$/cm$^{-3}$'
+            var2plot = 'CDP (total surface area)'
+            obs_var2plot = 'CDP-total-surface'
+            mod_var2plot = None
+            mod_label = 'GEOS-CF'
+            obs_scale = 1E9
+            mod_scale = None
+    #        ylim = (10, 100)
+            ylim = None
+            # Call timeseries plotter function
+            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                       obs_var2plot=obs_var2plot,
+                                       mod_scale=mod_scale,
+                                       obs_scale=obs_scale,
+                                       mod_label=mod_label,
+                                       mod_var2plot=mod_var2plot,
+                                       ylim=ylim,
+                                       df_mod=df_mod, df_obs=df_obs,
+                                       flight_ID=flight_ID,
+                                       )
+            # Save to PDF and close the plot
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+            plt.close()
+        except:
+            print('Failed to plot {}'.format(var2plot))
 
         # - Plot up temperature
         units = '$^{\circ}$C'
@@ -3787,7 +3843,7 @@ def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False):
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
             plt.close()
         except:
-            print('Failed to plot Latitude')
+            print('Failed to plot {}'.format(var2plot))
 
         # - Plot up Longitude
         try:
@@ -3810,7 +3866,7 @@ def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False):
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
             plt.close()
         except:
-            print('Failed to plot Longitude')
+            print('Failed to plot {}'.format(var2plot))
 
         # - Plot up altitude
         try:
@@ -3843,7 +3899,7 @@ def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False):
                                            label='SLR')
             plt.legend()
         except:
-            print('Failed to plot altitude')
+            print('Failed to plot {}'.format(var2plot))
 
 
         # - Save entire pdf
@@ -4038,6 +4094,39 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, show_plot=False):
             plt.close()
         except:
             print('Failed to plot HONO')
+
+        # - Plot up NOx / 'PCASP-total-surface'
+        try:
+            #
+            obs_var2plot = 'NOx/PCASP'
+            ratio = df_obs['NOx'] / df_obs['PCASP-total-surface']
+            df_obs[obs_var2plot] = ratio
+            # Then plot
+            units = 'ratio'
+            var2plot = obs_var2plot
+            mod_var2plot = None
+            obs_var2plot = obs_var2plot
+            mod_label = 'GEOS-CF'
+            mod_scale = None
+#            ylim = (0.3, 400)
+            yscale = 'log'
+            # Call timeseries plotter function
+            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                       obs_var2plot=obs_var2plot,
+                                       mod_scale=mod_scale,
+                                       mod_label=mod_label,
+                                       mod_var2plot=mod_var2plot,
+                                       ylim=ylim,
+                                       df_mod=df_mod, df_obs=df_obs,
+                                       flight_ID=flight_ID,
+                                       yscale=yscale,
+                                       )
+            # Save to PDF and close the plot
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+            plt.close()
+        except:
+            print('Failed to plot NOx')
+
 
         # - Save entire pdf
         AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)

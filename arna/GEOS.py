@@ -1,44 +1,24 @@
 """
 Functions to interact with GEOS-CF/GEOS-5/GMAO output during the ARNA campaign
 """
-
 import os
 import sys
-import xarray as xr
 import glob
+import gc
+import requests
+import re
+import wget
 import numpy as np
-import AC_tools as AC
 import pandas as pd
-from netCDF4 import Dataset
-from datetime import datetime as datetime_
-#import matplotlib.dates as mdates
-#import time
+import xarray as xr
+import xesmf as xe
+import AC_tools as AC
 import datetime as datetime
 import time
 from time import gmtime, strftime
-import matplotlib.pyplot as plt
-import seaborn as sns
-import gc
-#import matplotlib
-import cartopy.crs as ccrs
-import cartopy.feature as cfeature
-import matplotlib.patches as mpatches
-import seaborn as sns
-import matplotlib.ticker as mticker
-import cartopy.crs as ccrs
-from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
-#from cartopy.mpl.ticker import LatitudeFormatter, LongitudeFormatter
-#from cartopy.mpl.ticker import LatitudeLocator, LongitudeLocator
-from shapely.geometry.polygon import LinearRing
-import xesmf as xe
-import os
-#from bs4 import BeautifulSoup
-import requests
+from bs4 import BeautifulSoup
 from PIL import Image, ImageDraw
 import PIL
-from multiprocessing import Pool
-from functools import partial
-import matplotlib
 
 # Import from elsewhere in ARNA module
 from . core import *
@@ -82,10 +62,6 @@ def get_expanded_variable_GMAO_files(verbose=True, debug=False):
     """
     Get the expanded variable NetCDF files from GMAO
     """
-    from bs4 import BeautifulSoup
-    import requests
-    import re
-    import wget
     # What is the root URL for the data?
     URL = 'https://gmao.gsfc.nasa.gov/gmaoftp/geoscf/ARNA/'
     # Access the html via requests

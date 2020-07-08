@@ -1,9 +1,9 @@
 """
 Module of analysis and processing functions for the ARNA project
 """
-import xarray as xr
 import numpy as np
 import pandas as pd
+import xarray as xr
 
 
 def main():

@@ -1,7 +1,6 @@
 """
 Miscellaneous functions for ARNA campaign work (pre/during/after)
 """
-
 import os
 import sys
 import xarray as xr
@@ -9,36 +8,10 @@ import glob
 import numpy as np
 import AC_tools as AC
 import pandas as pd
-from netCDF4 import Dataset
-from datetime import datetime as datetime_
-#import matplotlib.dates as mdates
-#import time
 import datetime as datetime
 import time
 from time import gmtime, strftime
-import matplotlib.pyplot as plt
-import seaborn as sns
 import gc
-#import matplotlib
-import cartopy.crs as ccrs
-import cartopy.feature as cfeature
-import matplotlib.patches as mpatches
-import seaborn as sns
-import matplotlib.ticker as mticker
-import cartopy.crs as ccrs
-from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
-#from cartopy.mpl.ticker import LatitudeFormatter, LongitudeFormatter
-#from cartopy.mpl.ticker import LatitudeLocator, LongitudeLocator
-from shapely.geometry.polygon import LinearRing
-import xesmf as xe
-import os
-#from bs4 import BeautifulSoup
-import requests
-from PIL import Image, ImageDraw
-import PIL
-from multiprocessing import Pool
-from functools import partial
-import matplotlib
 
 
 def get_visibility_reports( dts=None, folder='./', debug=False  ):
@@ -58,7 +31,7 @@ def get_visibility_reports( dts=None, folder='./', debug=False  ):
     # URL for SDS-WAS address
     URL_str = 'https://sds-was.aemet.es/archive/images/visibility/'
     URL_str += '{}/{:0>2}/images/{}{:0>2}{:0>2}_visibility.png'
-    # for dt in dts
+    # For dt in dts
     for dt in dts:
         if debug:
             print(dt)
