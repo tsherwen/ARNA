@@ -2699,8 +2699,8 @@ def plt_timeseries4ARNA_flight(df_obs=None, df_mod=None,
                                obs_adjustby=0, mod_adjustby=0,
                                ylim=(None, None),
                                units='ppbv', var2plot='CO',
-                               obs_var2plot='CO_AERO',
-                               mod_var2plot='CO',
+                               ObsVar2Plot='CO_AERO',
+                               ModVar2Plot='CO',
                                mod_label='GEOS-CF',
                                plt_alt_as_shadow=True,
                                plt_dust_as_backfill=True,
@@ -2746,14 +2746,14 @@ def plt_timeseries4ARNA_flight(df_obs=None, df_mod=None,
         pass
 
     # Plot up the observations and model...
-    if not isinstance(obs_var2plot, type(None)):
-        df_obs = df_obs[[obs_var2plot]].dropna()
+    if not isinstance(ObsVar2Plot, type(None)):
+        df_obs = df_obs[[ObsVar2Plot]].dropna()
         plt.plot(df_obs.index,
-                 (df_obs[obs_var2plot].values+obs_adjustby)*obs_scale,
+                 (df_obs[ObsVar2Plot].values+obs_adjustby)*obs_scale,
                  label=obs_label, color='k' )
-    if not isinstance(mod_var2plot, type(None)):
+    if not isinstance(ModVar2Plot, type(None)):
         plt.plot(df_mod.index,
-                 (df_mod[ mod_var2plot ].values+mod_adjustby)*mod_scale,
+                 (df_mod[ ModVar2Plot ].values+mod_adjustby)*mod_scale,
                  label=mod_label, color='red' )
     # Beautify plot
     if isinstance(title, str):
@@ -2774,8 +2774,8 @@ def plt_timeseries4ARNA_flight(df_obs=None, df_mod=None,
     if plt_alt_as_shadow:
         # Add a shadow of the altitude
         ax2 = ax.twinx()
-        mod_var2plot = 'model-lev'
-        ax2.plot(df_mod.index, df_mod[ mod_var2plot ].values,
+        ModVar2Plot = 'model-lev'
+        ax2.plot(df_mod.index, df_mod[ ModVar2Plot ].values,
                  label='Altitude',
                  color='grey', zorder=100, alpha=0.25  )
         ax2.set_ylabel('Altitude (hPa)')
@@ -2794,13 +2794,124 @@ def plt_timeseries4ARNA_flight(df_obs=None, df_mod=None,
     plt.tight_layout()
 
 
+def plt_timeseries4ARNA_flight_period_obs(df_obs=None, df_mod=None,
+                                          dfs_mod_period=None,
+                                          obs_label='Obs.',
+                                          mod_scale=1, obs_adjustby=0,
+                                          ylim=(None, None),
+                                          units='ppbv', var2plot='CO',
+                                          ObsVar2Plot='CO_AERO',
+                                          ModVar2Plot='CO',
+                                          mod_label='GEOS-CF',
+                                          plt_alt_as_shadow=True,
+                                          aspect_ratio=0.25,
+                                          flight_ID='C216',
+                                          yscale='linear',
+                                          invert_yaxis=False,
+                                          plt_dust_as_backfill=True,
+                                          plt_errorbar=False,
+                                          ObsVar2PlotErr='',
+                                          StartVar='Sample Start',
+                                          EndVar='Sample End',
+                                          ):
+    """
+    Plot up a timeseries of observations and model for a given flight
+    """
+    # Get the beginning and end of the flight from the extracted model times
+    xylim_min = AC.add_minutes( df_mod.index.min(), -15)
+    xylim_max = AC.add_minutes( df_mod.index.max(), 15 )
+    xticks = df_mod.resample('15T' ).mean().index.values
+    xticks = AC.dt64_2_dt( xticks )
+    xticks_labels = [ i.strftime('%H:%M') for i in xticks]
+    # Get dates/datetimes of flight
+    sdate_str = df_mod.index.min().strftime('%x').strip()
+    edate_str = df_mod.index.max().strftime('%x').strip()
+    stime_str = df_mod.index.min().strftime('%H:%M').strip()
+    etime_str = df_mod.index.max().strftime('%H:%M').strip()
+    # Now use Seaborn settings
+    sns.set(color_codes=True)
+    sns.set_context("paper", font_scale=0.75)
+    # Set a shared title string
+    title_str =  "Timeseries of '{}' ({}) during flight '{}' on {}"
+    # Setup the figure
+    w, h = matplotlib.figure.figaspect(aspect_ratio)
+    fig = plt.figure(figsize=(w, h))
+    ax = fig.add_subplot(111)
+    # Plot up the model data...
+    if not isinstance(ModVar2Plot, type(None)):
+#        plt.plot(df_mod.index, df_mod[ ModVar2Plot ].values*mod_scale,
+#                 label=mod_label, color='red' )
+        xmin = dfs_mod_period[StartVar]
+        xmax = dfs_mod_period[EndVar]
+        plt.hlines(dfs_mod_period[ ModVar2Plot ].values*mod_scale,
+                   xmin, xmax,
+                   label=mod_label, color='red' )
+
+
+    # Plot up where
+    if plt_dust_as_backfill:
+        colour_plot_background_by_bool(df=df_obs, ax=ax,
+                                       bool2use='IS_DUST',
+                                       color='sandybrown',
+                                       alpha=0.25,
+                                       label='Dust (non-MBL)')
+    # Now plot up the observations
+    if plt_errorbar:
+        ax = plt.gca()
+        ax.errorbar(df_obs.index, df_obs[ObsVar2Plot].values+obs_adjustby,
+                    yerr=df_obs[ObsVar2PlotErr].values, fmt='-o',
+                    color='k', capsize=3.0, label=obs_label)
+    else:
+#        df_obs = df_obs[[ObsVar2Plot]].dropna()
+#        plt.scatter(df_obs.index,
+#                    label=obs_label,
+#                    color='k' )
+        xmin = df_obs[StartVar]
+        xmax = df_obs[EndVar]
+        plt.hlines(df_obs[ObsVar2Plot].values+obs_adjustby,
+                   xmin, xmax,
+                   label=mod_label, color='red' )
+
+    # Beautify plot
+    plt.title(title_str.format(var2plot, units, flight_ID, sdate_str ))
+    plt.yscale(yscale)
+    plt.ylim(ylim)
+    plt.ylabel( '{} ({})'.format( var2plot, units) )
+    plt.xlim(xylim_min, xylim_max)
+    ax.set_xticks(xticks)
+    ax.set_xticklabels(xticks_labels, rotation=45)
+#    print(xticks_labels)
+    # Invert the second y-axis
+    if plt_alt_as_shadow:
+        # Add a shadow of the altitude
+        ax2 = ax.twinx()
+        ModVar2Plot = 'model-lev'
+        ax2.plot(df_mod.index, df_mod[ ModVar2Plot ].values,
+                 label='Altitude',
+                 color='grey', zorder=100, alpha=0.25  )
+        ax2.set_ylabel('Altitude (hPa)')
+        ax2.grid(None)
+        ax2.invert_yaxis()
+        # Force use of the same ticks
+        ax2.set_xticks(xticks)
+        ax2.set_xticklabels(xticks_labels, rotation=45)
+    # Invert the y-xais?
+    if invert_yaxis:
+        plt.gca().invert_yaxis()
+    # Save to PDF
+    fig.legend(loc='best', bbox_to_anchor=(1,1),
+               bbox_transform=ax.transAxes)
+    plt.tight_layout()
+
+
+
 def plt_timeseries4ARNA_flight_point_obs(df_obs=None, df_mod=None,
                                          obs_label='Obs.',
                                          mod_scale=1, obs_adjustby=0,
                                          ylim=(None, None),
                                          units='ppbv', var2plot='CO',
-                                         obs_var2plot='CO_AERO',
-                                         mod_var2plot='CO',
+                                         ObsVar2Plot='CO_AERO',
+                                         ModVar2Plot='CO',
                                          mod_label='GEOS-CF',
                                          plt_alt_as_shadow=True,
                                          aspect_ratio=0.25,
@@ -2809,7 +2920,7 @@ def plt_timeseries4ARNA_flight_point_obs(df_obs=None, df_mod=None,
                                          invert_yaxis=False,
                                          plt_dust_as_backfill=True,
                                          plt_errorbar=False,
-                                         obs_var2plot_err='',
+                                         ObsVar2PlotErr='',
                                          ):
     """
     Plot up a timeseries of observations and model for a given flight
@@ -2835,8 +2946,8 @@ def plt_timeseries4ARNA_flight_point_obs(df_obs=None, df_mod=None,
     fig = plt.figure(figsize=(w, h))
     ax = fig.add_subplot(111)
     # Plot up the model data...
-    if not isinstance(mod_var2plot, type(None)):
-        plt.plot(df_mod.index, df_mod[ mod_var2plot ].values*mod_scale,
+    if not isinstance(ModVar2Plot, type(None)):
+        plt.plot(df_mod.index, df_mod[ ModVar2Plot ].values*mod_scale,
                  label=mod_label, color='red' )
 
     # Plot up where
@@ -2849,12 +2960,12 @@ def plt_timeseries4ARNA_flight_point_obs(df_obs=None, df_mod=None,
     # Now plot up the observations
     if plt_errorbar:
         ax = plt.gca()
-        ax.errorbar(df_obs.index, df_obs[obs_var2plot].values+obs_adjustby,
-                    yerr=df_obs[obs_var2plot_err].values, fmt='-o',
+        ax.errorbar(df_obs.index, df_obs[ObsVar2Plot].values+obs_adjustby,
+                    yerr=df_obs[ObsVar2PlotErr].values, fmt='-o',
                     color='k', capsize=3.0, label=obs_label)
     else:
-#        df_obs = df_obs[[obs_var2plot]].dropna()
-        plt.scatter(df_obs.index, df_obs[obs_var2plot].values+obs_adjustby,
+#        df_obs = df_obs[[ObsVar2Plot]].dropna()
+        plt.scatter(df_obs.index, df_obs[ObsVar2Plot].values+obs_adjustby,
                     label=obs_label, color='k' )
 
     # Beautify plot
@@ -2870,8 +2981,8 @@ def plt_timeseries4ARNA_flight_point_obs(df_obs=None, df_mod=None,
     if plt_alt_as_shadow:
         # Add a shadow of the altitude
         ax2 = ax.twinx()
-        mod_var2plot = 'model-lev'
-        ax2.plot(df_mod.index, df_mod[ mod_var2plot ].values,
+        ModVar2Plot = 'model-lev'
+        ax2.plot(df_mod.index, df_mod[ ModVar2Plot ].values,
                  label='Altitude',
                  color='grey', zorder=100, alpha=0.25  )
         ax2.set_ylabel('Altitude (hPa)')
@@ -3026,17 +3137,17 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, show_plot=False):
         try:
             units = 'ppt'
             var2plot = 'BrO'
-            obs_var2plot = 'BrO'
-            mod_var2plot = 'BrO'
+            ObsVar2Plot = 'BrO'
+            ModVar2Plot = 'BrO'
             mod_label = 'GEOS-CF'
             mod_scale = 1E12
             ylim = (-0.2, 1)
             # Call timeseries plotter function
             plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       obs_var2plot=obs_var2plot,
+                                       ObsVar2Plot=ObsVar2Plot,
                                        mod_scale=mod_scale,
                                        mod_label=mod_label,
-                                       mod_var2plot=mod_var2plot,
+                                       ModVar2Plot=ModVar2Plot,
                                        ylim=ylim,
                                        df_mod=df_mod, df_obs=df_obs,
                                        flight_ID=flight_ID,
@@ -3052,17 +3163,17 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, show_plot=False):
         try:
             units = 'ppt'
             var2plot = 'HNO3'
-            obs_var2plot = 'HNO3'
-            mod_var2plot = 'HNO3'
+            ObsVar2Plot = 'HNO3'
+            ModVar2Plot = 'HNO3'
             mod_label = 'GEOS-CF'
             mod_scale = 1E12
             ylim = (-30, 1500)
             # Call timeseries plotter function
             plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       obs_var2plot=obs_var2plot,
+                                       ObsVar2Plot=ObsVar2Plot,
                                        mod_scale=mod_scale,
                                        mod_label=mod_label,
-                                       mod_var2plot=mod_var2plot,
+                                       ModVar2Plot=ModVar2Plot,
                                        ylim=ylim,
                                        df_mod=df_mod, df_obs=df_obs,
                                        flight_ID=flight_ID,
@@ -3078,17 +3189,17 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, show_plot=False):
         try:
             units = 'ppt'
             var2plot = 'HONO'
-            obs_var2plot = 'HONO'
-            mod_var2plot = 'HNO2'
+            ObsVar2Plot = 'HONO'
+            ModVar2Plot = 'HNO2'
             mod_label = 'GEOS-CF'
             mod_scale = 1E12
             ylim = (-10, 60)
             # Call timeseries plotter function
             plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       obs_var2plot=obs_var2plot,
+                                       ObsVar2Plot=ObsVar2Plot,
                                        mod_scale=mod_scale,
                                        mod_label=mod_label,
-                                       mod_var2plot=mod_var2plot,
+                                       ModVar2Plot=ModVar2Plot,
                                        ylim=ylim,
                                        df_mod=df_mod, df_obs=df_obs,
                                        flight_ID=flight_ID,
@@ -3104,17 +3215,17 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, show_plot=False):
         try:
             units = 'ppt'
             var2plot = 'HCN'
-            obs_var2plot = 'HCN'
-            mod_var2plot = None
+            ObsVar2Plot = 'HCN'
+            ModVar2Plot = None
             mod_label = 'GEOS-CF'
             mod_scale = None
             ylim = (-10, 120)
             # Call timeseries plotter function
             plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       obs_var2plot=obs_var2plot,
+                                       ObsVar2Plot=ObsVar2Plot,
                                        mod_scale=mod_scale,
                                        mod_label=mod_label,
-                                       mod_var2plot=mod_var2plot,
+                                       ModVar2Plot=ModVar2Plot,
                                        ylim=ylim,
                                        df_mod=df_mod, df_obs=df_obs,
                                        flight_ID=flight_ID,
@@ -3131,8 +3242,8 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, show_plot=False):
             #
             units = 'ppt'
             var2plot = 'HCN'
-            obs_var2plot = 'HCN'
-            mod_var2plot = None
+            ObsVar2Plot = 'HCN'
+            ModVar2Plot = None
             mod_label = 'GEOS-CF'
             mod_scale = None
             ylim = (-10, 120)
@@ -3141,10 +3252,10 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, show_plot=False):
             title = title_str.format(var2plot, units, flight_ID, ext_str )
             # Call timeseries plotter function
             plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       obs_var2plot=obs_var2plot,
+                                       ObsVar2Plot=ObsVar2Plot,
                                        mod_scale=mod_scale,
                                        mod_label=mod_label,
-                                       mod_var2plot=mod_var2plot,
+                                       ModVar2Plot=ModVar2Plot,
                                        ylim=ylim,
                                        df_mod=df_mod, df_obs=df_obs,
                                        flight_ID=flight_ID,
@@ -3179,8 +3290,8 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, show_plot=False):
             #
             units = 'ppt'
             var2plot = 'HCN'
-            obs_var2plot = 'HCN'
-            mod_var2plot = None
+            ObsVar2Plot = 'HCN'
+            ModVar2Plot = None
             mod_label = 'GEOS-CF'
             mod_scale = None
             ylim = (-10, 120)
@@ -3189,10 +3300,10 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, show_plot=False):
             title = title_str.format(var2plot, units, flight_ID, ext_str )
             # Call timeseries plotter function
             plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       obs_var2plot=obs_var2plot,
+                                       ObsVar2Plot=ObsVar2Plot,
                                        mod_scale=mod_scale,
                                        mod_label=mod_label,
-                                       mod_var2plot=mod_var2plot,
+                                       ModVar2Plot=ModVar2Plot,
                                        ylim=ylim,
                                        df_mod=df_mod, df_obs=df_obs,
                                        flight_ID=flight_ID,
@@ -3227,8 +3338,8 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, show_plot=False):
             #
             units = 'ppt'
             var2plot = 'HCN'
-            obs_var2plot = 'HCN'
-            mod_var2plot = None
+            ObsVar2Plot = 'HCN'
+            ModVar2Plot = None
             mod_label = 'GEOS-CF'
             mod_scale = None
             ylim = (-10, 120)
@@ -3237,10 +3348,10 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, show_plot=False):
             title = title_str.format(var2plot, units, flight_ID, ext_str )
             # Call timeseries plotter function
             plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       obs_var2plot=obs_var2plot,
+                                       ObsVar2Plot=ObsVar2Plot,
                                        mod_scale=mod_scale,
                                        mod_label=mod_label,
-                                       mod_var2plot=mod_var2plot,
+                                       ModVar2Plot=ModVar2Plot,
                                        ylim=ylim,
                                        df_mod=df_mod, df_obs=df_obs,
                                        flight_ID=flight_ID,
@@ -3275,6 +3386,40 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, show_plot=False):
         plt.close('all')
 
 
+def only_consider_data_during_filter_times(df, FILTERdf=None,
+                                           flight_ID='C225',
+                                           average4period=True):
+    """
+    Chop out only the values for the filter sample periods
+    """
+    # Loop by filter
+    StartVar = 'Sample Start'
+    EndVar = 'Sample End'
+    dfs = []
+    for filter in FILTERdf['Filter'].values:
+#        print( filter )
+        FILTERdf_tmp = FILTERdf.loc[FILTERdf['Filter']==filter]
+        dt = FILTERdf_tmp.index.values
+        sdate = FILTERdf_tmp[StartVar].values[0]
+        edate = FILTERdf_tmp[EndVar].values[0]
+        # Select just the sampling period
+        df4filter = df.loc[df.index>=sdate, :]
+        df4filter = df4filter.loc[df4filter.index<=edate, :]
+        if average4period:
+            df4filter = df4filter.mean(axis=0)
+        # Add start time and end time to the dataframe
+        df4filter[StartVar] = sdate
+        df4filter[EndVar] = edate
+        # Save to list
+        dfs += [df4filter.copy()]
+        del df4filter
+    # return averaged over filter sample period
+    if average4period:
+        return pd.DataFrame( dfs, index=FILTERdf.index)
+    else:
+        return pd.DataFrame( pd.concat(dfs, axis=0) )
+
+
 def plt_timeseries_comp4ARNA_flights_filters(dpi=320, show_plot=False,
                                              debug=False):
     """
@@ -3302,16 +3447,26 @@ def plt_timeseries_comp4ARNA_flights_filters(dpi=320, show_plot=False,
     # Observations
     dfs_obs = get_filters_data4flight()
     dfs_obs = add_secs2duplicate_index_values(dfs_obs)
+    #
+    dfs_mod_filters = {}
+    for flight_ID in flight_IDs:
+        # Get observations and model timeseries data as a DataFrame
+        df_obs = dfs_obs.loc[ dfs_obs['Flight']==flight_ID, :]
+        df_mod = dfs_mod[flight_ID]
+        df_mod = only_consider_data_during_filter_times(df=df_mod,
+                                                        FILTERdf=df_obs,
+                                                        flight_ID=flight_ID)
+        dfs_mod_filters[flight_ID] = df_mod
 
     # Convert observation units into model units
     # unit on recipt were 'nanomoles/m3', which were updated to ug/m3
     # model units? 'pptv'
     NIT_obs_var = 'NO3.total'
-    data =  dfs_obs[NIT_obs_var].values
-    dfs_obs[NIT_obs_var] = AC.convert_ug_per_m3_2_ppbv(data, spec='NIT') *1E3
+    data = dfs_obs[NIT_obs_var].values
+    dfs_obs[NIT_obs_var] = AC.convert_ug_per_m3_2_ppbv(data, spec='NIT')*1E3
     SO4_obs_var = 'SO4.total'
-    data =  dfs_obs[SO4_obs_var].values
-    dfs_obs[SO4_obs_var] = AC.convert_ug_per_m3_2_ppbv(data, spec='SO4') *1E3
+    data = dfs_obs[SO4_obs_var].values
+    dfs_obs[SO4_obs_var] = AC.convert_ug_per_m3_2_ppbv(data, spec='SO4')*1E3
 
     # -  Now plot up
     for flight_ID in flight_IDs:
@@ -3339,24 +3494,25 @@ def plt_timeseries_comp4ARNA_flights_filters(dpi=320, show_plot=False,
         # - Plot up nitrate
         units = 'pptv'
         var2plot = 'NO3'
-        mod_var2plot = 'NIT.total'
-        obs_var2plot = NIT_obs_var
+        ModVar2Plot = 'NIT.total'
+        ObsVar2Plot = NIT_obs_var
         mod_label = 'GEOS-CF'
         mod_scale = 1E12
-        obs_var2plot_err = None
+        ObsVar2PlotErr = None
         plt_errorbar = False
 #        ylim = (-0.2, 1)
         ylim = None
         # Call timeseries plotter function
-        plt_timeseries4ARNA_flight_point_obs(var2plot=var2plot, units=units,
-                                             obs_var2plot=obs_var2plot,
+        plt_timeseries4ARNA_flight_period_obs(var2plot=var2plot, units=units,
+                                             ObsVar2Plot=ObsVar2Plot,
                                              mod_scale=mod_scale,
                                              mod_label=mod_label,
-                                             mod_var2plot=mod_var2plot,
+                                             ModVar2Plot=ModVar2Plot,
                                              ylim=ylim,
                                              df_mod=df_mod, df_obs=df_obs,
+                                             dfs_mod_period=dfs_mod_filters,
                                              flight_ID=flight_ID,
-                                             obs_var2plot_err=obs_var2plot_err,
+                                             ObsVar2PlotErr=ObsVar2PlotErr,
                                              plt_errorbar=plt_errorbar,
                                              )
         # Save to PDF and close the plot
@@ -3366,26 +3522,27 @@ def plt_timeseries_comp4ARNA_flights_filters(dpi=320, show_plot=False,
         # - Plot up sulfate
         units = 'pptv'
         var2plot = 'SO4'
-        mod_var2plot = 'SO4.total'
-        obs_var2plot = SO4_obs_var
+        ModVar2Plot = 'SO4.total'
+        ObsVar2Plot = SO4_obs_var
         mod_label = 'GEOS-CF'
         mod_scale = 1E12
-        obs_var2plot_err = None
+        ObsVar2PlotErr = None
         plt_errorbar = False
 #        ylim = (-0.2, 1)
         ylim = None
         # Call timeseries plotter function
-        plt_timeseries4ARNA_flight_point_obs(var2plot=var2plot, units=units,
-                                             obs_var2plot=obs_var2plot,
-                                             mod_scale=mod_scale,
-                                             mod_label=mod_label,
-                                             mod_var2plot=mod_var2plot,
-                                             ylim=ylim,
-                                             df_mod=df_mod, df_obs=df_obs,
-                                             flight_ID=flight_ID,
-                                             obs_var2plot_err=obs_var2plot_err,
-                                             plt_errorbar=plt_errorbar,
-                                             )
+        plt_timeseries4ARNA_flight_period_obs(var2plot=var2plot, units=units,
+                                              ObsVar2Plot=ObsVar2Plot,
+                                              mod_scale=mod_scale,
+                                              mod_label=mod_label,
+                                              ModVar2Plot=ModVar2Plot,
+                                              ylim=ylim,
+                                              df_mod=df_mod, df_obs=df_obs,
+                                              dfs_mod_period=dfs_mod_filters,
+                                              flight_ID=flight_ID,
+                                              ObsVar2PlotErr=ObsVar2PlotErr,
+                                              plt_errorbar=plt_errorbar,
+                                              )
         # Save to PDF and close the plot
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
         plt.close()
@@ -3449,23 +3606,23 @@ def plt_timeseries_comp4ARNA_flights_SWAS(dpi=320, show_plot=False,
         # - Plot up acetone
         units = 'ppt'
         var2plot = 'ACET'
-        mod_var2plot = 'ACET'
-        obs_var2plot = map_SWAS_var2GEOS_var(mod_var2plot, invert=True)
+        ModVar2Plot = 'ACET'
+        ObsVar2Plot = map_SWAS_var2GEOS_var(ModVar2Plot, invert=True)
         mod_label = 'GEOS-CF'
         mod_scale = 1E9
-        obs_var2plot_err = obs_var2plot+'_uncertainty'
+        ObsVar2PlotErr = ObsVar2Plot+'_uncertainty'
 #        ylim = (-0.2, 1)
         ylim = None
         # Call timeseries plotter function
         plt_timeseries4ARNA_flight_point_obs(var2plot=var2plot, units=units,
-                                             obs_var2plot=obs_var2plot,
+                                             ObsVar2Plot=ObsVar2Plot,
                                              mod_scale=mod_scale,
                                              mod_label=mod_label,
-                                             mod_var2plot=mod_var2plot,
+                                             ModVar2Plot=ModVar2Plot,
                                              ylim=ylim,
                                              df_mod=df_mod, df_obs=df_obs,
                                              flight_ID=flight_ID,
-                                             obs_var2plot_err=obs_var2plot_err,
+                                             ObsVar2PlotErr=ObsVar2PlotErr,
                                              plt_errorbar=True
                                              )
         # Save to PDF and close the plot
@@ -3475,23 +3632,23 @@ def plt_timeseries_comp4ARNA_flights_SWAS(dpi=320, show_plot=False,
         # - Plot up acetaldehyde
         units = 'ppt'
         var2plot = 'ALD2'
-        mod_var2plot = 'ALD2'
-        obs_var2plot = map_SWAS_var2GEOS_var(mod_var2plot, invert=True)
+        ModVar2Plot = 'ALD2'
+        ObsVar2Plot = map_SWAS_var2GEOS_var(ModVar2Plot, invert=True)
         mod_label = 'GEOS-CF'
         mod_scale = 1E9
-        obs_var2plot_err = obs_var2plot+'_uncertainty'
+        ObsVar2PlotErr = ObsVar2Plot+'_uncertainty'
 #        ylim = (-0.2, 1)
         ylim = None
         # Call timeseries plotter function
         plt_timeseries4ARNA_flight_point_obs(var2plot=var2plot, units=units,
-                                             obs_var2plot=obs_var2plot,
+                                             ObsVar2Plot=ObsVar2Plot,
                                              mod_scale=mod_scale,
                                              mod_label=mod_label,
-                                             mod_var2plot=mod_var2plot,
+                                             ModVar2Plot=ModVar2Plot,
                                              ylim=ylim,
                                              df_mod=df_mod, df_obs=df_obs,
                                              flight_ID=flight_ID,
-                                             obs_var2plot_err=obs_var2plot_err,
+                                             ObsVar2PlotErr=ObsVar2PlotErr,
                                              plt_errorbar=True
                                              )
         # Save to PDF and close the plot
@@ -3501,23 +3658,23 @@ def plt_timeseries_comp4ARNA_flights_SWAS(dpi=320, show_plot=False,
         # - Plot up ethane
         units = 'ppt'
         var2plot = 'C2H6'
-        mod_var2plot = 'C2H6'
-        obs_var2plot = map_SWAS_var2GEOS_var(mod_var2plot, invert=True)
+        ModVar2Plot = 'C2H6'
+        ObsVar2Plot = map_SWAS_var2GEOS_var(ModVar2Plot, invert=True)
         mod_label = 'GEOS-CF'
         mod_scale = 1E9
-        obs_var2plot_err = obs_var2plot+'_uncertainty'
+        ObsVar2PlotErr = ObsVar2Plot+'_uncertainty'
 #        ylim = (-0.2, 1)
         ylim = None
         # Call timeseries plotter function
         plt_timeseries4ARNA_flight_point_obs(var2plot=var2plot, units=units,
-                                             obs_var2plot=obs_var2plot,
+                                             ObsVar2Plot=ObsVar2Plot,
                                              mod_scale=mod_scale,
                                              mod_label=mod_label,
-                                             mod_var2plot=mod_var2plot,
+                                             ModVar2Plot=ModVar2Plot,
                                              ylim=ylim,
                                              df_mod=df_mod, df_obs=df_obs,
                                              flight_ID=flight_ID,
-                                             obs_var2plot_err=obs_var2plot_err,
+                                             ObsVar2PlotErr=ObsVar2PlotErr,
                                              plt_errorbar=True
                                              )
         # Save to PDF and close the plot
@@ -3527,23 +3684,23 @@ def plt_timeseries_comp4ARNA_flights_SWAS(dpi=320, show_plot=False,
         # - Plot up propane
         units = 'ppt'
         var2plot = 'C3H8'
-        mod_var2plot = 'C3H8'
-        obs_var2plot = map_SWAS_var2GEOS_var(mod_var2plot, invert=True)
+        ModVar2Plot = 'C3H8'
+        ObsVar2Plot = map_SWAS_var2GEOS_var(ModVar2Plot, invert=True)
         mod_label = 'GEOS-CF'
         mod_scale = 1E9
-        obs_var2plot_err = obs_var2plot+'_uncertainty'
+        ObsVar2PlotErr = ObsVar2Plot+'_uncertainty'
 #        ylim = (-0.2, 1)
         ylim = None
         # Call timeseries plotter function
         plt_timeseries4ARNA_flight_point_obs(var2plot=var2plot, units=units,
-                                             obs_var2plot=obs_var2plot,
+                                             ObsVar2Plot=ObsVar2Plot,
                                              mod_scale=mod_scale,
                                              mod_label=mod_label,
-                                             mod_var2plot=mod_var2plot,
+                                             ModVar2Plot=ModVar2Plot,
                                              ylim=ylim,
                                              df_mod=df_mod, df_obs=df_obs,
                                              flight_ID=flight_ID,
-                                             obs_var2plot_err=obs_var2plot_err,
+                                             ObsVar2PlotErr=ObsVar2PlotErr,
                                              plt_errorbar=True
                                              )
         # Save to PDF and close the plot
@@ -3598,18 +3755,18 @@ def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False):
     #        VarName = 'PCAS2CON'
     #        FlagName = 'PCAS2_FLAG'
             var2plot = 'ROLL_GIN'
-            obs_var2plot = 'ROLL_GIN'
-            mod_var2plot = None
+            ObsVar2Plot = 'ROLL_GIN'
+            ModVar2Plot = None
             mod_label = 'GEOS-CF'
             mod_scale = None
     #        ylim = (10, 100)
     #        ylim = None
             # Call timeseries plotter function
             plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       obs_var2plot=obs_var2plot,
+                                       ObsVar2Plot=ObsVar2Plot,
                                        mod_scale=mod_scale,
                                        mod_label=mod_label,
-                                       mod_var2plot=mod_var2plot,
+                                       ModVar2Plot=ModVar2Plot,
     #                                   ylim=ylim,
                                        df_mod=df_mod, df_obs=df_obs,
                                        flight_ID=flight_ID,
@@ -3635,18 +3792,18 @@ def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False):
     #        VarName = 'PCAS2CON'
     #        FlagName = 'PCAS2_FLAG'
             var2plot = 'VELD_GIN'
-            obs_var2plot = 'VELD_GIN'
-            mod_var2plot = None
+            ObsVar2Plot = 'VELD_GIN'
+            ModVar2Plot = None
             mod_label = 'GEOS-CF'
             mod_scale = None
     #        ylim = (10, 100)
             ylim = None
             # Call timeseries plotter function
             plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       obs_var2plot=obs_var2plot,
+                                       ObsVar2Plot=ObsVar2Plot,
                                        mod_scale=mod_scale,
                                        mod_label=mod_label,
-                                       mod_var2plot=mod_var2plot,
+                                       ModVar2Plot=ModVar2Plot,
                                        ylim=ylim,
                                        df_mod=df_mod, df_obs=df_obs,
                                        flight_ID=flight_ID,
@@ -3673,18 +3830,18 @@ def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False):
     #        VarName = 'PCAS2CON'
     #        FlagName = 'PCAS2_FLAG'
             var2plot = 'PCAS'
-            obs_var2plot = 'PCAS2CON'
-            mod_var2plot = None
+            ObsVar2Plot = 'PCAS2CON'
+            ModVar2Plot = None
             mod_label = 'GEOS-CF'
             mod_scale = None
     #        ylim = (10, 100)
             ylim = None
             # Call timeseries plotter function
             plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       obs_var2plot=obs_var2plot,
+                                       ObsVar2Plot=ObsVar2Plot,
                                        mod_scale=mod_scale,
                                        mod_label=mod_label,
-                                       mod_var2plot=mod_var2plot,
+                                       ModVar2Plot=ModVar2Plot,
                                        ylim=ylim,
                                        df_mod=df_mod, df_obs=df_obs,
                                        flight_ID=flight_ID,
@@ -3701,8 +3858,8 @@ def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False):
     #        VarName = 'PCAS2CON'
     #        FlagName = 'PCAS2_FLAG'
             var2plot = 'PCASP (total surface area)'
-            obs_var2plot = 'PCASP-total-surface'
-            mod_var2plot = None
+            ObsVar2Plot = 'PCASP-total-surface'
+            ModVar2Plot = None
             mod_label = 'GEOS-CF'
             obs_scale = 1E12
             mod_scale = None
@@ -3710,11 +3867,11 @@ def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False):
             ylim = None
             # Call timeseries plotter function
             plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       obs_var2plot=obs_var2plot,
+                                       ObsVar2Plot=ObsVar2Plot,
                                        obs_scale=obs_scale,
                                        mod_scale=mod_scale,
                                        mod_label=mod_label,
-                                       mod_var2plot=mod_var2plot,
+                                       ModVar2Plot=ModVar2Plot,
                                        ylim=ylim,
                                        df_mod=df_mod, df_obs=df_obs,
                                        flight_ID=flight_ID,
@@ -3729,8 +3886,8 @@ def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False):
         try:
             units = 'x10$^{-9}$ m${^3}$/cm$^{-3}$'
             var2plot = 'CDP (total surface area)'
-            obs_var2plot = 'CDP-total-surface'
-            mod_var2plot = None
+            ObsVar2Plot = 'CDP-total-surface'
+            ModVar2Plot = None
             mod_label = 'GEOS-CF'
             obs_scale = 1E9
             mod_scale = None
@@ -3738,11 +3895,11 @@ def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False):
             ylim = None
             # Call timeseries plotter function
             plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       obs_var2plot=obs_var2plot,
+                                       ObsVar2Plot=ObsVar2Plot,
                                        mod_scale=mod_scale,
                                        obs_scale=obs_scale,
                                        mod_label=mod_label,
-                                       mod_var2plot=mod_var2plot,
+                                       ModVar2Plot=ModVar2Plot,
                                        ylim=ylim,
                                        df_mod=df_mod, df_obs=df_obs,
                                        flight_ID=flight_ID,
@@ -3756,18 +3913,18 @@ def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False):
         # - Plot up temperature
         units = '$^{\circ}$C'
         var2plot = 'Temperature'
-        obs_var2plot = 'TAT_DI_R'
-        mod_var2plot = 'T'
+        ObsVar2Plot = 'TAT_DI_R'
+        ModVar2Plot = 'T'
         mod_label = 'GEOS-CF'
         mod_scale = 1
         ylim = (-25, 35)
         obs_adjustby = -273.15
         # Call timeseries plotter function
         plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                   obs_var2plot=obs_var2plot,
+                                   ObsVar2Plot=ObsVar2Plot,
                                    mod_scale=mod_scale,
                                    mod_label=mod_label,
-                                   mod_var2plot=mod_var2plot,
+                                   ModVar2Plot=ModVar2Plot,
                                    ylim=ylim,
                                    df_mod=df_mod, df_obs=df_obs,
                                    flight_ID=flight_ID,
@@ -3781,17 +3938,17 @@ def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False):
         # - Plot up Eastward wind
         units = 'm s$^{-1}$'
         var2plot = 'Eastward wind'
-        obs_var2plot = 'U_C'
-        mod_var2plot = 'U'
+        ObsVar2Plot = 'U_C'
+        ModVar2Plot = 'U'
         mod_label = 'GEOS-CF'
         mod_scale = 1
         ylim = (-25, 25)
         # Call timeseries plotter function
         plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                   obs_var2plot=obs_var2plot,
+                                   ObsVar2Plot=ObsVar2Plot,
                                    mod_scale=mod_scale,
                                    mod_label=mod_label,
-                                   mod_var2plot=mod_var2plot,
+                                   ModVar2Plot=ModVar2Plot,
                                    ylim=ylim,
                                    df_mod=df_mod, df_obs=df_obs,
                                    flight_ID=flight_ID,
@@ -3803,17 +3960,17 @@ def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False):
         # - Plot up Northward wind
         units = 'm s$^{-1}$'
         var2plot = 'Northward wind'
-        obs_var2plot = 'V_C'
-        mod_var2plot = 'V'
+        ObsVar2Plot = 'V_C'
+        ModVar2Plot = 'V'
         mod_label = 'GEOS-CF'
         mod_scale = 1
         ylim = (-25, 25)
         # Call timeseries plotter function
         plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                   obs_var2plot=obs_var2plot,
+                                   ObsVar2Plot=ObsVar2Plot,
                                    mod_scale=mod_scale,
                                    mod_label=mod_label,
-                                   mod_var2plot=mod_var2plot,
+                                   ModVar2Plot=ModVar2Plot,
                                    ylim=ylim,
                                    df_mod=df_mod, df_obs=df_obs,
                                    flight_ID=flight_ID,
@@ -3826,16 +3983,16 @@ def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False):
         try:
             units = '$^{\circ}$N'
             var2plot = 'Latitude'
-            obs_var2plot = 'LAT_GIN'
-            mod_var2plot = 'model-lat'
+            ObsVar2Plot = 'LAT_GIN'
+            ModVar2Plot = 'model-lat'
             mod_label = 'GEOS-CF'
             mod_scale = 1
             # Call timeseries plotter function
             plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       obs_var2plot=obs_var2plot,
+                                       ObsVar2Plot=ObsVar2Plot,
                                        mod_scale=mod_scale,
                                        mod_label=mod_label,
-                                       mod_var2plot=mod_var2plot,
+                                       ModVar2Plot=ModVar2Plot,
                                        df_mod=df_mod, df_obs=df_obs,
                                        flight_ID=flight_ID,
                                        )
@@ -3849,16 +4006,16 @@ def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False):
         try:
             units = '$^{\circ}$E'
             var2plot = 'Longitude'
-            obs_var2plot = 'LON_GIN'
-            mod_var2plot = 'model-lon'
+            ObsVar2Plot = 'LON_GIN'
+            ModVar2Plot = 'model-lon'
             mod_label = 'GEOS-CF'
             mod_scale = 1
             # Call timeseries plotter function
             plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       obs_var2plot=obs_var2plot,
+                                       ObsVar2Plot=ObsVar2Plot,
                                        mod_scale=mod_scale,
                                        mod_label=mod_label,
-                                       mod_var2plot=mod_var2plot,
+                                       ModVar2Plot=ModVar2Plot,
                                        df_mod=df_mod, df_obs=df_obs,
                                        flight_ID=flight_ID,
                                        )
@@ -3872,18 +4029,18 @@ def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False):
         try:
             units = 'hPa'
             var2plot = 'Altitude'
-            mod_var2plot = 'model-lev'
-            obs_var2plot = 'PS_RVSM' # Use pressure measurement
-#            obs_var2plot = 'ALT_GIN' # Use GPS altitude?
+            ModVar2Plot = 'model-lev'
+            ObsVar2Plot = 'PS_RVSM' # Use pressure measurement
+#            ObsVar2Plot = 'ALT_GIN' # Use GPS altitude?
 #            vals = AC.hPa_to_Km( df_obs['ALT_GIN'].values/1E3, reverse=True )
             mod_label = 'GEOS-CF'
             mod_scale = 1
             # Call timeseries plotter function
             plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       obs_var2plot=obs_var2plot,
+                                       ObsVar2Plot=ObsVar2Plot,
                                        mod_scale=mod_scale,
                                        mod_label=mod_label,
-                                       mod_var2plot=mod_var2plot,
+                                       ModVar2Plot=ModVar2Plot,
                                        df_mod=df_mod, df_obs=df_obs,
                                        flight_ID=flight_ID,
                                        invert_yaxis=True,
@@ -3948,16 +4105,16 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, show_plot=False):
         # - Plot up carbon monoxide
         units = 'ppbv'
         var2plot = 'CO'
-        obs_var2plot = 'CO_AERO'
-        mod_var2plot = 'CO'
+        ObsVar2Plot = 'CO_AERO'
+        ModVar2Plot = 'CO'
         mod_label = 'GEOS-CF'
         mod_scale = 1E9
         ylim = (50, 400)
         # Call timeseries plotter function
         plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                   obs_var2plot=obs_var2plot,
+                                   ObsVar2Plot=ObsVar2Plot,
                                    mod_scale=mod_scale, mod_label=mod_label,
-                                   mod_var2plot=mod_var2plot,
+                                   ModVar2Plot=ModVar2Plot,
                                    ylim=ylim,
                                    df_mod=df_mod, df_obs=df_obs,
                                    flight_ID=flight_ID,
@@ -3969,16 +4126,16 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, show_plot=False):
         # - Plot up ozone
         units = 'ppbv'
         var2plot = 'Ozone'
-        obs_var2plot = 'O3_TECO'
-        mod_var2plot = 'O3'
+        ObsVar2Plot = 'O3_TECO'
+        ModVar2Plot = 'O3'
         mod_label = 'GEOS-CF'
         mod_scale = 1E9
         ylim = (10, 100)
         # Call timeseries plotter function
         plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                   obs_var2plot=obs_var2plot,
+                                   ObsVar2Plot=ObsVar2Plot,
                                    mod_scale=mod_scale, mod_label=mod_label,
-                                   mod_var2plot=mod_var2plot,
+                                   ModVar2Plot=ModVar2Plot,
                                    ylim=ylim,
                                    df_mod=df_mod, df_obs=df_obs,
                                    flight_ID=flight_ID,
@@ -3991,18 +4148,18 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, show_plot=False):
         try:
             units = 'pptv'
             var2plot = 'NO2'
-            obs_var2plot = 'no2_mr'
-            mod_var2plot = 'NO2'
+            ObsVar2Plot = 'no2_mr'
+            ModVar2Plot = 'NO2'
             mod_label = 'GEOS-CF'
             mod_scale = 1E12
             ylim = (0.3, 400)
             yscale = 'log'
             # Call timeseries plotter function
             plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       obs_var2plot=obs_var2plot,
+                                       ObsVar2Plot=ObsVar2Plot,
                                        mod_scale=mod_scale,
                                        mod_label=mod_label,
-                                       mod_var2plot=mod_var2plot,
+                                       ModVar2Plot=ModVar2Plot,
                                        ylim=ylim,
                                        df_mod=df_mod, df_obs=df_obs,
                                        flight_ID=flight_ID,
@@ -4018,18 +4175,18 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, show_plot=False):
         try:
             units = 'pptv'
             var2plot = 'NO'
-            obs_var2plot = 'no_mr'
-            mod_var2plot = 'NO'
+            ObsVar2Plot = 'no_mr'
+            ModVar2Plot = 'NO'
             mod_label = 'GEOS-CF'
             mod_scale = 1E12
             ylim = (0.3, 400)
             yscale = 'log'
             # Call timeseries plotter function
             plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       obs_var2plot=obs_var2plot,
+                                       ObsVar2Plot=ObsVar2Plot,
                                        mod_scale=mod_scale,
                                        mod_label=mod_label,
-                                       mod_var2plot=mod_var2plot,
+                                       ModVar2Plot=ModVar2Plot,
                                        ylim=ylim,
                                        df_mod=df_mod, df_obs=df_obs,
                                        flight_ID=flight_ID,
@@ -4045,18 +4202,18 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, show_plot=False):
         try:
             units = 'pptv'
             var2plot = 'NOx'
-            mod_var2plot = 'NOx'
-            obs_var2plot = mod_var2plot
+            ModVar2Plot = 'NOx'
+            ObsVar2Plot = ModVar2Plot
             mod_label = 'GEOS-CF'
             mod_scale = 1E12
             ylim = (0.3, 400)
             yscale = 'log'
             # Call timeseries plotter function
             plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       obs_var2plot=obs_var2plot,
+                                       ObsVar2Plot=ObsVar2Plot,
                                        mod_scale=mod_scale,
                                        mod_label=mod_label,
-                                       mod_var2plot=mod_var2plot,
+                                       ModVar2Plot=ModVar2Plot,
                                        ylim=ylim,
                                        df_mod=df_mod, df_obs=df_obs,
                                        flight_ID=flight_ID,
@@ -4072,18 +4229,18 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, show_plot=False):
         try:
             units = 'pptv'
             var2plot = 'HONO'
-            obs_var2plot = 'hono_mr'
-            mod_var2plot = 'HNO2'
+            ObsVar2Plot = 'hono_mr'
+            ModVar2Plot = 'HNO2'
             mod_label = 'GEOS-CF'
             mod_scale = 1E12
             ylim = (0.3, 400)
             yscale = 'log'
             # Call timeseries plotter function
             plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       obs_var2plot=obs_var2plot,
+                                       ObsVar2Plot=ObsVar2Plot,
                                        mod_scale=mod_scale,
                                        mod_label=mod_label,
-                                       mod_var2plot=mod_var2plot,
+                                       ModVar2Plot=ModVar2Plot,
                                        ylim=ylim,
                                        df_mod=df_mod, df_obs=df_obs,
                                        flight_ID=flight_ID,
@@ -4098,24 +4255,24 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, show_plot=False):
         # - Plot up NOx / 'PCASP-total-surface'
         try:
             #
-            obs_var2plot = 'NOx/PCASP'
+            ObsVar2Plot = 'NOx/PCASP'
             ratio = df_obs['NOx'] / df_obs['PCASP-total-surface']
-            df_obs[obs_var2plot] = ratio
+            df_obs[ObsVar2Plot] = ratio
             # Then plot
             units = 'ratio'
-            var2plot = obs_var2plot
-            mod_var2plot = None
-            obs_var2plot = obs_var2plot
+            var2plot = ObsVar2Plot
+            ModVar2Plot = None
+            ObsVar2Plot = ObsVar2Plot
             mod_label = 'GEOS-CF'
             mod_scale = None
 #            ylim = (0.3, 400)
             yscale = 'log'
             # Call timeseries plotter function
             plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       obs_var2plot=obs_var2plot,
+                                       ObsVar2Plot=ObsVar2Plot,
                                        mod_scale=mod_scale,
                                        mod_label=mod_label,
-                                       mod_var2plot=mod_var2plot,
+                                       ModVar2Plot=ModVar2Plot,
                                        ylim=ylim,
                                        df_mod=df_mod, df_obs=df_obs,
                                        flight_ID=flight_ID,
