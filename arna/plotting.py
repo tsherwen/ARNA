@@ -1778,7 +1778,7 @@ def plt_comp_by_alt_4ARNA_all(dpi=320, just_SLR=True, show_plot=False):
     # Observations
     dfs_mod = {}
     for flight_ID in flight_IDs:
-        df = get_GEOSCF_output4flightnum(flight_ID=flight_ID )
+        df = get_GEOSCF_output4flightnum(flight_ID=flight_ID)
         df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
         df['flight_ID'] = flight_ID
         dfs_mod[flight_ID] = df
@@ -1943,7 +1943,7 @@ def plt_comp_by_alt_4ARNA_all_DUST(dpi=320, just_SLR=True,
     # Observations
     dfs_mod = {}
     for flight_ID in flight_IDs:
-        df = get_GEOSCF_output4flightnum(flight_ID=flight_ID )
+        df = get_GEOSCF_output4flightnum(flight_ID=flight_ID)
         df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
         df['flight_ID'] = flight_ID
         dfs_mod[flight_ID] = df
@@ -2107,26 +2107,26 @@ def plt_comp_by_alt_4ARNA_CIMS_all_DUST(dpi=320, just_SLR=True,
 #    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
     # Just use non-transit ARNA flights
     flights_nums = [
-#    217, # Missing data for C217 (NOy)
+    217, # Missing data for C217 (NOy)
     218, 219, 220,
-#    221, # Missing data for C221 (NOy)
+    221, # Missing data for C221 (NOy)
     222, 223,
-#    224,  # Missing data for C221 (BrO... )
-#    225,  # Missing data for C221 (BrO... )
+    224,  # Missing data for C221 (BrO... )
+    225,  # Missing data for C221 (BrO... )
     ]
     flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
     # - Loop by flight and retrieve the files as dataframes (mod + obs)
-    # Model
+    # Setup dictionary of Observation (CIMS) dataframes
     dfs_obs = {}
     for flight_ID in flight_IDs:
         df = get_CIMS_data4flight(flight_ID=flight_ID)
         df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
         df['flight_ID'] = flight_ID
         dfs_obs[flight_ID] = df
-    # Observations
+    # Setup dictionary of Model dataframes
     dfs_mod = {}
     for flight_ID in flight_IDs:
-        df = get_GEOSCF_output4flightnum(flight_ID=flight_ID )
+        df = get_GEOSCF_output4flightnum(flight_ID=flight_ID)
         df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
         df['flight_ID'] = flight_ID
         dfs_mod[flight_ID] = df
@@ -2307,7 +2307,7 @@ def plt_comp_by_alt_4ARNA_flights(dpi=320, just_SLR=True, show_plot=False):
     # Observations
     dfs_mod = {}
     for flight_ID in flight_IDs:
-        df = get_GEOSCF_output4flightnum(flight_ID=flight_ID )
+        df = get_GEOSCF_output4flightnum(flight_ID=flight_ID)
         df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
         dfs_mod[flight_ID] = df
 
@@ -2467,7 +2467,7 @@ def plt_comp_by_alt_4ARNA_flights_CIMS(dpi=320, just_SLR=False,
     # Model
     dfs_mod = {}
     for flight_ID in flight_IDs:
-        df = get_GEOSCF_output4flightnum(flight_ID=flight_ID )
+        df = get_GEOSCF_output4flightnum(flight_ID=flight_ID)
 #        df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
         dfs_mod[flight_ID] = df
 
@@ -2715,6 +2715,8 @@ def plt_timeseries4ARNA_flight(df_obs=None, df_mod=None,
     """
     Plot up a timeseries of observations and model for a given flight
     """
+    # Exclude points in the model dataframe where there is no model output
+    df_mod = df_mod.loc[~df_mod['model-lev'].isnull(), : ]
     # Get the beginning and end of the flight from the extracted model times
     xylim_min = AC.add_minutes( df_mod.index.min(), -15)
     xylim_max = AC.add_minutes( df_mod.index.max(), 15 )
@@ -2795,7 +2797,7 @@ def plt_timeseries4ARNA_flight(df_obs=None, df_mod=None,
 
 
 def plt_timeseries4ARNA_flight_period_obs(df_obs=None, df_mod=None,
-                                          dfs_mod_period=None,
+                                          df_mod_period=None,
                                           obs_label='Obs.',
                                           mod_scale=1, obs_adjustby=0,
                                           ylim=(None, None),
@@ -2817,6 +2819,8 @@ def plt_timeseries4ARNA_flight_period_obs(df_obs=None, df_mod=None,
     """
     Plot up a timeseries of observations and model for a given flight
     """
+    # Exclude points in the model dataframe where there is no model output
+    df_mod = df_mod.loc[~df_mod['model-lev'].isnull(), : ]
     # Get the beginning and end of the flight from the extracted model times
     xylim_min = AC.add_minutes( df_mod.index.min(), -15)
     xylim_max = AC.add_minutes( df_mod.index.max(), 15 )
@@ -2841,16 +2845,16 @@ def plt_timeseries4ARNA_flight_period_obs(df_obs=None, df_mod=None,
     if not isinstance(ModVar2Plot, type(None)):
 #        plt.plot(df_mod.index, df_mod[ ModVar2Plot ].values*mod_scale,
 #                 label=mod_label, color='red' )
-        xmin = dfs_mod_period[StartVar]
-        xmax = dfs_mod_period[EndVar]
-        plt.hlines(dfs_mod_period[ ModVar2Plot ].values*mod_scale,
+        xmin = df_mod_period[StartVar]
+        xmax = df_mod_period[EndVar]
+        plt.hlines(df_mod_period[ ModVar2Plot ].values*mod_scale,
                    xmin, xmax,
                    label=mod_label, color='red' )
 
 
     # Plot up where
     if plt_dust_as_backfill:
-        colour_plot_background_by_bool(df=df_obs, ax=ax,
+        colour_plot_background_by_bool(df=df_mod, ax=ax,
                                        bool2use='IS_DUST',
                                        color='sandybrown',
                                        alpha=0.25,
@@ -2870,7 +2874,7 @@ def plt_timeseries4ARNA_flight_period_obs(df_obs=None, df_mod=None,
         xmax = df_obs[EndVar]
         plt.hlines(df_obs[ObsVar2Plot].values+obs_adjustby,
                    xmin, xmax,
-                   label=mod_label, color='red' )
+                   label=obs_label, color='k' )
 
     # Beautify plot
     plt.title(title_str.format(var2plot, units, flight_ID, sdate_str ))
@@ -2925,6 +2929,8 @@ def plt_timeseries4ARNA_flight_point_obs(df_obs=None, df_mod=None,
     """
     Plot up a timeseries of observations and model for a given flight
     """
+    # Exclude points in the model dataframe where there is no model output
+    df_mod = df_mod.loc[~df_mod['model-lev'].isnull(), : ]
     # Get the beginning and end of the flight from the extracted model times
     xylim_min = AC.add_minutes( df_mod.index.min(), -15)
     xylim_max = AC.add_minutes( df_mod.index.max(), 15 )
@@ -3042,7 +3048,7 @@ def add_derived_FAAM_flags2df4flight(df=None, df_FAAM=None, flight_ID='C217'):
     """
     # Get the relevant FAAM dataframe is not provided
     if isinstance(df_FAAM, type(None)):
-#        df = get_GEOSCF_output4flightnum(flight_ID=flight_ID )
+#        df = get_GEOSCF_output4flightnum(flight_ID=flight_ID)
         df_FAAM = get_FAAM_core4flightnum(flight_ID=flight_ID,
                                           resample_data=True )
     # Just add is the "is dust" and "is SLR"
@@ -3102,7 +3108,7 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, show_plot=False):
     # Model
     dfs_mod = {}
     for flight_ID in flight_IDs:
-        df = get_GEOSCF_output4flightnum(flight_ID=flight_ID )
+        df = get_GEOSCF_output4flightnum(flight_ID=flight_ID)
         # Add the derived variables to the dataframe
         df = add_deriv_vars2df(df=df)
         dfs_mod[flight_ID] = df
@@ -3420,6 +3426,283 @@ def only_consider_data_during_filter_times(df, FILTERdf=None,
         return pd.DataFrame( pd.concat(dfs, axis=0) )
 
 
+def mk_combined_NOy_obs_variable(FAAMdf=None, CIMSdf=None, Filtersdf=None,
+                                 bin_dfs4filter_periods=False, NOyVar='NOy',
+                                 RTN_Filtersdf=True, flight_ID='C225'):
+    """
+    Make a combined NOy to compare against modelled NOy
+    ---- Notes
+     - GEOS-CF NOy is
+       no_no2_hno3_hno4_hono_2xn2o5_pan_organicnitrates_aerosolnitrates
+    """
+    # bin data to filter observation periods
+    if bin_dfs4filter_periods:
+        print('WARNING: binning of dataframes to filter perios not setup!')
+    # Use the filter dataframe as the basis to add otther species too too
+    # NOTE: conversion to pptv hs already been done!
+    Filtersdf[NOyVar] = Filtersdf['NO3.total'].copy()
+    # add NO, NO2 - from Faam obs
+    FAAMdf = FAAMdf.copy().replace(np.NaN, 0)
+    var2use = 'no_mr'
+    try:
+        Filtersdf.loc[:,NOyVar] += FAAMdf[var2use].values
+    except KeyError:
+        pstr = "WARNING: '{}' not added to '{}' variable for flight '{}'"
+        print(pstr.format(var2use, NOyVar, flight_ID))
+    var2use = 'no2_mr'
+    try:
+        Filtersdf.loc[:,NOyVar] += FAAMdf[var2use].values
+    except KeyError:
+        pstr = "WARNING: '{}' not added to '{}' variable for flight '{}'"
+        print(pstr.format(var2use, NOyVar, flight_ID))
+    # Add Nitrate rack HONO too?
+    # Add HNO3 from CIMS
+    var2use = 'HNO3'
+    CIMSdf = CIMSdf.copy().replace(np.NaN, 0)
+    try:
+        Filtersdf.loc[:,NOyVar] += CIMSdf[var2use].values
+    except KeyError:
+        pstr = "WARNING: '{}' not added to '{}' variable for flight '{}'"
+        print(pstr.format(var2use, NOyVar, flight_ID))
+    # Add HONO from CIMS for now
+    var2use = 'HONO'
+    try:
+        Filtersdf.loc[:,NOyVar] += CIMSdf[var2use].values
+    except KeyError:
+        pstr = "WARNING: '{}' not added to '{}' variable for flight '{}'"
+        print(pstr.format(var2use, NOyVar, flight_ID))
+    if RTN_Filtersdf:
+        return Filtersdf
+    else:
+        return Filtersdf[[NOyVar]]
+
+
+def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
+                                             debug=False):
+    """
+    Plot up timeseries comparisons between filter samples and model data
+    """
+    import seaborn as sns
+    # Which flights to plot?
+#    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
+	# Just use non-transit ARNA flights
+    flights_nums = [
+#    217,
+#    218, # No NOx on this flight
+    219, 220, 221, 222, 223, 224, 225,
+    ]
+    flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
+    # - Loop by flight and retrieve the files as dataframes (mod + obs)
+    # Setup Observation (filters) dataframe
+    dfs_obs = get_filters_data4flight()
+    dfs_obs = add_secs2duplicate_index_values(dfs_obs)
+    # Convert observation units into model units
+    # unit on recipt were 'nanomoles/m3', which were updated to ug/m3
+    # model units? 'pptv'
+    NIT_obs_var = 'NO3.total'
+    data = dfs_obs[NIT_obs_var].values
+    dfs_obs[NIT_obs_var] = AC.convert_ug_per_m3_2_ppbv(data, spec='NIT')*1E3
+    SO4_obs_var = 'SO4.total'
+    data = dfs_obs[SO4_obs_var].values
+    dfs_obs[SO4_obs_var] = AC.convert_ug_per_m3_2_ppbv(data, spec='SO4')*1E3
+    # Setup dictionary of Model (GEOS-CF) dataframes
+    dfs_mod = {}
+    dfs_mod_period = {}
+    for flight_ID in flight_IDs:
+        df = get_GEOSCF_output4flightnum(flight_ID=flight_ID)
+        df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
+        df['flight_ID'] = flight_ID
+        dfs_mod[flight_ID] = df.copy()
+        # Just consider values during filer observation period
+        FILTERdf = dfs_obs.loc[ dfs_obs['Flight']==flight_ID, :]
+        df = only_consider_data_during_filter_times(df=df,
+                                                    FILTERdf=FILTERdf,
+                                                    flight_ID=flight_ID)
+        dfs_mod_period[flight_ID] = df
+    # Setup dictionary of Observation (CIMS) dataframes
+    dfs_CIMS = {}
+    dfs_CIMS_period = {}
+    for flight_ID in flight_IDs:
+        df = get_CIMS_data4flight(flight_ID=flight_ID)
+        df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
+        df['flight_ID'] = flight_ID
+        dfs_CIMS[flight_ID] = df.copy()
+        # Just consider values during filer observation period
+        FILTERdf = dfs_obs.loc[ dfs_obs['Flight']==flight_ID, :]
+        df = only_consider_data_during_filter_times(df=df,
+                                                    FILTERdf=FILTERdf,
+                                                    flight_ID=flight_ID)
+        dfs_CIMS_period[flight_ID] = df
+    # Setup dictionary of Observation (FAAM) dataframes
+    dfs_FAAM = {}
+    dfs_FAAM_period = {}
+    for flight_ID in flight_IDs:
+        df = get_FAAM_core4flightnum(flight_ID=flight_ID)
+        df['flight_ID'] = flight_ID
+        dfs_FAAM[flight_ID] = df.copy()
+        # Just consider values during filer observation period
+        FILTERdf = dfs_obs.loc[ dfs_obs['Flight']==flight_ID, :]
+        df = only_consider_data_during_filter_times(df=df,
+                                                    FILTERdf=FILTERdf,
+                                                    flight_ID=flight_ID)
+        dfs_FAAM_period[flight_ID] = df
+    # Observations  - Combine to make NOy variables
+    dfs_obs_NOy = {}
+    for flight_ID in flight_IDs:
+        # Get observations and model timeseries data as a DataFrame
+        Filtersdf = dfs_obs.loc[ dfs_obs['Flight']==flight_ID, :]
+        CIMSdf = dfs_CIMS_period[flight_ID]
+        FAAMdf = dfs_FAAM_period[flight_ID]
+        # Now make a combined NOy variable.
+        df = mk_combined_NOy_obs_variable(Filtersdf=Filtersdf,
+                                          FAAMdf=FAAMdf,
+                                          CIMSdf=CIMSdf,
+                                          flight_ID=flight_ID,
+                                          )
+        dfs_obs_NOy[flight_ID] = df
+
+    # -  Now plot up
+    for flight_ID in flight_IDs:
+        print(flight_ID)
+        # Get observations and model timeseries data as a DataFrame
+        df_obs = dfs_obs.loc[ dfs_obs['Flight']==flight_ID, :]
+        df_mod = dfs_mod[flight_ID]
+        df_mod_period = dfs_mod_period[flight_ID]
+        df_obs_NOy = dfs_obs_NOy[flight_ID]
+        # add the dust and SLR flags to the core dataframe
+        df_obs = add_derived_FAAM_flags2df4flight(df=df_obs,
+                                                  flight_ID=flight_ID)
+        # Setup PDF to save PDF plots to
+        savetitle = 'ARNA_timeseries_flighttrack_{}_NOy'.format(flight_ID)
+        pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
+        # - Plot up location of flights
+        plt_flightpath_spatially_over_CVAO(df=df_mod, flight_ID=flight_ID,
+                                           LatVar='model-lat',
+                                           LonVar='model-lon',
+                                           )
+        # Save to PDF
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+        plt.close()
+        # - Now plot up flight time series plots by variable
+        vars2plot = 'NOy'
+
+        # - Plot up NOy
+        units = 'pptv'
+        var2plot = 'NOy'
+        ModVar2Plot = 'NOy'
+        ObsVar2Plot = 'NOy'
+        mod_label = 'GEOS-CF'
+        mod_scale = 1E12
+        ObsVar2PlotErr = None
+        plt_errorbar = False
+#        ylim = (-0.2, 1)
+        ylim = None
+        # Call timeseries plotter function
+        plt_timeseries4ARNA_flight_period_obs(var2plot=var2plot, units=units,
+                                             ObsVar2Plot=ObsVar2Plot,
+                                             mod_scale=mod_scale,
+                                             mod_label=mod_label,
+                                             ModVar2Plot=ModVar2Plot,
+                                             ylim=ylim,
+                                             df_mod=df_mod, df_obs=df_obs_NOy,
+                                             df_mod_period=df_mod_period,
+                                             flight_ID=flight_ID,
+                                             ObsVar2PlotErr=ObsVar2PlotErr,
+                                             plt_errorbar=plt_errorbar,
+                                             )
+        # Save to PDF and close the plot
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+        plt.close()
+
+        # - Plot up NOy-HNO3
+        units = 'pptv'
+        var2plot = 'NOy (model-HNO3)'
+        ModVar2Plot = 'NOy-HNO3'
+        ObsVar2Plot = 'NOy'
+        mod_label = 'GEOS-CF'
+        mod_scale = 1E12
+        ObsVar2PlotErr = None
+        plt_errorbar = False
+#        ylim = (-0.2, 1)
+        ylim = None
+        # Call timeseries plotter function
+        plt_timeseries4ARNA_flight_period_obs(var2plot=var2plot, units=units,
+                                             ObsVar2Plot=ObsVar2Plot,
+                                             mod_scale=mod_scale,
+                                             mod_label=mod_label,
+                                             ModVar2Plot=ModVar2Plot,
+                                             ylim=ylim,
+                                             df_mod=df_mod, df_obs=df_obs_NOy,
+                                             df_mod_period=df_mod_period,
+                                             flight_ID=flight_ID,
+                                             ObsVar2PlotErr=ObsVar2PlotErr,
+                                             plt_errorbar=plt_errorbar,
+                                             )
+        # Save to PDF and close the plot
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+        plt.close()
+
+        # - Plot up 'NOy-HNO3-PAN'
+        units = 'pptv'
+        var2plot = 'NOy (model-HNO3-PAN)'
+        ModVar2Plot = 'NOy-HNO3'
+        ObsVar2Plot = 'NOy'
+        mod_label = 'GEOS-CF'
+        mod_scale = 1E12
+        ObsVar2PlotErr = None
+        plt_errorbar = False
+#        ylim = (-0.2, 1)
+        ylim = None
+        # Call timeseries plotter function
+        plt_timeseries4ARNA_flight_period_obs(var2plot=var2plot, units=units,
+                                             ObsVar2Plot=ObsVar2Plot,
+                                             mod_scale=mod_scale,
+                                             mod_label=mod_label,
+                                             ModVar2Plot=ModVar2Plot,
+                                             ylim=ylim,
+                                             df_mod=df_mod, df_obs=df_obs_NOy,
+                                             df_mod_period=df_mod_period,
+                                             flight_ID=flight_ID,
+                                             ObsVar2PlotErr=ObsVar2PlotErr,
+                                             plt_errorbar=plt_errorbar,
+                                             )
+        # Save to PDF and close the plot
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+        plt.close()
+
+        # - Plot up 'NOy-HNO3-PAN'
+        units = 'pptv'
+        var2plot = 'NOy (NOx+HONO+NIT(s))'
+        ModVar2Plot = 'NOy-Limited'
+        ObsVar2Plot = 'NOy'
+        mod_label = 'GEOS-CF'
+        mod_scale = 1E12
+        ObsVar2PlotErr = None
+        plt_errorbar = False
+#        ylim = (-0.2, 1)
+        ylim = None
+        # Call timeseries plotter function
+        plt_timeseries4ARNA_flight_period_obs(var2plot=var2plot, units=units,
+                                             ObsVar2Plot=ObsVar2Plot,
+                                             mod_scale=mod_scale,
+                                             mod_label=mod_label,
+                                             ModVar2Plot=ModVar2Plot,
+                                             ylim=ylim,
+                                             df_mod=df_mod, df_obs=df_obs_NOy,
+                                             df_mod_period=df_mod_period,
+                                             flight_ID=flight_ID,
+                                             ObsVar2PlotErr=ObsVar2PlotErr,
+                                             plt_errorbar=plt_errorbar,
+                                             )
+        # Save to PDF and close the plot
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+        plt.close()
+
+        # - Save entire pdf
+        AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
+        plt.close('all')
+
+
 def plt_timeseries_comp4ARNA_flights_filters(dpi=320, show_plot=False,
                                              debug=False):
     """
@@ -3440,15 +3723,16 @@ def plt_timeseries_comp4ARNA_flights_filters(dpi=320, show_plot=False,
     for flight_ID in flight_IDs:
         if debug:
             print(flight_ID)
-        df = get_GEOSCF_output4flightnum(flight_ID=flight_ID )
+        df = get_GEOSCF_output4flightnum(flight_ID=flight_ID)
         # Add the derived variables to the dataframe
+        df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
         df = add_deriv_vars2df(df=df)
         dfs_mod[flight_ID] = df
     # Observations
     dfs_obs = get_filters_data4flight()
     dfs_obs = add_secs2duplicate_index_values(dfs_obs)
-    #
-    dfs_mod_filters = {}
+    # Only consider the model for the observation (filter) period
+    dfs_mod_period = {}
     for flight_ID in flight_IDs:
         # Get observations and model timeseries data as a DataFrame
         df_obs = dfs_obs.loc[ dfs_obs['Flight']==flight_ID, :]
@@ -3456,7 +3740,7 @@ def plt_timeseries_comp4ARNA_flights_filters(dpi=320, show_plot=False,
         df_mod = only_consider_data_during_filter_times(df=df_mod,
                                                         FILTERdf=df_obs,
                                                         flight_ID=flight_ID)
-        dfs_mod_filters[flight_ID] = df_mod
+        dfs_mod_period[flight_ID] = df_mod
 
     # Convert observation units into model units
     # unit on recipt were 'nanomoles/m3', which were updated to ug/m3
@@ -3474,6 +3758,7 @@ def plt_timeseries_comp4ARNA_flights_filters(dpi=320, show_plot=False,
         # Get observations and model timeseries data as a DataFrame
         df_obs = dfs_obs.loc[ dfs_obs['Flight']==flight_ID, :]
         df_mod = dfs_mod[flight_ID]
+        df_mod_period = dfs_mod_period[flight_ID]
         # add the dust and SLR flags to the core dataframe
         df_obs = add_derived_FAAM_flags2df4flight(df=df_obs,
                                                   flight_ID=flight_ID)
@@ -3510,7 +3795,7 @@ def plt_timeseries_comp4ARNA_flights_filters(dpi=320, show_plot=False,
                                              ModVar2Plot=ModVar2Plot,
                                              ylim=ylim,
                                              df_mod=df_mod, df_obs=df_obs,
-                                             dfs_mod_period=dfs_mod_filters,
+                                             df_mod_period=df_mod_period,
                                              flight_ID=flight_ID,
                                              ObsVar2PlotErr=ObsVar2PlotErr,
                                              plt_errorbar=plt_errorbar,
@@ -3538,7 +3823,7 @@ def plt_timeseries_comp4ARNA_flights_filters(dpi=320, show_plot=False,
                                               ModVar2Plot=ModVar2Plot,
                                               ylim=ylim,
                                               df_mod=df_mod, df_obs=df_obs,
-                                              dfs_mod_period=dfs_mod_filters,
+                                              df_mod_period=df_mod_period,
                                               flight_ID=flight_ID,
                                               ObsVar2PlotErr=ObsVar2PlotErr,
                                               plt_errorbar=plt_errorbar,
@@ -3571,7 +3856,7 @@ def plt_timeseries_comp4ARNA_flights_SWAS(dpi=320, show_plot=False,
     for flight_ID in flight_IDs:
         if debug:
             print(flight_ID)
-        df = get_GEOSCF_output4flightnum(flight_ID=flight_ID )
+        df = get_GEOSCF_output4flightnum(flight_ID=flight_ID)
         # Add the derived variables to the dataframe
         df = add_deriv_vars2df(df=df)
         dfs_mod[flight_ID] = df
@@ -3728,11 +4013,11 @@ def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False):
     # Model
     dfs_mod = {}
     for flight_ID in flight_IDs:
-        dfs_mod[flight_ID] = get_GEOSCF_output4flightnum(flight_ID=flight_ID )
+        dfs_mod[flight_ID] = get_GEOSCF_output4flightnum(flight_ID=flight_ID)
     # Observations
     dfs_obs = {}
     for flight_ID in flight_IDs:
-        dfs_obs[flight_ID] = get_FAAM_core4flightnum(flight_ID=flight_ID )
+        dfs_obs[flight_ID] = get_FAAM_core4flightnum(flight_ID=flight_ID)
 
     # -  Now plot up
     for flight_ID in flight_IDs:
@@ -4080,11 +4365,11 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, show_plot=False):
     # Model
     dfs_mod = {}
     for flight_ID in flight_IDs:
-        dfs_mod[flight_ID] = get_GEOSCF_output4flightnum(flight_ID=flight_ID )
+        dfs_mod[flight_ID] = get_GEOSCF_output4flightnum(flight_ID=flight_ID)
     # Observations
     dfs_obs = {}
     for flight_ID in flight_IDs:
-        dfs_obs[flight_ID] = get_FAAM_core4flightnum(flight_ID=flight_ID )
+        dfs_obs[flight_ID] = get_FAAM_core4flightnum(flight_ID=flight_ID)
 
     # -  Now plot up
     for flight_ID in flight_IDs:

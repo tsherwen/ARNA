@@ -746,3 +746,61 @@ def mk_file_of_flags():
     df = pd.concat([dfs_obs[i] for i in dfs_obs.keys()], axis=1)
     df[vars2use].to_csv(filename.format('ALL', version))
 
+
+def mk_planeflight_files4FAAM_campaigns(testing_mode=False):
+    """
+    Make plane-flight input files for various FAAM campaigns
+    """
+    # Location of flight data
+    folder = '/users/ts551/scratch/data/FAAM/core_faam_NetCDFs/'
+    folder4csv = '/users/ts551/scratch/data/FAAM/GEOSChem_planeflight_inputs/'
+    # Flights to use...
+    fname = 'FAAM_BAe146_Biomass_burning_and_ACISIS_flights_tabulated.csv'
+    df = pd.read_csv(folder+fname)
+    # Only consider the dates after Jan 2018
+    DateVar = 'Date'
+    df[DateVar] = pd.to_datetime( df[DateVar] )
+    if testing_mode:
+        df = df.loc[df[DateVar]  > datetime.datetime(2020,1,1), :]
+    # flights to use?
+    flight_IDs2use = [
+   'C227',
+   'C225', # Just re-done
+   'C223', 'C224', 'C222', 'C221', 'C219', 'C220', 'C218', 'C217',
+   'C212', 'C211', 'C210', 'C209', 'C208',
+   'C207',
+   'C206', 'C205', 'C204', 'C203', 'C202',
+   'C201',
+   'C200', 'C199',
+   'C190', 'C189', 'C188', 'C187', 'C186', 'C185',
+   'C184', 'C183',
+   'C182',
+   'C181',
+   'C180', 'C179', 'C178', 'C145', 'C144',
+   'C143',
+   'C142', 'C141',
+   'C140',
+   'C139', 'C134', 'C133', 'C132', 'C129',
+   'C106', 'C105', 'C104', 'C103'
+    ]
+    print(flight_IDs2use)
+#    df = df.loc[ df['Flight ID'].isin(flight_IDs2use),:]
+    # Extract variables of interest
+    flight_IDs = df['Flight ID'].values
+#    campaigns = df['Campaign'].values
+    # Loop and extract FAAM BAe146 flights
+    for flight_ID in flight_IDs:
+#        campaign = df.loc[df['Flight ID'] == flight_ID, 'Campaign' ].values[0]
+#        csv_suffix = '_{}'.format( campaign )
+        print(flight_ID)
+        AC.mk_planeflight_input4FAAM_flight(folder=folder,
+                                            folder4csv=folder4csv,
+                                            testing_mode=testing_mode,
+                                            flight_ID=flight_ID,)
+        gc.collect()
+
+
+
+
+
+

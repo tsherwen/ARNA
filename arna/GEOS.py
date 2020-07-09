@@ -1281,7 +1281,14 @@ def get_GEOSCF_output4flightnum( flight_ID='C216' ):
     df['TempK'] = df['T'].copy()
     df['T'] = df['T'].values - 273.15
     # Add NOx as combined NO and NO2
-    df['NOx']  = df['NO'].values + df['NO2'].values
+    df['NOx'] = df['NO'].values + df['NO2'].values
+    # Include a variable of NOy where HNO3 is removed
+    # NOy = no_no2_hno3_hno4_hono_2xn2o5_pan_organicnitrates_aerosolnitrates
+    df['NOy-HNO3'] = df['NOy'].values - df['HNO3'].values
+    # Include a variable of NOy where HNO3 is removed
+    df['NOy-HNO3-PAN'] = df['NOy'].values - df['HNO3'].values - df['PAN'].values
+    # gas-phase (exc. PAN, HNO3, HNO4, Org-NIT, N2O5)
+    df['NOy-Limited'] = df['NO'].values + df['NO2'].values + df['HNO2'].values + df['NIT'].values + df['NITs'].values
 	# Resample the data?
     resample_data = True
     if resample_data:
@@ -1955,3 +1962,14 @@ def add_extra_derived_species(ds, debug=False):
         print('-'*10, [i for i in ds.data_vars], '-'*10)
 
     return ds
+
+def v12_9_TRA_XX_2_name(TRA_XX):
+    """
+    Convert tracer number to tracer name in GEOS-Chem v12.9
+    """
+    TRAs = [
+    b'ACET', b'ACTA', b'AERI', b'ALD2', b'ALK4', b'ATOOH', b'BCPI', b'BCPO', b'BENZ', b'Br', b'Br2', b'BrCl', b'BrNO2', b'BrNO3', b'BrO', b'BrSALA', b'BrSALC', b'C2H6', b'C3H8', b'CCl4', b'CFC11', b'CFC113', b'CFC114', b'CFC115', b'CFC12', b'CH2Br2', b'CH2Cl2', b'CH2I2', b'CH2IBr', b'CH2ICl', b'CH2O', b'CH3Br', b'CH3CCl3', b'CH3Cl', b'CH3I', b'CH4', b'CHBr3', b'CHCl3', b'Cl', b'Cl2', b'Cl2O2', b'ClNO2', b'ClNO3', b'ClO', b'ClOO', b'CO', b'DMS', b'DST1', b'DST2', b'DST3', b'DST4', b'EOH', b'ETHLN', b'ETNO3', b'ETP', b'GLYC', b'GLYX', b'H1211', b'H1301', b'H2402', b'H2O', b'H2O2', b'HAC', b'HBr', b'HC5A', b'HCFC123', b'HCFC141b', b'HCFC142b', b'HCFC22', b'HCl', b'HCOOH', b'HI', b'HMHP', b'HMML', b'HNO2', b'HNO3', b'HNO4', b'HOBr', b'HOCl', b'HOI', b'HONIT', b'HPALD1', b'HPALD2', b'HPALD3', b'HPALD4', b'HPETHNL', b'I', b'I2', b'I2O2', b'I2O3', b'I2O4', b'IBr', b'ICHE', b'ICl', b'ICN', b'ICPDH', b'IDC', b'IDCHP', b'IDHDP', b'IDHPE', b'IDN', b'IEPOXA', b'IEPOXB', b'IEPOXD', b'IHN1', b'IHN2', b'IHN3', b'IHN4', b'INDIOL', b'INO', b'INPB', b'INPD', b'IO', b'IONITA', b'IONO', b'IONO2', b'IPRNO3', b'ISALA', b'ISALC', b'ISOP', b'ITCN', b'ITHN', b'LIMO', b'LVOC', b'LVOCOA', b'MACR', b'MACR1OOH', b'MAP', b'MCRDH', b'MCRENOL', b'MCRHN', b'MCRHNB', b'MCRHP', b'MEK', b'MENO3', b'MGLY', b'MOH', b'MONITA', b'MONITS', b'MONITU', b'MP', b'MPAN', b'MPN', b'MSA', b'MTPA', b'MTPO', b'MVK', b'MVKDH', b'MVKHC', b'MVKHCB', b'MVKHP', b'MVKN', b'MVKPC', b'N2O', b'N2O5', b'NH3', b'NH4', b'NIT', b'NITs', b'NO', b'NO2', b'NO3', b'NPRNO3', b'O3', b'OClO', b'OCPI', b'OCPO', b'OCS', b'OIO', b'PAN', b'pFe', b'PIP', b'PP', b'PPN', b'PROPNN', b'PRPE', b'PRPN', b'PYAC', b'R4N2', b'R4P', b'RA3P', b'RB3P', b'RCHO', b'RIPA', b'RIPB', b'RIPC', b'RIPD', b'RP', b'SALA', b'SALAAL', b'SALACL', b'SALC', b'SALCAL', b'SALCCL', b'SO2', b'SO4', b'SO4s', b'SOAGX', b'SOAIE', b'SOAP', b'SOAS', b'TOLU', b'XYLE'
+    ]
+    nums = np.arange(1, len(TRAs)+1)
+    return dict(zip(nums, TRAs))
+

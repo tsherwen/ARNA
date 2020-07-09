@@ -34,6 +34,8 @@ def main():
     # Plot up the temperature data from Hannah Price
     # N/A? this is only for 2019. Data to be worked up for 2020.
 
+    # Plot a comparison
+    ar.plt_timeseries_comp4ARNA_flights_NOy_ALL()
 
     # Plot up data for SLRs with and without dust
     ar.plt_comp_by_alt_4ARNA_all(just_SLR=False)
