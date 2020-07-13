@@ -1778,7 +1778,7 @@ def plt_comp_by_alt_4ARNA_all(dpi=320, just_SLR=True, show_plot=False):
     # Observations
     dfs_mod = {}
     for flight_ID in flight_IDs:
-        df = get_GEOSCF_output4flightnum(flight_ID=flight_ID)
+        df = get_GEOSCF4flightnum(flight_ID=flight_ID)
         df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
         df['flight_ID'] = flight_ID
         dfs_mod[flight_ID] = df
@@ -1943,7 +1943,7 @@ def plt_comp_by_alt_4ARNA_all_DUST(dpi=320, just_SLR=True,
     # Observations
     dfs_mod = {}
     for flight_ID in flight_IDs:
-        df = get_GEOSCF_output4flightnum(flight_ID=flight_ID)
+        df = get_GEOSCF4flightnum(flight_ID=flight_ID)
         df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
         df['flight_ID'] = flight_ID
         dfs_mod[flight_ID] = df
@@ -2126,7 +2126,7 @@ def plt_comp_by_alt_4ARNA_CIMS_all_DUST(dpi=320, just_SLR=True,
     # Setup dictionary of Model dataframes
     dfs_mod = {}
     for flight_ID in flight_IDs:
-        df = get_GEOSCF_output4flightnum(flight_ID=flight_ID)
+        df = get_GEOSCF4flightnum(flight_ID=flight_ID)
         df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
         df['flight_ID'] = flight_ID
         dfs_mod[flight_ID] = df
@@ -2307,7 +2307,7 @@ def plt_comp_by_alt_4ARNA_flights(dpi=320, just_SLR=True, show_plot=False):
     # Observations
     dfs_mod = {}
     for flight_ID in flight_IDs:
-        df = get_GEOSCF_output4flightnum(flight_ID=flight_ID)
+        df = get_GEOSCF4flightnum(flight_ID=flight_ID)
         df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
         dfs_mod[flight_ID] = df
 
@@ -2467,7 +2467,7 @@ def plt_comp_by_alt_4ARNA_flights_CIMS(dpi=320, just_SLR=False,
     # Model
     dfs_mod = {}
     for flight_ID in flight_IDs:
-        df = get_GEOSCF_output4flightnum(flight_ID=flight_ID)
+        df = get_GEOSCF4flightnum(flight_ID=flight_ID)
 #        df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
         dfs_mod[flight_ID] = df
 
@@ -2693,7 +2693,7 @@ def plt_flightpath_spatially_over_CVAO(df, LatVar='LAT_GIN', LonVar='LON_GIN',
     plt.tight_layout()
 
 
-def plt_timeseries4ARNA_flight(df_obs=None, df_mod=None,
+def plt_timeseries4ARNA_flight(df_obs=None, dfs_mod=None,
                                obs_label='Obs.',
                                mod_scale=1, obs_scale=1,
                                obs_adjustby=0, mod_adjustby=0,
@@ -2715,23 +2715,9 @@ def plt_timeseries4ARNA_flight(df_obs=None, df_mod=None,
     """
     Plot up a timeseries of observations and model for a given flight
     """
-    # Exclude points in the model dataframe where there is no model output
-    df_mod = df_mod.loc[~df_mod['model-lev'].isnull(), : ]
-    # Get the beginning and end of the flight from the extracted model times
-    xylim_min = AC.add_minutes( df_mod.index.min(), -15)
-    xylim_max = AC.add_minutes( df_mod.index.max(), 15 )
-    xticks = df_mod.resample('15T' ).mean().index.values
-    xticks = AC.dt64_2_dt( xticks )
-    xticks_labels = [ i.strftime('%H:%M') for i in xticks]
-    # Get dates/datetimes of flight
-    sdate_str = df_obs.index.min().strftime('%x').strip()
-    edate_str = df_obs.index.max().strftime('%x').strip()
-    stime_str = df_obs.index.min().strftime('%H:%M').strip()
-    etime_str = df_obs.index.max().strftime('%H:%M').strip()
     # Now use Seaborn settings
     sns.set(color_codes=True)
     sns.set_context("paper", font_scale=0.75)
-    # Set a shared title string
     # Setup the figure
     w, h = matplotlib.figure.figaspect(aspect_ratio)
     fig = plt.figure(figsize=(w, h))
@@ -2746,7 +2732,6 @@ def plt_timeseries4ARNA_flight(df_obs=None, df_mod=None,
     if plt_BB_as_backfill:
         # TODO add plotting of biomass as backfill too
         pass
-
     # Plot up the observations and model...
     if not isinstance(ObsVar2Plot, type(None)):
         df_obs = df_obs[[ObsVar2Plot]].dropna()
@@ -2754,24 +2739,58 @@ def plt_timeseries4ARNA_flight(df_obs=None, df_mod=None,
                  (df_obs[ObsVar2Plot].values+obs_adjustby)*obs_scale,
                  label=obs_label, color='k' )
     if not isinstance(ModVar2Plot, type(None)):
-        plt.plot(df_mod.index,
-                 (df_mod[ ModVar2Plot ].values+mod_adjustby)*mod_scale,
-                 label=mod_label, color='red' )
-    # Beautify plot
+        CB_cycle = AC.get_CB_color_cycle()
+        mod_colours = dict(zip(CB_cycle, dfs_mod.keys()))
+        ModelVar_CF = 'GEOS-CF'
+        mod_colours[ModelVar_CF] = 'red'
+        # If GEOS-CF is in the model list, then plot this last
+        # This is because it used for the shadow altitude
+        mods2plot = list(dfs_mod.keys())
+        print(mods2plot)
+        if len(mods2plot) >= 1:
+            if ModelVar_CF in mods2plot:
+                mods2plot.pop(mods2plot.index(ModelVar_CF))
+                mods2plot += [ModelVar_CF]
+            for n_key, key in enumerate(sorted(list(dfs_mod.keys()))):
+                mod_colours[key] = CB_cycle[n_key]
+        # Now just loop and plot
+        print(mods2plot)
+        for mod2plot in mods2plot:
+            df_mod = dfs_mod[ mod2plot ]
+            # Exc. points in the model dataframe where there is no model output
+            df_mod = df_mod.loc[~df_mod['model-lev'].isnull(), : ]
+            # Use the key of the dataframe dictionary as label, if >1 dataframe
+            if len(mods2plot) >1:
+                mod_label = mod2plot
+            # Plot model data
+            plt.plot(df_mod.index,
+                     (df_mod[ ModVar2Plot ].values+mod_adjustby)*mod_scale,
+                     label=mod_label,
+                     color=mod_colours[mod2plot] )
+    # Get the beginning and end of the flight from the extracted model times
+    xylim_min = AC.add_minutes( df_mod.index.min(), -15)
+    xylim_max = AC.add_minutes( df_mod.index.max(), 15 )
+    xticks = df_mod.resample('15T' ).mean().index.values
+    xticks = AC.dt64_2_dt( xticks )
+    xticks_labels = [ i.strftime('%H:%M') for i in xticks]
+    # Get dates/datetimes of flight
+    sdate_str = df_obs.index.min().strftime('%x').strip()
+    edate_str = df_obs.index.max().strftime('%x').strip()
+    stime_str = df_obs.index.min().strftime('%H:%M').strip()
+    etime_str = df_obs.index.max().strftime('%H:%M').strip()
+    # Set a shared title string
     if isinstance(title, str):
         plt.title(title)
-#    elif isinstance(title, type(None)):
     else:
         title_str =  "Timeseries of '{}' ({}) during flight '{}' on {}"
         plt.title(title_str.format(var2plot, units, flight_ID, sdate_str ))
-
+    # Beautify plot
     plt.yscale(yscale)
     plt.ylim(ylim)
     plt.ylabel( '{} ({})'.format( var2plot, units) )
     plt.xlim(xylim_min, xylim_max)
     ax.set_xticks(xticks)
     ax.set_xticklabels(xticks_labels, rotation=45)
-#    print(xticks_labels)
     # Invert the second y-axis
     if plt_alt_as_shadow:
         # Add a shadow of the altitude
@@ -3048,7 +3067,7 @@ def add_derived_FAAM_flags2df4flight(df=None, df_FAAM=None, flight_ID='C217'):
     """
     # Get the relevant FAAM dataframe is not provided
     if isinstance(df_FAAM, type(None)):
-#        df = get_GEOSCF_output4flightnum(flight_ID=flight_ID)
+#        df = get_GEOSCF4flightnum(flight_ID=flight_ID)
         df_FAAM = get_FAAM_core4flightnum(flight_ID=flight_ID,
                                           resample_data=True )
     # Just add is the "is dust" and "is SLR"
@@ -3108,7 +3127,7 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, show_plot=False):
     # Model
     dfs_mod = {}
     for flight_ID in flight_IDs:
-        df = get_GEOSCF_output4flightnum(flight_ID=flight_ID)
+        df = get_GEOSCF4flightnum(flight_ID=flight_ID)
         # Add the derived variables to the dataframe
         df = add_deriv_vars2df(df=df)
         dfs_mod[flight_ID] = df
@@ -3509,7 +3528,7 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
     dfs_mod = {}
     dfs_mod_period = {}
     for flight_ID in flight_IDs:
-        df = get_GEOSCF_output4flightnum(flight_ID=flight_ID)
+        df = get_GEOSCF4flightnum(flight_ID=flight_ID)
         df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
         df['flight_ID'] = flight_ID
         dfs_mod[flight_ID] = df.copy()
@@ -3820,7 +3839,7 @@ def plt_timeseries_comp4ARNA_flights_filters(dpi=320, show_plot=False,
     for flight_ID in flight_IDs:
         if debug:
             print(flight_ID)
-        df = get_GEOSCF_output4flightnum(flight_ID=flight_ID)
+        df = get_GEOSCF4flightnum(flight_ID=flight_ID)
         # Add the derived variables to the dataframe
         df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
         df = add_deriv_vars2df(df=df)
@@ -3953,7 +3972,7 @@ def plt_timeseries_comp4ARNA_flights_SWAS(dpi=320, show_plot=False,
     for flight_ID in flight_IDs:
         if debug:
             print(flight_ID)
-        df = get_GEOSCF_output4flightnum(flight_ID=flight_ID)
+        df = get_GEOSCF4flightnum(flight_ID=flight_ID)
         # Add the derived variables to the dataframe
         df = add_deriv_vars2df(df=df)
         dfs_mod[flight_ID] = df
@@ -4110,7 +4129,7 @@ def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False):
     # Model
     dfs_mod = {}
     for flight_ID in flight_IDs:
-        dfs_mod[flight_ID] = get_GEOSCF_output4flightnum(flight_ID=flight_ID)
+        dfs_mod[flight_ID] = get_GEOSCF4flightnum(flight_ID=flight_ID)
     # Observations
     dfs_obs = {}
     for flight_ID in flight_IDs:
@@ -4446,7 +4465,8 @@ def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False):
         plt.close('all')
 
 
-def plt_timeseries_comp4ARNA_flights(dpi=320, show_plot=False):
+def plt_timeseries_comp4ARNA_flights(dpi=320, inc_GEOSChem=False,
+                                     show_plot=False):
     """
     Plot up timeseries comparisons between core observations and model data
     """
@@ -4459,10 +4479,15 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, show_plot=False):
     ]
     flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
     # - Loop by flight and retrieve the files as dataframes (mod + obs)
-    # Model
-    dfs_mod = {}
+    # Model - GEOS-CF (online)
+    dfs_mod_CF = {}
     for flight_ID in flight_IDs:
-        dfs_mod[flight_ID] = get_GEOSCF_output4flightnum(flight_ID=flight_ID)
+        dfs_mod_CF[flight_ID] = get_GEOSCF4flightnum(flight_ID=flight_ID)
+    # Model - GEOS-Chem (offline)
+    if inc_GEOSChem:
+        dfs_mod_GC = {}
+        for flight_ID in flight_IDs:
+            dfs_mod_GC[flight_ID] = get_GEOSChem4flightnum(flight_ID=flight_ID)
     # Observations
     dfs_obs = {}
     for flight_ID in flight_IDs:
@@ -4473,7 +4498,12 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, show_plot=False):
         print(flight_ID)
         # Get observations and model timeseries data as a DataFrame
         df_obs = dfs_obs[flight_ID]
-        df_mod = dfs_mod[flight_ID]
+        df_mod_CF = dfs_mod_CF[flight_ID]
+        if inc_GEOSChem:
+            df_mod_GC = dfs_mod_GC[flight_ID]
+            dfs_mod = {'GEOS-Chem':df_mod_GC, 'GEOS-CF':df_mod_CF}
+        else:
+            dfs_mod = {'GEOS-CF':df_mod_CF}
         # Setup PDF to save PDF plots to
         savetitle = 'ARNA_timeseries_flighttrack_{}'.format(flight_ID)
         pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
@@ -4495,10 +4525,12 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, show_plot=False):
         # Call timeseries plotter function
         plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
                                    ObsVar2Plot=ObsVar2Plot,
-                                   mod_scale=mod_scale, mod_label=mod_label,
+                                   mod_scale=mod_scale,
+                                   mod_label=mod_label,
                                    ModVar2Plot=ModVar2Plot,
                                    ylim=ylim,
-                                   df_mod=df_mod, df_obs=df_obs,
+                                   dfs_mod=dfs_mod,
+                                   df_obs=df_obs,
                                    flight_ID=flight_ID,
                                    )
         # Save to PDF and close the plot
@@ -4516,10 +4548,12 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, show_plot=False):
         # Call timeseries plotter function
         plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
                                    ObsVar2Plot=ObsVar2Plot,
-                                   mod_scale=mod_scale, mod_label=mod_label,
+                                   mod_scale=mod_scale,
+                                   mod_label=mod_label,
                                    ModVar2Plot=ModVar2Plot,
                                    ylim=ylim,
-                                   df_mod=df_mod, df_obs=df_obs,
+                                   dfs_mod=dfs_mod,
+                                   df_obs=df_obs,
                                    flight_ID=flight_ID,
                                    )
         # Save to PDF and close the plot
@@ -4543,7 +4577,8 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, show_plot=False):
                                        mod_label=mod_label,
                                        ModVar2Plot=ModVar2Plot,
                                        ylim=ylim,
-                                       df_mod=df_mod, df_obs=df_obs,
+                                       dfs_mod=dfs_mod,
+                                       df_obs=df_obs,
                                        flight_ID=flight_ID,
                                        yscale=yscale,
                                        )
@@ -4570,7 +4605,8 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, show_plot=False):
                                        mod_label=mod_label,
                                        ModVar2Plot=ModVar2Plot,
                                        ylim=ylim,
-                                       df_mod=df_mod, df_obs=df_obs,
+                                       dfs_mod=dfs_mod,
+                                       df_obs=df_obs,
                                        flight_ID=flight_ID,
                                        yscale=yscale,
                                        )
@@ -4597,7 +4633,8 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, show_plot=False):
                                        mod_label=mod_label,
                                        ModVar2Plot=ModVar2Plot,
                                        ylim=ylim,
-                                       df_mod=df_mod, df_obs=df_obs,
+                                       dfs_mod=dfs_mod,
+                                       df_obs=df_obs,
                                        flight_ID=flight_ID,
                                        yscale=yscale,
                                        )
@@ -4624,7 +4661,8 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, show_plot=False):
                                        mod_label=mod_label,
                                        ModVar2Plot=ModVar2Plot,
                                        ylim=ylim,
-                                       df_mod=df_mod, df_obs=df_obs,
+                                       dfs_mod=dfs_mod,
+                                       df_obs=df_obs,
                                        flight_ID=flight_ID,
                                        yscale=yscale,
                                        )
