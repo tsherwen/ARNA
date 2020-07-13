@@ -3569,6 +3569,7 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
         df_mod = dfs_mod[flight_ID]
         df_mod_period = dfs_mod_period[flight_ID]
         df_obs_NOy = dfs_obs_NOy[flight_ID]
+        df_CIMS_period = dfs_CIMS_period[flight_ID]
         # add the dust and SLR flags to the core dataframe
         df_obs = add_derived_FAAM_flags2df4flight(df=df_obs,
                                                   flight_ID=flight_ID)
@@ -3627,17 +3628,17 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
         ylim = None
         # Call timeseries plotter function
         plt_timeseries4ARNA_flight_period_obs(var2plot=var2plot, units=units,
-                                             ObsVar2Plot=ObsVar2Plot,
-                                             mod_scale=mod_scale,
-                                             mod_label=mod_label,
-                                             ModVar2Plot=ModVar2Plot,
-                                             ylim=ylim,
-                                             df_mod=df_mod, df_obs=df_obs_NOy,
-                                             df_mod_period=df_mod_period,
-                                             flight_ID=flight_ID,
-                                             ObsVar2PlotErr=ObsVar2PlotErr,
-                                             plt_errorbar=plt_errorbar,
-                                             )
+                                              ObsVar2Plot=ObsVar2Plot,
+                                              mod_scale=mod_scale,
+                                              mod_label=mod_label,
+                                              ModVar2Plot=ModVar2Plot,
+                                              ylim=ylim,
+                                              df_mod=df_mod, df_obs=df_obs_NOy,
+                                              df_mod_period=df_mod_period,
+                                              flight_ID=flight_ID,
+                                              ObsVar2PlotErr=ObsVar2PlotErr,
+                                              plt_errorbar=plt_errorbar,
+                                              )
         # Save to PDF and close the plot
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
         plt.close()
@@ -3655,17 +3656,17 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
         ylim = None
         # Call timeseries plotter function
         plt_timeseries4ARNA_flight_period_obs(var2plot=var2plot, units=units,
-                                             ObsVar2Plot=ObsVar2Plot,
-                                             mod_scale=mod_scale,
-                                             mod_label=mod_label,
-                                             ModVar2Plot=ModVar2Plot,
-                                             ylim=ylim,
-                                             df_mod=df_mod, df_obs=df_obs_NOy,
-                                             df_mod_period=df_mod_period,
-                                             flight_ID=flight_ID,
-                                             ObsVar2PlotErr=ObsVar2PlotErr,
-                                             plt_errorbar=plt_errorbar,
-                                             )
+                                              ObsVar2Plot=ObsVar2Plot,
+                                              mod_scale=mod_scale,
+                                              mod_label=mod_label,
+                                              ModVar2Plot=ModVar2Plot,
+                                              ylim=ylim,
+                                              df_mod=df_mod, df_obs=df_obs_NOy,
+                                              df_mod_period=df_mod_period,
+                                              flight_ID=flight_ID,
+                                              ObsVar2PlotErr=ObsVar2PlotErr,
+                                              plt_errorbar=plt_errorbar,
+                                              )
         # Save to PDF and close the plot
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
         plt.close()
@@ -3683,20 +3684,116 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
         ylim = None
         # Call timeseries plotter function
         plt_timeseries4ARNA_flight_period_obs(var2plot=var2plot, units=units,
-                                             ObsVar2Plot=ObsVar2Plot,
-                                             mod_scale=mod_scale,
-                                             mod_label=mod_label,
-                                             ModVar2Plot=ModVar2Plot,
-                                             ylim=ylim,
-                                             df_mod=df_mod, df_obs=df_obs_NOy,
-                                             df_mod_period=df_mod_period,
-                                             flight_ID=flight_ID,
-                                             ObsVar2PlotErr=ObsVar2PlotErr,
-                                             plt_errorbar=plt_errorbar,
-                                             )
+                                              ObsVar2Plot=ObsVar2Plot,
+                                              mod_scale=mod_scale,
+                                              mod_label=mod_label,
+                                              ModVar2Plot=ModVar2Plot,
+                                              ylim=ylim,
+                                              df_mod=df_mod, df_obs=df_obs_NOy,
+                                              df_mod_period=df_mod_period,
+                                              flight_ID=flight_ID,
+                                              ObsVar2PlotErr=ObsVar2PlotErr,
+                                              plt_errorbar=plt_errorbar,
+                                              )
         # Save to PDF and close the plot
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
         plt.close()
+
+
+        # - Plot up 'NOy-HNO3-PAN'
+        units = 'pptv'
+        var2plot = 'NOy (NOx+HONO+NIT(s))'
+        ModVar2Plot = 'NOy-Limited'
+        ObsVar2Plot = 'NOy'
+        mod_label = 'GEOS-CF'
+        mod_scale = 1E12
+        ObsVar2PlotErr = None
+        plt_errorbar = False
+#        ylim = (-0.2, 1)
+        ylim = None
+        # Call timeseries plotter function
+        plt_timeseries4ARNA_flight_period_obs(var2plot=var2plot, units=units,
+                                              ObsVar2Plot=ObsVar2Plot,
+                                              mod_scale=mod_scale,
+                                              mod_label=mod_label,
+                                              ModVar2Plot=ModVar2Plot,
+                                              ylim=ylim,
+                                              df_mod=df_mod, df_obs=df_obs_NOy,
+                                              df_mod_period=df_mod_period,
+                                              flight_ID=flight_ID,
+                                              ObsVar2PlotErr=ObsVar2PlotErr,
+                                              plt_errorbar=plt_errorbar,
+                                              )
+        # Save to PDF and close the plot
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+        plt.close()
+
+        # - Plot up HONO
+        try:
+            units = 'pptv'
+            var2plot = 'HONO'
+            ModVar2Plot = 'HNO2'
+            ObsVar2Plot = 'HONO'
+            mod_label = 'GEOS-CF'
+            mod_scale = 1E12
+            ObsVar2PlotErr = None
+            plt_errorbar = False
+    #        ylim = (-0.2, 1)
+            ylim = None
+            # Call timeseries plotter function
+            plt_timeseries4ARNA_flight_period_obs(var2plot=var2plot,
+                                                 units=units,
+                                                 ObsVar2Plot=ObsVar2Plot,
+                                                 mod_scale=mod_scale,
+                                                 mod_label=mod_label,
+                                                 ModVar2Plot=ModVar2Plot,
+                                                 ylim=ylim,
+                                                 df_mod=df_mod,
+                                                 df_obs=df_CIMS_period,
+                                                 df_mod_period=df_mod_period,
+                                                 flight_ID=flight_ID,
+                                                 ObsVar2PlotErr=ObsVar2PlotErr,
+                                                 plt_errorbar=plt_errorbar,
+                                                 )
+            # Save to PDF and close the plot
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+            plt.close()
+        except KeyError:
+            pstr = "WARNING: '{}' not plotted for '{}' - not in DataDrame"
+            print(pstr.format(var2plot, flight_ID))
+        # - Plot up HNO3
+        try:
+            units = 'pptv'
+            var2plot = 'HNO3'
+            ModVar2Plot = 'HNO3'
+            ObsVar2Plot = 'HNO3'
+            mod_label = 'GEOS-CF'
+            mod_scale = 1E12
+            ObsVar2PlotErr = None
+            plt_errorbar = False
+    #        ylim = (-0.2, 1)
+            ylim = None
+            # Call timeseries plotter function
+            plt_timeseries4ARNA_flight_period_obs(var2plot=var2plot,
+                                                  units=units,
+                                                  ObsVar2Plot=ObsVar2Plot,
+                                                  mod_scale=mod_scale,
+                                                  mod_label=mod_label,
+                                                  ModVar2Plot=ModVar2Plot,
+                                                  ylim=ylim,
+                                                  df_mod=df_mod,
+                                                  df_obs=df_CIMS_period,
+                                                  df_mod_period=df_mod_period,
+                                                  flight_ID=flight_ID,
+                                                 ObsVar2PlotErr=ObsVar2PlotErr,
+                                                  plt_errorbar=plt_errorbar,
+                                                  )
+            # Save to PDF and close the plot
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)
+            plt.close()
+        except KeyError:
+            pstr = "WARNING: '{}' not plotted for '{}' - not in DataDrame"
+            print(pstr.format(var2plot, flight_ID))
 
         # - Save entire pdf
         AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
