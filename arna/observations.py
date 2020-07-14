@@ -210,7 +210,7 @@ def get_summary4flight(flight_ID='C217'):
     else:
         header = 0
         names = None
-    # read file
+    # Read file
     df = pd.read_csv(file2use[0], header=header, names=names)
     # Add a flight ID column
     df['flight_ID'] = flight_ID
@@ -747,6 +747,59 @@ def mk_file_of_flags():
     df[vars2use].to_csv(filename.format('ALL', version))
 
 
+def get_FAAM_flights_df():
+    """
+    Retrieve DataFrame of FAAM BAe146 flights
+    """
+    # Flights to use...
+    folder = '/users/ts551/scratch/data/FAAM/core_faam_NetCDFs/'
+    filename = 'FAAM_BAe146_Biomass_burning_and_ACISIS_flights_tabulated.csv'
+    df = pd.read_csv(folder+filename)
+    # Only consider the dates after Jan 2018
+    DateVar = 'Date'
+    df[DateVar] = pd.to_datetime( df[DateVar] )
+    return df
+
+
+def get_flighttracks4campaign(campaign='ARNA-2', PressVar="PS_RVSM",
+                              LonVar='LON_GIN', TimeVar='Time',
+                              LatVar='LAT_GIN', resample_data=True ):
+    """
+    Flight tracks for campaign
+    """
+    # Get dataframe of all flights and select those for a given campaign
+    folder = '/users/ts551/scratch/data/FAAM/core_faam_NetCDFs/'
+    df = get_FAAM_flights_df()
+    flight_IDs = df.loc[df['Campaign']==campaign, :]['Flight ID']
+    # For flight in campaign flights
+    dfs = []
+    for flight_ID in flight_IDs:
+        try:
+            # Retrieve FAAM BAe146 Core NetCDF files
+            filename = 'core_faam_*_{}_1hz.nc'.format(flight_ID.lower())
+            file2use = glob.glob(folder+filename)
+            if len(file2use) > 1:
+                print('WARNING: more that one file found! (so using latest file)')
+                print(file2use)
+            ds = xr.open_dataset( file2use[0] )
+            # Only select the variable of intereest and drop where these are NaNs
+            df = ds[ [PressVar, LatVar, LonVar, TimeVar] ].to_dataframe()
+            df = df.dropna()
+            # Remove the index name and add index values to a column
+            df.index.name = None
+            dfs += [df.copy()]
+            del ds, df
+        except IndexError:
+            pstr = 'WARNING: failed to extract flight data for {} ({})'
+            print(pstr.format(flight_ID, campaign))
+    # Return
+    df = pd.concat(dfs, axis=0)
+    if resample_data:
+        df = df.resample('1T' ).mean()
+    return df
+
+
+
 def mk_planeflight_files4FAAM_campaigns(testing_mode=False):
     """
     Make plane-flight input files for various FAAM campaigns
@@ -754,12 +807,7 @@ def mk_planeflight_files4FAAM_campaigns(testing_mode=False):
     # Location of flight data
     folder = '/users/ts551/scratch/data/FAAM/core_faam_NetCDFs/'
     folder4csv = '/users/ts551/scratch/data/FAAM/GEOSChem_planeflight_inputs/'
-    # Flights to use...
-    fname = 'FAAM_BAe146_Biomass_burning_and_ACISIS_flights_tabulated.csv'
-    df = pd.read_csv(folder+fname)
-    # Only consider the dates after Jan 2018
-    DateVar = 'Date'
-    df[DateVar] = pd.to_datetime( df[DateVar] )
+    df = get_FAAM_flights_df()
     if testing_mode:
         df = df.loc[df[DateVar]  > datetime.datetime(2020,1,1), :]
     # flights to use?

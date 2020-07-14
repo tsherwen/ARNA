@@ -227,6 +227,8 @@ def plot_individual_spec_alt_slices(ds, folder='./',
             gc.collect()
 
 
+
+
 def plot_up_latitudinally_sampled_locs(ds, var2use='noy', extents=None,
                                        add_detailed_map=True,
                                        add_flyable_range_as_circle=True,
@@ -1140,7 +1142,6 @@ def plot_CVAO_region_on_global_map(ds, var2use='NOy'):
                              transform=ccrs.PlateCarree())
     # Beautify the figure/plot
     ax.coastlines()
-    ax.set_global()
     # Force global perspective
     ax.set_global() # this will force a global perspective
     # Save
@@ -5063,3 +5064,126 @@ def quick_lat_plt_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
         plt.savefig(folder+savename+'.png', dpi=dpi)
     if show_plot:
         plt.show()
+
+
+def plt_highres_modelling_region(ds=None, var2use='NOy', LatVar='lat',
+                                 LonVar='lon',
+                                 plot_blank_data=False, rm_colourbar=True,
+                                 add_box4highres_region=True,
+                                 projection=ccrs.PlateCarree):
+    """
+    Plot a map to show ARNA campaign region
+    """
+    # Reset sns for spatial plot
+    sns.reset_orig()
+    # Plot some blank data?
+    if plot_blank_data:
+        if isinstance(ds, type(None)):
+#            NASA_data = get_local_folder('NASA_data')
+#            folder = NASA_data + 'nature_run/O3/'
+#            filename = 'nature_run_lev_72_res_0.125_spec_O3_2014_034_ctm.nc'
+            folder = '/mnt/lustre/groups/chem-acm-2018/earth0_data/'
+            folder += 'Data4Papers/Data_Full/'
+            folder += '201609_ACP_Sherwen_GC_Present_day_halogens_Externally_shared_2x25_files/HAL/'
+            filename = 'ctm.nc'
+            ds = xr.open_dataset(folder+filename)
+            var2use = 'IJ_AVG_S__O3'
+            ds = ds[[var2use]].mean(dim='time')
+            ds[var2use][:] = np.NaN
+            # Select a single level
+            ds = ds.sel(model_level_number=ds.model_level_number[0])
+            del ds['model_level_number']
+            ds[[var2use]].attrs = {}
+            # rename lat and long
+            ds = ds.rename({'latitude':LatVar, 'longitude':LonVar})
+    # - extents to use
+    # extracted data from OPeNDAP
+#    x0 = -30
+#    x1 =-10
+#    y0 = 0
+#    y1 = 25
+    # Context area
+    x0 = -40
+    x1 = 30
+    y0 = -5
+    y1 = 45
+    # Local area analysed as Cape Verde
+#    x0 = -30
+#    x1 =-10
+#    y0 = 0
+#    y1 = 25
+    # - Select the data
+    # Set values region
+    bool1 = ((ds.lon >= x0) & (ds.lon <= x1)).values
+    bool2 = ((ds.lat >= y0) & (ds.lat <= y1)).values
+    # Cut by lon, then lat
+    ds = ds.isel(lon=bool1)
+    ds = ds.isel(lat=bool2)
+    # Plot the data
+    fig = plt.figure(figsize=(10, 6))
+    ax = fig.add_subplot(111, projection=projection(), aspect='auto',
+                         alpha=0.5)
+    ds[var2use].plot.imshow(x=LonVar, y=LatVar, ax=ax,
+                            transform=ccrs.PlateCarree())
+    # Beautify the figure/plot
+    ax.coastlines()
+    # Add borders for countries
+    ax.add_feature(cfeature.BORDERS, edgecolor='grey',
+                   facecolor='none', zorder=50)
+    # Also add minor islands (inc. Cape Verde)
+#    land_10m = cfeature.NaturalEarthFeature('physical', 'land', '10m',
+#                                            edgecolor=None,
+#                                            facecolor='none')
+    # Force map perspective to be on West/Northern Africa
+    ax.set_extent((x0, x1, y0, y1), projection())
+    #
+    if add_box4highres_region:
+        ax = add_LinearRing2cartopy_map(ax=ax)
+
+#    ax.set_global() # this will force a global perspective
+    # Remove the colout mpa from the plot
+    if rm_colourbar:
+        im = ax.images
+        cb = im[-1].colorbar
+        cb.remove()
+        del cb
+    return fig, ax
+
+
+def add_LinearRing2cartopy_map(ax=None, x0=15, x1=-35, y0=0, y1=34,
+                               projection=ccrs.PlateCarree):
+    """
+    Add a LinearRing to cartopy plot
+    """
+    # Add rectangles for location of the high resolution grid
+    # Now plot as a linear ring
+    # Initial choice
+#    x0=15, x1=-32, y0=0, y1=32.5,
+    # 4x5 grid choice
+#    x0=15, x1=-35, y0=0, y1=34,
+    lons = (x0, x1, x1, x0)
+    lats = (y0, y0, y1, y1)
+    ring = LinearRing(list(zip(lons, lats)))
+    ax.add_geometries([ring], projection(),
+                      facecolor='none',
+                      edgecolor='green',
+                      zorder=100, linestyle='--',
+                      )
+    return ax
+
+
+def add_scatter_points2cartopy_ax(ax=None, projection=ccrs.PlateCarree,
+                                  marker='o', s=2, lats=None, lons=None,
+                                  alpha=0.5, color='red', zorder=999,
+                                  label=None):
+    """
+    Add scatter points to cartopy axis
+    """
+    # Now scatter points on plot
+    ax.scatter(lons, lats, color=color, s=s,
+               marker=marker, alpha=alpha,
+               transform=projection(),
+               zorder=zorder, label=label)
+    return ax
+
+

@@ -11,7 +11,7 @@ def main():
     # - run the extraction of ARNA flights from GEOS-CF data
     # Plot up core FAAM data
 #    extract_GEOS54all_ARNA_flights()
-    ar.plt_timeseries_comp4ARNA_flights()
+    ar.plt_timeseries_comp4ARNA_flights(inc_GEOSChem=False)
     ar.plt_comp_by_alt_4ARNA_flights()
 
     # plot up ToF-CIMS data
