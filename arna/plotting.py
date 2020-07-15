@@ -471,7 +471,7 @@ def plot_up_longitudinally_sampled_locs(ds, var2use='noy', extents=None,
 
 def plt_timeseries4ds(ds, region='Cape_Verde', extr_str='',
                       vars2use=None, year=2018, verbose=False,
-                      show_plot=False, dpi=320):
+                      show_plot=False, dpi=320, context="talk"):
     """
     Plot timeseries of data at different heights
     """
@@ -481,7 +481,7 @@ def plt_timeseries4ds(ds, region='Cape_Verde', extr_str='',
     # - Now plot up species as PDf based on level
     import seaborn as sns
     sns.set(color_codes=True)
-    sns.set_context("talk", font_scale=0.75)
+    sns.set_context(context, font_scale=0.75)
     # Setup PDF to save PDF plots to
     savetitle = 'ARNA_timeseries_{}_{}'.format(region, year)
     pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
@@ -564,7 +564,8 @@ def plt_timeseries4ds(ds, region='Cape_Verde', extr_str='',
 
 def PDF_on_species_in_ds4lvls(ds, region='Cape_Verde', extr_str='',
                               vars2use=None, year=2018, verbose=False,
-                              show_plot=False, dpi=320):
+                              show_plot=False, dpi=320,
+                              context="talk"):
     """
     plot the stats on species at different heights as a PDF
     """
@@ -592,7 +593,7 @@ def PDF_on_species_in_ds4lvls(ds, region='Cape_Verde', extr_str='',
     # - Now plot up species as PDf based on level
     import seaborn as sns
     sns.set(color_codes=True)
-    sns.set_context("talk")
+    sns.set_context(context)
     # Setup PDF to save PDF plots to
     savetitle = 'ARNA_PDF_of_concs_by_level_{}_{}'.format(region, year)
     pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
@@ -1755,7 +1756,8 @@ def quick_lon_plot_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
         plt.show()
 
 
-def plt_comp_by_alt_4ARNA_all(dpi=320, just_SLR=True, show_plot=False):
+def plt_comp_by_alt_4ARNA_all(dpi=320, just_SLR=True, show_plot=False,
+                              context="paper"):
     """
     Plot up altitude binned comparisons between core obs. and model data
     """
@@ -1809,7 +1811,7 @@ def plt_comp_by_alt_4ARNA_all(dpi=320, just_SLR=True, show_plot=False):
 
     # - Put observations and vars to plot into a dictionary
     sns.set(color_codes=True)
-    sns.set_context("paper", font_scale=0.75)
+    sns.set_context(context, font_scale=0.75)
     # Force alt to be in units of km
     ALT_var = 'Altitude (km)'
     Y_unit = ALT_var
@@ -1920,7 +1922,8 @@ def plt_comp_by_alt_4ARNA_all(dpi=320, just_SLR=True, show_plot=False):
 
 
 def plt_comp_by_alt_4ARNA_all_DUST(dpi=320, just_SLR=True,
-                                   plt_model=False, show_plot=False):
+                                   plt_model=False, show_plot=False,
+                                   context="paper"):
     """
     Plot up altitude binned comparisons between core obs. and model data
     """
@@ -1990,7 +1993,7 @@ def plt_comp_by_alt_4ARNA_all_DUST(dpi=320, just_SLR=True,
 
     # - Put observations and vars to plot into a dictionary
     sns.set(color_codes=True)
-    sns.set_context("paper", font_scale=0.75)
+    sns.set_context(context, font_scale=0.75)
 
     # - Now plot up flight time series plots by variable
     if just_SLR:
@@ -2099,7 +2102,8 @@ def plt_comp_by_alt_4ARNA_all_DUST(dpi=320, just_SLR=True,
 
 
 def plt_comp_by_alt_4ARNA_CIMS_all_DUST(dpi=320, just_SLR=True,
-                                        plt_model=False, show_plot=False):
+                                        plt_model=False, show_plot=False,
+                                        context="paper"):
     """
     Plot up altitude binned comparisons between core obs. and model data
     """
@@ -2173,7 +2177,7 @@ def plt_comp_by_alt_4ARNA_CIMS_all_DUST(dpi=320, just_SLR=True,
 
     # - Put observations and vars to plot into a dictionary
     sns.set(color_codes=True)
-    sns.set_context("paper", font_scale=0.75)
+    sns.set_context(context, font_scale=0.75)
 
     # - Now plot up flight time series plots by variable
     if just_SLR:
@@ -2286,7 +2290,8 @@ def plt_comp_by_alt_4ARNA_CIMS_all_DUST(dpi=320, just_SLR=True,
     plt.close('all')
 
 
-def plt_comp_by_alt_4ARNA_flights(dpi=320, just_SLR=True, show_plot=False):
+def plt_comp_by_alt_4ARNA_flights(dpi=320, just_SLR=True, show_plot=False,
+                                  context="paper"):
     """
     Plot up altitude binned comparisons between core obs. and model data
     """
@@ -2336,7 +2341,7 @@ def plt_comp_by_alt_4ARNA_flights(dpi=320, just_SLR=True, show_plot=False):
 
         # - Put observations and vars to plot into a dictionary
         sns.set(color_codes=True)
-        sns.set_context("paper", font_scale=0.75)
+        sns.set_context(context, font_scale=0.75)
         # Force alt to be in units of km
         ALT_var = 'Altitude (km)'
         Y_unit = ALT_var
@@ -2444,13 +2449,13 @@ def plt_comp_by_alt_4ARNA_flights(dpi=320, just_SLR=True, show_plot=False):
 
 
 def plt_comp_by_alt_4ARNA_flights_CIMS(dpi=320, just_SLR=False,
-                                       show_plot=False):
+                                       show_plot=False, context="paper"):
     """
     Plot up altitude binned comparisons between core obs. and model data
     """
     import seaborn as sns
     sns.set(color_codes=True)
-    sns.set_context("paper", font_scale=0.75)
+    sns.set_context(context, font_scale=0.75)
     # Which flights to plot?
 #    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
     # Just use non-transit ARNA flights
@@ -2504,7 +2509,7 @@ def plt_comp_by_alt_4ARNA_flights_CIMS(dpi=320, just_SLR=False,
 
         # - Put observations and vars to plot into a dictionary
         sns.set(color_codes=True)
-        sns.set_context("paper", font_scale=0.75)
+        sns.set_context(context, font_scale=0.75)
         # Force alt to be in units of km
         ALT_var = 'Altitude (km)'
         Y_unit = ALT_var
@@ -2712,13 +2717,14 @@ def plt_timeseries4ARNA_flight(df_obs=None, dfs_mod=None,
                                invert_yaxis=False,
                                title=None,
                                plt_legend=True,
+                               context="paper",
                                ):
     """
     Plot up a timeseries of observations and model for a given flight
     """
     # Now use Seaborn settings
     sns.set(color_codes=True)
-    sns.set_context("paper", font_scale=0.75)
+    sns.set_context(context, font_scale=0.75)
     # Setup the figure
     w, h = matplotlib.figure.figaspect(aspect_ratio)
     fig = plt.figure(figsize=(w, h))
@@ -2835,6 +2841,7 @@ def plt_timeseries4ARNA_flight_period_obs(df_obs=None, df_mod=None,
                                           ObsVar2PlotErr='',
                                           StartVar='Sample Start',
                                           EndVar='Sample End',
+                                          context="paper",
                                           ):
     """
     Plot up a timeseries of observations and model for a given flight
@@ -2854,7 +2861,7 @@ def plt_timeseries4ARNA_flight_period_obs(df_obs=None, df_mod=None,
     etime_str = df_mod.index.max().strftime('%H:%M').strip()
     # Now use Seaborn settings
     sns.set(color_codes=True)
-    sns.set_context("paper", font_scale=0.75)
+    sns.set_context(context, font_scale=0.75)
     # Set a shared title string
     title_str =  "Timeseries of '{}' ({}) during flight '{}' on {}"
     # Setup the figure
@@ -2945,6 +2952,7 @@ def plt_timeseries4ARNA_flight_point_obs(df_obs=None, df_mod=None,
                                          plt_dust_as_backfill=True,
                                          plt_errorbar=False,
                                          ObsVar2PlotErr='',
+                                         context="paper",
                                          ):
     """
     Plot up a timeseries of observations and model for a given flight
@@ -2964,7 +2972,7 @@ def plt_timeseries4ARNA_flight_point_obs(df_obs=None, df_mod=None,
     etime_str = df_mod.index.max().strftime('%H:%M').strip()
     # Now use Seaborn settings
     sns.set(color_codes=True)
-    sns.set_context("paper", font_scale=0.75)
+    sns.set_context(context, font_scale=0.75)
     # Set a shared title string
     title_str =  "Timeseries of '{}' ({}) during flight '{}' on {}"
     # Setup the figure
