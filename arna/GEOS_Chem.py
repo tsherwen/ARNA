@@ -49,14 +49,35 @@ def v12_9_TRA_XX_2_name(TRA_XX, RTN_dict=False):
         return dict(zip(nums, TRAs))[TRA_XX]
 
 
-def get_GEOSChem4flightnum(flight_ID='C225', resample_data=True):
+def get_dict_of_GEOSChem_model_output(res='0.5x0.625', RunSet='MERRA2-intial'):
+    """
+    Retrieve dictionary of model run names and their full location paths
+    """
+    RunDir = '/users/ts551/scratch/GC/rundirs/'
+    if res == '4x5':
+        # boundary condition resolution runs
+        SpecificRunStr = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.PF'
+        folder = '{}/{}/'.format( RunDir, SpecificRunStr )
+        d = {'BC-BASE':folder}
+    elif res == '0.5x0.625':
+        SpecificRunStr = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.1x1.PF'
+        folder = '{}/{}/'.format( RunDir, SpecificRunStr )
+        d = {'BASE':folder}
+    else:
+        pass
+
+    return d
+
+
+def get_GEOSChem4flightnum(flight_ID='C225', res='0.5x0.625',
+                           RunSet='MERRA2-intial', resample_data=True):
     """
     Retrieve GEOS-Chem output for FAAM flight
     """
     # Where is the extract GEOS-CF data?
-    RunDir = '/users/ts551/scratch/GC/rundirs/'
-    SpecificRunStr = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.PF'
-    folder = '{}/{}/'.format( RunDir, SpecificRunStr )
+    RunDict = get_dict_of_GEOSChem_model_output(res=res, RunSet=RunSet)
+    # Asume just one run for now...
+    folder = RunDict[ list(RunDict.keys())[0] ]
     # Extract the data for a specific flight
     files2use = glob.glob( os.path.join(folder,'*plane.log*') )
     # Get start date of flight - use the plane-flight from same day as sdate

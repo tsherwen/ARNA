@@ -4624,9 +4624,13 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, inc_GEOSChem=False,
         dfs_mod_CF[flight_ID] = get_GEOSCF4flightnum(flight_ID=flight_ID)
     # Model - GEOS-Chem (offline)
     if inc_GEOSChem:
+        RunSet='MERRA2-intial'
+        res='0.5x0.625'
         dfs_mod_GC = {}
         for flight_ID in flight_IDs:
-            dfs_mod_GC[flight_ID] = get_GEOSChem4flightnum(flight_ID=flight_ID)
+            dfs_mod_GC[flight_ID] = get_GEOSChem4flightnum(flight_ID=flight_ID,
+                                                           res=res,
+                                                           RunSet=RunSet,)
     # Observations
     dfs_obs = {}
     for flight_ID in flight_IDs:
