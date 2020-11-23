@@ -31,7 +31,9 @@ from shapely.geometry.polygon import LinearRing
 import matplotlib
 
 # import local ARNA module functions
+#from . GEOS_Chem import get_GEOSChem4flightnum
 from . GEOS import *
+from . GEOS_Chem import *
 from . core import *
 from . utils import *
 
@@ -2800,11 +2802,17 @@ def plt_timeseries4ARNA_flight(df_obs=None, dfs_mod=None,
     xticks = df_mod.resample('15T' ).mean().index.values
     xticks = AC.dt64_2_dt( xticks )
     xticks_labels = [ i.strftime('%H:%M') for i in xticks]
-    # Get dates/datetimes of flight
-    sdate_str = df_obs.index.min().strftime('%x').strip()
-    edate_str = df_obs.index.max().strftime('%x').strip()
-    stime_str = df_obs.index.min().strftime('%H:%M').strip()
-    etime_str = df_obs.index.max().strftime('%H:%M').strip()
+    # Get dates/datetimes of flight (using observed time in preference)
+    try:
+        sdate_str = df_obs.index.dropna().min().strftime('%x').strip()
+        edate_str = df_obs.index.dropna().max().strftime('%x').strip()
+        stime_str = df_obs.index.dropna().min().strftime('%H:%M').strip()
+        etime_str = df_obs.index.dropna().max().strftime('%H:%M').strip()
+    except ValueError:
+        sdate_str = df_mod.index.dropna().min().strftime('%x').strip()
+        edate_str = df_mod.index.dropna().max().strftime('%x').strip()
+        stime_str = df_mod.index.dropna().min().strftime('%H:%M').strip()
+        etime_str = df_mod.index.dropna().max().strftime('%H:%M').strip()
     # Set a shared title string and fill with variables specific to flight
     if isinstance(title, str):
         plt.title(title)
@@ -2843,7 +2851,7 @@ def plt_timeseries4ARNA_flight(df_obs=None, dfs_mod=None,
 
 
 def plt_timeseries4ARNA_flight_period_obs(df_obs=None, df_mod=None,
-                                          df_mod_period=None,
+                                          dfs_mod_period=None,
                                           obs_label='Obs.',
                                           mod_scale=1, obs_adjustby=0,
                                           ylim=(None, None),
@@ -2870,33 +2878,47 @@ def plt_timeseries4ARNA_flight_period_obs(df_obs=None, df_mod=None,
     # Now use Seaborn settings
     sns.set(color_codes=True)
     sns.set_context(context, font_scale=font_scale)
-    # Exclude points in the model dataframe where there is no model output
-    df_mod = df_mod.loc[~df_mod['model-lev'].isnull(), : ]
-    # Get the beginning and end of the flight from the extracted model times
-    xylim_min = AC.add_minutes( df_mod.index.min(), -15)
-    xylim_max = AC.add_minutes( df_mod.index.max(), 15 )
-    xticks = df_mod.resample('15T' ).mean().index.values
-    xticks = AC.dt64_2_dt( xticks )
-    xticks_labels = [ i.strftime('%H:%M') for i in xticks]
-    # Get dates/datetimes of flight
-    sdate_str = df_mod.index.min().strftime('%x').strip()
-    edate_str = df_mod.index.max().strftime('%x').strip()
-    stime_str = df_mod.index.min().strftime('%H:%M').strip()
-    etime_str = df_mod.index.max().strftime('%H:%M').strip()
     # Setup the figure
     w, h = matplotlib.figure.figaspect(aspect_ratio)
     fig = plt.figure(figsize=(w, h))
     ax = fig.add_subplot(111)
-    # Plot up the model data...
+    # Setup model(s) variables lists regardless of whether these are plotted
+    CB_cycle = AC.get_CB_color_cycle()
+    mods2plot = list(dfs_mod.keys())
+    mod_colours = dict(zip(CB_cycle, dfs_mod.keys()))
+    ModelVar_CF = 'GEOS-CF'
+    # If GEOS-CF is in the model list, then plot this last
+    # This is because it used for the shadow altitude
+    if debug:
+        print(mods2plot)
+    if len(mods2plot) >= 1:
+        if ModelVar_CF in mods2plot:
+            mods2plot.pop(mods2plot.index(ModelVar_CF))
+            mods2plot += [ModelVar_CF]
+        for n_key, key in enumerate(sorted(list(dfs_mod.keys()))):
+            mod_colours[key] = CB_cycle[n_key]
+
+    # Plot up the model data if requested...
     if not isinstance(ModVar2Plot, type(None)):
+        mod_colours[ModelVar_CF] = 'red'
+        # Now just loop and plot
+        if debug:
+            print(mods2plot)
 #        plt.plot(df_mod.index, df_mod[ ModVar2Plot ].values*mod_scale,
 #                 label=mod_label, color='red' )
-        xmin = df_mod_period[StartVar]
-        xmax = df_mod_period[EndVar]
-        plt.hlines(df_mod_period[ ModVar2Plot ].values*mod_scale,
-                   xmin, xmax,
-                   label=mod_label, color='red' )
-
+        for mod2plot in mods2plot:
+            df_mod_period = dfs_mod_period[ mod2plot ]
+            xmin = df_mod_period[StartVar]
+            xmax = df_mod_period[EndVar]
+            plt.hlines(df_mod_period[ ModVar2Plot ].values*mod_scale,
+                       xmin, xmax,
+                       label=mod_label, color=mod_colours[mod2plot] )
+    else:
+        # Use the first model input
+        # This needs to be GEOS-CF (for model-lev) variable
+        df_mod = dfs_mod[ mods2plot[0] ]
+        # Exc. points in the model dataframe where there is no model output
+        df_mod = df_mod.loc[~df_mod['model-lev'].isnull(), : ]
 
     # Plot up where
     if plt_dust_as_backfill:
@@ -2912,16 +2934,25 @@ def plt_timeseries4ARNA_flight_period_obs(df_obs=None, df_mod=None,
                     yerr=df_obs[ObsVar2PlotErr].values, fmt='-o',
                     color='k', capsize=3.0, label=obs_label)
     else:
-#        df_obs = df_obs[[ObsVar2Plot]].dropna()
-#        plt.scatter(df_obs.index,
-#                    label=obs_label,
-#                    color='k' )
         xmin = df_obs[StartVar]
         xmax = df_obs[EndVar]
         plt.hlines(df_obs[ObsVar2Plot].values+obs_adjustby,
                    xmin, xmax,
                    label=obs_label, color='k' )
 
+    # Exclude points in the model dataframe where there is no model output
+    df_mod = df_mod.loc[~df_mod['model-lev'].isnull(), : ]
+    # Get the beginning and end of the flight from the extracted model times
+    xylim_min = AC.add_minutes( df_mod.index.min(), -15)
+    xylim_max = AC.add_minutes( df_mod.index.max(), 15 )
+    xticks = df_mod.resample('15T' ).mean().index.values
+    xticks = AC.dt64_2_dt( xticks )
+    xticks_labels = [ i.strftime('%H:%M') for i in xticks]
+    # Get dates/datetimes of flight
+    sdate_str = df_mod.index.min().strftime('%x').strip()
+    edate_str = df_mod.index.max().strftime('%x').strip()
+    stime_str = df_mod.index.min().strftime('%H:%M').strip()
+    etime_str = df_mod.index.max().strftime('%H:%M').strip()
     # Beautify plot
     # Set a shared title string and fill with variables specific to flight
     if isinstance(title, str):
@@ -2957,7 +2988,6 @@ def plt_timeseries4ARNA_flight_period_obs(df_obs=None, df_mod=None,
     fig.legend(loc='best', bbox_to_anchor=(1,1),
                bbox_transform=ax.transAxes)
     plt.tight_layout()
-
 
 
 def plt_timeseries4ARNA_flight_point_obs(df_obs=None, df_mod=None,
@@ -3547,12 +3577,419 @@ def mk_combined_NOy_obs_variable(FAAMdf=None, CIMSdf=None, Filtersdf=None,
         return Filtersdf[[NOyVar]]
 
 
+def plt_timeseries_comp4MOYA_flights(dpi=320, inc_GEOSChem=False,
+                                     show_plot=False, context='talk'):
+    """
+    Plot up timeseries comparisons between core observations and model data
+    """
+    import seaborn as sns
+    # Which flights to plot?
+    flight_IDs = ['C006', 'C007']
+    sdate_d = {
+    'C006': datetime.datetime(2017, 3, 1),
+    'C007': datetime.datetime(2017, 3, 2),
+    }
+    # - Loop by flight and retrieve the files as dataframes (mod + obs)
+    # Model
+    dfs_mod = {}
+#    dfs_mod_GC = {}
+    for flight_ID in flight_IDs:
+        # No GEOS-CF availiblie for MOYA flights (pre 2018)
+#        dfs_mod[flight_ID] = get_GEOSCF4flightnum(flight_ID=flight_ID)
+        #
+        RunSet='FP-MOYA-Nest'
+        res='0.25x0.3125'
+        sdate = sdate_d[flight_ID]
+        dfs_mod_GC = get_GEOSChem4flightnum(flight_ID=flight_ID,
+                                            res=res,
+                                            RunSet=RunSet,
+                                            sdate=sdate,
+                                            )
+        dfs_mod[flight_ID] = dfs_mod_GC[ list(dfs_mod_GC.keys())[0] ]
+
+#    dfs_mod = dfs_mod_GC
+    # Observations
+    folder = '/users/ts551/scratch/data/FAAM/core_faam_NetCDFs/'
+    dfs_obs = {}
+    for flight_ID in flight_IDs:
+        dfs_obs[flight_ID] = get_FAAM_core4flightnum(flight_ID=flight_ID,
+                                                     folder=folder)
+    # -  Now plot up
+    for flight_ID in flight_IDs:
+        print(flight_ID)
+        # Get observations and model timeseries data as a DataFrame
+        df_obs = dfs_obs[flight_ID]
+        # Setup PDF to save PDF plots to
+        savetitle = 'MOYA_timeseries_flighttrack_{}'.format(flight_ID)
+        pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
+        # - Plot up location of flights
+        plt_flightpath_spatially_over_CVAO(df=df_obs, flight_ID=flight_ID)
+        # Save to PDF
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+        plt.close()
+
+        # - Now plot up flight time series plots by variable
+        # - Plot up carbon monoxide
+        units = 'ppbv'
+        var2plot = 'CO'
+        ObsVar2Plot = 'CO_AERO'
+        ModVar2Plot = 'CO'
+        mod_label = RunSet
+        mod_scale = 1E9
+        ylim = (50, 400)
+        # Call timeseries plotter function
+        plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                   ObsVar2Plot=ObsVar2Plot,
+                                   mod_scale=mod_scale,
+                                   mod_label=mod_label,
+                                   ModVar2Plot=ModVar2Plot,
+                                   ylim=ylim,
+                                   dfs_mod={RunSet:dfs_mod[flight_ID]},
+                                   df_obs=df_obs,
+                                   flight_ID=flight_ID,
+                                   context=context,
+                                   )
+        # Save to PDF and close the plot
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+        plt.close()
+
+        # - Plot up ozone
+#        try:
+        units = 'ppbv'
+        var2plot = 'Ozone'
+        ObsVar2Plot = 'O3_TECO'
+        ModVar2Plot = 'O3'
+        mod_label = RunSet
+        mod_scale = 1E9
+        ylim = (10, 100)
+        # Call timeseries plotter function
+        plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                   ObsVar2Plot=ObsVar2Plot,
+                                   mod_scale=mod_scale,
+                                   mod_label=mod_label,
+                                   ModVar2Plot=ModVar2Plot,
+                                   ylim=ylim,
+                                   dfs_mod={RunSet:dfs_mod[flight_ID]},
+                                   df_obs=df_obs,
+                                   flight_ID=flight_ID,
+                                   context=context,
+                                   )
+        # Save to PDF and close the plot
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+        plt.close()
+
+
+        # - Save entire pdf
+        AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
+        plt.close('all')
+
+
+
+def plt_timeseries_comp4MOYA_flights_PHYSICAL_VARS(dpi=320, show_plot=False,
+                                     debug=False, context='paper'):
+    """
+    Plot up overview for MOYA campaign flights
+    """
+    import seaborn as sns
+    # Which flights to plot?
+    flight_IDs = ['C006', 'C007']
+    sdate_d = {
+    'C006': datetime.datetime(2017, 3, 1),
+    'C007': datetime.datetime(2017, 3, 2),
+    }
+    # - Loop by flight and retrieve the files as dataframes (mod + obs)
+    # Model
+    dfs_mod = {}
+#    dfs_mod_GC = {}
+    for flight_ID in flight_IDs:
+        # No GEOS-CF availiblie for MOYA flights (pre 2018)
+#        dfs_mod[flight_ID] = get_GEOSCF4flightnum(flight_ID=flight_ID)
+        #
+        RunSet='FP-MOYA-Nest'
+        res='0.25x0.3125'
+        sdate = sdate_d[flight_ID]
+        dfs_mod_GC = get_GEOSChem4flightnum(flight_ID=flight_ID,
+                                                       res=res,
+                                                       RunSet=RunSet,
+                                                       sdate=sdate,
+                                                       )
+        dfs_mod[flight_ID] = dfs_mod_GC[ list(dfs_mod_GC.keys())[0] ]
+
+#    dfs_mod = dfs_mod_GC
+    # Observations
+    folder = '/users/ts551/scratch/data/FAAM/core_faam_NetCDFs/'
+    dfs_obs = {}
+    for flight_ID in flight_IDs:
+        dfs_obs[flight_ID] = get_FAAM_core4flightnum(flight_ID=flight_ID,
+                                                     folder=folder)
+
+    # -  Now plot up
+    for flight_ID in flight_IDs:
+        print(flight_ID)
+        # Get observations and model timeseries data as a DataFrame
+        df_obs = dfs_obs[flight_ID]
+        df_mod = dfs_mod[flight_ID]
+        # Setup PDF to save PDF plots to
+        savetitle = 'MOYA_timeseries_flighttrack_{}_PHYSICAL_VARS'.format(flight_ID)
+        pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
+        # - Plot up location of flights
+        plt_flightpath_spatially_over_CVAO(df=df_obs, flight_ID=flight_ID)
+        # Save to PDF
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+        plt.close()
+
+        # - Plot up ROLL_GIN
+        try:
+            units = 'ADD THIS'
+    #        VarName = 'PCAS2CON'
+    #        FlagName = 'PCAS2_FLAG'
+            var2plot = 'ROLL_GIN'
+            ObsVar2Plot = 'ROLL_GIN'
+            ModVar2Plot = None
+            mod_label = RunSet
+            mod_scale = None
+    #        ylim = (10, 100)
+    #        ylim = None
+            # Call timeseries plotter function
+            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                       ObsVar2Plot=ObsVar2Plot,
+                                       mod_scale=mod_scale,
+                                       mod_label=mod_label,
+                                       ModVar2Plot=ModVar2Plot,
+    #                                   ylim=ylim,
+                                       dfs_mod={mod_label:df_mod},
+                                       df_obs=df_obs,
+                                       flight_ID=flight_ID,
+                                       plt_legend=False,
+                                       context=context,
+                                       )
+            # Colour in SLRs
+            ax = plt.gca()
+            colour_plot_background_by_bool(df=df_obs, ax=ax, bool2use='IS_SLR',
+                                           color='blue', alpha=0.25,
+                                           label='SLR')
+            fig = plt.gcf()
+            fig.legend(loc='best', bbox_to_anchor=(1,1),
+                       bbox_transform=ax.transAxes)
+            # Save to PDF and close the plot
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+            plt.close()
+        except:
+            print('Failed to plot ROLL_GIN')
+
+        # - Plot up VELD_GIN
+        try:
+            units = 'ADD THIS'
+    #        VarName = 'PCAS2CON'
+    #        FlagName = 'PCAS2_FLAG'
+            var2plot = 'VELD_GIN'
+            ObsVar2Plot = 'VELD_GIN'
+            ModVar2Plot = None
+            mod_label = RunSet
+            mod_scale = None
+    #        ylim = (10, 100)
+            ylim = None
+            # Call timeseries plotter function
+            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                       ObsVar2Plot=ObsVar2Plot,
+                                       mod_scale=mod_scale,
+                                       mod_label=mod_label,
+                                       ModVar2Plot=ModVar2Plot,
+                                       ylim=ylim,
+                                       dfs_mod={mod_label:df_mod},
+                                       df_obs=df_obs,
+                                       flight_ID=flight_ID,
+                                       plt_legend=False,
+                                       context=context,
+                                       )
+            # Colour in SLRs
+            ax = plt.gca()
+            colour_plot_background_by_bool(df=df_obs, ax=ax, bool2use='IS_SLR',
+                                           color='blue', alpha=0.25,
+                                           label='SLR')
+            fig = plt.gcf()
+            fig.legend(loc='best', bbox_to_anchor=(1,1),
+                       bbox_transform=ax.transAxes)
+
+            # Save to PDF and close the plot
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+            plt.close()
+        except:
+            print('Failed to plot VELD_GIN')
+
+        # - Plot up temperature
+        units = '$^{\circ}$C'
+        var2plot = 'Temperature'
+        ObsVar2Plot = 'TAT_DI_R'
+        ModVar2Plot = 'T'
+        mod_label = RunSet
+        mod_scale = 1
+        ylim = (-25, 35)
+        obs_adjustby = -273.15
+        # Call timeseries plotter function
+        plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                   ObsVar2Plot=ObsVar2Plot,
+                                   mod_scale=mod_scale,
+                                   mod_label=mod_label,
+                                   ModVar2Plot=ModVar2Plot,
+                                   ylim=ylim,
+                                   dfs_mod={mod_label:df_mod},
+                                   df_obs=df_obs,
+                                   flight_ID=flight_ID,
+                                   obs_adjustby=obs_adjustby,
+                                   context=context,
+                                   )
+        # Save to PDF and close the plot
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+        plt.close()
+
+
+        # - Plot up Eastward wind
+        units = 'm s$^{-1}$'
+        var2plot = 'Eastward wind'
+        ObsVar2Plot = 'U_C'
+        ModVar2Plot = 'U'
+        mod_label = RunSet
+        mod_scale = 1
+        ylim = (-25, 25)
+        # Call timeseries plotter function
+        plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                   ObsVar2Plot=ObsVar2Plot,
+                                   mod_scale=mod_scale,
+                                   mod_label=mod_label,
+                                   ModVar2Plot=ModVar2Plot,
+                                   ylim=ylim,
+                                   dfs_mod={mod_label:df_mod},
+                                   df_obs=df_obs,
+                                   flight_ID=flight_ID,
+                                   context=context,
+                                   )
+        # Save to PDF and close the plot
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+        plt.close()
+
+        # - Plot up Northward wind
+        units = 'm s$^{-1}$'
+        var2plot = 'Northward wind'
+        ObsVar2Plot = 'V_C'
+        ModVar2Plot = 'V'
+        mod_label = RunSet
+        mod_scale = 1
+        ylim = (-25, 25)
+        # Call timeseries plotter function
+        plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                   ObsVar2Plot=ObsVar2Plot,
+                                   mod_scale=mod_scale,
+                                   mod_label=mod_label,
+                                   ModVar2Plot=ModVar2Plot,
+                                   ylim=ylim,
+                                   dfs_mod={mod_label:df_mod},
+                                   df_obs=df_obs,
+                                   flight_ID=flight_ID,
+                                   context=context,
+                                   )
+        # Save to PDF and close the plot
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+        plt.close()
+
+        # - Plot up Latitude
+        try:
+            units = '$^{\circ}$N'
+            var2plot = 'Latitude'
+            ObsVar2Plot = 'LAT_GIN'
+            ModVar2Plot = 'LAT'
+            mod_label = RunSet
+            mod_scale = 1
+            # Call timeseries plotter function
+            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                       ObsVar2Plot=ObsVar2Plot,
+                                       mod_scale=mod_scale,
+                                       mod_label=mod_label,
+                                       ModVar2Plot=ModVar2Plot,
+                                       dfs_mod={mod_label:df_mod},
+                                       df_obs=df_obs,
+                                       flight_ID=flight_ID,
+                                       context=context,
+                                       )
+            # Save to PDF and close the plot
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+            plt.close()
+        except:
+            print('Failed to plot {}'.format(var2plot))
+
+        # - Plot up Longitude
+        try:
+            units = '$^{\circ}$E'
+            var2plot = 'Longitude'
+            ObsVar2Plot = 'LON_GIN'
+            ModVar2Plot = 'LON'
+            mod_label = RunSet
+            mod_scale = 1
+            # Call timeseries plotter function
+            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                       ObsVar2Plot=ObsVar2Plot,
+                                       mod_scale=mod_scale,
+                                       mod_label=mod_label,
+                                       ModVar2Plot=ModVar2Plot,
+                                       dfs_mod={mod_label:df_mod},
+                                       df_obs=df_obs,
+                                       flight_ID=flight_ID,
+                                       context=context,
+                                       )
+            # Save to PDF and close the plot
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+            plt.close()
+        except:
+            print('Failed to plot {}'.format(var2plot))
+
+        # - Plot up altitude
+        try:
+            units = 'hPa'
+            var2plot = 'Altitude'
+            ModVar2Plot = 'PRESS'
+            ObsVar2Plot = 'PS_RVSM' # Use pressure measurement
+#            ObsVar2Plot = 'ALT_GIN' # Use GPS altitude?
+#            vals = AC.hPa_to_Km( df_obs['ALT_GIN'].values/1E3, reverse=True )
+            mod_label = RunSet
+            mod_scale = 1
+            # Call timeseries plotter function
+            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
+                                       ObsVar2Plot=ObsVar2Plot,
+                                       mod_scale=mod_scale,
+                                       mod_label=mod_label,
+                                       ModVar2Plot=ModVar2Plot,
+                                       dfs_mod={mod_label:df_mod},
+                                       df_obs=df_obs,
+                                       flight_ID=flight_ID,
+                                       invert_yaxis=True,
+                                       plt_alt_as_shadow=False,
+                                       context=context,
+                                       )
+            # Save to PDF and close the plot
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+            plt.close()
+            # Colour in SLRs
+            ax = plt.gca()
+            colour_plot_background_by_bool(df=df_obs, ax=ax, bool2use='IS_SLR',
+                                           color='blue', alpha=0.25,
+                                           label='SLR')
+            plt.legend()
+        except:
+            print('Failed to plot {}'.format(var2plot))
+
+
+        # - Save entire pdf
+        AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
+        plt.close('all')
+
+
 def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
                                              debug=False, context='paper'):
     """
     Plot up timeseries comparisons between filter samples and model data
     """
     import seaborn as sns
+    # elephant
     # Which flights to plot?
 #    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
 	# Just use non-transit ARNA flights
@@ -4624,8 +5061,12 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, inc_GEOSChem=False,
         dfs_mod_CF[flight_ID] = get_GEOSCF4flightnum(flight_ID=flight_ID)
     # Model - GEOS-Chem (offline)
     if inc_GEOSChem:
-        RunSet='MERRA2-intial'
-        res='0.5x0.625'
+#        RunSet='MERRA2-0.5-initial'
+#        res='0.5x0.625'
+#        RunSet='MERRA2-BC'
+#        res='4x5'
+        RunSet='GEOS-FP'
+        res='0.25x0.3125'
         dfs_mod_GC = {}
         for flight_ID in flight_IDs:
             dfs_mod_GC[flight_ID] = get_GEOSChem4flightnum(flight_ID=flight_ID,
@@ -4643,8 +5084,10 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, inc_GEOSChem=False,
         df_obs = dfs_obs[flight_ID]
         df_mod_CF = dfs_mod_CF[flight_ID]
         if inc_GEOSChem:
-            df_mod_GC = dfs_mod_GC[flight_ID]
-            dfs_mod = {'GEOS-Chem':df_mod_GC, 'GEOS-CF':df_mod_CF}
+            dfs_mod_GC4flight = dfs_mod_GC[flight_ID]
+            dfs_mod = {'GEOS-CF':df_mod_CF}
+            for key in list(dfs_mod_GC4flight.keys()):
+                dfs_mod[key] = dfs_mod_GC4flight[key]
         else:
             dfs_mod = {'GEOS-CF':df_mod_CF}
         # Setup PDF to save PDF plots to

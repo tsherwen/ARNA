@@ -1265,7 +1265,8 @@ def get_GEOSCF4flightnum(flight_ID='C225', resample_data=True):
     Get the extracted GEOS-CF flight data for a specific flight
     """
     # Where is the extract GEOS-CF data?
-    folder = '/users/ts551/scratch/data/ARNA/GEOS-CF/extracted_planeflight/'
+    ARNA_data = get_local_folder('ARNA_data')
+    folder = '{}/GEOS-CF/extracted_planeflight/'.format(ARNA_data)
     # Extract the data for a specific flight
     file2use = glob.glob( folder + '*_{}.csv'.format(flight_ID) )[0]
     df = pd.read_csv( file2use )
@@ -1303,7 +1304,7 @@ def extract_GEOS54all_ARNA_flights(debug=True):
 #    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
 	# Just use non-transit ARNA flights
     flights_nums = [
-#    217, 218, 219, 220, 221, 222, 223, 224,
+#   217, 218, 219, 220, 221, 222, 223, 224,
     225
     ]
     flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
@@ -1322,6 +1323,143 @@ def extract_GEOS54all_ARNA_flights(debug=True):
         gc.collect()
 
 
+def extract_GEOS54all_ARNA_surface_dates(testing_mode=False, debug=True):
+    """
+    Extract GEOS-CF model data for all ARNA surface dates
+    """
+    testing_mode = False
+    ARNA_data = get_local_folder('ARNA_data')
+    folder = '{}/GEOS-CF/extracted_surface4CVAO/'.format(ARNA_data)
+    # Which dates to use?
+    d = {
+    'ARNA-1' : (datetime.datetime(2019, 8, 6), datetime.datetime(2019, 9, 3)),
+    'ARNA-Winter-1': (datetime.datetime(2019, 11, 26),
+                datetime.datetime(2019, 12, 14)),
+    'ARNA-2' : (datetime.datetime(2020, 2, 5), datetime.datetime(2020, 2, 27)),
+#    'CVAO-ALL' : (datetime.datetime(2018, 1, 1), datetime.datetime.now()),
+        }
+    # Variables for CVAO location
+    location = 'CVO'
+    LON, LAT, ALT = AC.get_loc(location)
+    hPa_ = 985 # Note: this is the lowest level saved!
+    # Loop by campaign and store data
+    for campaign in list(sorted(d.keys()))[::-1]:
+        # Start and end of campaign
+        sdate, edate = d[campaign]
+        # Make a dummy dataframe of
+        date_range = pd.date_range(start=sdate, end=edate, freq='T')
+        df = pd.DataFrame(index=date_range)
+        LonVar = 'lon'
+        LatVar = 'lat'
+        TimeVar = 'time'
+        PressVar = 'hPa'
+        AltVar = PressVar
+        df[LonVar] = LON
+        df[LatVar] = LAT
+        df[TimeVar] = df.index.values
+        df[PressVar] = hPa_
+        # Extract the standard output for dates
+            # (only hourly as this is the natively save resolution)
+#            dfE = extract_ds4df_locs(ds=dsGCF, df=df,)
+            #
+        # Add date column to dataframe
+        def datetime2date(x):
+            return datetime.datetime( x.year, x.month, x.day )
+        df['date'] = df.index.map(datetime2date)
+        dates2use = list(set(df.resample('D').sum().index.values ))
+        # Loop by collections to extract
+        FileStr = 'ARNA_CVAO_extracted_GEOSCF_surface_{}hPa_{}_{}_{}_{}'
+        folder = './'
+        mode = 'assim'
+        collections2use = [
+        # Below are the core chemistry related collections
+        'aqc_tavg_1hr_g1440x721_v1',
+        'chm_tavg_1hr_g1440x721_v1',
+        # Also a higher-resolution chemistry collection
+        'htf_inst_15mn_g1440x721_x1',
+        # And more model related output
+#        'met_tavg_1hr_g1440x721_x1',
+#        'xgc_tavg_1hr_g1440x721_x1',
+        ]
+#        collections2use += ['chm_inst_1hr_g1440x721_p23', 'met_inst_1hr_g1440x721_p23']
+        for collection in collections2use[::-1]:
+            if testing_mode:
+                dates2use = dates2use[:2]
+            # Open the OPenDAP dataset, get the data_vars, then close
+            ds = AC.get_GEOSCF_as_ds_via_OPeNDAP(collection=collection,
+                                                 mode=mode)
+            vars2extract = list(ds.data_vars)
+            del ds
+            # remove the gocart variable as this has different dimensions
+            if 'pm25_rh35_gocar' in vars2extract:
+                vars2extract.pop(vars2extract.index('pm25_rh35_gocar'))
+            # Loop by date
+            for date in dates2use:
+                date_dt = AC.dt64_2_dt([date])[0]
+                date_str = '{}{:0>2}{:0>2}'.format(date_dt.year, date_dt.month,
+                                           date_dt.day)
+                # Loop by variable to extract
+                for var2extract in vars2extract:
+                    print(campaign, collection, date_str, var2extract)
+                    # Check if file exists already, if not then download
+                    filename = FileStr.format(hPa_, collection, date_str,
+                                              var2extract, campaign,)
+                    filename = AC.rm_spaces_and_chars_from_str(filename)
+                    file_exists = os.path.isfile(folder+filename)
+#                     try:
+#                         file_size = os.path.getsize(folder+filename)
+#                     except OSError:
+#                         file_size = 0
+                    if file_exists:
+                        FileStr = 'File already present, so skipping - {}'
+                        print(FileStr.format(filename))
+                    else:
+                        try:
+                            df_tmp = df.loc[df['date'] == date, :]
+                            print(df_tmp.shape)
+                            # Get variables from collection
+                            _df = AC.extract_GEOSCF_assim4df(df_tmp,
+                                                             PressVar=PressVar,
+                                                             LonVar=LonVar,
+                                                             LatVar=LatVar,
+                                                             TimeVar=TimeVar,
+                                                      collection=collection,
+                                                      resample_df2ds_freq=True,
+                                                    vars2extract=[var2extract],
+                                                            spatial_buffer=1.5,
+                                                             debug=True)
+                            # Save to csv.
+                            _df.to_csv(folder+filename+'.csv')
+                            del _df
+                            gc.collect()
+                        except RuntimeError:
+                            FileStr = 'RuntimeError, so skipping file - {}'
+                            print(FileStr.format(filename))
+
+        # Also extract the expanded output for ARNA-2
+        extract_GEOSCF = False
+        if (campaign == 'ARNA-2') and extract_GEOSCF:
+            # Get the model data for the days of surface campaign
+            dsGCF = get_GEOS_assim_expanded_dataset4ARNA(dts=date_range)
+            # Extract nearest point using xarray function
+            dsGCF = dsGCF.sel(lon=LON, lat=LAT, lev=hPa_, method='nearest')
+            dsGCF = dsGCF.squeeze()
+            del dsGCF['lon']
+            del dsGCF['lat']
+            del dsGCF['lev']
+            dsGCF = AC.save_ds2disk_then_reload(dsGCF)
+            # Save to csv.
+            filename = 'ARNA_CVAO_extracted_GEOSCF_surface_{}hPa_{}_{}.csv'
+            filename = filename.format(hPa_, '_expanded', campaign)
+            filename = AC.rm_spaces_and_chars_from_str(filename)
+            folder = './'
+            df.to_csv(folder+filename)
+            del df
+            gc.collect()
+        del df
+        gc.collect()
+
+
 def extract_GEOS54ARNA_flight(flight_ID='C225'):
     """
     Extract ARNA flightpath from GEOS-CF assimilation data
@@ -1329,7 +1467,7 @@ def extract_GEOS54ARNA_flight(flight_ID='C225'):
     # -  Get the measurement flight tracks
     # Manually set FAAM flight file to use for now...
     filename = 'core_faam_*_*_r*_{}_1hz.nc'.format(flight_ID.lower())
-    folder = get_local_folder('ARNA_data') + '/CEDA/v2020_05/'
+    folder =  '{}/CEDA/v2020_05/'.format(get_local_folder('ARNA_data'))
     file2use = glob.glob(folder+filename)
     assert len(file2use) == 1, 'WARNING: more that one file found!'
     ds = xr.open_dataset( file2use[0] )
@@ -1339,30 +1477,34 @@ def extract_GEOS54ARNA_flight(flight_ID='C225'):
     dt = AC.dt64_2_dt([df.index.values[0]])[0]
     # - Extract the flight tracks from the model
     #  Get the model data for the days near the flight
-    dsGCF = get_GEOS_assim_expanded_dataset4ARNA(dt=dt)
+    dsGCF = get_GEOS_assim_expanded_dataset4ARNA(dts=[dt])
     # Extract for known locations
     dfE = extract_ds4df_locs(ds=dsGCF, df=df,)
     return dfE
 
 
-def get_GEOS_assim_expanded_dataset4ARNA( dt=None, update_lvl_units=True ):
+def get_GEOS_assim_expanded_dataset4ARNA(dts=None, update_lvl_units=True):
     """
     Get GEOS-CF assimilation data (expanded) for the ARNA campaign
     """
     # Where is the expanded GEOS-CF data
     NASA_data = get_local_folder('NASA_data')
-    folder = NASA_data + 'GEOS_CF/ARNA/assim/expanded_variable_files/'
+    folder = '{}/GEOS_CF/ARNA/assim/expanded_variable_files/'.format(NASA_data)
     file_str = '*.nc4'
     # Make a dataframe of available files
     files = list(sorted(glob.glob(folder+file_str)))
     dates = [i.split('.nc4')[0][-14:] for i in files ]
-    dts = [datetime.datetime.strptime(i, '%Y%m%d_%H%Mz') for i in dates]
-    df = pd.DataFrame({'files':files}, index=dts)
+    dates2dt = [datetime.datetime.strptime(i, '%Y%m%d_%H%Mz') for i in dates]
+    df = pd.DataFrame({'files':files}, index=dates2dt)
     # If a date is given, only open dates a day before and after
-    if not isinstance(dt, type(None)):
+    if not isinstance(dts, type(None)):
         # Use one dat before and after
-        sdate = AC.add_days(dt, -1)
-        edate = AC.add_days(dt, 1)
+        if len(dts) == 1:
+            sdate = AC.add_days(dts[0], -1)
+            edate = AC.add_days(dts[0], 1)
+        else:
+            sdate = dts[0]
+            edate = dts[-1]
         # Limit data to one day before or after
         bool1 = (df.index >=sdate) & (df.index <= edate)
         df = df.loc[bool1, :]

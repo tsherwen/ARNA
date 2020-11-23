@@ -818,19 +818,17 @@ def extract_ds4df_locs(ds=None, df=None, LonVar='lon', LatVar='lat',
             lat_ = df_tmp[LatVar].values
             hPa_ = df_tmp[AltVar].values
             lon_ = df_tmp[LonVar].values
-            #
+            # Extract nearest point using xarray function
             ds_tmp = ds.sel(lon=lon_, lat=lat_, lev=hPa_, time=dftime,
                             method='nearest')
-
-            #
+            # loop and extract by data variable
             for data_var in vars2extract:
                 dfN.loc[dftime, data_var ] = ds_tmp[data_var].values
-            #
             del ds_tmp, df_tmp
     else:
         # get indexes =en masse then extract with these
         d = AC.calc_4D_idx_in_ds(ds=ds, df=df)
-        #
+        # Run in testing mode?
         if testing_mode:
             times2use = df.index.values[:10]
         else:
@@ -842,7 +840,7 @@ def extract_ds4df_locs(ds=None, df=None, LonVar='lon', LatVar='lat',
             lon_idx = d['lon'][n]
             lev_idx = d['hPa'][n]
             time_idx =  d['time'][n]
-            #
+            # Extract nearest point using isel function
             ds_tmp = ds.isel(lat=lat_idx, lon=lon_idx, time=time_idx,
                              lev=lev_idx)
 #            d_tmp = ds_tmp.to_dict()
@@ -857,7 +855,7 @@ def extract_ds4df_locs(ds=None, df=None, LonVar='lon', LatVar='lat',
             dfN.loc['model-lev', time] = float(ds_tmp['lev'].values)
             dfN.loc['model-time', time] = float(ds_tmp['time'].values)
             del ds_tmp, vals
-#        # Add the tracer names to the index
+        # Add the tracer names to the index
 #        dfN.index = vars2extract
         # Make datetime the index
         dfN = dfN.transpose()
@@ -866,6 +864,68 @@ def extract_ds4df_locs(ds=None, df=None, LonVar='lon', LatVar='lat',
         # Update the model datetime to be in datetime units
         dfN['model-time'] = pd.to_datetime(dfN['model-time'].values)
     return dfN
+
+
+def summarise_stats_on_species_in_ds4lvls(ds, region='Cape_Verde', extr_str='',
+                                          vars2use=None, year=2018):
+    """
+    Summarise the stats on species at different heights
+    """
+    # Which variables to include in analysis?
+    if not isinstance(vars2use, list):
+        vars2use = [i for i in ds.data_vars]
+    # Setup a dataframe to store data in
+    df = pd.DataFrame()
+    # Loop by variable
+    vars2use = [i for i in ds.data_vars]
+    for var in vars2use:
+        # Loop by level
+        lvls = np.array(ds.lev.values)
+        for lvl in lvls:
+            print(var, lvl)
+            # Setup a name to save data to
+            varname = '{}-{:.0f}hPa'.format(var, lvl)
+            # Flatten the data
+            vals = ds[var].sel(lev=lvl).values.flatten()
+            S = pd.Series(vals).describe()
+            # Save to the main DataFrame
+            df[varname] = S
+            del vals, S
+    # Save summary statistics
+    savename = 'ARNA_stats_species_{}_{}_{}.csv'.format(region, year, extr_str)
+    df.to_csv(savename)
+
+
+def save_model_output2csv(RunSet='FP-MOYA-Nest', res='0.25x0.3125',
+                          folder='./'):
+    """
+    Save model output as csv file by flight
+    """
+    import seaborn as sns
+    # Which flights to plot?
+    if (RunSet == 'FP-MOYA-Nest') and (res=='0.25x0.3125'):
+        # Local settings/variables
+        flight_IDs = ['C006', 'C007']
+        sdate_d = {
+        'C006': datetime.datetime(2017, 3, 1),
+        'C007': datetime.datetime(2017, 3, 2),
+        }
+        # Loop by flight and retrieve the files as dataframes
+        dfs_mod = {}
+        for flight_ID in flight_IDs:
+            # Get data
+            sdate = sdate_d[flight_ID]
+            dfs_mod_GC = get_GEOSChem4flightnum(flight_ID=flight_ID,
+                                                res=res,
+                                                RunSet=RunSet,
+                                                sdate=sdate,
+                                                )
+            # Save to csv
+            df = dfs_mod_GC[ list(dfs_mod_GC.keys())[0] ]
+            filename_str = 'GC_planeflight_data_{}_{}'
+            filename = filename_str.format(RunSet, flight_ID)
+#            filename = AC.rm_spaces_and_chars_from_str(filename)
+            df.to_csv( os.path.join(folder+filename+'.csv') )
 
 
 def get_local_folder(key, host=None, rtn_dict=False):
@@ -879,9 +939,13 @@ def get_local_folder(key, host=None, rtn_dict=False):
     if ('viking' in host):
         NASA_data = '/mnt/lustre/groups/chem-acm-2018/earth0_data/NASA/'
         ARNA_data = '/users/ts551/scratch/data/ARNA/'
+        DataRoot = '/users/ts551/scratch/data/'
+        RunRoot = '/users/ts551/scratch/GC/rundirs/'
     elif ('earth0' in host):
         NASA_data = '/work/data/NASA/'
         ARNA_data = ''
+        DataRoot = ''
+        RunRoot = ''
     else:
         print( 'NASA folder loction not known' )
     # - Setup a dictionary for the variables
@@ -889,5 +953,7 @@ def get_local_folder(key, host=None, rtn_dict=False):
     'NASA_data': NASA_data,
 #    'folder4plots': folder4plots,
     'ARNA_data' : ARNA_data,
+    'RunRoot' : RunRoot,
+    'DataRoot' : DataRoot,
     }
     return d[key]

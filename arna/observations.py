@@ -457,12 +457,13 @@ def add_biomass_flag2df(df, CIMSdf=None, flight_ID='C225', threshold=None):
 
 
 def get_FAAM_core4flightnum(flight_ID='C225', version='v2020_06',
-                            resample_data=True):
+                            folder=None, resample_data=True):
     """
     Get the core FAAM flight data for a specific flight
     """
 	# Where are the files? Which files to use?
-    folder = '{}/CEDA/{}/'.format( get_local_folder('ARNA_data'), version)
+    if isinstance(folder, type(None)):
+        folder = '{}/CEDA/{}/'.format( get_local_folder('ARNA_data'), version)
     files2use = glob.glob( folder + '*_{}*'.format(flight_ID.lower()) )
     # Open all the files together
     # Cannot as time is not capitalised in both
@@ -752,7 +753,8 @@ def get_FAAM_flights_df():
     Retrieve DataFrame of FAAM BAe146 flights
     """
     # Flights to use...
-    folder = '/users/ts551/scratch/data/FAAM/core_faam_NetCDFs/'
+    DataRoot = get_local_folder('DataRoot')
+    folder = '/{}/FAAM/core_faam_NetCDFs/'.format(DataRoot)
     filename = 'FAAM_BAe146_Biomass_burning_and_ACISIS_flights_tabulated.csv'
     df = pd.read_csv(folder+filename)
     # Only consider the dates after Jan 2018
@@ -768,7 +770,8 @@ def get_flighttracks4campaign(campaign='ARNA-2', PressVar="PS_RVSM",
     Flight tracks for campaign
     """
     # Get dataframe of all flights and select those for a given campaign
-    folder = '/users/ts551/scratch/data/FAAM/core_faam_NetCDFs/'
+    DataRoot = get_local_folder('DataRoot')
+    folder = '/{}/FAAM/core_faam_NetCDFs/'.format(DataRoot)
     df = get_FAAM_flights_df()
     flight_IDs = df.loc[df['Campaign']==campaign, :]['Flight ID']
     # For flight in campaign flights
@@ -805,8 +808,9 @@ def mk_planeflight_files4FAAM_campaigns(testing_mode=False):
     Make plane-flight input files for various FAAM campaigns
     """
     # Location of flight data
-    folder = '/users/ts551/scratch/data/FAAM/core_faam_NetCDFs/'
-    folder4csv = '/users/ts551/scratch/data/FAAM/GEOSChem_planeflight_inputs/'
+    DataRoot = get_local_folder('DataRoot')
+    folder = '/{}/FAAM/core_faam_NetCDFs/'.format(DataRoot)
+    folder4csv = '/{}/FAAM/GEOSChem_planeflight_inputs/'.format(DataRoot)
     df = get_FAAM_flights_df()
     if testing_mode:
         df = df.loc[df[DateVar]  > datetime.datetime(2020,1,1), :]
