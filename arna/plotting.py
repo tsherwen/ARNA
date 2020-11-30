@@ -5065,7 +5065,7 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, inc_GEOSChem=False,
 #        res='0.5x0.625'
 #        RunSet='MERRA2-BC'
 #        res='4x5'
-        RunSet='GEOS-FP'
+        RunSet='FP-Nest'
         res='0.25x0.3125'
         dfs_mod_GC = {}
         for flight_ID in flight_IDs:

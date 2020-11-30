@@ -839,11 +839,8 @@ def mk_planeflight_files4FAAM_campaigns(testing_mode=False):
 #    df = df.loc[ df['Flight ID'].isin(flight_IDs2use),:]
     # Extract variables of interest
     flight_IDs = df['Flight ID'].values
-#    campaigns = df['Campaign'].values
     # Loop and extract FAAM BAe146 flights
     for flight_ID in flight_IDs:
-#        campaign = df.loc[df['Flight ID'] == flight_ID, 'Campaign' ].values[0]
-#        csv_suffix = '_{}'.format( campaign )
         print(flight_ID)
         AC.mk_planeflight_input4FAAM_flight(folder=folder,
                                             folder4csv=folder4csv,
@@ -852,6 +849,25 @@ def mk_planeflight_files4FAAM_campaigns(testing_mode=False):
         gc.collect()
 
 
+    # - Re-process the dates with two flights on one day
+    # 1st double flight
+    flight_IDs2use_l = [ ['C223', 'C224'],  ['C219', 'C220'] ]
+    for flight_IDs2use in flight_IDs2use_l:
+        ds_l = []
+        for flight_ID in flight_IDs2use:
+            filename = 'core_faam_*_{}_1hz.nc'.format(flight_ID.lower())
+            file2use = glob.glob(folder+filename)
+            print(flight_ID, file2use)
+            ds_l += [ xr.open_dataset( file2use[0] ) ]
+        # Now re-make file but with values for both flights
+        ds = xr.concat(ds_l, dim='Time')
+        AC.mk_planeflight_input4FAAM_flight(ds=ds,
+                                            folder=folder,
+                                            folder4csv=folder4csv,
+                                            testing_mode=testing_mode,
+                                            flight_ID=flight_ID,)
+        gc.collect()
+        del ds, ds_l
 
 
 

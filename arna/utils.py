@@ -896,38 +896,6 @@ def summarise_stats_on_species_in_ds4lvls(ds, region='Cape_Verde', extr_str='',
     df.to_csv(savename)
 
 
-def save_model_output2csv(RunSet='FP-MOYA-Nest', res='0.25x0.3125',
-                          folder='./'):
-    """
-    Save model output as csv file by flight
-    """
-    import seaborn as sns
-    # Which flights to plot?
-    if (RunSet == 'FP-MOYA-Nest') and (res=='0.25x0.3125'):
-        # Local settings/variables
-        flight_IDs = ['C006', 'C007']
-        sdate_d = {
-        'C006': datetime.datetime(2017, 3, 1),
-        'C007': datetime.datetime(2017, 3, 2),
-        }
-        # Loop by flight and retrieve the files as dataframes
-        dfs_mod = {}
-        for flight_ID in flight_IDs:
-            # Get data
-            sdate = sdate_d[flight_ID]
-            dfs_mod_GC = get_GEOSChem4flightnum(flight_ID=flight_ID,
-                                                res=res,
-                                                RunSet=RunSet,
-                                                sdate=sdate,
-                                                )
-            # Save to csv
-            df = dfs_mod_GC[ list(dfs_mod_GC.keys())[0] ]
-            filename_str = 'GC_planeflight_data_{}_{}'
-            filename = filename_str.format(RunSet, flight_ID)
-#            filename = AC.rm_spaces_and_chars_from_str(filename)
-            df.to_csv( os.path.join(folder+filename+'.csv') )
-
-
 def get_local_folder(key, host=None, rtn_dict=False):
     """
     Hold folders in a dictionary and return specific variables or a dictionary

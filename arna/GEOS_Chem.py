@@ -96,6 +96,65 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625',
     return d
 
 
+def save_model_output2csv(RunSet='FP-MOYA-Nest', res='0.25x0.3125',
+                          folder='./'):
+    """
+    Save model output as csv file by flight
+    """
+    import seaborn as sns
+    # Which flights to plot?
+    if (RunSet == 'FP-MOYA-Nest') and (res=='0.25x0.3125'):
+        # Local settings/variables
+        flight_IDs = ['C006', 'C007']
+        sdate_d = {
+        'C006': datetime.datetime(2017, 3, 1),
+        'C007': datetime.datetime(2017, 3, 2),
+        }
+        # Loop by flight and retrieve the files as dataframes
+        dfs_mod = {}
+        for flight_ID in flight_IDs:
+            # Get data
+            sdate = sdate_d[flight_ID]
+            dfs_mod_GC = get_GEOSChem4flightnum(flight_ID=flight_ID,
+                                                res=res,
+                                                RunSet=RunSet,
+                                                sdate=sdate,
+                                                )
+            # Save to csv
+            df = dfs_mod_GC[ list(dfs_mod_GC.keys())[0] ]
+            filename_str = 'GC_planeflight_data_{}_{}'
+            filename = filename_str.format(RunSet, flight_ID)
+#            filename = AC.rm_spaces_and_chars_from_str(filename)
+            df.to_csv( os.path.join(folder+filename+'.csv') )
+
+    elif (res=='0.25x0.3125') and (RunSet == 'FP-Nest'):
+#        RunSet = 'FP-Nest'
+#        res='0.25x0.3125'
+        flights_nums = [
+    #    217,
+        218, 219, 220, 221, 222, 223, 224, 225,
+        ]
+        flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
+        # - Loop by flight and retrieve the files as dataframes (mod + obs)
+        # Model
+        dfs_mod_GC = {}
+        for flight_ID in flight_IDs:
+            dfs = get_GEOSChem4flightnum(flight_ID=flight_ID, res=res,
+                                         RunSet=RunSet,)
+            df = dfs[RunSet]
+            # Add the derived variables to the dataframe
+            df = add_deriv_vars2df(df=df)
+#            dfs_mod[flight_ID] = df
+
+            # Save to csv
+#            df = dfs_mod_GC[ list(dfs_mod_GC.keys())[0] ]
+            filename_str = 'GC_planeflight_data_{}_{}'
+            filename = filename_str.format(RunSet, flight_ID)
+#            filename = AC.rm_spaces_and_chars_from_str(filename)
+            df.to_csv( os.path.join(folder+filename+'.csv') )
+
+
+
 def get_GEOSChem4flightnum(flight_ID='C225', res='0.5x0.625', sdate=None,
                            RunSet='MERRA2-0.5-initial', resample_data=True,
                            debug=False):
