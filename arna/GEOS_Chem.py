@@ -77,7 +77,8 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625',
         d = {'FP-Nest':folder}
     elif res == '0.25x0.3125': # and (RunSet=='GEOS-FP-Nest'):
         # GEOS-FP 0.25 nested run
-        Run = 'geosfp_4x5_standard.v12.9.0.BASE.2019.2020.ARNA.Nest'
+#        Run = 'geosfp_4x5_standard.v12.9.0.BASE.2019.2020.ARNA.Nest'
+        Run = 'geosfp_4x5_standard.v12.9.0.BASE.2019.2020.ARNA.Nest.repeat'
         folder = '{}/{}/'.format( RunRoot, Run )
         d = {'FP-Nest':folder}
     elif res == '0.5x0.625': # and (RunSet=='MERRA2-0.5-initial'):
