@@ -812,8 +812,10 @@ def mk_planeflight_files4FAAM_campaigns(testing_mode=False):
     folder = '/{}/FAAM/core_faam_NetCDFs/'.format(DataRoot)
     folder4csv = '/{}/FAAM/GEOSChem_planeflight_inputs/'.format(DataRoot)
     df = get_FAAM_flights_df()
-    if testing_mode:
-        df = df.loc[df[DateVar]  > datetime.datetime(2020,1,1), :]
+#    if testing_mode:
+    # Only consider flights in 2020
+    DateVar = 'Date'
+    df = df.loc[df[DateVar]  > datetime.datetime(2020,1,1), :]
     # flights to use?
     flight_IDs2use = [
    'C227',
@@ -839,19 +841,55 @@ def mk_planeflight_files4FAAM_campaigns(testing_mode=False):
 #    df = df.loc[ df['Flight ID'].isin(flight_IDs2use),:]
     # Extract variables of interest
     flight_IDs = df['Flight ID'].values
+    #
+    num_tracers = 203
+#    rxn_nums = [
+    # Just extract, HNO3, NO2, O3, NIT(s) for now
+    # Numbers in *.eqn file for
+#    1, 2, 3, 11, 16, 130, 131, 132, 133,
+    # Index numbers for RCONST array
+#    699, 700, 701, 702, 707, 803, 804, 805, 806
+#    ]
+    # Mannually setup slist
+    met_vars = [
+        'GMAO_ABSH', 'GMAO_PSFC', 'GMAO_SURF', 'GMAO_TEMP', 'GMAO_UWND',
+        'GMAO_VWND', 'GMAO_PRES'
+    ]
+    species = ['OH', 'HO2']
+    assert isinstance(num_tracers, int), 'num_tracers must be an integer'
+    slist = ['TRA_{:0>3}'.format(i) for i in np.arange(1, num_tracers+1)]
+    # Add Jvals
+    JVN2use = np.arange(1,139)
+    JVN2drop = [4, 5, 35, 52, 57, 58, 102]
+    JVN2use = [i for i in JVN2use if i not in JVN2drop]
+    JVAL_list = ['JVL_{:0>3}'.format(i) for i in JVN2use]
+    slist = slist + species + met_vars + JVAL_list
+
     # Loop and extract FAAM BAe146 flights
     for flight_ID in flight_IDs:
         print(flight_ID)
         AC.mk_planeflight_input4FAAM_flight(folder=folder,
                                             folder4csv=folder4csv,
                                             testing_mode=testing_mode,
+                                            num_tracers=num_tracers,
+#                                            rxn_nums=rxn_nums,
+                                            slist=slist,
                                             flight_ID=flight_ID,)
         gc.collect()
 
 
     # - Re-process the dates with two flights on one day
     # 1st double flight
-    flight_IDs2use_l = [ ['C223', 'C224'],  ['C219', 'C220'] ]
+    flight_IDs2use_l = [
+        ['C199', 'C200'],
+        ['C202', 'C203'],
+        ['C204', 'C205'],
+        ['C206', 'C207'],
+        ['C208', 'C209'],
+        ['C211', 'C212'],
+        ['C223', 'C224'],
+        ['C219', 'C220']
+    ]
     for flight_IDs2use in flight_IDs2use_l:
         ds_l = []
         for flight_ID in flight_IDs2use:
@@ -865,6 +903,9 @@ def mk_planeflight_files4FAAM_campaigns(testing_mode=False):
                                             folder=folder,
                                             folder4csv=folder4csv,
                                             testing_mode=testing_mode,
+                                            num_tracers=num_tracers,
+#                                            rxn_nums=rxn_nums,
+                                            slist=slist,
                                             flight_ID=flight_ID,)
         gc.collect()
         del ds, ds_l

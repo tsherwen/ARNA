@@ -896,6 +896,55 @@ def summarise_stats_on_species_in_ds4lvls(ds, region='Cape_Verde', extr_str='',
     df.to_csv(savename)
 
 
+def get_analysis_region(RegionName):
+    """
+    Function to store analysis regions extents (in degrees) for ARNA work
+    """
+
+    d = {
+    # "context area"
+    "context_area": {'x0':-40, 'x1': 30, 'y0': -5, 'y1': 45},
+    # Download region for GEOS-CF/5
+    'OPeNDAP_download_area': {'x0':-35, 'x1': 10, 'y0': 0, 'y1': 60},
+    # Cape Verde Regional perspective
+    # ... ?
+
+    # Cape Verde Nested offline model region
+    # (for both 0.25x0.315 and 0.5*x.625 resolutions)
+    # ... ?
+    # TODO: Needs checking on plots (-32 or -35 in plots , rest the same )
+    'model_nest_area': {'x0':-32, 'x1': 15, 'y0':0, 'y1':34},
+    # Cape Verde "local" perspective
+    'local_CVAO_area': {'x0':-30, 'x1':-10, 'y0':0, 'y1':25},
+
+    # Cape Verde flying area for ARNA
+    'Cape_Verde_Flying': {'x0': -29.1, 'x1':-15.9, 'y0':11.9, 'y1':21.1},
+    }
+    return d[RegionName]
+
+
+def add_deriv_vars2df(df):
+    """
+    Add derived/combined model variables to dataframe
+    """
+    # Add HOBr+Br2 (measured by the ToF-CIMS)
+    try:
+        df['Br2+HOBr'] = df['Br2']+df['HOBr']
+    except KeyError:
+        print("Derived variable not added to dataframe ('Br2+HOBr')")
+    # total SO4
+    try:
+        df['SO4.total'] = df['SO4']+df['SO4s']
+    except KeyError:
+        print("Derived variable not added to dataframe ('SO4.total')")
+    # total NIT
+    try:
+        df['NIT.total'] = df['NIT']+df['NITs']
+    except KeyError:
+        print("Derived variable not added to dataframe ('NIT.total')")
+    return df
+
+
 def get_local_folder(key, host=None, rtn_dict=False):
     """
     Hold folders in a dictionary and return specific variables or a dictionary

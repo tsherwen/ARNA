@@ -247,10 +247,8 @@ def plot_up_latitudinally_sampled_locs(ds, var2use='noy', extents=None,
         filename += 'lvls_1000_900_800_700_600_500.nc'
         ds = xr.open_dataset( folder + filename )
     # Local area analysed as Cape Verde
-    x0 = -30
-    x1 =-10
-    y0 = 0
-    y1 = 25
+    d = get_analysis_region('local_CVAO_area')
+    x0, x1, y0, y1 = d['x0'], d['x1'], d['y0'], d['y1']
     # - Select the data
     # Just get an example dataset
     ds = ds[[var2use]]
@@ -366,10 +364,8 @@ def plot_up_longitudinally_sampled_locs(ds, var2use='noy', extents=None,
         filename += 'lvls_1000_900_800_700_600_500.nc'
         ds = xr.open_dataset( folder + filename )
     # Local area analysed as Cape Verde
-    x0 = -30
-    x1 =-10
-    y0 = 0
-    y1 = 25
+    d = get_analysis_region('local_CVAO_area')
+    x0, x1, y0, y1 = d['x0'], d['x1'], d['y0'], d['y1']
     # - Select the data
     # Just get an example dataset
     ds = ds[[var2use]]
@@ -811,11 +807,8 @@ def quick_map_plt_CV_1layer(ds, var2plot=None, extra_str='',
     gl.ylabels_right = False
     # Limit plot to Cape Verde region
     if use_local_CVAO_area:
-        x0 = -30
-        x1 =-10
-        y0 = 0
-        y1 = 25
-        extents = (x0, x1, y0, y1)
+        d = get_analysis_region('local_CVAO_area')
+        extents = (d['x0'], d['x1'], d['y0'], d['y1'])
     # Mark known places to help geo-locate viewers
     if add_ARNA_locs:
 #        colours = AC.get_CB_color_cycle()
@@ -1111,15 +1104,10 @@ def plot_CVAO_region_on_global_map(ds, var2use='NOy'):
     """
     # - extents to use
     # extracted data from OPeNDAP
-#     x0 = -30
-#     x1 =-10
-#     y0 = 0
-#     y1 = 25
+#    d = get_analysis_region('OPeNDAP_download_area')
     # Local area analysed as Cape Verde
-    x0 = -30
-    x1 =-10
-    y0 = 0
-    y1 = 25
+    d = get_analysis_region('local_CVAO_area')
+    x0, x1, y0, y1 = d['x0'], d['x1'], d['y0'], d['y1']
     # - Select the data
     # Just get an example dataset
     ds = ds[[var2use]]
@@ -1278,17 +1266,11 @@ def quick_map_plt_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
     gl.ylabels_right = False
     # Just plot over the CVAO region?
     if use_local_CVAO_area and (region != 'Cape_Verde_Flying'):
-        x0 = -30
-        x1 =-10
-        y0 = 0
-        y1 = 25
-        extents = (x0, x1, y0, y1)
+        d = get_analysis_region(region) #'local_CVAO_area'
+        extents = (d['x0'], d['x1'], d['y0'], d['y1'])
     elif (region == 'Cape_Verde_Flying'):
-        x0 = -29.1
-        x1 =-15.9
-        y0 = 11.9
-        y1 = 21.1
-        extents = (x0, x1, y0, y1)
+        d = get_analysis_region(region)
+        extents = (d['x0'], d['x1'], d['y0'], d['y1'])
     # Add extra lat and lon grid libnes
     if (region == 'Cape_Verde_Flying'):
         # Which X tickst to use?
@@ -2693,11 +2675,8 @@ def plt_flightpath_spatially_over_CVAO(df, LatVar='LAT_GIN', LonVar='LON_GIN',
                transform=projection(), zorder=999
                )
     # Local area analysed as Cape Verde
-    x0 = -30
-    x1 =-10
-    y0 = 0
-    y1 = 25
-    extents = (x0, x1, y0, y1)
+    d = get_analysis_region('local_CVAO_area')
+    extents = (d['x0'], d['x1'], d['y0'], d['y1'])
     # Get limits of plotting data
     if isinstance(extents, type(None)):
         x0 = float(ds[LonVar].min())
@@ -3089,28 +3068,6 @@ def plt_timeseries4ARNA_flight_point_obs(df_obs=None, df_mod=None,
     fig.legend(loc='best', bbox_to_anchor=(1,1),
                bbox_transform=ax.transAxes)
     plt.tight_layout()
-
-
-def add_deriv_vars2df(df):
-    """
-    Add derived/combined model variables to dataframe
-    """
-    # Add HOBr+Br2 (measured by the ToF-CIMS)
-    try:
-        df['Br2+HOBr'] = df['Br2']+df['HOBr']
-    except KeyError:
-        print("Derived variable not added to dataframe ('Br2+HOBr')")
-    # total SO4
-    try:
-        df['SO4.total'] = df['SO4']+df['SO4s']
-    except KeyError:
-        print("Derived variable not added to dataframe ('SO4.total')")
-    # total NIT
-    try:
-        df['NIT.total'] = df['NIT']+df['NITs']
-    except KeyError:
-        print("Derived variable not added to dataframe ('NIT.total')")
-    return df
 
 
 def colour_plot_background_by_bool(df, ax=None, bool2use=None, color='grey',
@@ -5084,10 +5041,17 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, inc_GEOSChem=False,
         df_obs = dfs_obs[flight_ID]
         df_mod_CF = dfs_mod_CF[flight_ID]
         if inc_GEOSChem:
-            dfs_mod_GC4flight = dfs_mod_GC[flight_ID]
-            dfs_mod = {'GEOS-CF':df_mod_CF}
-            for key in list(dfs_mod_GC4flight.keys()):
-                dfs_mod[key] = dfs_mod_GC4flight[key]
+            if just_plot_GEOS_Chem:
+                dfs_mod = dfs_mod_GC[flight_ID]
+                mod_label_master = RunSet
+
+            else:
+                dfs_mod_GC4flight = dfs_mod_GC[flight_ID]
+                dfs_mod = {'GEOS-CF':df_mod_CF}
+                for key in list(dfs_mod_GC4flight.keys()):
+                    dfs_mod[key] = dfs_mod_GC4flight[key]
+                mod_label_master = 'GEOS-CF'
+
         else:
             dfs_mod = {'GEOS-CF':df_mod_CF}
         # Setup PDF to save PDF plots to
@@ -5105,7 +5069,7 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, inc_GEOSChem=False,
         var2plot = 'CO'
         ObsVar2Plot = 'CO_AERO'
         ModVar2Plot = 'CO'
-        mod_label = 'GEOS-CF'
+        mod_label = mod_label_master
         mod_scale = 1E9
         ylim = (50, 400)
         # Call timeseries plotter function
@@ -5129,7 +5093,7 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, inc_GEOSChem=False,
         var2plot = 'Ozone'
         ObsVar2Plot = 'O3_TECO'
         ModVar2Plot = 'O3'
-        mod_label = 'GEOS-CF'
+        mod_label = mod_label_master
         mod_scale = 1E9
         ylim = (10, 100)
         # Call timeseries plotter function
@@ -5154,7 +5118,7 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, inc_GEOSChem=False,
             var2plot = 'NO2'
             ObsVar2Plot = 'no2_mr'
             ModVar2Plot = 'NO2'
-            mod_label = 'GEOS-CF'
+            mod_label =mod_label_master
             mod_scale = 1E12
 #            yscale = 'log'
             yscale = 'linear'
@@ -5187,7 +5151,7 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, inc_GEOSChem=False,
             var2plot = 'NO'
             ObsVar2Plot = 'no_mr'
             ModVar2Plot = 'NO'
-            mod_label = 'GEOS-CF'
+            mod_label =mod_label_master
             mod_scale = 1E12
 #            yscale = 'log'
             yscale = 'linear'
@@ -5220,7 +5184,7 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, inc_GEOSChem=False,
             var2plot = 'NOx'
             ModVar2Plot = 'NOx'
             ObsVar2Plot = ModVar2Plot
-            mod_label = 'GEOS-CF'
+            mod_label = mod_label_master
             mod_scale = 1E12
 #            yscale = 'log'
             yscale = 'linear'
@@ -5253,7 +5217,7 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, inc_GEOSChem=False,
             var2plot = 'HONO'
             ObsVar2Plot = 'hono_mr'
             ModVar2Plot = 'HNO2'
-            mod_label = 'GEOS-CF'
+            mod_label = mod_label_master
             mod_scale = 1E12
 #            yscale = 'log'
             yscale = 'linear'
@@ -5291,7 +5255,7 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, inc_GEOSChem=False,
             var2plot = ObsVar2Plot
             ModVar2Plot = None
             ObsVar2Plot = ObsVar2Plot
-            mod_label = 'GEOS-CF'
+            mod_label = mod_label_master
             mod_scale = None
             yscale = 'linear'
             # Call timeseries plotter function
@@ -5375,11 +5339,8 @@ def plot_up_flight_locations_from_FAAM_website(d=None,
                    transform=projection(), zorder=999
                    )
     # Local area analysed as Cape Verde
-    x0 = -30
-    x1 =-10
-    y0 = 0
-    y1 = 25
-    extents = (x0, x1, y0, y1)
+    d = get_analysis_region('local_CVAO_area')
+    extents = (d['x0'], d['x1'], d['y0'], d['y1'])
     # Get limits of plotting data
     if isinstance(extents, type(None)):
         x0 = float(ds[LonVar].min())
@@ -5704,22 +5665,15 @@ def plt_highres_modelling_region(ds=None, var2use='NOy', LatVar='lat',
             ds[[var2use]].attrs = {}
             # rename lat and long
             ds = ds.rename({'latitude':LatVar, 'longitude':LonVar})
-    # - extents to use
-    # extracted data from OPeNDAP
-#    x0 = -30
-#    x1 =-10
-#    y0 = 0
-#    y1 = 25
-    # Context area
-    x0 = -40
-    x1 = 30
-    y0 = -5
-    y1 = 45
+    # - Extents to use
+    # area of extracted data from OPeNDAP
+#    d = get_analysis_region('OPeNDAP_download_area')
+    # Context area - local area
+    d = get_analysis_region('context_area')
     # Local area analysed as Cape Verde
-#    x0 = -30
-#    x1 =-10
-#    y0 = 0
-#    y1 = 25
+#     d = get_analysis_region('local_CVAO_area')
+    # extract dictionary to local variables
+    x0, x1, y0, y1 = d['x0'], d['x1'], d['y0'], d['y1']
     # - Select the data
     # Set values region
     bool1 = ((ds.lon >= x0) & (ds.lon <= x1)).values
@@ -5746,7 +5700,10 @@ def plt_highres_modelling_region(ds=None, var2use='NOy', LatVar='lat',
     ax.set_extent((x0, x1, y0, y1), projection())
     #
     if add_box4highres_region:
-        ax = add_LinearRing2cartopy_map(ax=ax)
+        d = get_analysis_region('model_nest_area')
+        x0, x1, y0, y1 = d['x0'], d['x1'], d['y0'], d['y1']
+        #
+        ax = add_LinearRing2cartopy_map(ax=ax, x0=x0, x1=x1, y0=y0, y1=y1)
 
 #    ax.set_global() # this will force a global perspective
     # Remove the colout mpa from the plot

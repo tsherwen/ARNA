@@ -16,7 +16,7 @@ def main():
     ar.plt_timeseries_comp4ARNA_flights(inc_GEOSChem=False, context=context)
     ar.plt_comp_by_alt_4ARNA_flights(context=context)
 
-    # plot up ToF-CIMS data
+    # Plot up ToF-CIMS data
     ar.plt_comp_by_alt_4ARNA_flights_CIMS(context=context)
     ar.plt_timeseries_comp4ARNA_flights_CIMS(context=context)
 
@@ -52,6 +52,172 @@ def main():
     # Also plot up for related biomass-burning flights in MOYA campaign
     ar.plt_timeseries_comp4MOYA_flights()
     ar.plt_timeseries_comp4MOYA_flights_PHYSICAL_VARS()
+
+
+
+def extract_GC_data4CVAO():
+    """
+    Extract model data for CVAO
+    """
+    # - Get photolysis surface data for Simone
+    RunRoot = '/mnt/lustre/users/ts551/GC/rundirs/'
+    folder = 'geosfp_4x5_standard.v12.9.0.BASE.2019.2020.ARNA.BCs.'
+    folder += 'TEST.PF_Jrates.JVALS.GLOBAL/OutputDir/'
+    folder = RunRoot + folder
+    # Open the dataset
+    ds = AC.GetJValuesDataset(wd=folder)
+    # Extract for CVAO
+    site = 'CVO'
+    lat, lon, alt, TZ = gaw_2_loc(site)
+    ds_tmp = ds.sel(lat=lat, lon=lon, method='nearest')
+    ds_tmp = ds_tmp.sel(lev=ds_tmp.lev.values[0])
+    # save out to csv.
+    vars2use = [i for i in ds.data_vars if 'UV' in i]
+    vars2use += [i for i in ds.data_vars if 'Jval_' in i]
+    vars2use = list(set(vars2use))
+    # Reduce to the variables of intereest and then save to disk
+    ds_tmp = ds_tmp[vars2use].squeeze()
+    del ds_tmp['lat']
+    del ds_tmp['lon']
+    del ds_tmp['lev']
+    ds_tmp = AC.save_ds2disk_then_reload(ds_tmp)
+    df = ds_tmp.to_dataframe()
+    df.to_csv('GC_JValues_Collection_4x5_FP-GLOBAL_CVAO.csv')
+
+
+def test_new_planeflight_Jrate_output():
+    """
+    Test online rxn. output via plane-flight diagnostic from GEOS-Chem
+    """
+    from funcs4obs import gaw_2_loc
+    # - Setup sites to use
+    df = pd.DataFrame()
+    GAW_sites = [
+        'ASK', 'BRW', 'CGO', 'CMN', 'CPT', 'CVO', 'JFJ', 'LAU', 'MHD', 'MLO',
+        'MNM', 'NMY', 'SMO', 'SPO', 'THD'
+    ]
+
+    # - Get plane flight output
+    RunRoot = '/mnt/lustre/users/ts551/GC/rundirs/'
+    folder = RunRoot+'/geosfp_4x5_standard.v12.9.0.BASE.2019.2020.ARNA.BCs.TEST.PF_Jrates.REA.VI/'
+    files2use = list(sorted(glob.glob(folder + '/TEST_1day/*plane*')))
+    file2use = files2use[0]
+    # Get Header infomation from first file
+    vars, sites = AC.get_pf_headers(file2use, debug=debug)
+    # Extract all points from file
+    dfs = []
+    for file2use in files2use:
+        print(file2use)
+        df, NIU = AC.pf_csv2pandas(file=file2use, vars=vars, epoch=True,
+                                    r_vars=True)
+        dfs += [df]
+    # Append the dataframes together
+    df = dfs[0].append(dfs[1:])
+    df = AC.DF_YYYYMMDD_HHMM_2_dt(df, rmvars=None, epoch=False)
+    df.index.name = None
+
+    # Process and save csv files by date
+    filename = 'GC_planeflight_data_FP-GLOBAL_JVALS_ARNA1_{}.csv'
+    for file2use in files2use:
+        date = file2use.split('plane.log.')[-1]
+        print(file2use)
+        vars, sites = AC.get_pf_headers(file2use, debug=debug)
+        df, NIU = AC.pf_csv2pandas(file=file2use, vars=vars, epoch=True,
+                                    r_vars=True)
+        # Update the datetime index
+        df = AC.DF_YYYYMMDD_HHMM_2_dt(df, rmvars=None, epoch=False)
+        df.index.name = None
+        df.to_csv( filename.format(date) )
+
+    # - Get output from NetCDF diagnostics
+    # Get Get J-values
+    folder = RunRoot+'/geosfp_4x5_standard.v12.9.0.BASE.2019.2020.ARNA.BCs.TEST.PF_Jrates.REA.III/OutputDir/'
+    ds = AC.GetJValuesDataset(wd=folder)
+    # And get StateMet
+    FileStr = 'GEOSChem.StateMet.*'
+    ds2 = xr.open_mfdataset(folder+FileStr)
+    ds2 = ds2[ 'Met_PMID' ]
+    ds = xr.merge([ds2, ds])
+
+    s_d = {}
+    for site in GAW_sites:
+        # Get: lat, lon, alt (press), timezone (UTC)
+        lat, lon, alt, TZ = gaw_2_loc(site)
+        # Use nearest grid box
+#                lev2use = AC.find_nearest_value(HPa_r, alt)
+
+        # Get the closest location
+        ds_tmp = ds.sel(lat=lat, lon=lon, method='nearest')
+        # then select height
+#                lev=ds.lev.values[lev2use]
+        lev2use = ds_tmp['Met_PMID'].mean(dim='time')
+        first_level = int(lev2use.values[0])
+        lev2use = AC.find_nearest(lev2use.values, alt)
+#                int(lev2use.sel(lev=alt, method='nearest').values)
+        ds_tmp = ds_tmp.isel(lev=lev2use)
+        print(site, alt, lev2use, lev2use ==0 )
+        # extract data
+        prefix = 'Jval_'
+        vars2use = [i for i in ds_tmp.data_vars if prefix in i]
+        ds_tmp = ds_tmp[vars2use]
+        name_dict = zip(vars2use, [i.split(prefix)[-1] for i in vars2use])
+        name_dict = dict(name_dict)
+        ds_tmp = ds_tmp.rename(name_dict=name_dict)
+        #
+        for coord in [i for i in ds_tmp.coords if i != 'time']:
+            del ds_tmp[coord]
+        S = ds_tmp.to_dataframe()
+        s_d[site] = S
+
+    # - plot up
+    specs2plot = ['NO2', 'HNO3', 'HNO2', 'BrO', 'IO', 'CH2I2', 'O3', 'PAN']
+    # Setup PDF to save PDF plots to
+    savetitle = 'ARNA_test_Jvals'
+    pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
+    for site in GAW_sites:
+        print(site)
+        #
+        nc_data = s_d[site]
+        pf_data = df.loc[ df['TYPE']==site, : ]
+        for spec in specs2plot:
+            print(spec)
+
+            # Plot up PF
+            pf_spec = None
+            if spec == 'BrO':
+                pf_spec = 'JVL_028'
+            elif spec == 'O3':
+                pf_spec = 'JVL_002'
+            elif spec == 'NO2':
+                pf_spec = 'JVL_011'
+            elif spec == 'IO':
+                pf_spec = 'JVL_116'
+            elif spec == 'CH2I2':
+                pf_spec = 'JVL_123'
+            elif spec == 'PAN':
+                pf_spec = 'JVL_059'
+            elif spec == 'HNO3':
+                pf_spec = 'JVL_016'
+            elif spec == 'HNO2':
+                pf_spec = 'JVL_015'
+            else:
+                print('case not setup for species: {}'.format(spec))
+            if isinstance(pf_spec, str):
+                print( spec, pf_spec)
+                data = pf_data[pf_spec]
+                plt.plot(data.index, data.values, label='PF')
+            # Plot up NC
+            data = nc_data[spec]
+            plt.plot(data.index, data.values, label='NetCDF')
+            plt.legend()
+            plt.title('{} @ {}'.format(spec, site))
+            # save
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+            plt.close()
+
+    # - Save entire pdf
+    AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
+    plt.close('all')
 
 
 def evaluate_regional_grid4GEOSChem(show_plot=False, dpi=320):

@@ -18,6 +18,7 @@ def main():
 
     # Save model output to csv file
     ar.save_model_output2csv(RunSet='FP-MOYA-Nest', res='0.25x0.3125')
+    ar.save_model_output2csv(RunSet='FP-Nest', res='0.25x0.3125')
 
 
 
