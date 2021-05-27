@@ -567,6 +567,37 @@ def get_FAAM_core4flightnum(flight_ID='C225', version='v2020_06',
         df['NOx'] = df['no_mr'].values + df['no2_mr'].values
     except:
         print('WARNING: failed to add NOx to flight {}'.format(flight_ID))
+    # Add a values for H2O
+    try:
+        ds = set_flagged_data2NaNs(ds, VarName='NV_LWC1_C',
+                                       FlagName='NV_LWC1_C_FLAG')
+        ds = set_flagged_data2NaNs(ds, VarName='NV_LWC2_C',
+                                       FlagName='NV_LWC2_C_FLAG')
+
+        ds['H2O'] = ds['NV_LWC1_C'].copy()
+        ds['H2O'] += ds['NV_LWC2_C']
+        ds['H2O_U'] = ds['NV_LWC1_C'].copy()
+        ds['H2O_U'] += ds['NV_LWC2_C']
+        # Air density  ( ρ =  P / RT )
+#        ds = set_flagged_data2NaNs(ds, VarName='TAT_DI_R',
+#                                       FlagName='TAT_DI_R_FLAG')
+#        ds = set_flagged_data2NaNs(ds, VarName='PS_RVSM',
+#                                       FlagName='PS_RVSM_FLAG')
+#        GasConst = 8.314 4621 # m3 Pa K−1 mol−1
+#        GasConst *= 0.01 # m3 hPa K−1 mol−1
+#        GasConst /= AC.constants('AVG') # m3 hPa K−1
+        GasConst = 0.167226 # J/ kg K
+        ds['AIR_DEN'] = ds["PS_RVSM"]*10 / ( GasConst * ds['TAT_DI_R'] )
+        # (kg/m3) => g/m3
+        ds['AIR_DEN'] = ds['AIR_DEN']*1E3
+
+
+        # convert g/M3 to ppbv
+        ds['H2O'] = ds['H2O'] / ds['AIR_DEN']
+
+    except:
+        print('WARNING: failed to add H2O to flight {}'.format(flight_ID))
+
     # Include flight_ID
     df['flight_ID'] =  flight_ID
 	# Resample the data?

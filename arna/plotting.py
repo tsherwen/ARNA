@@ -4999,7 +4999,14 @@ def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False,
 
 
 def plt_timeseries_comp4ARNA_flights(dpi=320, inc_GEOSChem=False,
-                                     show_plot=False, context='talk'):
+                                     show_plot=False, context='talk',
+#                                     RunSet='FP-Nest', res='0.25x0.3125',
+#                                      RunSet='MERRA2-BC',
+#                                      RunSet='MERRA2-0.5-initial',
+                                     RunSet=None, res='4x5',
+                                     just_plot_GEOS_Chem=False,
+                                     flights_nums = []
+                                     ):
     """
     Plot up timeseries comparisons between core observations and model data
     """
@@ -5007,9 +5014,10 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, inc_GEOSChem=False,
     # Which flights to plot?
 #    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
 	# Just use non-transit ARNA flights
-    flights_nums = [
-    217, 218, 219, 220, 221, 222, 223, 224, 225,
-    ]
+    if len(flights_nums) == 0:
+        flights_nums = [
+        217, 218, 219, 220, 221, 222, 223, 224, 225,
+        ]
     flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
     # - Loop by flight and retrieve the files as dataframes (mod + obs)
     # Model - GEOS-CF (online)
@@ -5022,8 +5030,8 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, inc_GEOSChem=False,
 #        res='0.5x0.625'
 #        RunSet='MERRA2-BC'
 #        res='4x5'
-        RunSet='FP-Nest'
-        res='0.25x0.3125'
+#        RunSet='FP-Nest'
+#        res='0.25x0.3125'
         dfs_mod_GC = {}
         for flight_ID in flight_IDs:
             dfs_mod_GC[flight_ID] = get_GEOSChem4flightnum(flight_ID=flight_ID,
@@ -5053,6 +5061,7 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, inc_GEOSChem=False,
                 mod_label_master = 'GEOS-CF'
 
         else:
+            mod_label_master = 'GEOS-CF'
             dfs_mod = {'GEOS-CF':df_mod_CF}
         # Setup PDF to save PDF plots to
         savetitle = 'ARNA_timeseries_flighttrack_{}'.format(flight_ID)

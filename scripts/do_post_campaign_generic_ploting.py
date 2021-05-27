@@ -219,6 +219,43 @@ def test_new_planeflight_Jrate_output():
     AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
     plt.close('all')
 
+    # - Plot up differences between J rates in nested and global run
+    savetitle = 'ARNA_Jvals_Global_vs_nest_model'
+    pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
+    RunRoot = '/users/ts551/scratch/GC/rundirs/'
+    RunStr = 'geosfp_4x5_standard.v12.9.0.BASE.2019.2020.'
+    folderNest = RunRoot + RunStr + 'ARNA.Nest.repeat.JVALS/'
+    folderGlobal = RunRoot + RunStr + 'ARNA.BCs.TEST.PF_Jrates.JVALS.GLOBAL/'
+    files2useNest = list(sorted(glob.glob(folderNest + '/*plane*log*')))
+    files2useGlobal = list(sorted(glob.glob(folderGlobal + '/*plane*log*')))
+    for nfile2use, file2useNest in enumerate( files2useNest ):
+        date = file2use.split('plane.log.')[-1]
+        print(file2use)
+        file2useGlobal = files2useGlobal[nfile2use]
+        file2use_dict = {'Nest':file2useNest, 'Global':file2useGlobal}
+        dfs = {}
+        for key in file2use_dict.keys():
+            file2use = file2use_dict[key]
+            vars, sites = AC.get_pf_headers(file2use, debug=debug)
+            df, NIU = AC.pf_csv2pandas(file=file2use, vars=vars, epoch=True,
+                                        r_vars=True)
+            # Update the datetime index
+            df = AC.DF_YYYYMMDD_HHMM_2_dt(df, rmvars=None, epoch=False)
+            df.index.name = None
+            dfs[key]= df
+        # Now plot
+        for nkey, key in enumerate(list(dfs.keys())):
+            dfs[key]['JVL_134'].plot(label=key, color=['blue', 'red'][nkey])
+            plt.title('JHNO3 for flighttrack on {}'.format(date))
+        # save
+        plt.ylabel( 'J-rate (s$^{-1}$)' )
+        plt.legend()
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+        plt.close()
+    # - Save entire pdf
+    AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
+    plt.close('all')
+
 
 def evaluate_regional_grid4GEOSChem(show_plot=False, dpi=320):
     """
