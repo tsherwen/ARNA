@@ -1296,18 +1296,16 @@ def get_GEOSCF4flightnum(flight_ID='C225', resample_data=True):
     return df
 
 
-def extract_GEOS54all_ARNA_flights(debug=True):
+def extract_GEOS54all_ARNA_flights(flight_nums=[], debug=True):
     """
     Extract GEOS-CF model data for all ARNA flights
     """
     # Which flights to plot
-#    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
-	# Just use non-transit ARNA flights
-    flights_nums = [
-#   217, 218, 219, 220, 221, 222, 223, 224,
-    225
-    ]
-    flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
+    if len(flights_nums) == 0:
+        flights_nums = [
+        217, 218, 219, 220, 221, 222, 223, 224, 225,
+        ]
+    flight_IDs = [ 'C{}'.format(i) for i in flight_nums ]
     # Loop by flight and extract the files
     for flight_ID in flight_IDs:
         if debug:

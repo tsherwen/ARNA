@@ -1746,20 +1746,21 @@ def plt_comp_by_alt_4ARNA_all(dpi=320, just_SLR=True, show_plot=False,
                               just_plot_GEOS_Chem=False,
                               inc_GEOSChem=False,
                               res='4x5', RunSet=None,
-                              flights_nums=[]):
+                              flight_nums=[]):
     """
     Plot up altitude binned comparisons between core obs. and model data
     """
     import seaborn as sns
     # Which flights to plot?
-#    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
     # Just use non-transit ARNA flights
-    if len(flights_nums) == 0:
-        flights_nums = [
-    #    217,
+    if len(flight_nums) == 0:
+        flight_nums = [
+    	# Just use non-transit ARNA flights
+#        216,
+#        217,
         218, 219, 220, 221, 222, 223, 224, 225,
         ]
-    flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
+    flight_IDs = [ 'C{}'.format(i) for i in flight_nums ]
     # - Loop by flight and retrieve the files as dataframes (mod + obs)
     # Observations
     dfs_obs = {}
@@ -1968,7 +1969,7 @@ def plt_comp_by_alt_4ARNA_all(dpi=320, just_SLR=True, show_plot=False,
     plt.close('all')
 
 
-def plt_comp_by_alt_4ARNA_all_DUST(dpi=320, just_SLR=True,
+def plt_comp_by_alt_4ARNA_all_DUST(dpi=320, just_SLR=True, flight_nums=[],
                                    plt_model=False, show_plot=False,
                                    context="paper", font_scale=0.75):
     """
@@ -1976,13 +1977,15 @@ def plt_comp_by_alt_4ARNA_all_DUST(dpi=320, just_SLR=True,
     """
     import seaborn as sns
     # Which flights to plot?
-#    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
     # Just use non-transit ARNA flights
-    flights_nums = [
-#    217,
-    218, 219, 220, 221, 222, 223, 224, 225,
-    ]
-    flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
+    if len(flight_nums) == 0:
+        flight_nums = [
+    	# Just use non-transit ARNA flights
+#        216,
+#        217,
+        218, 219, 220, 221, 222, 223, 224, 225,
+        ]
+    flight_IDs = [ 'C{}'.format(i) for i in flight_nums ]
     # - Loop by flight and retrieve the files as dataframes (mod + obs)
     # Model
     dfs_obs = {}
@@ -2152,23 +2155,20 @@ def plt_comp_by_alt_4ARNA_all_DUST(dpi=320, just_SLR=True,
 
 def plt_comp_by_alt_4ARNA_CIMS_all_DUST(dpi=320, just_SLR=True,
                                         plt_model=False, show_plot=False,
+                                        flight_nums=[],
                                         context="paper", font_scale=0.75):
     """
     Plot up altitude binned comparisons between core obs. and model data
     """
     import seaborn as sns
     # Which flights to plot?
-#    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
     # Just use non-transit ARNA flights
-    flights_nums = [
-    217, # Missing data for C217 (NOy)
-    218, 219, 220,
-    221, # Missing data for C221 (NOy)
-    222, 223,
-    224,  # Missing data for C221 (BrO... )
-    225,  # Missing data for C221 (BrO... )
-    ]
-    flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
+    if len(flight_nums) == 0:
+        flight_nums = [
+#        216,
+        217, 218, 219, 220, 221, 222, 223, 224, 225,
+        ]
+    flight_IDs = [ 'C{}'.format(i) for i in flight_nums ]
     # - Loop by flight and retrieve the files as dataframes (mod + obs)
     # Setup dictionary of Observation (CIMS) dataframes
     dfs_obs = {}
@@ -2342,7 +2342,7 @@ def plt_comp_by_alt_4ARNA_CIMS_all_DUST(dpi=320, just_SLR=True,
 
 
 def plt_comp_by_alt_4ARNA_flights(dpi=320, just_SLR=True, show_plot=False,
-                                  RunSet=None, res='4x5', flights_nums=[],
+                                  RunSet=None, res='4x5', flight_nums=[],
                                   just_plot_GEOS_Chem=False,
                                   inc_GEOSChem=False,
                                   context="paper", font_scale=0.75):
@@ -2351,13 +2351,15 @@ def plt_comp_by_alt_4ARNA_flights(dpi=320, just_SLR=True, show_plot=False,
     """
     import seaborn as sns
     # Which flights to plot?
-#    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
     # Just use non-transit ARNA flights
-    if len(flights_nums) == 0:
-        flights_nums = [
-        217, 218, 219, 220, 221, 222, 223, 224, 225,
+    if len(flight_nums) == 0:
+        flight_nums = [
+    	# Just use non-transit ARNA flights
+#        216,
+#        217,
+        218, 219, 220, 221, 222, 223, 224, 225,
         ]
-    flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
+    flight_IDs = [ 'C{}'.format(i) for i in flight_nums ]
     # - Loop by flight and retrieve the files as dataframes (mod + obs)
     # Model
     dfs_obs = {}
@@ -2573,23 +2575,23 @@ def plt_comp_by_alt_4ARNA_flights(dpi=320, just_SLR=True, show_plot=False,
 
 
 def plt_comp_by_alt_4ARNA_flights_CIMS(dpi=320, just_SLR=False,
-                                       show_plot=False,
+                                       show_plot=False, flight_nums=[],
                                        context="paper", font_scale=0.75):
     """
     Plot up altitude binned comparisons between core obs. and model data
     """
     # Which flights to plot?
-#    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
     # Just use non-transit ARNA flights
-    flights_nums = [
+    if len(flight_nums) == 0:
+        flight_nums = [
 #    217, # Missing data for C217 (NOy)
-    218, 219, 220,
+        218, 219, 220,
 #    221, # Missing data for C221 (NOy)
-    222, 223,
+        222, 223,
 #    224,  # Missing data for C221 (BrO... )
 #    225,  # Missing data for C221 (BrO... )
-    ]
-    flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
+        ]
+    flight_IDs = [ 'C{}'.format(i) for i in flight_nums ]
 
     # - Loop by flight and retrieve the files as dataframes (mod + obs)
     # Model
@@ -2960,7 +2962,9 @@ def plt_timeseries4ARNA_flight(df_obs=None, dfs_mod=None,
     plt.tight_layout()
 
 
-def plt_timeseries4ARNA_flight_period_obs(df_obs=None, df_mod=None,
+def plt_timeseries4ARNA_flight_period_obs(df_obs=None,
+#                                          df_mod=None,
+                                          dfs_mod=None,
                                           dfs_mod_period=None,
                                           obs_label='Obs.',
                                           mod_scale=1, obs_adjustby=0,
@@ -2981,6 +2985,7 @@ def plt_timeseries4ARNA_flight_period_obs(df_obs=None, df_mod=None,
                                           EndVar='Sample End',
                                           context="paper", font_scale=0.75,
                                           title=None,
+                                          debug=False,
                                           ):
     """
     Plot up a timeseries of observations and model for a given flight
@@ -3005,6 +3010,9 @@ def plt_timeseries4ARNA_flight_period_obs(df_obs=None, df_mod=None,
         if ModelVar_CF in mods2plot:
             mods2plot.pop(mods2plot.index(ModelVar_CF))
             mods2plot += [ModelVar_CF]
+            df_mod = dfs_mod[ModelVar_CF]
+        else:
+            df_mod = dfs_mod[list(dfs_mod.keys())[0]]
         for n_key, key in enumerate(sorted(list(dfs_mod.keys()))):
             mod_colours[key] = CB_cycle[n_key]
 
@@ -3023,6 +3031,7 @@ def plt_timeseries4ARNA_flight_period_obs(df_obs=None, df_mod=None,
             plt.hlines(df_mod_period[ ModVar2Plot ].values*mod_scale,
                        xmin, xmax,
                        label=mod_label, color=mod_colours[mod2plot] )
+
     else:
         # Use the first model input
         # This needs to be GEOS-CF (for model-lev) variable
@@ -3256,20 +3265,23 @@ def add_secs2duplicate_index_values(df):
 
 
 def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, context='paper',
+                                          flight_nums=[],
                                           show_plot=False):
     """
     Plot up timeseries comparisons between core observations and model data
     """
     import seaborn as sns
     # Which flights to plot?
-#    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
 	# Just use non-transit ARNA flights
-    flights_nums = [
-#    217,
-    218, 219, 220, 221, 222, 223, 224, 225,
-    ]
+    if len(flight_nums) == 0:
+        flight_nums = [
+    	# Just use non-transit ARNA flights
+#        216,
+#        217,
+        218, 219, 220, 221, 222, 223, 224, 225,
+        ]
     # Use flightnumbers with both NOy and halogens data
-#    flights_nums = [
+#    flight_nums = [
 #    217, # Missing data for C217 (NOy)
 #    218, 219, 220,
 #    221, # Missing data for C221 (NOy)
@@ -3277,7 +3289,7 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, context='paper',
 #    224,  # Missing data for C221 (BrO... )
 #    225,  # Missing data for C221 (BrO... )
 #    ]
-    flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
+    flight_IDs = [ 'C{}'.format(i) for i in flight_nums ]
     # - Loop by flight and retrieve the files as dataframes (mod + obs)
     # Model
     dfs_mod = {}
@@ -4072,21 +4084,21 @@ def plt_timeseries_comp4MOYA_flights_PHYSICAL_VARS(dpi=320, show_plot=False,
 
 
 def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
+                                             flight_nums=[],
                                              debug=False, context='paper'):
     """
     Plot up timeseries comparisons between filter samples and model data
     """
     import seaborn as sns
-    # elephant
     # Which flights to plot?
-#    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
 	# Just use non-transit ARNA flights
-    flights_nums = [
-#    217,
-#    218, # No NOx on this flight
-    219, 220, 221, 222, 223, 224, 225,
-    ]
-    flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
+    if len(flight_nums) == 0:
+        flight_nums = [
+#        217,
+#        218, # No NOx on this flight
+        219, 220, 221, 222, 223, 224, 225,
+        ]
+    flight_IDs = [ 'C{}'.format(i) for i in flight_nums ]
     # - Loop by flight and retrieve the files as dataframes (mod + obs)
     # Setup Observation (filters) dataframe
     dfs_obs = get_filters_data4flight()
@@ -4455,30 +4467,73 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
 
 
 def plt_timeseries_comp4ARNA_flights_filters(dpi=320, show_plot=False,
+                                             flight_nums=[],
+                                             res='4x5', RunSet=None,
+                                             inc_GEOSChem=False,
+                                             just_plot_GEOS_Chem=False,
+                                             LatVar='model-lat',
+                                             LonVar='model-lon',
                                              debug=False, context='paper'):
     """
     Plot up timeseries comparisons between filter samples and model data
     """
     import seaborn as sns
     # Which flights to plot?
-#    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
 	# Just use non-transit ARNA flights
-    flights_nums = [
-#    217,
-    218, 219, 220, 221, 222, 223, 224, 225,
-    ]
-    flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
+    if len(flight_nums) == 0:
+        flight_nums = [
+#        216,
+#        217,
+        218, 219, 220, 221, 222, 223, 224, 225,
+        ]
+    flight_IDs = [ 'C{}'.format(i) for i in flight_nums ]
     # - Loop by flight and retrieve the files as dataframes (mod + obs)
     # Model
-    dfs_mod = {}
+    dfs_mod_CF = {}
     for flight_ID in flight_IDs:
-        if debug:
-            print(flight_ID)
         df = get_GEOSCF4flightnum(flight_ID=flight_ID)
         # Add the derived variables to the dataframe
         df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
         df = add_deriv_vars2df(df=df)
-        dfs_mod[flight_ID] = df
+        dfs_mod_CF[flight_ID] = df
+        mod_label_master = 'GEOS-CF'
+
+    # Model - GEOS-Chem (offline)
+    if inc_GEOSChem:
+#        RunSet='MERRA2-0.5-initial'
+#        res='0.5x0.625'
+#        RunSet='MERRA2-BC'
+#        res='4x5'
+#        RunSet='FP-Nest'
+#        res='0.25x0.3125'
+        mod_label_master = RunSet
+        dfs_mod_GC = {}
+        for flight_ID in flight_IDs:
+            dfs = get_GEOSChem4flightnum(flight_ID=flight_ID, res=res,
+                                         RunSet=RunSet,)
+            for key in dfs.keys():
+                df = dfs[key]
+                df = add_derived_FAAM_flags2df4flight(df=df,
+                                                      flight_ID=flight_ID)
+                df = add_deriv_vars2df(df=df)
+                dfs[key] = df
+            dfs_mod_GC[flight_ID] = dfs
+
+#     dfs_mod = {}
+#     for flight_ID in flight_IDs:
+#         if debug:
+#             print(flight_ID)
+#         df = get_GEOSCF4flightnum(flight_ID=flight_ID)
+#         # Add the derived variables to the dataframe
+#         df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
+#         df = add_deriv_vars2df(df=df)
+#         dfs_mod[flight_ID] = df
+
+    # KLUDGE -  just plot GEOS-Chem for now
+    # (previously just plotted just GEOS-CF)
+    print('WARNING: TODO setup to plot multiple model runs')
+    dfs_mod = dfs_mod_GC
+
     # Observations
     dfs_obs = get_filters_data4flight()
     dfs_obs = add_secs2duplicate_index_values(dfs_obs)
@@ -4487,11 +4542,18 @@ def plt_timeseries_comp4ARNA_flights_filters(dpi=320, show_plot=False,
     for flight_ID in flight_IDs:
         # Get observations and model timeseries data as a DataFrame
         df_obs = dfs_obs.loc[ dfs_obs['Flight']==flight_ID, :]
-        df_mod = dfs_mod[flight_ID]
-        df_mod = only_consider_data_during_filter_times(df=df_mod,
-                                                        FILTERdf=df_obs,
-                                                        flight_ID=flight_ID)
-        dfs_mod_period[flight_ID] = df_mod
+#        df_mod = dfs_mod[flight_ID]
+        # Kludge! force use of single set of model output for now...
+        print('WARNING: TODO setup to plot multiple model runs')
+        ModelVarName = list(dfs_mod[flight_ID].keys())[0]
+        dfs_mod4flight = dfs_mod[flight_ID]#[ModelVarName]
+        for key in dfs_mod4flight.keys():
+            df_mod = dfs_mod4flight[key]
+            df_mod = only_consider_data_during_filter_times(df=df_mod,
+                                                            FILTERdf=df_obs,
+                                                           flight_ID=flight_ID)
+            dfs_mod4flight[key] = df_mod
+        dfs_mod_period[flight_ID] = dfs_mod4flight
 
     # Convert observation units into model units
     # unit on recipt were 'nanomoles/m3', which were updated to ug/m3
@@ -4508,8 +4570,12 @@ def plt_timeseries_comp4ARNA_flights_filters(dpi=320, show_plot=False,
         print(flight_ID)
         # Get observations and model timeseries data as a DataFrame
         df_obs = dfs_obs.loc[ dfs_obs['Flight']==flight_ID, :]
-        df_mod = dfs_mod[flight_ID]
-        df_mod_period = dfs_mod_period[flight_ID]
+#        df_mod = dfs_mod[flight_ID]
+        # Kludge! force use of single set of model output for now...
+        print('WARNING: TODO setup to plot multiple model runs')
+        df_mod = dfs_mod[flight_ID][ModelVarName]
+        print(df_mod)
+#        df_mod_period = dfs_mod_period[flight_ID]
         # add the dust and SLR flags to the core dataframe
         df_obs = add_derived_FAAM_flags2df4flight(df=df_obs,
                                                   flight_ID=flight_ID)
@@ -4517,10 +4583,11 @@ def plt_timeseries_comp4ARNA_flights_filters(dpi=320, show_plot=False,
         savetitle = 'ARNA_timeseries_flighttrack_{}_FILTERS'.format(flight_ID)
         pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
         # - Plot up location of flights
+        print(df_mod)
+#        print(df_mod.columns)
+#        print(df_mod.head())
         plt_flightpath_spatially_over_CVAO(df=df_mod, flight_ID=flight_ID,
-                                           LatVar='model-lat',
-                                           LonVar='model-lon',
-                                           )
+                                           LatVar=LatVar, LonVar=LonVar,)
         # Save to PDF
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
         plt.close()
@@ -4532,7 +4599,7 @@ def plt_timeseries_comp4ARNA_flights_filters(dpi=320, show_plot=False,
         var2plot = 'NO3'
         ModVar2Plot = 'NIT.total'
         ObsVar2Plot = NIT_obs_var
-        mod_label = 'GEOS-CF'
+        mod_label = mod_label_master
         mod_scale = 1E12
         ObsVar2PlotErr = None
         plt_errorbar = False
@@ -4545,8 +4612,12 @@ def plt_timeseries_comp4ARNA_flights_filters(dpi=320, show_plot=False,
                                               mod_label=mod_label,
                                               ModVar2Plot=ModVar2Plot,
                                               ylim=ylim,
-                                              df_mod=df_mod, df_obs=df_obs,
-                                              df_mod_period=df_mod_period,
+#                                              df_mod=df_mod,
+                                              dfs_mod=dfs_mod[flight_ID],
+                                              df_obs=df_obs,
+#                                              df_mod_period=df_mod_period,
+#                                              dfs_mod_period=dfs_mod_period,
+                                      dfs_mod_period=dfs_mod_period[flight_ID],
                                               flight_ID=flight_ID,
                                               ObsVar2PlotErr=ObsVar2PlotErr,
                                               plt_errorbar=plt_errorbar,
@@ -4561,7 +4632,7 @@ def plt_timeseries_comp4ARNA_flights_filters(dpi=320, show_plot=False,
         var2plot = 'SO4'
         ModVar2Plot = 'SO4.total'
         ObsVar2Plot = SO4_obs_var
-        mod_label = 'GEOS-CF'
+        mod_label = mod_label_master
         mod_scale = 1E12
         ObsVar2PlotErr = None
         plt_errorbar = False
@@ -4574,8 +4645,12 @@ def plt_timeseries_comp4ARNA_flights_filters(dpi=320, show_plot=False,
                                               mod_label=mod_label,
                                               ModVar2Plot=ModVar2Plot,
                                               ylim=ylim,
-                                              df_mod=df_mod, df_obs=df_obs,
-                                              df_mod_period=df_mod_period,
+#                                              df_mod=df_mod,
+                                              dfs_mod=dfs_mod[flight_ID],
+                                              df_obs=df_obs,
+#                                              df_mod_period=df_mod_period,
+#                                              dfs_mod_period=dfs_mod_period,
+                                      dfs_mod_period=dfs_mod_period[flight_ID],
                                               flight_ID=flight_ID,
                                               ObsVar2PlotErr=ObsVar2PlotErr,
                                               plt_errorbar=plt_errorbar,
@@ -4591,18 +4666,19 @@ def plt_timeseries_comp4ARNA_flights_filters(dpi=320, show_plot=False,
 
 
 def plt_timeseries_comp4ARNA_flights_SWAS(dpi=320, show_plot=False,
+                                          flight_nums=[],
                                           context='paper', debug=False):
     """
     Plot up timeseries comparisons between SWAS observations and model data
     """
     import seaborn as sns
     # Which flights to plot?
-#    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
 	# Just use non-transit ARNA flights
-    flights_nums = [
-    217, 218, 219, 220, 221, 222, 223, 224, 225,
-    ]
-    flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
+    if len(flight_nums) == 0:
+        flight_nums = [
+        217, 218, 219, 220, 221, 222, 223, 224, 225,
+        ]
+    flight_IDs = [ 'C{}'.format(i) for i in flight_nums ]
     # - Loop by flight and retrieve the files as dataframes (mod + obs)
     # Model
     dfs_mod = {}
@@ -4758,20 +4834,19 @@ def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False,
                                                    inc_GEOSChem=False,
                                                    RunSet=None, res='4x5',
                                                    just_plot_GEOS_Chem=False,
-                                                   flights_nums=[],
+                                                   flight_nums=[],
                                                    context='paper'):
     """
     Plot up timeseries comparisons between physical variables and model data
     """
     import seaborn as sns
     # Which flights to plot?
-#    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
 	# Just use non-transit ARNA flights
-    if len(flights_nums) == 0:
-        flights_nums = [
+    if len(flight_nums) == 0:
+        flight_nums = [
         217, 218, 219, 220, 221, 222, 223, 224, 225,
         ]
-    flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
+    flight_IDs = [ 'C{}'.format(i) for i in flight_nums ]
     # - Loop by flight and retrieve the files as dataframes (mod + obs)
     # Observations
     dfs_obs = {}
@@ -5174,20 +5249,21 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, inc_GEOSChem=False,
 #                                      RunSet='MERRA2-0.5-initial',
                                      RunSet=None, res='4x5',
                                      just_plot_GEOS_Chem=False,
-                                     flights_nums = []
+                                     flight_nums=[],
                                      ):
     """
     Plot up timeseries comparisons between core observations and model data
     """
     import seaborn as sns
     # Which flights to plot?
-#    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
-	# Just use non-transit ARNA flights
-    if len(flights_nums) == 0:
-        flights_nums = [
-        217, 218, 219, 220, 221, 222, 223, 224, 225,
+    if len(flight_nums) == 0:
+        flight_nums = [
+    	# Just use non-transit ARNA flights
+#        216,
+#        217,
+        218, 219, 220, 221, 222, 223, 224, 225,
         ]
-    flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
+    flight_IDs = [ 'C{}'.format(i) for i in flight_nums ]
     # - Loop by flight and retrieve the files as dataframes (mod + obs)
     # Model - GEOS-CF (online)
     dfs_mod_CF = {}

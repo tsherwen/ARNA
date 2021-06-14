@@ -54,8 +54,8 @@ def get_ARNA_flights_as_dfs():
     """
     Retrieve the ARNA flights as a list of dataframes
     """
-    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
-    flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
+    flight_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
+    flight_IDs = [ 'C{}'.format(i) for i in flight_nums ]
     dfs = {}
     for flight_ID in flight_IDs:
         print( flight_ID )
@@ -175,11 +175,11 @@ def get_ARNA_flight_log_as_df():
     """
     Make a single pd.DataFrame with all flight summaries
     """
-    flights_nums = [
+    flight_nums = [
 #    216,
     217, 218, 219, 220, 221, 222, 223, 224, 225
     ]
-    flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
+    flight_IDs = [ 'C{}'.format(i) for i in flight_nums ]
     dfs = []
     for flight_ID in flight_IDs:
         dfs += [get_summary4flight( flight_ID=flight_ID )]
@@ -743,18 +743,17 @@ def get_surface_area4flight(flight_ID='C225', instrument='PCASP',
     return ds
 
 
-def mk_file_of_flags():
+def mk_file_of_flags(flights_nums=[]):
     """
     Make csv files of flagging (e.g. SLR, dust) for ARNA flights
     """
     # Which flights to plot?
-#    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
 	# Just use non-transit ARNA flights
-    flights_nums = [
-    217,
-    218, 219, 220, 221, 222, 223, 224, 225,
-    ]
-    flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
+    if len(flights_nums) == 0:
+        flights_nums = [
+        217, 218, 219, 220, 221, 222, 223, 224, 225,
+        ]
+    flight_IDs = [ 'C{}'.format(i) for i in flight_nums ]
     # Loop by flight and retrieve flights
     dfs_obs = {}
     for flight_ID in flight_IDs:

@@ -27,6 +27,12 @@ def main():
 
     # Plot up nitrate aerosol data
     ar.plt_timeseries_comp4ARNA_flights_filters(context=context)
+    ar.plt_timeseries_comp4ARNA_flights_filters(context=context,
+                                                RunSet='FP-Nest',
+                                                res='0.25x0.3125',
+                                                inc_GEOSChem=True,
+                                                LatVar='LAT',
+                                                LonVar='LON',)
 
     #  Plot up PCASP/CDP date
     # NOTE: CAS data being ignored currently due to issue with mirror window

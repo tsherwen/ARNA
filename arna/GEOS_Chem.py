@@ -131,11 +131,11 @@ def save_model_output2csv(RunSet='FP-MOYA-Nest', res='0.25x0.3125',
     elif (res=='0.25x0.3125') and (RunSet == 'FP-Nest'):
 #        RunSet = 'FP-Nest'
 #        res='0.25x0.3125'
-        flights_nums = [
+        flight_nums = [
     #    217,
         218, 219, 220, 221, 222, 223, 224, 225,
         ]
-        flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
+        flight_IDs = [ 'C{}'.format(i) for i in flight_nums ]
         # - Loop by flight and retrieve the files as dataframes (mod + obs)
         # Model
         dfs_mod_GC = {}
