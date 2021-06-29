@@ -13,10 +13,10 @@ def main():
     context = 'paper'
     # Plot up core FAAM data
 #    extract_GEOS54all_ARNA_flights()
-    ar.plt_timeseries_comp4ARNA_flights(inc_GEOSChem=False, context=context)
-    ar.plt_timeseries_comp4ARNA_flights(inc_GEOSChem=True, context=context,
-                                        just_plot_GEOS_Chem=True,
-                                        RunSet='FP-Nest', res='0.25x0.3125')
+    ar.plt_ts_comp4ARNA_flights(inc_GEOSChem=False, context=context)
+    ar.plt_ts_comp4ARNA_flights(inc_GEOSChem=True, context=context,
+                                just_plot_GEOS_Chem=True,
+                                RunSet='FP-Nest', res='0.25x0.3125')
     ar.plt_comp_by_alt_4ARNA_flights(context=context)
     ar.plt_comp_by_alt_4ARNA_flights(inc_GEOSChem=True, context=context,
                                      just_plot_GEOS_Chem=True,
@@ -34,50 +34,50 @@ def main():
 #                                          LatVar='LAT',
 #                                          LonVar='LON',)
 
-    ar.plt_timeseries_comp4ARNA_flights_CIMS(context=context)
-    ar.plt_timeseries_comp4ARNA_flights_CIMS(context=context,
-                                             RunSet='FP-Nest',
-                                             res='0.25x0.3125',
-                                             inc_GEOSChem=True,
-                                             flight_nums=flight_nums,
-                                             LatVar='LAT',
-                                             LonVar='LON',)
+    ar.plt_ts_comp4ARNA_flights_CIMS(context=context)
+    ar.plt_ts_comp4ARNA_flights_CIMS(context=context,
+                                     RunSet='FP-Nest',
+                                     res='0.25x0.3125',
+                                     inc_GEOSChem=True,
+                                     flight_nums=flight_nums,
+                                     LatVar='LAT',
+                                     LonVar='LON',)
 
     # Plot up nitrate aerosol data
-    ar.plt_timeseries_comp4ARNA_flights_filters(context=context)
-    ar.plt_timeseries_comp4ARNA_flights_filters(context=context,
-                                                RunSet='FP-Nest',
-                                                res='0.25x0.3125',
-                                                inc_GEOSChem=True,
-                                                LatVar='LAT',
-                                                LonVar='LON',)
+    ar.plt_ts_comp4ARNA_flights_filters(context=context)
+    ar.plt_ts_comp4ARNA_flights_filters(context=context,
+                                        RunSet='FP-Nest',
+                                        res='0.25x0.3125',
+                                        inc_GEOSChem=True,
+                                        LatVar='LAT',
+                                        LonVar='LON',)
 
     #  Plot up PCASP/CDP date
     # NOTE: CAS data being ignored currently due to issue with mirror window
-#    ar.plt_timeseries_comp4ARNA_flights_PCASP()
+#    ar.plt_ts_comp4ARNA_flights_PCASP()
 
     # Plot up SWAS data
-    ar.plt_timeseries_comp4ARNA_flights_SWAS(context=context)
+    ar.plt_ts_comp4ARNA_flights_SWAS(context=context)
 
     # Plot up vertical velocity and Roll, amongst other core physical vars
-    ar.plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(context=context)
-    ar.plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(context=context,
-                                                      just_plot_GEOS_Chem=True,
-                                                      inc_GEOSChem=True,
-                                                      res='0..25x0.3125',
-                                                      RunSet='FP-Nest')
+    ar.plt_ts_comp4ARNA_flights_PHYSICAL_VARS(context=context)
+    ar.plt_ts_comp4ARNA_flights_PHYSICAL_VARS(context=context,
+                                              just_plot_GEOS_Chem=True,
+                                              inc_GEOSChem=True,
+                                              res='0..25x0.3125',
+                                              RunSet='FP-Nest')
     # Plot up the temperature data from Hannah Price
     # N/A? this is only for 2019. Data to be worked up for 2020.
 
     # Plot a comparison
-    ar.plt_timeseries_comp4ARNA_flights_NOy_ALL(context=context)
-    ar.plt_timeseries_comp4ARNA_flights_NOy_ALL(context=context,
-                                                RunSet='FP-Nest',
-                                                res='0.25x0.3125',
-                                                inc_GEOSChem=True,
-                                                #                                                flight_nums=flight_nums,
-                                                LatVar='LAT',
-                                                LonVar='LON',)
+    ar.plt_ts_comp4ARNA_flights_NOy_ALL(context=context)
+    ar.plt_ts_comp4ARNA_flights_NOy_ALL(context=context,
+                                        RunSet='FP-Nest',
+                                        res='0.25x0.3125',
+                                        inc_GEOSChem=True,
+                                        #                                                flight_nums=flight_nums,
+                                        LatVar='LAT',
+                                        LonVar='LON',)
 
     # Plot up data for SLRs with and without dust
     ar.plt_comp_by_alt_4ARNA_all(just_SLR=False, context=context)
@@ -100,8 +100,8 @@ def main():
     ar.evaluate_regional_grid4GEOSChem()
 
     # Also plot up for related biomass-burning flights in MOYA campaign
-    ar.plt_timeseries_comp4MOYA_flights()
-    ar.plt_timeseries_comp4MOYA_flights_PHYSICAL_VARS()
+    ar.plt_ts_comp4MOYA_flights()
+    ar.plt_ts_comp4MOYA_flights_PHYSICAL_VARS()
 
     # - Other misc. plotting tasks
 #    explore_high_ozone_near_CVAO()

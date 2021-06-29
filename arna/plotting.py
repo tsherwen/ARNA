@@ -241,8 +241,8 @@ def plot_up_latitudinally_sampled_locs(ds, var2use='noy', extents=None,
     if isinstance(ds, type(None)):
         folder = '/Users/tomassherwen/Google_Drive/Data/ARNA/GEOS_CF/'
         folder += '/data_GEOSCF_2019_12_14/'
-        filename = 'ARNA_GEOSCF_chm_inst_1hr_g1440x721_p23_Cape_Verde_2019_353_noy_'
-        filename += 'lvls_1000_900_800_700_600_500.nc'
+        filename = 'ARNA_GEOSCF_chm_inst_1hr_g1440x721_p23_Cape_Verde_2019_'
+        filename += '353_noy_lvls_1000_900_800_700_600_500.nc'
         ds = xr.open_dataset(folder + filename)
     # Local area analysed as Cape Verde
     d = get_analysis_region('local_CVAO_area')
@@ -464,10 +464,10 @@ def plot_up_longitudinally_sampled_locs(ds, var2use='noy', extents=None,
     plt.savefig(savename+'.png', dpi=dpi)
 
 
-def plt_timeseries4ds(ds, region='Cape_Verde', extr_str='',
-                      vars2use=None, year=2018, verbose=False,
-                      show_plot=False, dpi=320, context="talk",
-                      font_scale=0.75):
+def plt_ts4ds(ds, region='Cape_Verde', extr_str='',
+              vars2use=None, year=2018, verbose=False,
+              show_plot=False, dpi=320, context="talk",
+              font_scale=0.75):
     """
     Plot timeseries of data at different heights
     """
@@ -949,7 +949,7 @@ def plot_spatial_concs_2layer(ds, show_plot=False, folder=None,
 
 def set_values_below_range2NaNs4spec(var=None, ds=None):
     """
-    To improve aesthetics of plots, values below a certain threshold are removed
+    To improve aesthetics of plots, values below a threshold are removed
     """
     # Limit plotted NOy values to those above 0.5 pptv
     if var == 'NOy':
@@ -962,7 +962,7 @@ def set_values_below_range2NaNs4spec(var=None, ds=None):
         arr[arr < 15] = np.NaN
         ds[var].values = arr
     else:
-        pstr = "WARNING: No case set for variable '{}', so not restricting array values"
+        pstr = "WARNING: No case set for '{}', so not restricting array values"
         print(pstr.format(var))
     return ds
 
@@ -1359,11 +1359,8 @@ def quick_map_plt_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
             # Plot up circle
             ax.add_patch(mpatches.Circle(xy=[lon, lat],
                                          radius=radius,
-                                         #                                         color='red',
-                                         #                                         alpha=0.3,
                                          transform=projection,
                                          facecolor='none',
-                                         #                                         edgecolor='grey',
                                          edgecolor='black',
                                          linestyle=':',
                                          linewidth=3.0,
@@ -1585,10 +1582,8 @@ def quick_lon_plot_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
     ds[var2plot1].plot.pcolormesh(x=LatVar, y=LevVar, ax=ax,
                                   vmin=vmin1, vmax=vmax1,
                                   zorder=1, alpha=alpha,
-                                  #                                 origin='lower',
                                   yincrease=True,
                                   cmap=cmap,
-                                  #                                 extend=extend,
                                   cbar_ax=cbar_ax,
                                   cbar_kwargs=cbar_kwargs,
                                   )
@@ -1645,7 +1640,8 @@ def quick_lon_plot_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
 
     # Add locations for airports
     locs2plot = [
-        'Praia Airport', 'Dakar',  'Gran Canaria Airport', 'Sao Vicente Airport',
+        'Praia Airport', 'Dakar',  'Gran Canaria Airport',
+        'Sao Vicente Airport',
         'Lisbon Airport',  'Paris (Charles de Gaulle) Airport'
     ]
     for n, loc_ in enumerate(locs2plot):
@@ -2040,7 +2036,7 @@ def plt_comp_by_alt_4ARNA_all_DUST(dpi=320, just_SLR=True, flight_nums=[],
 
     # - Now plot up flight time series plots by variable
     if just_SLR:
-        title_str = "Altitude binned '{}' ({}) for all 'Straight and Level Runs'"
+        title_str = "Altitude binned '{}' ({}) for all 'Straight+Level Runs'"
     else:
         title_str = "Altitude binned '{}' ({}) for all flights"
     # Setup color dictinoary
@@ -2223,7 +2219,7 @@ def plt_comp_by_alt_4ARNA_CIMS_all_DUST(dpi=320, just_SLR=True,
 
     # - Now plot up flight time series plots by variable
     if just_SLR:
-        title_str = "Altitude binned '{}' ({}) for all 'Straight and Level Runs'"
+        title_str = "Altitude binned '{}' ({}) for all 'Straight+Level Runs'"
     else:
         title_str = "Altitude binned '{}' ({}) for all flights"
     # Setup color dictinoary
@@ -2515,7 +2511,8 @@ def plt_comp_by_alt_4ARNA_flights(dpi=320, just_SLR=True, show_plot=False,
                 xlabel = '{} ({})'.format(var2plot, units)
                 # Add alt to DataFrame
                 df = pd.DataFrame({
-                    var2plot: data_d[key_][varname], ALT_var: data_d[key_][ALT_var]
+                    var2plot: data_d[key_][varname],
+                    ALT_var: data_d[key_][ALT_var]
                 })
                 # Scale the modelled values to the same units
                 if key_ != 'Obs.':
@@ -2753,7 +2750,8 @@ def plt_comp_by_alt_4ARNA_flights_CIMS(dpi=320, just_SLR=False,
                 xlabel = '{} ({})'.format(var2plot, units)
                 # Add alt to DataFrame
                 df = pd.DataFrame({
-                    var2plot: data_d[key_][varname], ALT_var: data_d[key_][ALT_var]
+                    var2plot: data_d[key_][varname],
+                    ALT_var: data_d[key_][ALT_var]
                 })
                 #
                 if key_ != 'Obs.':
@@ -2881,26 +2879,26 @@ def plt_flightpath_spatially_over_CVAO(df, LatVar='LAT_GIN', LonVar='LON_GIN',
     plt.tight_layout()
 
 
-def plt_timeseries4ARNA_flight(df_obs=None, dfs_mod=None,
-                               obs_label='Obs.',
-                               mod_scale=1, obs_scale=1,
-                               obs_adjustby=0, mod_adjustby=0,
-                               ylim=(None, None),
-                               units='ppbv', var2plot='CO',
-                               ObsVar2Plot='CO_AERO',
-                               ModVar2Plot='CO',
-                               mod_label='GEOS-CF',
-                               plt_alt_as_shadow=True,
-                               plt_dust_as_backfill=True,
-                               plt_BB_as_backfill=False,
-                               aspect_ratio=0.25,
-                               flight_ID='C216',
-                               yscale='linear',
-                               invert_yaxis=False,
-                               title=None,
-                               plt_legend=True,
-                               context="paper", font_scale=0.75,
-                               debug=False):
+def plt_ts4ARNA_flight(df_obs=None, dfs_mod=None,
+                       obs_label='Obs.',
+                       mod_scale=1, obs_scale=1,
+                       obs_adjustby=0, mod_adjustby=0,
+                       ylim=(None, None),
+                       units='ppbv', var2plot='CO',
+                       ObsVar2Plot='CO_AERO',
+                       ModVar2Plot='CO',
+                       mod_label='GEOS-CF',
+                       plt_alt_shadow=True,
+                       plt_dust_as_backfill=True,
+                       plt_BB_as_backfill=False,
+                       aspect_ratio=0.25,
+                       flight_ID='C216',
+                       yscale='linear',
+                       invert_yaxis=False,
+                       title=None,
+                       plt_legend=True,
+                       context="paper", font_scale=0.75,
+                       debug=False):
     """
     Plot up a timeseries of observations and model for a given flight
     """
@@ -2997,7 +2995,7 @@ def plt_timeseries4ARNA_flight(df_obs=None, dfs_mod=None,
     ax.set_xticks(xticks)
     ax.set_xticklabels(xticks_labels, rotation=45)
     # Invert the second y-axis
-    if plt_alt_as_shadow:
+    if plt_alt_shadow:
         # Add a shadow of the altitude
         ax2 = ax.twinx()
         ModVar2Plot = 'model-lev'
@@ -3020,31 +3018,30 @@ def plt_timeseries4ARNA_flight(df_obs=None, dfs_mod=None,
     plt.tight_layout()
 
 
-def plt_timeseries4ARNA_flight_period_obs(df_obs=None,
-                                          #                                          df_mod=None,
-                                          dfs_mod=None,
-                                          dfs_mod_period=None,
-                                          obs_label='Obs.',
-                                          mod_scale=1, obs_adjustby=0,
-                                          ylim=(None, None),
-                                          units='ppbv', var2plot='CO',
-                                          ObsVar2Plot='CO_AERO',
-                                          ModVar2Plot='CO',
-                                          mod_label='GEOS-CF',
-                                          plt_alt_as_shadow=True,
-                                          aspect_ratio=0.25,
-                                          flight_ID='C216',
-                                          yscale='linear',
-                                          invert_yaxis=False,
-                                          plt_dust_as_backfill=True,
-                                          plt_errorbar=False,
-                                          ObsVar2PlotErr='',
-                                          StartVar='Sample Start',
-                                          EndVar='Sample End',
-                                          context="paper", font_scale=0.75,
-                                          title=None,
-                                          debug=False,
-                                          ):
+def plt_ts4ARNA_flt_period_obs(df_obs=None,
+                               dfs_mod=None,
+                               dfs_mod_period=None,
+                               obs_label='Obs.',
+                               mod_scale=1, obs_adjustby=0,
+                               ylim=(None, None),
+                               units='ppbv', var2plot='CO',
+                               ObsVar2Plot='CO_AERO',
+                               ModVar2Plot='CO',
+                               mod_label='GEOS-CF',
+                               plt_alt_shadow=True,
+                               aspect_ratio=0.25,
+                               flight_ID='C216',
+                               yscale='linear',
+                               invert_yaxis=False,
+                               plt_dust_as_backfill=True,
+                               plt_errorbar=False,
+                               ObsVar2PlotErr='',
+                               StartVar='Sample Start',
+                               EndVar='Sample End',
+                               context="paper", font_scale=0.75,
+                               title=None,
+                               debug=False,
+                               ):
     """
     Plot up a timeseries of observations and model for a given flight
     """
@@ -3145,7 +3142,7 @@ def plt_timeseries4ARNA_flight_period_obs(df_obs=None,
     ax.set_xticklabels(xticks_labels, rotation=45)
 #    print(xticks_labels)
     # Invert the second y-axis
-    if plt_alt_as_shadow:
+    if plt_alt_shadow:
         # Add a shadow of the altitude
         ax2 = ax.twinx()
         ModVar2Plot = 'model-lev'
@@ -3167,25 +3164,25 @@ def plt_timeseries4ARNA_flight_period_obs(df_obs=None,
     plt.tight_layout()
 
 
-def plt_timeseries4ARNA_flight_point_obs(df_obs=None, df_mod=None,
-                                         obs_label='Obs.',
-                                         mod_scale=1, obs_adjustby=0,
-                                         ylim=(None, None),
-                                         units='ppbv', var2plot='CO',
-                                         ObsVar2Plot='CO_AERO',
-                                         ModVar2Plot='CO',
-                                         mod_label='GEOS-CF',
-                                         plt_alt_as_shadow=True,
-                                         aspect_ratio=0.25,
-                                         flight_ID='C216',
-                                         yscale='linear',
-                                         invert_yaxis=False,
-                                         plt_dust_as_backfill=True,
-                                         plt_errorbar=False,
-                                         ObsVar2PlotErr='',
-                                         context="paper", font_scale=0.75,
-                                         title=None,
-                                         ):
+def plt_ts4ARNA_flt_point_obs(df_obs=None, df_mod=None,
+                                 obs_label='Obs.',
+                                 mod_scale=1, obs_adjustby=0,
+                                 ylim=(None, None),
+                                 units='ppbv', var2plot='CO',
+                                 ObsVar2Plot='CO_AERO',
+                                 ModVar2Plot='CO',
+                                 mod_label='GEOS-CF',
+                                 plt_alt_shadow=True,
+                                 aspect_ratio=0.25,
+                                 flight_ID='C216',
+                                 yscale='linear',
+                                 invert_yaxis=False,
+                                 plt_dust_as_backfill=True,
+                                 plt_errorbar=False,
+                                 ObsVar2PlotErr='',
+                                 context="paper", font_scale=0.75,
+                                 title=None,
+                                 ):
     """
     Plot up a timeseries of observations and model for a given flight
     """
@@ -3245,7 +3242,7 @@ def plt_timeseries4ARNA_flight_point_obs(df_obs=None, df_mod=None,
     ax.set_xticks(xticks)
     ax.set_xticklabels(xticks_labels, rotation=45)
     # Invert the second y-axis
-    if plt_alt_as_shadow:
+    if plt_alt_shadow:
         # Add a shadow of the altitude
         ax2 = ax.twinx()
         ModVar2Plot = 'model-lev'
@@ -3298,7 +3295,7 @@ def add_derived_FAAM_flags2df4flight(df=None, df_FAAM=None, flight_ID='C217'):
 
 def add_secs2duplicate_index_values(df):
     """
-    duplicate values for index are not limit panadas operations
+    Duplicate values for index are not limit panadas operations
     """
     # Add a number to each ro
     RowVar = 'Row'
@@ -3321,14 +3318,14 @@ def add_secs2duplicate_index_values(df):
     return df
 
 
-def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, context='paper',
-                                          flight_nums=[],
-                                          RunSet=None, res='4x5',
-                                          just_plot_GEOS_Chem=False,
-                                          inc_GEOSChem=False,
-                                          LatVar='model-lat',
-                                          LonVar='model-lon',
-                                          show_plot=False):
+def plt_ts_comp4ARNA_flights_CIMS(dpi=320, context='paper',
+                                  flight_nums=[],
+                                  RunSet=None, res='4x5',
+                                  just_plot_GEOS_Chem=False,
+                                  inc_GEOSChem=False,
+                                  LatVar='model-lat',
+                                  LonVar='model-lon',
+                                  show_plot=False):
     """
     Plot up timeseries comparisons between core observations and model data
     """
@@ -3438,18 +3435,17 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, context='paper',
             mod_scale = 1E12
             ylim = (-0.2, 1)
             # Call timeseries plotter function
-            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       ObsVar2Plot=ObsVar2Plot,
-                                       mod_scale=mod_scale,
-                                       mod_label=mod_label,
-                                       ModVar2Plot=ModVar2Plot,
-                                       ylim=ylim,
-                                       #                                       dfs_mod={mod_label:df_mod},
-                                       dfs_mod=dfs_mod,
-                                       df_obs=df_obs,
-                                       flight_ID=flight_ID,
-                                       context=context,
-                                       )
+            plt_ts4ARNA_flight(var2plot=var2plot, units=units,
+                               ObsVar2Plot=ObsVar2Plot,
+                               mod_scale=mod_scale,
+                               mod_label=mod_label,
+                               ModVar2Plot=ModVar2Plot,
+                               ylim=ylim,
+                               dfs_mod=dfs_mod,
+                               df_obs=df_obs,
+                               flight_ID=flight_ID,
+                               context=context,
+                               )
             # Save to PDF and close the plot
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
             plt.close()
@@ -3467,18 +3463,17 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, context='paper',
             mod_scale = 1E12
             ylim = (-30, 1500)
             # Call timeseries plotter function
-            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       ObsVar2Plot=ObsVar2Plot,
-                                       mod_scale=mod_scale,
-                                       mod_label=mod_label,
-                                       ModVar2Plot=ModVar2Plot,
-                                       ylim=ylim,
-                                       #                                       dfs_mod={mod_label:df_mod},
-                                       dfs_mod=dfs_mod,
-                                       df_obs=df_obs,
-                                       flight_ID=flight_ID,
-                                       context=context,
-                                       )
+            plt_ts4ARNA_flight(var2plot=var2plot, units=units,
+                               ObsVar2Plot=ObsVar2Plot,
+                               mod_scale=mod_scale,
+                               mod_label=mod_label,
+                               ModVar2Plot=ModVar2Plot,
+                               ylim=ylim,
+                               dfs_mod=dfs_mod,
+                               df_obs=df_obs,
+                               flight_ID=flight_ID,
+                               context=context,
+                               )
             # Save to PDF and close the plot
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
             plt.close()
@@ -3496,18 +3491,17 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, context='paper',
             mod_scale = 1E12
             ylim = (-10, 25)
             # Call timeseries plotter function
-            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       ObsVar2Plot=ObsVar2Plot,
-                                       mod_scale=mod_scale,
-                                       mod_label=mod_label,
-                                       ModVar2Plot=ModVar2Plot,
-                                       ylim=ylim,
-                                       #                                       dfs_mod={mod_label:df_mod},
-                                       dfs_mod=dfs_mod,
-                                       df_obs=df_obs,
-                                       flight_ID=flight_ID,
-                                       context=context,
-                                       )
+            plt_ts4ARNA_flight(var2plot=var2plot, units=units,
+                               ObsVar2Plot=ObsVar2Plot,
+                               mod_scale=mod_scale,
+                               mod_label=mod_label,
+                               ModVar2Plot=ModVar2Plot,
+                               ylim=ylim,
+                               dfs_mod=dfs_mod,
+                               df_obs=df_obs,
+                               flight_ID=flight_ID,
+                               context=context,
+                               )
             # Save to PDF and close the plot
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
             plt.close()
@@ -3525,18 +3519,17 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, context='paper',
             mod_scale = None
             ylim = (-10, 120)
             # Call timeseries plotter function
-            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       ObsVar2Plot=ObsVar2Plot,
-                                       mod_scale=mod_scale,
-                                       mod_label=mod_label,
-                                       ModVar2Plot=ModVar2Plot,
-                                       ylim=ylim,
-                                       #                                       dfs_mod={mod_label:df_mod},
-                                       dfs_mod=dfs_mod,
-                                       df_obs=df_obs,
-                                       flight_ID=flight_ID,
-                                       context=context,
-                                       )
+            plt_ts4ARNA_flight(var2plot=var2plot, units=units,
+                               ObsVar2Plot=ObsVar2Plot,
+                               mod_scale=mod_scale,
+                               mod_label=mod_label,
+                               ModVar2Plot=ModVar2Plot,
+                               ylim=ylim,
+                               dfs_mod=dfs_mod,
+                               df_obs=df_obs,
+                               flight_ID=flight_ID,
+                               context=context,
+                               )
             # Save to PDF and close the plot
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
             plt.close()
@@ -3558,21 +3551,20 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, context='paper',
             ext_str = 'Biomass flagged as HCN @ background+3$\sigma$'
             title = title_str.format(var2plot, units, flight_ID, ext_str)
             # Call timeseries plotter function
-            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       ObsVar2Plot=ObsVar2Plot,
-                                       mod_scale=mod_scale,
-                                       mod_label=mod_label,
-                                       ModVar2Plot=ModVar2Plot,
-                                       ylim=ylim,
-                                       #                                       dfs_mod={mod_label:df_mod},
-                                       dfs_mod=dfs_mod,
-                                       df_obs=df_obs,
-                                       flight_ID=flight_ID,
-                                       plt_legend=False,
-                                       title=title,
-                                       context=context,
-                                       )
-            # Add a flat for biomass burning
+            plt_ts4ARNA_flight(var2plot=var2plot, units=units,
+                               ObsVar2Plot=ObsVar2Plot,
+                               mod_scale=mod_scale,
+                               mod_label=mod_label,
+                               ModVar2Plot=ModVar2Plot,
+                               ylim=ylim,
+                               dfs_mod=dfs_mod,
+                               df_obs=df_obs,
+                               flight_ID=flight_ID,
+                               plt_legend=False,
+                               title=title,
+                               context=context,
+                               )
+            # Add a flat threshold for biomass burning
             # hardware the stats for now
             sigma = 20.082764920179258
             background = 7.5
@@ -3609,20 +3601,19 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, context='paper',
             ext_str = 'Biomass flagged as HCN @ background+2$\sigma$'
             title = title_str.format(var2plot, units, flight_ID, ext_str)
             # Call timeseries plotter function
-            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       ObsVar2Plot=ObsVar2Plot,
-                                       mod_scale=mod_scale,
-                                       mod_label=mod_label,
-                                       ModVar2Plot=ModVar2Plot,
-                                       ylim=ylim,
-                                       #                                       dfs_mod={mod_label:df_mod},
-                                       dfs_mod=dfs_mod,
-                                       df_obs=df_obs,
-                                       flight_ID=flight_ID,
-                                       plt_legend=False,
-                                       title=title,
-                                       context=context,
-                                       )
+            plt_ts4ARNA_flight(var2plot=var2plot, units=units,
+                               ObsVar2Plot=ObsVar2Plot,
+                               mod_scale=mod_scale,
+                               mod_label=mod_label,
+                               ModVar2Plot=ModVar2Plot,
+                               ylim=ylim,
+                               dfs_mod=dfs_mod,
+                               df_obs=df_obs,
+                               flight_ID=flight_ID,
+                               plt_legend=False,
+                               title=title,
+                               context=context,
+                               )
             # Add a flat for biomass burning
             # hardware the stats for now
             sigma = 20.082764920179258
@@ -3660,20 +3651,19 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, context='paper',
             ext_str = 'Biomass flagged as HCN @ background+1$\sigma$'
             title = title_str.format(var2plot, units, flight_ID, ext_str)
             # Call timeseries plotter function
-            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       ObsVar2Plot=ObsVar2Plot,
-                                       mod_scale=mod_scale,
-                                       mod_label=mod_label,
-                                       ModVar2Plot=ModVar2Plot,
-                                       ylim=ylim,
-                                       #                                       dfs_mod={mod_label:df_mod},
-                                       dfs_mod=dfs_mod,
-                                       df_obs=df_obs,
-                                       flight_ID=flight_ID,
-                                       plt_legend=False,
-                                       title=title,
-                                       context=context,
-                                       )
+            plt_ts4ARNA_flight(var2plot=var2plot, units=units,
+                               ObsVar2Plot=ObsVar2Plot,
+                               mod_scale=mod_scale,
+                               mod_label=mod_label,
+                               ModVar2Plot=ModVar2Plot,
+                               ylim=ylim,
+                               dfs_mod=dfs_mod,
+                               df_obs=df_obs,
+                               flight_ID=flight_ID,
+                               plt_legend=False,
+                               title=title,
+                               context=context,
+                               )
             # Add a flat for biomass burning
             # hardware the stats for now
             sigma = 20.082764920179258
@@ -3702,9 +3692,8 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, context='paper',
         plt.close('all')
 
 
-def only_consider_data_during_filter_times(df, FILTERdf=None,
-                                           flight_ID='C225',
-                                           average4period=True):
+def only_use_filter_times(df, FILTERdf=None, flight_ID='C225',
+                          average4period=True):
     """
     Chop out only the values for the filter sample periods
     """
@@ -3787,8 +3776,8 @@ def mk_combined_NOy_obs_variable(FAAMdf=None, CIMSdf=None, Filtersdf=None,
         return Filtersdf[[NOyVar]]
 
 
-def plt_timeseries_comp4MOYA_flights(dpi=320, inc_GEOSChem=False,
-                                     show_plot=False, context='talk'):
+def plt_ts_comp4MOYA_flights(dpi=320, inc_GEOSChem=False,
+                             show_plot=False, context='talk'):
     """
     Plot up timeseries comparisons between core observations and model data
     """
@@ -3848,23 +3837,22 @@ def plt_timeseries_comp4MOYA_flights(dpi=320, inc_GEOSChem=False,
         mod_scale = 1E9
         ylim = (50, 400)
         # Call timeseries plotter function
-        plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                   ObsVar2Plot=ObsVar2Plot,
-                                   mod_scale=mod_scale,
-                                   mod_label=mod_label,
-                                   ModVar2Plot=ModVar2Plot,
-                                   ylim=ylim,
-                                   dfs_mod={RunSet: dfs_mod[flight_ID]},
-                                   df_obs=df_obs,
-                                   flight_ID=flight_ID,
-                                   context=context,
-                                   )
+        plt_ts4ARNA_flight(var2plot=var2plot, units=units,
+                           ObsVar2Plot=ObsVar2Plot,
+                           mod_scale=mod_scale,
+                           mod_label=mod_label,
+                           ModVar2Plot=ModVar2Plot,
+                           ylim=ylim,
+                           dfs_mod={RunSet: dfs_mod[flight_ID]},
+                           df_obs=df_obs,
+                           flight_ID=flight_ID,
+                           context=context,
+                           )
         # Save to PDF and close the plot
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
         plt.close()
 
         # - Plot up ozone
-#        try:
         units = 'ppbv'
         var2plot = 'Ozone'
         ObsVar2Plot = 'O3_TECO'
@@ -3873,17 +3861,17 @@ def plt_timeseries_comp4MOYA_flights(dpi=320, inc_GEOSChem=False,
         mod_scale = 1E9
         ylim = (10, 100)
         # Call timeseries plotter function
-        plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                   ObsVar2Plot=ObsVar2Plot,
-                                   mod_scale=mod_scale,
-                                   mod_label=mod_label,
-                                   ModVar2Plot=ModVar2Plot,
-                                   ylim=ylim,
-                                   dfs_mod={RunSet: dfs_mod[flight_ID]},
-                                   df_obs=df_obs,
-                                   flight_ID=flight_ID,
-                                   context=context,
-                                   )
+        plt_ts4ARNA_flight(var2plot=var2plot, units=units,
+                           ObsVar2Plot=ObsVar2Plot,
+                           mod_scale=mod_scale,
+                           mod_label=mod_label,
+                           ModVar2Plot=ModVar2Plot,
+                           ylim=ylim,
+                           dfs_mod={RunSet: dfs_mod[flight_ID]},
+                           df_obs=df_obs,
+                           flight_ID=flight_ID,
+                           context=context,
+                           )
         # Save to PDF and close the plot
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
         plt.close()
@@ -3893,8 +3881,9 @@ def plt_timeseries_comp4MOYA_flights(dpi=320, inc_GEOSChem=False,
         plt.close('all')
 
 
-def plt_timeseries_comp4MOYA_flights_PHYSICAL_VARS(dpi=320, show_plot=False,
-                                                   debug=False, context='paper'):
+def plt_ts_comp4MOYA_flights_PHYSICAL_VARS(dpi=320, show_plot=False,
+                                           debug=False,
+                                           context='paper'):
     """
     Plot up overview for MOYA campaign flights
     """
@@ -3960,18 +3949,18 @@ def plt_timeseries_comp4MOYA_flights_PHYSICAL_VARS(dpi=320, show_plot=False,
     #        ylim = (10, 100)
     #        ylim = None
             # Call timeseries plotter function
-            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       ObsVar2Plot=ObsVar2Plot,
-                                       mod_scale=mod_scale,
-                                       mod_label=mod_label,
-                                       ModVar2Plot=ModVar2Plot,
-                                       #                                   ylim=ylim,
-                                       dfs_mod={mod_label: df_mod},
-                                       df_obs=df_obs,
-                                       flight_ID=flight_ID,
-                                       plt_legend=False,
-                                       context=context,
-                                       )
+            plt_ts4ARNA_flight(var2plot=var2plot, units=units,
+                               ObsVar2Plot=ObsVar2Plot,
+                               mod_scale=mod_scale,
+                               mod_label=mod_label,
+                               ModVar2Plot=ModVar2Plot,
+                               #                                   ylim=ylim,
+                               dfs_mod={mod_label: df_mod},
+                               df_obs=df_obs,
+                               flight_ID=flight_ID,
+                               plt_legend=False,
+                               context=context,
+                               )
             # Colour in SLRs
             ax = plt.gca()
             colour_plot_background_by_bool(df=df_obs, ax=ax, bool2use='IS_SLR',
@@ -3999,18 +3988,18 @@ def plt_timeseries_comp4MOYA_flights_PHYSICAL_VARS(dpi=320, show_plot=False,
     #        ylim = (10, 100)
             ylim = None
             # Call timeseries plotter function
-            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       ObsVar2Plot=ObsVar2Plot,
-                                       mod_scale=mod_scale,
-                                       mod_label=mod_label,
-                                       ModVar2Plot=ModVar2Plot,
-                                       ylim=ylim,
-                                       dfs_mod={mod_label: df_mod},
-                                       df_obs=df_obs,
-                                       flight_ID=flight_ID,
-                                       plt_legend=False,
-                                       context=context,
-                                       )
+            plt_ts4ARNA_flight(var2plot=var2plot, units=units,
+                               ObsVar2Plot=ObsVar2Plot,
+                               mod_scale=mod_scale,
+                               mod_label=mod_label,
+                               ModVar2Plot=ModVar2Plot,
+                               ylim=ylim,
+                               dfs_mod={mod_label: df_mod},
+                               df_obs=df_obs,
+                               flight_ID=flight_ID,
+                               plt_legend=False,
+                               context=context,
+                               )
             # Colour in SLRs
             ax = plt.gca()
             colour_plot_background_by_bool(df=df_obs, ax=ax, bool2use='IS_SLR',
@@ -4036,18 +4025,18 @@ def plt_timeseries_comp4MOYA_flights_PHYSICAL_VARS(dpi=320, show_plot=False,
         ylim = (-25, 35)
         obs_adjustby = -273.15
         # Call timeseries plotter function
-        plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                   ObsVar2Plot=ObsVar2Plot,
-                                   mod_scale=mod_scale,
-                                   mod_label=mod_label,
-                                   ModVar2Plot=ModVar2Plot,
-                                   ylim=ylim,
-                                   dfs_mod={mod_label: df_mod},
-                                   df_obs=df_obs,
-                                   flight_ID=flight_ID,
-                                   obs_adjustby=obs_adjustby,
-                                   context=context,
-                                   )
+        plt_ts4ARNA_flight(var2plot=var2plot, units=units,
+                           ObsVar2Plot=ObsVar2Plot,
+                           mod_scale=mod_scale,
+                           mod_label=mod_label,
+                           ModVar2Plot=ModVar2Plot,
+                           ylim=ylim,
+                           dfs_mod={mod_label: df_mod},
+                           df_obs=df_obs,
+                           flight_ID=flight_ID,
+                           obs_adjustby=obs_adjustby,
+                           context=context,
+                           )
         # Save to PDF and close the plot
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
         plt.close()
@@ -4061,17 +4050,17 @@ def plt_timeseries_comp4MOYA_flights_PHYSICAL_VARS(dpi=320, show_plot=False,
         mod_scale = 1
         ylim = (-25, 25)
         # Call timeseries plotter function
-        plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                   ObsVar2Plot=ObsVar2Plot,
-                                   mod_scale=mod_scale,
-                                   mod_label=mod_label,
-                                   ModVar2Plot=ModVar2Plot,
-                                   ylim=ylim,
-                                   dfs_mod={mod_label: df_mod},
-                                   df_obs=df_obs,
-                                   flight_ID=flight_ID,
-                                   context=context,
-                                   )
+        plt_ts4ARNA_flight(var2plot=var2plot, units=units,
+                           ObsVar2Plot=ObsVar2Plot,
+                           mod_scale=mod_scale,
+                           mod_label=mod_label,
+                           ModVar2Plot=ModVar2Plot,
+                           ylim=ylim,
+                           dfs_mod={mod_label: df_mod},
+                           df_obs=df_obs,
+                           flight_ID=flight_ID,
+                           context=context,
+                           )
         # Save to PDF and close the plot
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
         plt.close()
@@ -4085,17 +4074,17 @@ def plt_timeseries_comp4MOYA_flights_PHYSICAL_VARS(dpi=320, show_plot=False,
         mod_scale = 1
         ylim = (-25, 25)
         # Call timeseries plotter function
-        plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                   ObsVar2Plot=ObsVar2Plot,
-                                   mod_scale=mod_scale,
-                                   mod_label=mod_label,
-                                   ModVar2Plot=ModVar2Plot,
-                                   ylim=ylim,
-                                   dfs_mod={mod_label: df_mod},
-                                   df_obs=df_obs,
-                                   flight_ID=flight_ID,
-                                   context=context,
-                                   )
+        plt_ts4ARNA_flight(var2plot=var2plot, units=units,
+                           ObsVar2Plot=ObsVar2Plot,
+                           mod_scale=mod_scale,
+                           mod_label=mod_label,
+                           ModVar2Plot=ModVar2Plot,
+                           ylim=ylim,
+                           dfs_mod={mod_label: df_mod},
+                           df_obs=df_obs,
+                           flight_ID=flight_ID,
+                           context=context,
+                           )
         # Save to PDF and close the plot
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
         plt.close()
@@ -4109,16 +4098,16 @@ def plt_timeseries_comp4MOYA_flights_PHYSICAL_VARS(dpi=320, show_plot=False,
             mod_label = RunSet
             mod_scale = 1
             # Call timeseries plotter function
-            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       ObsVar2Plot=ObsVar2Plot,
-                                       mod_scale=mod_scale,
-                                       mod_label=mod_label,
-                                       ModVar2Plot=ModVar2Plot,
-                                       dfs_mod={mod_label: df_mod},
-                                       df_obs=df_obs,
-                                       flight_ID=flight_ID,
-                                       context=context,
-                                       )
+            plt_ts4ARNA_flight(var2plot=var2plot, units=units,
+                               ObsVar2Plot=ObsVar2Plot,
+                               mod_scale=mod_scale,
+                               mod_label=mod_label,
+                               ModVar2Plot=ModVar2Plot,
+                               dfs_mod={mod_label: df_mod},
+                               df_obs=df_obs,
+                               flight_ID=flight_ID,
+                               context=context,
+                               )
             # Save to PDF and close the plot
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
             plt.close()
@@ -4134,16 +4123,16 @@ def plt_timeseries_comp4MOYA_flights_PHYSICAL_VARS(dpi=320, show_plot=False,
             mod_label = RunSet
             mod_scale = 1
             # Call timeseries plotter function
-            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       ObsVar2Plot=ObsVar2Plot,
-                                       mod_scale=mod_scale,
-                                       mod_label=mod_label,
-                                       ModVar2Plot=ModVar2Plot,
-                                       dfs_mod={mod_label: df_mod},
-                                       df_obs=df_obs,
-                                       flight_ID=flight_ID,
-                                       context=context,
-                                       )
+            plt_ts4ARNA_flight(var2plot=var2plot, units=units,
+                               ObsVar2Plot=ObsVar2Plot,
+                               mod_scale=mod_scale,
+                               mod_label=mod_label,
+                               ModVar2Plot=ModVar2Plot,
+                               dfs_mod={mod_label: df_mod},
+                               df_obs=df_obs,
+                               flight_ID=flight_ID,
+                               context=context,
+                               )
             # Save to PDF and close the plot
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
             plt.close()
@@ -4161,18 +4150,18 @@ def plt_timeseries_comp4MOYA_flights_PHYSICAL_VARS(dpi=320, show_plot=False,
             mod_label = RunSet
             mod_scale = 1
             # Call timeseries plotter function
-            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       ObsVar2Plot=ObsVar2Plot,
-                                       mod_scale=mod_scale,
-                                       mod_label=mod_label,
-                                       ModVar2Plot=ModVar2Plot,
-                                       dfs_mod={mod_label: df_mod},
-                                       df_obs=df_obs,
-                                       flight_ID=flight_ID,
-                                       invert_yaxis=True,
-                                       plt_alt_as_shadow=False,
-                                       context=context,
-                                       )
+            plt_ts4ARNA_flight(var2plot=var2plot, units=units,
+                               ObsVar2Plot=ObsVar2Plot,
+                               mod_scale=mod_scale,
+                               mod_label=mod_label,
+                               ModVar2Plot=ModVar2Plot,
+                               dfs_mod={mod_label: df_mod},
+                               df_obs=df_obs,
+                               flight_ID=flight_ID,
+                               invert_yaxis=True,
+                               plt_alt_shadow=False,
+                               context=context,
+                               )
             # Save to PDF and close the plot
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
             plt.close()
@@ -4190,15 +4179,15 @@ def plt_timeseries_comp4MOYA_flights_PHYSICAL_VARS(dpi=320, show_plot=False,
         plt.close('all')
 
 
-def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
-                                             flight_nums=[],
-                                             res='4x5', RunSet=None,
-                                             inc_GEOSChem=False,
-                                             just_plot_GEOS_Chem=False,
-                                             LatVar='model-lat',
-                                             LonVar='model-lon',
-                                             plt_alt_as_shadow=False,
-                                             debug=False, context='paper'):
+def plt_ts_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
+                                     flight_nums=[],
+                                     res='4x5', RunSet=None,
+                                     inc_GEOSChem=False,
+                                     just_plot_GEOS_Chem=False,
+                                     LatVar='model-lat',
+                                     LonVar='model-lon',
+                                     plt_alt_shadow=False,
+                                     debug=False, context='paper'):
     """
     Plot up timeseries comparisons between filter samples and model data
     """
@@ -4240,7 +4229,7 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
         dfs_mod_CF[flight_ID] = df.copy()
         # Just consider values during filer observation period
 #        FILTERdf = dfs_obs.loc[ dfs_obs['Flight']==flight_ID, :]
-#        df = only_consider_data_during_filter_times(df=df,
+#        df = only_use_filter_times(df=df,
 #                                                    FILTERdf=FILTERdf,
 #                                                    flight_ID=flight_ID)
 #        dfs_mod_CF_period[flight_ID] = df
@@ -4257,7 +4246,7 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
 #         dfs_mod[flight_ID] = df.copy()
 #         # Just consider values during filer observation period
 #         FILTERdf = dfs_obs.loc[ dfs_obs['Flight']==flight_ID, :]
-#         df = only_consider_data_during_filter_times(df=df,
+#         df = only_use_filter_times(df=df,
 #                                                     FILTERdf=FILTERdf,
 #                                                     flight_ID=flight_ID)
 #         dfs_mod_period[flight_ID] = df
@@ -4294,9 +4283,8 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
         dfs_CIMS[flight_ID] = df.copy()
         # Just consider values during filer observation period
         FILTERdf = dfs_obs.loc[dfs_obs['Flight'] == flight_ID, :]
-        df = only_consider_data_during_filter_times(df=df,
-                                                    FILTERdf=FILTERdf,
-                                                    flight_ID=flight_ID)
+        df = only_use_filter_times(df=df, FILTERdf=FILTERdf,
+                                   flight_ID=flight_ID)
         dfs_CIMS_period[flight_ID] = df
     # Setup dictionary of Observation (FAAM) dataframes
     dfs_FAAM = {}
@@ -4307,9 +4295,8 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
         dfs_FAAM[flight_ID] = df.copy()
         # Just consider values during filer observation period
         FILTERdf = dfs_obs.loc[dfs_obs['Flight'] == flight_ID, :]
-        df = only_consider_data_during_filter_times(df=df,
-                                                    FILTERdf=FILTERdf,
-                                                    flight_ID=flight_ID)
+        df = only_use_filter_times(df=df, FILTERdf=FILTERdf,
+                                   flight_ID=flight_ID)
         dfs_FAAM_period[flight_ID] = df
     # Observations  - Combine to make NOy variables
     dfs_obs_NOy = {}
@@ -4343,9 +4330,8 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
         dfs_mod4flight = dfs_mod[flight_ID]  # [ModelVarName]
         for key in dfs_mod4flight.keys():
             df_mod = dfs_mod4flight[key]
-            df_mod = only_consider_data_during_filter_times(df=df_mod,
-                                                            FILTERdf=df_obs,
-                                                            flight_ID=flight_ID)
+            df_mod = only_use_filter_times(df=df_mod, FILTERdf=df_obs,
+                                           flight_ID=flight_ID)
             dfs_mod4flight[key] = df_mod
         dfs_mod_period[flight_ID] = dfs_mod4flight
 
@@ -4391,23 +4377,21 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
 #        ylim = (-0.2, 1)
         ylim = None
         # Call timeseries plotter function
-        plt_timeseries4ARNA_flight_period_obs(var2plot=var2plot, units=units,
-                                              ObsVar2Plot=ObsVar2Plot,
-                                              mod_scale=mod_scale,
-                                              mod_label=mod_label,
-                                              ModVar2Plot=ModVar2Plot,
-                                              ylim=ylim,
-                                              #                                              df_mod=df_mod,
-                                              dfs_mod=dfs_mod[flight_ID],
-                                              df_obs=df_obs_NOy,
-                                              #                                              df_mod_period=df_mod_period,
-                                              dfs_mod_period=dfs_mod_period[flight_ID],
-                                              plt_alt_as_shadow=plt_alt_as_shadow,
-                                              flight_ID=flight_ID,
-                                              ObsVar2PlotErr=ObsVar2PlotErr,
-                                              plt_errorbar=plt_errorbar,
-                                              context=context,
-                                              )
+        plt_ts4ARNA_flt_period_obs(var2plot=var2plot, units=units,
+                                   ObsVar2Plot=ObsVar2Plot,
+                                   mod_scale=mod_scale,
+                                   mod_label=mod_label,
+                                   ModVar2Plot=ModVar2Plot,
+                                   ylim=ylim,
+                                   dfs_mod=dfs_mod[flight_ID],
+                                   df_obs=df_obs_NOy,
+                                   dfs_mod_period=dfs_mod_period[flight_ID],
+                                   plt_alt_shadow=plt_alt_shadow,
+                                   flight_ID=flight_ID,
+                                   ObsVar2PlotErr=ObsVar2PlotErr,
+                                   plt_errorbar=plt_errorbar,
+                                   context=context,
+                                   )
         # Save to PDF and close the plot
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
         plt.close()
@@ -4424,23 +4408,21 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
 #        ylim = (-0.2, 1)
         ylim = None
         # Call timeseries plotter function
-        plt_timeseries4ARNA_flight_period_obs(var2plot=var2plot, units=units,
-                                              ObsVar2Plot=ObsVar2Plot,
-                                              mod_scale=mod_scale,
-                                              mod_label=mod_label,
-                                              ModVar2Plot=ModVar2Plot,
-                                              ylim=ylim,
-                                              #                                              df_mod=df_mod,
-                                              dfs_mod=dfs_mod[flight_ID],
-                                              df_obs=df_obs_NOy,
-                                              #                                              df_mod_period=df_mod_period,
-                                              dfs_mod_period=dfs_mod_period[flight_ID],
-                                              plt_alt_as_shadow=plt_alt_as_shadow,
-                                              flight_ID=flight_ID,
-                                              ObsVar2PlotErr=ObsVar2PlotErr,
-                                              plt_errorbar=plt_errorbar,
-                                              context=context,
-                                              )
+        plt_ts4ARNA_flt_period_obs(var2plot=var2plot, units=units,
+                                   ObsVar2Plot=ObsVar2Plot,
+                                   mod_scale=mod_scale,
+                                   mod_label=mod_label,
+                                   ModVar2Plot=ModVar2Plot,
+                                   ylim=ylim,
+                                   dfs_mod=dfs_mod[flight_ID],
+                                   df_obs=df_obs_NOy,
+                                   dfs_mod_period=dfs_mod_period[flight_ID],
+                                   plt_alt_shadow=plt_alt_shadow,
+                                   flight_ID=flight_ID,
+                                   ObsVar2PlotErr=ObsVar2PlotErr,
+                                   plt_errorbar=plt_errorbar,
+                                   context=context,
+                                   )
         # Save to PDF and close the plot
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
         plt.close()
@@ -4457,23 +4439,21 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
 #        ylim = (-0.2, 1)
         ylim = None
         # Call timeseries plotter function
-        plt_timeseries4ARNA_flight_period_obs(var2plot=var2plot, units=units,
-                                              ObsVar2Plot=ObsVar2Plot,
-                                              mod_scale=mod_scale,
-                                              mod_label=mod_label,
-                                              ModVar2Plot=ModVar2Plot,
-                                              ylim=ylim,
-                                              #                                              df_mod=df_mod,
-                                              dfs_mod=dfs_mod[flight_ID],
-                                              df_obs=df_obs_NOy,
-                                              #                                              df_mod_period=df_mod_period,
-                                              dfs_mod_period=dfs_mod_period[flight_ID],
-                                              plt_alt_as_shadow=plt_alt_as_shadow,
-                                              flight_ID=flight_ID,
-                                              ObsVar2PlotErr=ObsVar2PlotErr,
-                                              plt_errorbar=plt_errorbar,
-                                              context=context,
-                                              )
+        plt_ts4ARNA_flt_period_obs(var2plot=var2plot, units=units,
+                                   ObsVar2Plot=ObsVar2Plot,
+                                   mod_scale=mod_scale,
+                                   mod_label=mod_label,
+                                   ModVar2Plot=ModVar2Plot,
+                                   ylim=ylim,
+                                   dfs_mod=dfs_mod[flight_ID],
+                                   df_obs=df_obs_NOy,
+                                   dfs_mod_period=dfs_mod_period[flight_ID],
+                                   plt_alt_shadow=plt_alt_shadow,
+                                   flight_ID=flight_ID,
+                                   ObsVar2PlotErr=ObsVar2PlotErr,
+                                   plt_errorbar=plt_errorbar,
+                                   context=context,
+                                   )
         # Save to PDF and close the plot
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
         plt.close()
@@ -4490,23 +4470,21 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
 #        ylim = (-0.2, 1)
         ylim = None
         # Call timeseries plotter function
-        plt_timeseries4ARNA_flight_period_obs(var2plot=var2plot, units=units,
-                                              ObsVar2Plot=ObsVar2Plot,
-                                              mod_scale=mod_scale,
-                                              mod_label=mod_label,
-                                              ModVar2Plot=ModVar2Plot,
-                                              ylim=ylim,
-                                              #                                              df_mod=df_mod,
-                                              dfs_mod=dfs_mod[flight_ID],
-                                              df_obs=df_obs_NOy,
-                                              #                                              df_mod_period=df_mod_period,
-                                              dfs_mod_period=dfs_mod_period[flight_ID],
-                                              plt_alt_as_shadow=plt_alt_as_shadow,
-                                              flight_ID=flight_ID,
-                                              ObsVar2PlotErr=ObsVar2PlotErr,
-                                              plt_errorbar=plt_errorbar,
-                                              context=context,
-                                              )
+        plt_ts4ARNA_flt_period_obs(var2plot=var2plot, units=units,
+                                   ObsVar2Plot=ObsVar2Plot,
+                                   mod_scale=mod_scale,
+                                   mod_label=mod_label,
+                                   ModVar2Plot=ModVar2Plot,
+                                   ylim=ylim,
+                                   dfs_mod=dfs_mod[flight_ID],
+                                   df_obs=df_obs_NOy,
+                                   dfs_mod_period=dfs_mod_period[flight_ID],
+                                   plt_alt_shadow=plt_alt_shadow,
+                                   flight_ID=flight_ID,
+                                   ObsVar2PlotErr=ObsVar2PlotErr,
+                                   plt_errorbar=plt_errorbar,
+                                   context=context,
+                                   )
         # Save to PDF and close the plot
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
         plt.close()
@@ -4523,23 +4501,21 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
 #        ylim = (-0.2, 1)
         ylim = None
         # Call timeseries plotter function
-        plt_timeseries4ARNA_flight_period_obs(var2plot=var2plot, units=units,
-                                              ObsVar2Plot=ObsVar2Plot,
-                                              mod_scale=mod_scale,
-                                              mod_label=mod_label,
-                                              ModVar2Plot=ModVar2Plot,
-                                              ylim=ylim,
-                                              #                                              df_mod=df_mod,
-                                              dfs_mod=dfs_mod[flight_ID],
-                                              df_obs=df_obs_NOy,
-                                              #                                              df_mod_period=df_mod_period,
-                                              dfs_mod_period=dfs_mod_period[flight_ID],
-                                              plt_alt_as_shadow=plt_alt_as_shadow,
-                                              flight_ID=flight_ID,
-                                              ObsVar2PlotErr=ObsVar2PlotErr,
-                                              plt_errorbar=plt_errorbar,
-                                              context=context,
-                                              )
+        plt_ts4ARNA_flt_period_obs(var2plot=var2plot, units=units,
+                                   ObsVar2Plot=ObsVar2Plot,
+                                   mod_scale=mod_scale,
+                                   mod_label=mod_label,
+                                   ModVar2Plot=ModVar2Plot,
+                                   ylim=ylim,
+                                   dfs_mod=dfs_mod[flight_ID],
+                                   df_obs=df_obs_NOy,
+                                   dfs_mod_period=dfs_mod_period[flight_ID],
+                                   plt_alt_shadow=plt_alt_shadow,
+                                   flight_ID=flight_ID,
+                                   ObsVar2PlotErr=ObsVar2PlotErr,
+                                   plt_errorbar=plt_errorbar,
+                                   context=context,
+                                   )
         # Save to PDF and close the plot
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
         plt.close()
@@ -4560,25 +4536,23 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
             ext_str = 'ToF CIMS'
             title = title_str.format(var2plot, units, flight_ID, ext_str)
             # Call timeseries plotter function
-            plt_timeseries4ARNA_flight_period_obs(var2plot=var2plot,
-                                                  units=units,
-                                                  ObsVar2Plot=ObsVar2Plot,
-                                                  mod_scale=mod_scale,
-                                                  mod_label=mod_label,
-                                                  ModVar2Plot=ModVar2Plot,
-                                                  ylim=ylim,
-                                                  #                                                 df_mod=df_mod,
-                                                  dfs_mod=dfs_mod[flight_ID],
-                                                  df_obs=df_CIMS_period,
-                                                  #                                                 df_mod_period=df_mod_period,
-                                                  dfs_mod_period=dfs_mod_period[flight_ID],
-                                                  plt_alt_as_shadow=plt_alt_as_shadow,
-                                                  flight_ID=flight_ID,
-                                                  ObsVar2PlotErr=ObsVar2PlotErr,
-                                                  plt_errorbar=plt_errorbar,
-                                                  context=context,
-                                                  title=title,
-                                                  )
+            plt_ts4ARNA_flt_period_obs(var2plot=var2plot,
+                                       units=units,
+                                       ObsVar2Plot=ObsVar2Plot,
+                                       mod_scale=mod_scale,
+                                       mod_label=mod_label,
+                                       ModVar2Plot=ModVar2Plot,
+                                       ylim=ylim,
+                                       dfs_mod=dfs_mod[flight_ID],
+                                       df_obs=df_CIMS_period,
+                                       dfs_mod_period=dfs_mod_period[flight_ID],
+                                       plt_alt_shadow=plt_alt_shadow,
+                                       flight_ID=flight_ID,
+                                       ObsVar2PlotErr=ObsVar2PlotErr,
+                                       plt_errorbar=plt_errorbar,
+                                       context=context,
+                                       title=title,
+                                       )
             # Save to PDF and close the plot
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
             plt.close()
@@ -4601,25 +4575,23 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
             ext_str = 'ToF CIMS'
             title = title_str.format(var2plot, units, flight_ID, ext_str)
             # Call timeseries plotter function
-            plt_timeseries4ARNA_flight_period_obs(var2plot=var2plot,
-                                                  units=units,
-                                                  ObsVar2Plot=ObsVar2Plot,
-                                                  mod_scale=mod_scale,
-                                                  mod_label=mod_label,
-                                                  ModVar2Plot=ModVar2Plot,
-                                                  ylim=ylim,
-                                                  #                                                  df_mod=df_mod,
-                                                  dfs_mod=dfs_mod[flight_ID],
-                                                  df_obs=df_CIMS_period,
-                                                  #                                                  df_mod_period=df_mod_period,
-                                                  dfs_mod_period=dfs_mod_period[flight_ID],
-                                                  plt_alt_as_shadow=plt_alt_as_shadow,
-                                                  flight_ID=flight_ID,
-                                                  ObsVar2PlotErr=ObsVar2PlotErr,
-                                                  plt_errorbar=plt_errorbar,
-                                                  context=context,
-                                                  title=title,
-                                                  )
+            plt_ts4ARNA_flt_period_obs(var2plot=var2plot,
+                                       units=units,
+                                       ObsVar2Plot=ObsVar2Plot,
+                                       mod_scale=mod_scale,
+                                       mod_label=mod_label,
+                                       ModVar2Plot=ModVar2Plot,
+                                       ylim=ylim,
+                                       dfs_mod=dfs_mod[flight_ID],
+                                       df_obs=df_CIMS_period,
+                                       dfs_mod_period=dfs_mod_period[flight_ID],
+                                       plt_alt_shadow=plt_alt_shadow,
+                                       flight_ID=flight_ID,
+                                       ObsVar2PlotErr=ObsVar2PlotErr,
+                                       plt_errorbar=plt_errorbar,
+                                       context=context,
+                                       title=title,
+                                       )
             # Save to PDF and close the plot
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
             plt.close()
@@ -4647,25 +4619,23 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
             ext_str = 'FAAM Nitrate rack data'
             title = title_str.format(var2plot, units, flight_ID, ext_str)
             # Call timeseries plotter function
-            plt_timeseries4ARNA_flight_period_obs(var2plot=var2plot,
-                                                  units=units,
-                                                  ObsVar2Plot=ObsVar2Plot,
-                                                  mod_scale=mod_scale,
-                                                  mod_label=mod_label,
-                                                  ModVar2Plot=ModVar2Plot,
-                                                  ylim=ylim,
-                                                  #                                                 df_mod=df_mod,
-                                                  dfs_mod=dfs_mod[flight_ID],
-                                                  df_obs=df_FAAM_period,
-                                                  #                                                 df_mod_period=df_mod_period,
-                                                  dfs_mod_period=dfs_mod_period[flight_ID],
-                                                  plt_alt_as_shadow=plt_alt_as_shadow,
-                                                  flight_ID=flight_ID,
-                                                  ObsVar2PlotErr=ObsVar2PlotErr,
-                                                  plt_errorbar=plt_errorbar,
-                                                  context=context,
-                                                  title=title,
-                                                  )
+            plt_ts4ARNA_flt_period_obs(var2plot=var2plot,
+                                       units=units,
+                                       ObsVar2Plot=ObsVar2Plot,
+                                       mod_scale=mod_scale,
+                                       mod_label=mod_label,
+                                       ModVar2Plot=ModVar2Plot,
+                                       ylim=ylim,
+                                       dfs_mod=dfs_mod[flight_ID],
+                                       df_obs=df_FAAM_period,
+                                       dfs_mod_period=dfs_mod_period[flight_ID],
+                                       plt_alt_shadow=plt_alt_shadow,
+                                       flight_ID=flight_ID,
+                                       ObsVar2PlotErr=ObsVar2PlotErr,
+                                       plt_errorbar=plt_errorbar,
+                                       context=context,
+                                       title=title,
+                                       )
             # Save to PDF and close the plot
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
             plt.close()
@@ -4678,15 +4648,15 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
         plt.close('all')
 
 
-def plt_timeseries_comp4ARNA_flights_filters(dpi=320, show_plot=False,
-                                             flight_nums=[],
-                                             res='4x5', RunSet=None,
-                                             inc_GEOSChem=False,
-                                             just_plot_GEOS_Chem=False,
-                                             LatVar='model-lat',
-                                             LonVar='model-lon',
-                                             plt_alt_as_shadow=False,
-                                             debug=False, context='paper'):
+def plt_ts_comp4ARNA_flights_filters(dpi=320, show_plot=False,
+                                     flight_nums=[],
+                                     res='4x5', RunSet=None,
+                                     inc_GEOSChem=False,
+                                     just_plot_GEOS_Chem=False,
+                                     LatVar='model-lat',
+                                     LonVar='model-lon',
+                                     plt_alt_shadow=False,
+                                     debug=False, context='paper'):
     """
     Plot up timeseries comparisons between filter samples and model data
     """
@@ -4762,9 +4732,9 @@ def plt_timeseries_comp4ARNA_flights_filters(dpi=320, show_plot=False,
         dfs_mod4flight = dfs_mod[flight_ID]  # [ModelVarName]
         for key in dfs_mod4flight.keys():
             df_mod = dfs_mod4flight[key]
-            df_mod = only_consider_data_during_filter_times(df=df_mod,
-                                                            FILTERdf=df_obs,
-                                                            flight_ID=flight_ID)
+            df_mod = only_use_filter_times(df=df_mod,
+                                           FILTERdf=df_obs,
+                                           flight_ID=flight_ID)
             dfs_mod4flight[key] = df_mod
         dfs_mod_period[flight_ID] = dfs_mod4flight
 
@@ -4819,24 +4789,21 @@ def plt_timeseries_comp4ARNA_flights_filters(dpi=320, show_plot=False,
 #        ylim = (-0.2, 1)
         ylim = None
         # Call timeseries plotter function
-        plt_timeseries4ARNA_flight_period_obs(var2plot=var2plot, units=units,
-                                              ObsVar2Plot=ObsVar2Plot,
-                                              mod_scale=mod_scale,
-                                              mod_label=mod_label,
-                                              ModVar2Plot=ModVar2Plot,
-                                              ylim=ylim,
-                                              #                                              df_mod=df_mod,
-                                              dfs_mod=dfs_mod[flight_ID],
-                                              df_obs=df_obs,
-                                              #                                              df_mod_period=df_mod_period,
-                                              #                                              dfs_mod_period=dfs_mod_period,
-                                              dfs_mod_period=dfs_mod_period[flight_ID],
-                                              plt_alt_as_shadow=plt_alt_as_shadow,
-                                              flight_ID=flight_ID,
-                                              ObsVar2PlotErr=ObsVar2PlotErr,
-                                              plt_errorbar=plt_errorbar,
-                                              context=context,
-                                              )
+        plt_ts4ARNA_flt_period_obs(var2plot=var2plot, units=units,
+                                   ObsVar2Plot=ObsVar2Plot,
+                                   mod_scale=mod_scale,
+                                   mod_label=mod_label,
+                                   ModVar2Plot=ModVar2Plot,
+                                   ylim=ylim,
+                                   dfs_mod=dfs_mod[flight_ID],
+                                   df_obs=df_obs,
+                                   dfs_mod_period=dfs_mod_period[flight_ID],
+                                   plt_alt_shadow=plt_alt_shadow,
+                                   flight_ID=flight_ID,
+                                   ObsVar2PlotErr=ObsVar2PlotErr,
+                                   plt_errorbar=plt_errorbar,
+                                   context=context,
+                                   )
         # Save to PDF and close the plot
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
         plt.close()
@@ -4853,24 +4820,21 @@ def plt_timeseries_comp4ARNA_flights_filters(dpi=320, show_plot=False,
 #        ylim = (-0.2, 1)
         ylim = None
         # Call timeseries plotter function
-        plt_timeseries4ARNA_flight_period_obs(var2plot=var2plot, units=units,
-                                              ObsVar2Plot=ObsVar2Plot,
-                                              mod_scale=mod_scale,
-                                              mod_label=mod_label,
-                                              ModVar2Plot=ModVar2Plot,
-                                              ylim=ylim,
-                                              #                                              df_mod=df_mod,
-                                              dfs_mod=dfs_mod[flight_ID],
-                                              df_obs=df_obs,
-                                              #                                              df_mod_period=df_mod_period,
-                                              #                                              dfs_mod_period=dfs_mod_period,
-                                              dfs_mod_period=dfs_mod_period[flight_ID],
-                                              plt_alt_as_shadow=plt_alt_as_shadow,
-                                              flight_ID=flight_ID,
-                                              ObsVar2PlotErr=ObsVar2PlotErr,
-                                              plt_errorbar=plt_errorbar,
-                                              context=context,
-                                              )
+        plt_ts4ARNA_flt_period_obs(var2plot=var2plot, units=units,
+                                   ObsVar2Plot=ObsVar2Plot,
+                                   mod_scale=mod_scale,
+                                   mod_label=mod_label,
+                                   ModVar2Plot=ModVar2Plot,
+                                   ylim=ylim,
+                                   dfs_mod=dfs_mod[flight_ID],
+                                   df_obs=df_obs,
+                                   dfs_mod_period=dfs_mod_period[flight_ID],
+                                   plt_alt_shadow=plt_alt_shadow,
+                                   flight_ID=flight_ID,
+                                   ObsVar2PlotErr=ObsVar2PlotErr,
+                                   plt_errorbar=plt_errorbar,
+                                   context=context,
+                                   )
         # Save to PDF and close the plot
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
         plt.close()
@@ -4880,9 +4844,9 @@ def plt_timeseries_comp4ARNA_flights_filters(dpi=320, show_plot=False,
         plt.close('all')
 
 
-def plt_timeseries_comp4ARNA_flights_SWAS(dpi=320, show_plot=False,
-                                          flight_nums=[],
-                                          context='paper', debug=False):
+def plt_ts_comp4ARNA_flights_SWAS(dpi=320, show_plot=False,
+                                  flight_nums=[],
+                                  context='paper', debug=False):
     """
     Plot up timeseries comparisons between SWAS observations and model data
     """
@@ -4943,18 +4907,18 @@ def plt_timeseries_comp4ARNA_flights_SWAS(dpi=320, show_plot=False,
 #        ylim = (-0.2, 1)
         ylim = None
         # Call timeseries plotter function
-        plt_timeseries4ARNA_flight_point_obs(var2plot=var2plot, units=units,
-                                             ObsVar2Plot=ObsVar2Plot,
-                                             mod_scale=mod_scale,
-                                             mod_label=mod_label,
-                                             ModVar2Plot=ModVar2Plot,
-                                             ylim=ylim,
-                                             df_mod=df_mod, df_obs=df_obs,
-                                             flight_ID=flight_ID,
-                                             ObsVar2PlotErr=ObsVar2PlotErr,
-                                             plt_errorbar=True,
-                                             context=context,
-                                             )
+        plt_ts4ARNA_flt_point_obs(var2plot=var2plot, units=units,
+                                     ObsVar2Plot=ObsVar2Plot,
+                                     mod_scale=mod_scale,
+                                     mod_label=mod_label,
+                                     ModVar2Plot=ModVar2Plot,
+                                     ylim=ylim,
+                                     df_mod=df_mod, df_obs=df_obs,
+                                     flight_ID=flight_ID,
+                                     ObsVar2PlotErr=ObsVar2PlotErr,
+                                     plt_errorbar=True,
+                                     context=context,
+                                     )
         # Save to PDF and close the plot
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
         plt.close()
@@ -4970,18 +4934,18 @@ def plt_timeseries_comp4ARNA_flights_SWAS(dpi=320, show_plot=False,
 #        ylim = (-0.2, 1)
         ylim = None
         # Call timeseries plotter function
-        plt_timeseries4ARNA_flight_point_obs(var2plot=var2plot, units=units,
-                                             ObsVar2Plot=ObsVar2Plot,
-                                             mod_scale=mod_scale,
-                                             mod_label=mod_label,
-                                             ModVar2Plot=ModVar2Plot,
-                                             ylim=ylim,
-                                             df_mod=df_mod, df_obs=df_obs,
-                                             flight_ID=flight_ID,
-                                             ObsVar2PlotErr=ObsVar2PlotErr,
-                                             plt_errorbar=True,
-                                             context=context,
-                                             )
+        plt_ts4ARNA_flt_point_obs(var2plot=var2plot, units=units,
+                                     ObsVar2Plot=ObsVar2Plot,
+                                     mod_scale=mod_scale,
+                                     mod_label=mod_label,
+                                     ModVar2Plot=ModVar2Plot,
+                                     ylim=ylim,
+                                     df_mod=df_mod, df_obs=df_obs,
+                                     flight_ID=flight_ID,
+                                     ObsVar2PlotErr=ObsVar2PlotErr,
+                                     plt_errorbar=True,
+                                     context=context,
+                                     )
         # Save to PDF and close the plot
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
         plt.close()
@@ -4997,18 +4961,18 @@ def plt_timeseries_comp4ARNA_flights_SWAS(dpi=320, show_plot=False,
 #        ylim = (-0.2, 1)
         ylim = None
         # Call timeseries plotter function
-        plt_timeseries4ARNA_flight_point_obs(var2plot=var2plot, units=units,
-                                             ObsVar2Plot=ObsVar2Plot,
-                                             mod_scale=mod_scale,
-                                             mod_label=mod_label,
-                                             ModVar2Plot=ModVar2Plot,
-                                             ylim=ylim,
-                                             df_mod=df_mod, df_obs=df_obs,
-                                             flight_ID=flight_ID,
-                                             ObsVar2PlotErr=ObsVar2PlotErr,
-                                             plt_errorbar=True,
-                                             context=context,
-                                             )
+        plt_ts4ARNA_flt_point_obs(var2plot=var2plot, units=units,
+                                     ObsVar2Plot=ObsVar2Plot,
+                                     mod_scale=mod_scale,
+                                     mod_label=mod_label,
+                                     ModVar2Plot=ModVar2Plot,
+                                     ylim=ylim,
+                                     df_mod=df_mod, df_obs=df_obs,
+                                     flight_ID=flight_ID,
+                                     ObsVar2PlotErr=ObsVar2PlotErr,
+                                     plt_errorbar=True,
+                                     context=context,
+                                     )
         # Save to PDF and close the plot
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
         plt.close()
@@ -5024,18 +4988,18 @@ def plt_timeseries_comp4ARNA_flights_SWAS(dpi=320, show_plot=False,
 #        ylim = (-0.2, 1)
         ylim = None
         # Call timeseries plotter function
-        plt_timeseries4ARNA_flight_point_obs(var2plot=var2plot, units=units,
-                                             ObsVar2Plot=ObsVar2Plot,
-                                             mod_scale=mod_scale,
-                                             mod_label=mod_label,
-                                             ModVar2Plot=ModVar2Plot,
-                                             ylim=ylim,
-                                             df_mod=df_mod, df_obs=df_obs,
-                                             flight_ID=flight_ID,
-                                             ObsVar2PlotErr=ObsVar2PlotErr,
-                                             plt_errorbar=True,
-                                             context=context,
-                                             )
+        plt_ts4ARNA_flt_point_obs(var2plot=var2plot, units=units,
+                                     ObsVar2Plot=ObsVar2Plot,
+                                     mod_scale=mod_scale,
+                                     mod_label=mod_label,
+                                     ModVar2Plot=ModVar2Plot,
+                                     ylim=ylim,
+                                     df_mod=df_mod, df_obs=df_obs,
+                                     flight_ID=flight_ID,
+                                     ObsVar2PlotErr=ObsVar2PlotErr,
+                                     plt_errorbar=True,
+                                     context=context,
+                                     )
         # Save to PDF and close the plot
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
         plt.close()
@@ -5045,12 +5009,12 @@ def plt_timeseries_comp4ARNA_flights_SWAS(dpi=320, show_plot=False,
         plt.close('all')
 
 
-def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False,
-                                                   inc_GEOSChem=False,
-                                                   RunSet=None, res='4x5',
-                                                   just_plot_GEOS_Chem=False,
-                                                   flight_nums=[],
-                                                   context='paper'):
+def plt_ts_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False,
+                                           inc_GEOSChem=False,
+                                           RunSet=None, res='4x5',
+                                           just_plot_GEOS_Chem=False,
+                                           flight_nums=[],
+                                           context='paper'):
     """
     Plot up timeseries comparisons between physical variables and model data
     """
@@ -5130,18 +5094,18 @@ def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False,
     #        ylim = (10, 100)
     #        ylim = None
             # Call timeseries plotter function
-            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       ObsVar2Plot=ObsVar2Plot,
-                                       mod_scale=mod_scale,
-                                       mod_label=mod_label,
-                                       ModVar2Plot=ModVar2Plot,
-                                       #                                   ylim=ylim,
-                                       dfs_mod=dfs_mod,
-                                       df_obs=df_obs,
-                                       flight_ID=flight_ID,
-                                       plt_legend=False,
-                                       context=context,
-                                       )
+            plt_ts4ARNA_flight(var2plot=var2plot, units=units,
+                               ObsVar2Plot=ObsVar2Plot,
+                               mod_scale=mod_scale,
+                               mod_label=mod_label,
+                               ModVar2Plot=ModVar2Plot,
+                               #                                   ylim=ylim,
+                               dfs_mod=dfs_mod,
+                               df_obs=df_obs,
+                               flight_ID=flight_ID,
+                               plt_legend=False,
+                               context=context,
+                               )
             # Colour in SLRs
             ax = plt.gca()
             colour_plot_background_by_bool(df=df_obs, ax=ax, bool2use='IS_SLR',
@@ -5169,18 +5133,18 @@ def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False,
     #        ylim = (10, 100)
             ylim = None
             # Call timeseries plotter function
-            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       ObsVar2Plot=ObsVar2Plot,
-                                       mod_scale=mod_scale,
-                                       mod_label=mod_label,
-                                       ModVar2Plot=ModVar2Plot,
-                                       ylim=ylim,
-                                       dfs_mod=dfs_mod,
-                                       df_obs=df_obs,
-                                       flight_ID=flight_ID,
-                                       plt_legend=False,
-                                       context=context,
-                                       )
+            plt_ts4ARNA_flight(var2plot=var2plot, units=units,
+                               ObsVar2Plot=ObsVar2Plot,
+                               mod_scale=mod_scale,
+                               mod_label=mod_label,
+                               ModVar2Plot=ModVar2Plot,
+                               ylim=ylim,
+                               dfs_mod=dfs_mod,
+                               df_obs=df_obs,
+                               flight_ID=flight_ID,
+                               plt_legend=False,
+                               context=context,
+                               )
             # Colour in SLRs
             ax = plt.gca()
             colour_plot_background_by_bool(df=df_obs, ax=ax, bool2use='IS_SLR',
@@ -5209,17 +5173,17 @@ def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False,
     #        ylim = (10, 100)
             ylim = None
             # Call timeseries plotter function
-            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       ObsVar2Plot=ObsVar2Plot,
-                                       mod_scale=mod_scale,
-                                       mod_label=mod_label,
-                                       ModVar2Plot=ModVar2Plot,
-                                       ylim=ylim,
-                                       dfs_mod=dfs_mod,
-                                       df_obs=df_obs,
-                                       flight_ID=flight_ID,
-                                       context=context,
-                                       )
+            plt_ts4ARNA_flight(var2plot=var2plot, units=units,
+                               ObsVar2Plot=ObsVar2Plot,
+                               mod_scale=mod_scale,
+                               mod_label=mod_label,
+                               ModVar2Plot=ModVar2Plot,
+                               ylim=ylim,
+                               dfs_mod=dfs_mod,
+                               df_obs=df_obs,
+                               flight_ID=flight_ID,
+                               context=context,
+                               )
             # Save to PDF and close the plot
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
             plt.close()
@@ -5240,18 +5204,18 @@ def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False,
     #        ylim = (10, 100)
             ylim = None
             # Call timeseries plotter function
-            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       ObsVar2Plot=ObsVar2Plot,
-                                       obs_scale=obs_scale,
-                                       mod_scale=mod_scale,
-                                       mod_label=mod_label,
-                                       ModVar2Plot=ModVar2Plot,
-                                       ylim=ylim,
-                                       dfs_mod=dfs_mod,
-                                       df_obs=df_obs,
-                                       flight_ID=flight_ID,
-                                       context=context,
-                                       )
+            plt_ts4ARNA_flight(var2plot=var2plot, units=units,
+                               ObsVar2Plot=ObsVar2Plot,
+                               obs_scale=obs_scale,
+                               mod_scale=mod_scale,
+                               mod_label=mod_label,
+                               ModVar2Plot=ModVar2Plot,
+                               ylim=ylim,
+                               dfs_mod=dfs_mod,
+                               df_obs=df_obs,
+                               flight_ID=flight_ID,
+                               context=context,
+                               )
             # Save to PDF and close the plot
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
             plt.close()
@@ -5270,18 +5234,18 @@ def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False,
     #        ylim = (10, 100)
             ylim = None
             # Call timeseries plotter function
-            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       ObsVar2Plot=ObsVar2Plot,
-                                       mod_scale=mod_scale,
-                                       obs_scale=obs_scale,
-                                       mod_label=mod_label,
-                                       ModVar2Plot=ModVar2Plot,
-                                       ylim=ylim,
-                                       dfs_mod=dfs_mod,
-                                       df_obs=df_obs,
-                                       flight_ID=flight_ID,
-                                       context=context,
-                                       )
+            plt_ts4ARNA_flight(var2plot=var2plot, units=units,
+                               ObsVar2Plot=ObsVar2Plot,
+                               mod_scale=mod_scale,
+                               obs_scale=obs_scale,
+                               mod_label=mod_label,
+                               ModVar2Plot=ModVar2Plot,
+                               ylim=ylim,
+                               dfs_mod=dfs_mod,
+                               df_obs=df_obs,
+                               flight_ID=flight_ID,
+                               context=context,
+                               )
             # Save to PDF and close the plot
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
             plt.close()
@@ -5298,18 +5262,18 @@ def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False,
         ylim = (-25, 35)
         obs_adjustby = -273.15
         # Call timeseries plotter function
-        plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                   ObsVar2Plot=ObsVar2Plot,
-                                   mod_scale=mod_scale,
-                                   mod_label=mod_label,
-                                   ModVar2Plot=ModVar2Plot,
-                                   ylim=ylim,
-                                   dfs_mod=dfs_mod,
-                                   df_obs=df_obs,
-                                   flight_ID=flight_ID,
-                                   obs_adjustby=obs_adjustby,
-                                   context=context,
-                                   )
+        plt_ts4ARNA_flight(var2plot=var2plot, units=units,
+                           ObsVar2Plot=ObsVar2Plot,
+                           mod_scale=mod_scale,
+                           mod_label=mod_label,
+                           ModVar2Plot=ModVar2Plot,
+                           ylim=ylim,
+                           dfs_mod=dfs_mod,
+                           df_obs=df_obs,
+                           flight_ID=flight_ID,
+                           obs_adjustby=obs_adjustby,
+                           context=context,
+                           )
         # Save to PDF and close the plot
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
         plt.close()
@@ -5323,17 +5287,17 @@ def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False,
         mod_scale = 1
         ylim = (-25, 25)
         # Call timeseries plotter function
-        plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                   ObsVar2Plot=ObsVar2Plot,
-                                   mod_scale=mod_scale,
-                                   mod_label=mod_label,
-                                   ModVar2Plot=ModVar2Plot,
-                                   ylim=ylim,
-                                   dfs_mod=dfs_mod,
-                                   df_obs=df_obs,
-                                   flight_ID=flight_ID,
-                                   context=context,
-                                   )
+        plt_ts4ARNA_flight(var2plot=var2plot, units=units,
+                           ObsVar2Plot=ObsVar2Plot,
+                           mod_scale=mod_scale,
+                           mod_label=mod_label,
+                           ModVar2Plot=ModVar2Plot,
+                           ylim=ylim,
+                           dfs_mod=dfs_mod,
+                           df_obs=df_obs,
+                           flight_ID=flight_ID,
+                           context=context,
+                           )
         # Save to PDF and close the plot
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
         plt.close()
@@ -5347,17 +5311,17 @@ def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False,
         mod_scale = 1
         ylim = (-25, 25)
         # Call timeseries plotter function
-        plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                   ObsVar2Plot=ObsVar2Plot,
-                                   mod_scale=mod_scale,
-                                   mod_label=mod_label,
-                                   ModVar2Plot=ModVar2Plot,
-                                   ylim=ylim,
-                                   dfs_mod=dfs_mod,
-                                   df_obs=df_obs,
-                                   flight_ID=flight_ID,
-                                   context=context,
-                                   )
+        plt_ts4ARNA_flight(var2plot=var2plot, units=units,
+                           ObsVar2Plot=ObsVar2Plot,
+                           mod_scale=mod_scale,
+                           mod_label=mod_label,
+                           ModVar2Plot=ModVar2Plot,
+                           ylim=ylim,
+                           dfs_mod=dfs_mod,
+                           df_obs=df_obs,
+                           flight_ID=flight_ID,
+                           context=context,
+                           )
         # Save to PDF and close the plot
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
         plt.close()
@@ -5371,16 +5335,16 @@ def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False,
             mod_label = mod_label_master
             mod_scale = 1
             # Call timeseries plotter function
-            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       ObsVar2Plot=ObsVar2Plot,
-                                       mod_scale=mod_scale,
-                                       mod_label=mod_label,
-                                       ModVar2Plot=ModVar2Plot,
-                                       dfs_mod=dfs_mod,
-                                       df_obs=df_obs,
-                                       flight_ID=flight_ID,
-                                       context=context,
-                                       )
+            plt_ts4ARNA_flight(var2plot=var2plot, units=units,
+                               ObsVar2Plot=ObsVar2Plot,
+                               mod_scale=mod_scale,
+                               mod_label=mod_label,
+                               ModVar2Plot=ModVar2Plot,
+                               dfs_mod=dfs_mod,
+                               df_obs=df_obs,
+                               flight_ID=flight_ID,
+                               context=context,
+                               )
             # Save to PDF and close the plot
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
             plt.close()
@@ -5396,16 +5360,16 @@ def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False,
             mod_label = mod_label_master
             mod_scale = 1
             # Call timeseries plotter function
-            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       ObsVar2Plot=ObsVar2Plot,
-                                       mod_scale=mod_scale,
-                                       mod_label=mod_label,
-                                       ModVar2Plot=ModVar2Plot,
-                                       dfs_mod=dfs_mod,
-                                       df_obs=df_obs,
-                                       flight_ID=flight_ID,
-                                       context=context,
-                                       )
+            plt_ts4ARNA_flight(var2plot=var2plot, units=units,
+                               ObsVar2Plot=ObsVar2Plot,
+                               mod_scale=mod_scale,
+                               mod_label=mod_label,
+                               ModVar2Plot=ModVar2Plot,
+                               dfs_mod=dfs_mod,
+                               df_obs=df_obs,
+                               flight_ID=flight_ID,
+                               context=context,
+                               )
             # Save to PDF and close the plot
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
             plt.close()
@@ -5426,18 +5390,18 @@ def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False,
             mod_label = mod_label_master
             mod_scale = 1
             # Call timeseries plotter function
-            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       ObsVar2Plot=ObsVar2Plot,
-                                       mod_scale=mod_scale,
-                                       mod_label=mod_label,
-                                       ModVar2Plot=ModVar2Plot,
-                                       dfs_mod=dfs_mod,
-                                       df_obs=df_obs,
-                                       flight_ID=flight_ID,
-                                       invert_yaxis=True,
-                                       plt_alt_as_shadow=False,
-                                       context=context,
-                                       )
+            plt_ts4ARNA_flight(var2plot=var2plot, units=units,
+                               ObsVar2Plot=ObsVar2Plot,
+                               mod_scale=mod_scale,
+                               mod_label=mod_label,
+                               ModVar2Plot=ModVar2Plot,
+                               dfs_mod=dfs_mod,
+                               df_obs=df_obs,
+                               flight_ID=flight_ID,
+                               invert_yaxis=True,
+                               plt_alt_shadow=False,
+                               context=context,
+                               )
             # Save to PDF and close the plot
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
             plt.close()
@@ -5455,15 +5419,12 @@ def plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(dpi=320, show_plot=False,
         plt.close('all')
 
 
-def plt_timeseries_comp4ARNA_flights(dpi=320, inc_GEOSChem=False,
-                                     show_plot=False, context='talk',
-                                     #                                     RunSet='FP-Nest', res='0.25x0.3125',
-                                     #                                      RunSet='MERRA2-BC',
-                                     #                                      RunSet='MERRA2-0.5-initial',
-                                     RunSet=None, res='4x5',
-                                     just_plot_GEOS_Chem=False,
-                                     flight_nums=[],
-                                     ):
+def plt_ts_comp4ARNA_flights(dpi=320, inc_GEOSChem=False,
+                             show_plot=False, context='talk',
+                             RunSet=None, res='4x5',
+                             just_plot_GEOS_Chem=False,
+                             flight_nums=[],
+                             ):
     """
     Plot up timeseries comparisons between core observations and model data
     """
@@ -5540,17 +5501,17 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, inc_GEOSChem=False,
         mod_scale = 1E9
         ylim = (50, 400)
         # Call timeseries plotter function
-        plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                   ObsVar2Plot=ObsVar2Plot,
-                                   mod_scale=mod_scale,
-                                   mod_label=mod_label,
-                                   ModVar2Plot=ModVar2Plot,
-                                   ylim=ylim,
-                                   dfs_mod=dfs_mod,
-                                   df_obs=df_obs,
-                                   flight_ID=flight_ID,
-                                   context=context,
-                                   )
+        plt_ts4ARNA_flight(var2plot=var2plot, units=units,
+                           ObsVar2Plot=ObsVar2Plot,
+                           mod_scale=mod_scale,
+                           mod_label=mod_label,
+                           ModVar2Plot=ModVar2Plot,
+                           ylim=ylim,
+                           dfs_mod=dfs_mod,
+                           df_obs=df_obs,
+                           flight_ID=flight_ID,
+                           context=context,
+                           )
         # Save to PDF and close the plot
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
         plt.close()
@@ -5564,17 +5525,17 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, inc_GEOSChem=False,
         mod_scale = 1E9
         ylim = (10, 100)
         # Call timeseries plotter function
-        plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                   ObsVar2Plot=ObsVar2Plot,
-                                   mod_scale=mod_scale,
-                                   mod_label=mod_label,
-                                   ModVar2Plot=ModVar2Plot,
-                                   ylim=ylim,
-                                   dfs_mod=dfs_mod,
-                                   df_obs=df_obs,
-                                   flight_ID=flight_ID,
-                                   context=context,
-                                   )
+        plt_ts4ARNA_flight(var2plot=var2plot, units=units,
+                           ObsVar2Plot=ObsVar2Plot,
+                           mod_scale=mod_scale,
+                           mod_label=mod_label,
+                           ModVar2Plot=ModVar2Plot,
+                           ylim=ylim,
+                           dfs_mod=dfs_mod,
+                           df_obs=df_obs,
+                           flight_ID=flight_ID,
+                           context=context,
+                           )
         # Save to PDF and close the plot
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
         plt.close()
@@ -5594,18 +5555,18 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, inc_GEOSChem=False,
             if yscale == 'linear':
                 ylim = (-20, 400)
             # Call timeseries plotter function
-            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       ObsVar2Plot=ObsVar2Plot,
-                                       mod_scale=mod_scale,
-                                       mod_label=mod_label,
-                                       ModVar2Plot=ModVar2Plot,
-                                       ylim=ylim,
-                                       dfs_mod=dfs_mod,
-                                       df_obs=df_obs,
-                                       flight_ID=flight_ID,
-                                       yscale=yscale,
-                                       context=context,
-                                       )
+            plt_ts4ARNA_flight(var2plot=var2plot, units=units,
+                               ObsVar2Plot=ObsVar2Plot,
+                               mod_scale=mod_scale,
+                               mod_label=mod_label,
+                               ModVar2Plot=ModVar2Plot,
+                               ylim=ylim,
+                               dfs_mod=dfs_mod,
+                               df_obs=df_obs,
+                               flight_ID=flight_ID,
+                               yscale=yscale,
+                               context=context,
+                               )
             # Save to PDF and close the plot
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
             plt.close()
@@ -5627,18 +5588,18 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, inc_GEOSChem=False,
             if yscale == 'linear':
                 ylim = (-10, 200)
             # Call timeseries plotter function
-            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       ObsVar2Plot=ObsVar2Plot,
-                                       mod_scale=mod_scale,
-                                       mod_label=mod_label,
-                                       ModVar2Plot=ModVar2Plot,
-                                       ylim=ylim,
-                                       dfs_mod=dfs_mod,
-                                       df_obs=df_obs,
-                                       flight_ID=flight_ID,
-                                       yscale=yscale,
-                                       context=context,
-                                       )
+            plt_ts4ARNA_flight(var2plot=var2plot, units=units,
+                               ObsVar2Plot=ObsVar2Plot,
+                               mod_scale=mod_scale,
+                               mod_label=mod_label,
+                               ModVar2Plot=ModVar2Plot,
+                               ylim=ylim,
+                               dfs_mod=dfs_mod,
+                               df_obs=df_obs,
+                               flight_ID=flight_ID,
+                               yscale=yscale,
+                               context=context,
+                               )
             # Save to PDF and close the plot
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
             plt.close()
@@ -5660,18 +5621,18 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, inc_GEOSChem=False,
             if yscale == 'linear':
                 ylim = (-20, 400)
             # Call timeseries plotter function
-            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       ObsVar2Plot=ObsVar2Plot,
-                                       mod_scale=mod_scale,
-                                       mod_label=mod_label,
-                                       ModVar2Plot=ModVar2Plot,
-                                       ylim=ylim,
-                                       dfs_mod=dfs_mod,
-                                       df_obs=df_obs,
-                                       flight_ID=flight_ID,
-                                       yscale=yscale,
-                                       context=context,
-                                       )
+            plt_ts4ARNA_flight(var2plot=var2plot, units=units,
+                               ObsVar2Plot=ObsVar2Plot,
+                               mod_scale=mod_scale,
+                               mod_label=mod_label,
+                               ModVar2Plot=ModVar2Plot,
+                               ylim=ylim,
+                               dfs_mod=dfs_mod,
+                               df_obs=df_obs,
+                               flight_ID=flight_ID,
+                               yscale=yscale,
+                               context=context,
+                               )
             # Save to PDF and close the plot
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
             plt.close()
@@ -5693,18 +5654,18 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, inc_GEOSChem=False,
             if yscale == 'linear':
                 ylim = (-20, 70)
             # Call timeseries plotter function
-            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       ObsVar2Plot=ObsVar2Plot,
-                                       mod_scale=mod_scale,
-                                       mod_label=mod_label,
-                                       ModVar2Plot=ModVar2Plot,
-                                       ylim=ylim,
-                                       dfs_mod=dfs_mod,
-                                       df_obs=df_obs,
-                                       flight_ID=flight_ID,
-                                       yscale=yscale,
-                                       context=context,
-                                       )
+            plt_ts4ARNA_flight(var2plot=var2plot, units=units,
+                               ObsVar2Plot=ObsVar2Plot,
+                               mod_scale=mod_scale,
+                               mod_label=mod_label,
+                               ModVar2Plot=ModVar2Plot,
+                               ylim=ylim,
+                               dfs_mod=dfs_mod,
+                               df_obs=df_obs,
+                               flight_ID=flight_ID,
+                               yscale=yscale,
+                               context=context,
+                               )
             # Save to PDF and close the plot
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
             plt.close()
@@ -5726,18 +5687,18 @@ def plt_timeseries_comp4ARNA_flights(dpi=320, inc_GEOSChem=False,
             mod_scale = None
             yscale = 'linear'
             # Call timeseries plotter function
-            plt_timeseries4ARNA_flight(var2plot=var2plot, units=units,
-                                       ObsVar2Plot=ObsVar2Plot,
-                                       mod_scale=mod_scale,
-                                       mod_label=mod_label,
-                                       ModVar2Plot=ModVar2Plot,
-                                       ylim=ylim,
-                                       dfs_mod={mod_label: df_mod},
-                                       df_obs=df_obs,
-                                       flight_ID=flight_ID,
-                                       yscale=yscale,
-                                       context=context,
-                                       )
+            plt_ts4ARNA_flight(var2plot=var2plot, units=units,
+                               ObsVar2Plot=ObsVar2Plot,
+                               mod_scale=mod_scale,
+                               mod_label=mod_label,
+                               ModVar2Plot=ModVar2Plot,
+                               ylim=ylim,
+                               dfs_mod={mod_label: df_mod},
+                               df_obs=df_obs,
+                               flight_ID=flight_ID,
+                               yscale=yscale,
+                               context=context,
+                               )
             # Save to PDF and close the plot
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
             plt.close()
@@ -5871,9 +5832,7 @@ def quick_lat_plt_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
     # Setup figure and axis and plot
     if isinstance(fig, type(None)):
         fig = plt.figure(figsize=(12, 6))
-#        fig = plt.figure()
     if isinstance(ax, type(None)):
-        #        ax = fig.add_subplot(111, projection=projection, aspect='auto')
         ax = fig.add_subplot(111)
 #    if isinstance(xlim, type(None)):
 #        xlim = (ds.lat.values.min(), ds.lat.values.max())
@@ -5958,7 +5917,6 @@ def quick_lat_plt_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
     im = ds[var2plot2].plot.pcolormesh(x=LonVar, y=LevVar, ax=ax,
                                        vmin=vmin2, vmax=vmax2,
                                        zorder=1, alpha=alpha, cmap=cmap,
-                                       #                                 origin='lower',
                                        yincrease=True,
                                        cbar_kwargs=cbar_kwargs,
                                        cbar_ax=cbar_ax,

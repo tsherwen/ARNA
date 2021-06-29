@@ -444,7 +444,7 @@ def mv_plots2webfiles(dt=None, debug=True):
     host = "webfiles.york.ac.uk"  # hard-coded
     port = 22
     transport = paramiko.Transport((host, port))
-    password = "niangw?ndi"  # hard-coded
+    password = "niangw?ndi"  # hard-coded (NOTE: no longer valid now on GitHub)
     username = "chem631"  # hard-coded
     # Connect to webfiles
     transport.connect(username=username, password=password)
@@ -457,7 +457,6 @@ def mv_plots2webfiles(dt=None, debug=True):
     # Loop through files and directories to upload
     for path, directories, files in os.walk(folder):
         # What is the subroot for the folder?
-        #        dt_sub_path = dt_root_path + path.split( dt_str+'_test' )[-1] # TESTING!
         subfolder = path.split(dt_str)[-1].split('/plots/')[-1]
         dt_sub_path = '{}/{}/'.format(dt_root_path, subfolder)
         if debug:
@@ -908,7 +907,6 @@ def get_analysis_region(RegionName):
     """
     Function to store analysis regions extents (in degrees) for ARNA work
     """
-
     d = {
         # "context area"
         "context_area": {'x0': -40, 'x1': 30, 'y0': -5, 'y1': 45},
