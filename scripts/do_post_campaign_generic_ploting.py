@@ -21,9 +21,28 @@ def main():
                                      just_plot_GEOS_Chem=True,
                                      RunSet='FP-Nest', res='0.25x0.3125')
 
-    # Plot up ToF-CIMS data
+    # - Plot up ToF-CIMS data
+    # By alt
     ar.plt_comp_by_alt_4ARNA_flights_CIMS(context=context)
+    ar.plt_comp_by_alt_4ARNA_flights_CIMS(context=context,
+                                          RunSet='FP-Nest',
+                                          res='0.25x0.3125',
+                                          inc_GEOSChem=True,
+#                                                         flight_nums=flight_nums
+                                          )
+#                                          LatVar='LAT',
+#                                          LonVar='LON',)
+
     ar.plt_timeseries_comp4ARNA_flights_CIMS(context=context)
+    ar.plt_timeseries_comp4ARNA_flights_CIMS(context=context,
+                                             RunSet='FP-Nest',
+                                             res='0.25x0.3125',
+                                             inc_GEOSChem=True,
+                                             flight_nums=flight_nums,
+                                             LatVar='LAT',
+                                             LonVar='LON',)
+
+
 
     # Plot up nitrate aerosol data
     ar.plt_timeseries_comp4ARNA_flights_filters(context=context)
@@ -44,7 +63,6 @@ def main():
     # Plot up vertical velocity and Roll, amongst other core physical vars
     ar.plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(context=context)
     ar.plt_timeseries_comp4ARNA_flights_PHYSICAL_VARS(context=context,
-#                                                      flights_nums=[225],
                                                       just_plot_GEOS_Chem=True,
                                                       inc_GEOSChem=True,
                                                       res='0..25x0.3125',
@@ -54,13 +72,33 @@ def main():
 
     # Plot a comparison
     ar.plt_timeseries_comp4ARNA_flights_NOy_ALL(context=context)
+    ar.plt_timeseries_comp4ARNA_flights_NOy_ALL(context=context,
+                                                RunSet='FP-Nest',
+                                                res='0.25x0.3125',
+                                                inc_GEOSChem=True,
+#                                                flight_nums=flight_nums,
+                                                LatVar='LAT',
+                                                LonVar='LON',)
+
+
 
     # Plot up data for SLRs with and without dust
     ar.plt_comp_by_alt_4ARNA_all(just_SLR=False, context=context)
     ar.plt_comp_by_alt_4ARNA_all(just_SLR=True, context=context)
+
+    ar.plt_comp_by_alt_4ARNA_flights_CIMS(context=context,
+                                          RunSet='FP-Nest',
+                                          res='0.25x0.3125',
+                                          inc_GEOSChem=True,
+#                                          flight_nums=flight_nums,
+#                                          LatVar='LAT',
+#                                          LonVar='LON',
+                                          just_SLR=True)
+
     ar.plt_comp_by_alt_4ARNA_all_DUST(plt_model=False, context=context)
     ar.plt_comp_by_alt_4ARNA_all_DUST(plt_model=True, context=context)
     ar.plt_comp_by_alt_4ARNA_CIMS_all_DUST(context=context)
+
 
     # Evaluate the high resolution modelling region
     ar.evaluate_regional_grid4GEOSChem()
@@ -166,17 +204,23 @@ def explore_high_ozone_near_CVAO():
     ds = AC.get_GEOSChem_files_as_ds(wd=Folder)
 #    StateMet = AC.get_StateMet_ds(wd=Folder)
     ModelAlt = AC.gchemgrid('c_km_geos5')
+    prefix = 'SpeciesConc_'
+    specs2plot = [ i for i in ds.data_vars if prefix in i ]
+    specs2plot = [i.split(prefix)[-1] for i in specs2plot][::-1]
+#    specs2plot = ['O3', 'CO', 'NO2'][::-1]
 
-    specs2plot = ['O3', 'CO', 'NO2'][::-1]
-
-    #
-    font_scale=1
+    # Setup PDF to save PDF plots to
+    savetitle = 'ARNA_vertical_above_CVAO_GEOSChem_campaign_02'
+    pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
+    save2png = False
+    show_plot = False
+    font_scale = 1
     import seaborn as sns
     sns.color_palette('colorblind')
     sns.set_context(context)
     from funcs4obs import gaw_2_loc
-    prefix = 'SpeciesConc_'
-    for spec in specs2plot:
+#    for spec in specs2plot[:100]:
+    for spec in specs2plot[-100:]:
         site = 'CVO'
         lat, lon, alt, TZ = gaw_2_loc(site)
         ds_tmp = ds[prefix+spec].sel(lat=lat, lon=lon, method='nearest')
@@ -195,10 +239,20 @@ def explore_high_ozone_near_CVAO():
             plt.xlim(-0.05, 0.2)
         elif spec == 'CO':
             plt.xlim(40, 160)
-        save_str = 'ARNA_vertical_above_CVAO_GEOSChem_{}'
-        AC.save_plot( save_str.format( spec ) )
-        AC.close_plot()
+        if save2png:
+            save_str = 'ARNA_vertical_above_CVAO_GEOSChem_{}'
+            AC.save_plot( save_str.format( spec ) )
+            AC.close_plot()
+        else:
+            # Save to PDF
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+            if show_plot:
+                plt.show()
+            plt.close()
 
+    # - Save entire pdf
+    AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
+    plt.close('all')
 
 
 
