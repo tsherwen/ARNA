@@ -25,13 +25,9 @@ import seaborn as sns
 import matplotlib.ticker as mticker
 import cartopy.crs as ccrs
 from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
-#from cartopy.mpl.ticker import LatitudeFormatter, LongitudeFormatter
-#from cartopy.mpl.ticker import LatitudeLocator, LongitudeLocator
 from shapely.geometry.polygon import LinearRing
 import matplotlib
-
-# import local ARNA module functions
-#from . GEOS_Chem import get_GEOSChem4flightnum
+# Import local ARNA module functions
 from . GEOS import *
 from . GEOS_Chem import *
 from . core import *
@@ -175,6 +171,7 @@ def plt_smaller_area_around_CVAO(ds, LonVar='lon',
 
 def plot_individual_spec_alt_slices(ds, folder='./',
                                     extr_title_str=None,
+                                    testing_mode=False,
                                     vars2use=None):
     """
     Plot up other core species individually
@@ -192,7 +189,8 @@ def plot_individual_spec_alt_slices(ds, folder='./',
             LaTeX_spec = var2plot
         # Then loop by times in output
         dts = AC.dt64_2_dt( ds.time.values )
-#        for n_time, t in enumerate( dts[:3] ): # unhash if testing
+        if testing_mode:
+            dts = dts[:3]
         for n_time, t in enumerate( dts ):
             # Sub select for time
             ds_tmp = ds[[var2plot]].sel(time=ds.time.values[n_time])
@@ -201,8 +199,10 @@ def plot_individual_spec_alt_slices(ds, folder='./',
             date_str = date_str.format(t.year, t.month, t.day, t.hour,
                                        t.minute)
             title_date = t.strftime('%Y/%m/%d %H:%M')
-            for lev2use in ds.lev.values:
-#            for lev2use in ds.lev.values[:2]: # unhash if testing
+            levs2use = ds.lev.values:
+            if testing_mode:
+                levs2use = levs2use[:3]
+            for lev2use in levs2use:
                 print( var2plot, lev2use, title_date)
                 ds_tmpII = ds_tmp[[var2plot]].sel(lev=lev2use)
                 # Setup a string for the title
@@ -227,8 +227,6 @@ def plot_individual_spec_alt_slices(ds, folder='./',
                 del ds_tmpII
             del ds_tmp
             gc.collect()
-
-
 
 
 def plot_up_latitudinally_sampled_locs(ds, var2use='noy', extents=None,
@@ -273,14 +271,13 @@ def plot_up_latitudinally_sampled_locs(ds, var2use='noy', extents=None,
     LatVar = 'lat'
     LonVar = 'lon'
     ds[var2use].plot.imshow(x=LonVar, y=LatVar, ax=ax,
-                             transform=ccrs.PlateCarree())
+                            transform=ccrs.PlateCarree())
     # Now plot as a linear ring
     lons = (-15, -30, -30, -15)
     lats2plot = [12, 13, 14, 15, 16, 17]
     for lat in lats2plot:
         # Set lats
         lats = (lat, lat+0.125, lat+0.125, lat)
-        #
         ring = LinearRing(list(zip(lons, lats)))
         ax.add_geometries([ring], ccrs.PlateCarree(),
                           facecolor='none', edgecolor='green',
@@ -1497,7 +1494,6 @@ def quick_map_plt_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
         plt.show()
 
 
-
 def quick_lon_plot_2layer(ds, var2plot1=None, var2plot2=None, extra_str='',
                           save_plot=True, show_plot=False, savename=None,
                           units=None, title=None, folder=None,
@@ -2575,7 +2571,10 @@ def plt_comp_by_alt_4ARNA_flights(dpi=320, just_SLR=True, show_plot=False,
 
 
 def plt_comp_by_alt_4ARNA_flights_CIMS(dpi=320, just_SLR=False,
-                                       show_plot=False, flight_nums=[],
+                                       show_plot=False,
+                                       RunSet=None, res='4x5', flight_nums=[],
+                                       just_plot_GEOS_Chem=False,
+                                       inc_GEOSChem=False,
                                        context="paper", font_scale=0.75):
     """
     Plot up altitude binned comparisons between core obs. and model data
@@ -2594,13 +2593,6 @@ def plt_comp_by_alt_4ARNA_flights_CIMS(dpi=320, just_SLR=False,
     flight_IDs = [ 'C{}'.format(i) for i in flight_nums ]
 
     # - Loop by flight and retrieve the files as dataframes (mod + obs)
-    # Model
-    dfs_mod = {}
-    for flight_ID in flight_IDs:
-        df = get_GEOSCF4flightnum(flight_ID=flight_ID)
-#        df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
-        dfs_mod[flight_ID] = df
-
     # Observations
     dfs_obs = {}
     for flight_ID in flight_IDs:
@@ -2608,16 +2600,66 @@ def plt_comp_by_alt_4ARNA_flights_CIMS(dpi=320, just_SLR=False,
         df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
         dfs_obs[flight_ID] = df
 
+    # Model
+    dfs_mod_CF = {}
+    for flight_ID in flight_IDs:
+        df = get_GEOSCF4flightnum(flight_ID=flight_ID)
+        df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
+        dfs_mod_CF[flight_ID] = df
+
+    # Model - GEOS-Chem (offline)
+    if inc_GEOSChem:
+#        RunSet='MERRA2-0.5-initial'
+#        res='0.5x0.625'
+#        RunSet='MERRA2-BC'
+#        res='4x5'
+#        RunSet='FP-Nest'
+#        res='0.25x0.3125'
+        dfs_mod_GC = {}
+        for flight_ID in flight_IDs:
+            dfs = get_GEOSChem4flightnum(flight_ID=flight_ID, res=res,
+                                         RunSet=RunSet,)
+            for key in dfs.keys():
+                df = dfs[key]
+                df = add_derived_FAAM_flags2df4flight(df=df,
+                                                      flight_ID=flight_ID)
+                dfs[key] = df
+            dfs_mod_GC[flight_ID] = dfs
+            del dfs
+
+
     # -  Now plot up
     for flight_ID in flight_IDs:
         print(flight_ID)
         # Get observations and model timeseries data as a DataFrame
         df_obs = dfs_obs[flight_ID]
-        df_mod = dfs_mod[flight_ID]
+#        df_mod = dfs_mod[flight_ID]
+        df_mod_CF = dfs_mod_CF[flight_ID]
+        if inc_GEOSChem:
+            if just_plot_GEOS_Chem:
+                dfs_mod = dfs_mod_GC[flight_ID]
+                mod_label_master = RunSet
+
+            else:
+                dfs_mod_GC4flight = dfs_mod_GC[flight_ID]
+                dfs_mod = {'GEOS-CF':df_mod_CF}
+                for key in list(dfs_mod_GC4flight.keys()):
+                    dfs_mod[key] = dfs_mod_GC4flight[key]
+                mod_label_master = 'GEOS-CF'
+
+        else:
+            mod_label_master = 'GEOS-CF'
+            dfs_mod = {'GEOS-CF':df_mod_CF}
+        print(('!'*30, mod_label_master, dfs_mod.keys()))
+
         # Only consider data during SLRs?
         if just_SLR:
             df_obs = df_obs.loc[df_obs['IS_SLR'] == True, :]
-            df_mod = df_mod.loc[df_mod['IS_SLR'] == True, :]
+#            df_mod = df_mod.loc[df_mod['IS_SLR'] == True, :]
+            for key in dfs_mod.keys():
+                df_mod = dfs_mod[key]
+                df_mod = df_mod.loc[df_mod['IS_SLR'] == True, :]
+                dfs_mod[key] = df_mod
             extr_str = '_JUST_SLR'
         else:
             extr_str = ''
@@ -2637,15 +2679,35 @@ def plt_comp_by_alt_4ARNA_flights_CIMS(dpi=320, just_SLR=False,
         # Force alt to be in units of km
         ALT_var = 'Altitude (km)'
         Y_unit = ALT_var
-        df_mod[ALT_var] = AC.hPa_to_Km( df_mod['model-lev'].values )
+#        df_mod[ALT_var] = AC.hPa_to_Km( df_mod['model-lev'].values )
+        key4GEOSCF = 'GEOS-CF'
+        for key in dfs_mod.keys():
+#        if key in dfs_mod.keys():
+            df_mod = dfs_mod[key]
+            if key4GEOSCF == key:
+                df_mod[ALT_var] = AC.hPa_to_Km( df_mod['model-lev'].values )
+            else:
+                df_mod[ALT_var] =  AC.hPa_to_Km( df_mod['PRESS'].values )
+            dfs_mod[key] = df_mod
         df_obs[ALT_var] = df_obs['ALT_GIN'].values / 1E3
-        #
-        data_d = {'GEOS-CF': df_mod, 'Obs.':df_obs}
+        # Online consider offline model output?
+        if just_plot_GEOS_Chem:
+#            GEOSChem_varname = sorted(list(dfs_mod.keys())
+            GCvarname = 'FP-Nest'
+            data_d = {GCvarname: dfs_mod[GCvarname], 'Obs.':df_obs}
+        else:
+            data_d = AC.merge_two_dicts(dfs_mod, {'Obs.':df_obs})
+        print('Plotting model runs: ', data_d.keys())
+#        data_d = {'GEOS-CF': df_mod, 'Obs.':df_obs}
 
         # - Now plot up flight time series plots by variable
         title_str =  "Altitude binned '{}' ({}) during flight '{}'"
         # Setup color dictinoary
         color_dict = {'GEOS-CF': 'red', 'Obs.':'k'}
+        CB_color_cycle = AC.get_CB_color_cycle()
+        for n_key, key in enumerate(list(data_d.keys())):
+            if key not in color_dict.keys():
+                color_dict[key] = CB_color_cycle[n_key]
         unit_d = {}
         mod2obs_varnames = {
         'BrO':'BrO',
@@ -3186,7 +3248,6 @@ def plt_timeseries4ARNA_flight_point_obs(df_obs=None, df_mod=None,
     plt.xlim(xylim_min, xylim_max)
     ax.set_xticks(xticks)
     ax.set_xticklabels(xticks_labels, rotation=45)
-#    print(xticks_labels)
     # Invert the second y-axis
     if plt_alt_as_shadow:
         # Add a shadow of the altitude
@@ -3266,6 +3327,11 @@ def add_secs2duplicate_index_values(df):
 
 def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, context='paper',
                                           flight_nums=[],
+                                          RunSet=None, res='4x5',
+                                          just_plot_GEOS_Chem=False,
+                                          inc_GEOSChem=False,
+                                          LatVar='model-lat',
+                                          LonVar='model-lon',
                                           show_plot=False):
     """
     Plot up timeseries comparisons between core observations and model data
@@ -3292,12 +3358,36 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, context='paper',
     flight_IDs = [ 'C{}'.format(i) for i in flight_nums ]
     # - Loop by flight and retrieve the files as dataframes (mod + obs)
     # Model
-    dfs_mod = {}
+#     dfs_mod = {}
+#     for flight_ID in flight_IDs:
+#         df = get_GEOSCF4flightnum(flight_ID=flight_ID)
+#         # Add the derived variables to the dataframe
+#         df = add_deriv_vars2df(df=df)
+#         dfs_mod[flight_ID] = df
+
+
+    dfs_mod_CF = {}
     for flight_ID in flight_IDs:
         df = get_GEOSCF4flightnum(flight_ID=flight_ID)
         # Add the derived variables to the dataframe
         df = add_deriv_vars2df(df=df)
-        dfs_mod[flight_ID] = df
+        dfs_mod_CF[flight_ID] = df
+
+    # Model - GEOS-Chem (offline)
+    if inc_GEOSChem:
+#        RunSet='MERRA2-0.5-initial'
+#        res='0.5x0.625'
+#        RunSet='MERRA2-BC'
+#        res='4x5'
+#        RunSet='FP-Nest'
+#        res='0.25x0.3125'
+        dfs_mod_GC = {}
+        for flight_ID in flight_IDs:
+            df = get_GEOSChem4flightnum(flight_ID=flight_ID,res=res,
+                                        RunSet=RunSet,)
+            # Add the derived variables to the dataframe
+            df = add_deriv_vars2df(df=df)
+            dfs_mod_GC[flight_ID] = df
 
     # Observations
     dfs_obs = {}
@@ -3310,14 +3400,32 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, context='paper',
     for flight_ID in flight_IDs:
         print(flight_ID)
         # Get observations and model timeseries data as a DataFrame
+#        df_obs = dfs_obs[flight_ID]
+#        df_mod = dfs_mod[flight_ID]
         df_obs = dfs_obs[flight_ID]
-        df_mod = dfs_mod[flight_ID]
+        df_mod_CF = dfs_mod_CF[flight_ID]
+        if inc_GEOSChem:
+            if just_plot_GEOS_Chem:
+                dfs_mod = dfs_mod_GC[flight_ID]
+                mod_label_master = RunSet
+
+            else:
+                dfs_mod_GC4flight = dfs_mod_GC[flight_ID]
+                dfs_mod = {'GEOS-CF':df_mod_CF}
+                for key in list(dfs_mod_GC4flight.keys()):
+                    dfs_mod[key] = dfs_mod_GC4flight[key]
+                mod_label_master = 'GEOS-CF'
+
+        else:
+            mod_label_master = 'GEOS-CF'
+            dfs_mod = {'GEOS-CF':df_mod_CF}
         # Setup PDF to save PDF plots to
         savetitle = 'ARNA_timeseries_flighttrack_{}_CIMS'.format(flight_ID)
         pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
         # - Plot up location of flights
         try:
-            plt_flightpath_spatially_over_CVAO(df=df_obs, flight_ID=flight_ID)
+            plt_flightpath_spatially_over_CVAO(df=df_obs, flight_ID=flight_ID,
+                                               LatVar=LatVar, LonVar=LonVar,)
             # Save to PDF
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
             plt.close()
@@ -3331,7 +3439,7 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, context='paper',
             var2plot = 'BrO'
             ObsVar2Plot = 'BrO'
             ModVar2Plot = 'BrO'
-            mod_label = 'GEOS-CF'
+            mod_label = mod_label_master
             mod_scale = 1E12
             ylim = (-0.2, 1)
             # Call timeseries plotter function
@@ -3341,7 +3449,8 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, context='paper',
                                        mod_label=mod_label,
                                        ModVar2Plot=ModVar2Plot,
                                        ylim=ylim,
-                                       dfs_mod={mod_label:df_mod},
+#                                       dfs_mod={mod_label:df_mod},
+                                       dfs_mod=dfs_mod,
                                        df_obs=df_obs,
                                        flight_ID=flight_ID,
                                        context=context,
@@ -3359,7 +3468,7 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, context='paper',
             var2plot = 'HNO3'
             ObsVar2Plot = 'HNO3'
             ModVar2Plot = 'HNO3'
-            mod_label = 'GEOS-CF'
+            mod_label = mod_label_master
             mod_scale = 1E12
             ylim = (-30, 1500)
             # Call timeseries plotter function
@@ -3369,7 +3478,8 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, context='paper',
                                        mod_label=mod_label,
                                        ModVar2Plot=ModVar2Plot,
                                        ylim=ylim,
-                                       dfs_mod={mod_label:df_mod},
+#                                       dfs_mod={mod_label:df_mod},
+                                       dfs_mod=dfs_mod,
                                        df_obs=df_obs,
                                        flight_ID=flight_ID,
                                        context=context,
@@ -3387,7 +3497,7 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, context='paper',
             var2plot = 'HONO'
             ObsVar2Plot = 'HONO'
             ModVar2Plot = 'HNO2'
-            mod_label = 'GEOS-CF'
+            mod_label = mod_label_master
             mod_scale = 1E12
             ylim = (-10, 25)
             # Call timeseries plotter function
@@ -3397,7 +3507,8 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, context='paper',
                                        mod_label=mod_label,
                                        ModVar2Plot=ModVar2Plot,
                                        ylim=ylim,
-                                       dfs_mod={mod_label:df_mod},
+#                                       dfs_mod={mod_label:df_mod},
+                                       dfs_mod=dfs_mod,
                                        df_obs=df_obs,
                                        flight_ID=flight_ID,
                                        context=context,
@@ -3415,7 +3526,7 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, context='paper',
             var2plot = 'HCN'
             ObsVar2Plot = 'HCN'
             ModVar2Plot = None
-            mod_label = 'GEOS-CF'
+            mod_label = mod_label_master
             mod_scale = None
             ylim = (-10, 120)
             # Call timeseries plotter function
@@ -3425,7 +3536,8 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, context='paper',
                                        mod_label=mod_label,
                                        ModVar2Plot=ModVar2Plot,
                                        ylim=ylim,
-                                       dfs_mod={mod_label:df_mod},
+#                                       dfs_mod={mod_label:df_mod},
+                                       dfs_mod=dfs_mod,
                                        df_obs=df_obs,
                                        flight_ID=flight_ID,
                                        context=context,
@@ -3444,7 +3556,7 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, context='paper',
             var2plot = 'HCN'
             ObsVar2Plot = 'HCN'
             ModVar2Plot = None
-            mod_label = 'GEOS-CF'
+            mod_label = mod_label_master
             mod_scale = None
             ylim = (-10, 120)
             title_str =  "Timeseries of '{}' ({}) during flight '{}' - {}"
@@ -3457,7 +3569,8 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, context='paper',
                                        mod_label=mod_label,
                                        ModVar2Plot=ModVar2Plot,
                                        ylim=ylim,
-                                       dfs_mod={mod_label:df_mod},
+#                                       dfs_mod={mod_label:df_mod},
+                                       dfs_mod=dfs_mod,
                                        df_obs=df_obs,
                                        flight_ID=flight_ID,
                                        plt_legend=False,
@@ -3494,7 +3607,7 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, context='paper',
             var2plot = 'HCN'
             ObsVar2Plot = 'HCN'
             ModVar2Plot = None
-            mod_label = 'GEOS-CF'
+            mod_label = mod_label_master
             mod_scale = None
             ylim = (-10, 120)
             title_str =  "Timeseries of '{}' ({}) during flight '{}' - {}"
@@ -3507,7 +3620,8 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, context='paper',
                                        mod_label=mod_label,
                                        ModVar2Plot=ModVar2Plot,
                                        ylim=ylim,
-                                       dfs_mod={mod_label:df_mod},
+#                                       dfs_mod={mod_label:df_mod},
+                                       dfs_mod=dfs_mod,
                                        df_obs=df_obs,
                                        flight_ID=flight_ID,
                                        plt_legend=False,
@@ -3544,7 +3658,7 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, context='paper',
             var2plot = 'HCN'
             ObsVar2Plot = 'HCN'
             ModVar2Plot = None
-            mod_label = 'GEOS-CF'
+            mod_label = mod_label_master
             mod_scale = None
             ylim = (-10, 120)
             title_str =  "Timeseries of '{}' ({}) during flight '{}' - {}"
@@ -3557,7 +3671,8 @@ def plt_timeseries_comp4ARNA_flights_CIMS(dpi=320, context='paper',
                                        mod_label=mod_label,
                                        ModVar2Plot=ModVar2Plot,
                                        ylim=ylim,
-                                       dfs_mod={mod_label:df_mod},
+#                                       dfs_mod={mod_label:df_mod},
+                                       dfs_mod=dfs_mod,
                                        df_obs=df_obs,
                                        flight_ID=flight_ID,
                                        plt_legend=False,
@@ -4085,7 +4200,14 @@ def plt_timeseries_comp4MOYA_flights_PHYSICAL_VARS(dpi=320, show_plot=False,
 
 def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
                                              flight_nums=[],
+                                             res='4x5', RunSet=None,
+                                             inc_GEOSChem=False,
+                                             just_plot_GEOS_Chem=False,
+                                             LatVar='model-lat',
+                                             LonVar='model-lon',
+                                             plt_alt_as_shadow=False,
                                              debug=False, context='paper'):
+
     """
     Plot up timeseries comparisons between filter samples and model data
     """
@@ -4113,19 +4235,65 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
     data = dfs_obs[SO4_obs_var].values
     dfs_obs[SO4_obs_var] = AC.convert_ug_per_m3_2_ppbv(data, spec='SO4')*1E3
     # Setup dictionary of Model (GEOS-CF) dataframes
-    dfs_mod = {}
-    dfs_mod_period = {}
+
+    # Model
+    dfs_mod_CF = {}
+#    dfs_mod_CF_period = {}
     for flight_ID in flight_IDs:
         df = get_GEOSCF4flightnum(flight_ID=flight_ID)
+        # Add the derived variables to the dataframe
         df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
+        df = add_deriv_vars2df(df=df)
+        # Extra actions for this specific function
         df['flight_ID'] = flight_ID
-        dfs_mod[flight_ID] = df.copy()
+        dfs_mod_CF[flight_ID] = df.copy()
         # Just consider values during filer observation period
-        FILTERdf = dfs_obs.loc[ dfs_obs['Flight']==flight_ID, :]
-        df = only_consider_data_during_filter_times(df=df,
-                                                    FILTERdf=FILTERdf,
-                                                    flight_ID=flight_ID)
-        dfs_mod_period[flight_ID] = df
+#        FILTERdf = dfs_obs.loc[ dfs_obs['Flight']==flight_ID, :]
+#        df = only_consider_data_during_filter_times(df=df,
+#                                                    FILTERdf=FILTERdf,
+#                                                    flight_ID=flight_ID)
+#        dfs_mod_CF_period[flight_ID] = df
+
+        dfs_mod_CF[flight_ID] = df
+        mod_label_master = 'GEOS-CF'
+
+#     dfs_mod = {}
+#     dfs_mod_period = {}
+#     for flight_ID in flight_IDs:
+#         df = get_GEOSCF4flightnum(flight_ID=flight_ID)
+#         df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
+#         df['flight_ID'] = flight_ID
+#         dfs_mod[flight_ID] = df.copy()
+#         # Just consider values during filer observation period
+#         FILTERdf = dfs_obs.loc[ dfs_obs['Flight']==flight_ID, :]
+#         df = only_consider_data_during_filter_times(df=df,
+#                                                     FILTERdf=FILTERdf,
+#                                                     flight_ID=flight_ID)
+#         dfs_mod_period[flight_ID] = df
+
+
+    # Model - GEOS-Chem (offline)
+    if inc_GEOSChem:
+        mod_label_master = RunSet
+        dfs_mod_GC = {}
+#        dfs_mod_GC_period = {}
+        for flight_ID in flight_IDs:
+            dfs = get_GEOSChem4flightnum(flight_ID=flight_ID, res=res,
+                                         RunSet=RunSet,)
+            for key in dfs.keys():
+                df = dfs[key]
+                df = add_derived_FAAM_flags2df4flight(df=df,
+                                                      flight_ID=flight_ID)
+                df = add_deriv_vars2df(df=df)
+                dfs[key] = df
+            dfs_mod_GC[flight_ID] = dfs
+
+    # KLUDGE -  just plot GEOS-Chem for now
+    # (previously just plotted just GEOS-CF)
+    print('WARNING: TODO setup to plot multiple model runs')
+    dfs_mod = dfs_mod_GC
+#    dfs_mod_period = dfs_mod_GC_period
+
     # Setup dictionary of Observation (CIMS) dataframes
     dfs_CIMS = {}
     dfs_CIMS_period = {}
@@ -4168,12 +4336,39 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
                                           )
         dfs_obs_NOy[flight_ID] = df
 
+    # KLUDGE -  just plot GEOS-Chem for now
+    # (previously just plotted just GEOS-CF)
+    print('WARNING: TODO setup to plot multiple model runs')
+    dfs_mod = dfs_mod_GC
+
+    # Only consider the model for the observation (filter) period
+    dfs_mod_period = {}
+    for flight_ID in flight_IDs:
+        # Get observations and model timeseries data as a DataFrame
+        df_obs = dfs_obs.loc[ dfs_obs['Flight']==flight_ID, :]
+#        df_mod = dfs_mod[flight_ID]
+        # Kludge! force use of single set of model output for now...
+        print('WARNING: TODO setup to plot multiple model runs')
+        ModelVarName = list(dfs_mod[flight_ID].keys())[0]
+        dfs_mod4flight = dfs_mod[flight_ID]#[ModelVarName]
+        for key in dfs_mod4flight.keys():
+            df_mod = dfs_mod4flight[key]
+            df_mod = only_consider_data_during_filter_times(df=df_mod,
+                                                            FILTERdf=df_obs,
+                                                           flight_ID=flight_ID)
+            dfs_mod4flight[key] = df_mod
+        dfs_mod_period[flight_ID] = dfs_mod4flight
+
+
     # -  Now plot up
     for flight_ID in flight_IDs:
         print(flight_ID)
         # Get observations and model timeseries data as a DataFrame
         df_obs = dfs_obs.loc[ dfs_obs['Flight']==flight_ID, :]
-        df_mod = dfs_mod[flight_ID]
+        print('WARNING: TODO setup to plot multiple model runs')
+#        df_mod = dfs_mod[flight_ID]
+        df_mod = dfs_mod[flight_ID][ModelVarName]
+
         df_mod_period = dfs_mod_period[flight_ID]
         df_obs_NOy = dfs_obs_NOy[flight_ID]
         df_CIMS_period = dfs_CIMS_period[flight_ID]
@@ -4186,8 +4381,8 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
         pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
         # - Plot up location of flights
         plt_flightpath_spatially_over_CVAO(df=df_mod, flight_ID=flight_ID,
-                                           LatVar='model-lat',
-                                           LonVar='model-lon',
+                                           LatVar=LatVar,
+                                           LonVar=LonVar,
                                            )
         # Save to PDF
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
@@ -4200,7 +4395,7 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
         var2plot = 'NOy'
         ModVar2Plot = 'NOy'
         ObsVar2Plot = 'NOy'
-        mod_label = 'GEOS-CF'
+        mod_label = mod_label_master
         mod_scale = 1E12
         ObsVar2PlotErr = None
         plt_errorbar = False
@@ -4213,8 +4408,12 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
                                               mod_label=mod_label,
                                               ModVar2Plot=ModVar2Plot,
                                               ylim=ylim,
-                                              df_mod=df_mod, df_obs=df_obs_NOy,
-                                              df_mod_period=df_mod_period,
+#                                              df_mod=df_mod,
+                                              dfs_mod=dfs_mod[flight_ID],
+                                              df_obs=df_obs_NOy,
+#                                              df_mod_period=df_mod_period,
+                                      dfs_mod_period=dfs_mod_period[flight_ID],
+                                          plt_alt_as_shadow=plt_alt_as_shadow,
                                               flight_ID=flight_ID,
                                               ObsVar2PlotErr=ObsVar2PlotErr,
                                               plt_errorbar=plt_errorbar,
@@ -4229,7 +4428,7 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
         var2plot = 'NOy (model-HNO3)'
         ModVar2Plot = 'NOy-HNO3'
         ObsVar2Plot = 'NOy'
-        mod_label = 'GEOS-CF'
+        mod_label = mod_label_master
         mod_scale = 1E12
         ObsVar2PlotErr = None
         plt_errorbar = False
@@ -4242,8 +4441,12 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
                                               mod_label=mod_label,
                                               ModVar2Plot=ModVar2Plot,
                                               ylim=ylim,
-                                              df_mod=df_mod, df_obs=df_obs_NOy,
-                                              df_mod_period=df_mod_period,
+#                                              df_mod=df_mod,
+                                              dfs_mod=dfs_mod[flight_ID],
+                                              df_obs=df_obs_NOy,
+#                                              df_mod_period=df_mod_period,
+                                      dfs_mod_period=dfs_mod_period[flight_ID],
+                                          plt_alt_as_shadow=plt_alt_as_shadow,
                                               flight_ID=flight_ID,
                                               ObsVar2PlotErr=ObsVar2PlotErr,
                                               plt_errorbar=plt_errorbar,
@@ -4258,7 +4461,7 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
         var2plot = 'NOy (model-HNO3-PAN)'
         ModVar2Plot = 'NOy-HNO3'
         ObsVar2Plot = 'NOy'
-        mod_label = 'GEOS-CF'
+        mod_label = mod_label_master
         mod_scale = 1E12
         ObsVar2PlotErr = None
         plt_errorbar = False
@@ -4271,8 +4474,12 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
                                               mod_label=mod_label,
                                               ModVar2Plot=ModVar2Plot,
                                               ylim=ylim,
-                                              df_mod=df_mod, df_obs=df_obs_NOy,
-                                              df_mod_period=df_mod_period,
+#                                              df_mod=df_mod,
+                                              dfs_mod=dfs_mod[flight_ID],
+                                              df_obs=df_obs_NOy,
+#                                              df_mod_period=df_mod_period,
+                                      dfs_mod_period=dfs_mod_period[flight_ID],
+                                          plt_alt_as_shadow=plt_alt_as_shadow,
                                               flight_ID=flight_ID,
                                               ObsVar2PlotErr=ObsVar2PlotErr,
                                               plt_errorbar=plt_errorbar,
@@ -4287,7 +4494,7 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
         var2plot = 'NOy (NOx+HONO+NIT(s))'
         ModVar2Plot = 'NOy-Limited'
         ObsVar2Plot = 'NOy'
-        mod_label = 'GEOS-CF'
+        mod_label = mod_label_master
         mod_scale = 1E12
         ObsVar2PlotErr = None
         plt_errorbar = False
@@ -4300,8 +4507,12 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
                                               mod_label=mod_label,
                                               ModVar2Plot=ModVar2Plot,
                                               ylim=ylim,
-                                              df_mod=df_mod, df_obs=df_obs_NOy,
-                                              df_mod_period=df_mod_period,
+#                                              df_mod=df_mod,
+                                              dfs_mod=dfs_mod[flight_ID],
+                                              df_obs=df_obs_NOy,
+#                                              df_mod_period=df_mod_period,
+                                      dfs_mod_period=dfs_mod_period[flight_ID],
+                                          plt_alt_as_shadow=plt_alt_as_shadow,
                                               flight_ID=flight_ID,
                                               ObsVar2PlotErr=ObsVar2PlotErr,
                                               plt_errorbar=plt_errorbar,
@@ -4317,7 +4528,7 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
         var2plot = 'NOy (NOx+HONO+NIT(s))'
         ModVar2Plot = 'NOy-Limited'
         ObsVar2Plot = 'NOy'
-        mod_label = 'GEOS-CF'
+        mod_label = mod_label_master
         mod_scale = 1E12
         ObsVar2PlotErr = None
         plt_errorbar = False
@@ -4330,8 +4541,12 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
                                               mod_label=mod_label,
                                               ModVar2Plot=ModVar2Plot,
                                               ylim=ylim,
-                                              df_mod=df_mod, df_obs=df_obs_NOy,
-                                              df_mod_period=df_mod_period,
+#                                              df_mod=df_mod,
+                                              dfs_mod=dfs_mod[flight_ID],
+                                              df_obs=df_obs_NOy,
+#                                              df_mod_period=df_mod_period,
+                                      dfs_mod_period=dfs_mod_period[flight_ID],
+                                          plt_alt_as_shadow=plt_alt_as_shadow,
                                               flight_ID=flight_ID,
                                               ObsVar2PlotErr=ObsVar2PlotErr,
                                               plt_errorbar=plt_errorbar,
@@ -4347,7 +4562,7 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
             var2plot = 'HONO'
             ModVar2Plot = 'HNO2'
             ObsVar2Plot = 'HONO'
-            mod_label = 'GEOS-CF'
+            mod_label = mod_label_master
             mod_scale = 1E12
             ObsVar2PlotErr = None
             plt_errorbar = False
@@ -4364,9 +4579,12 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
                                                  mod_label=mod_label,
                                                  ModVar2Plot=ModVar2Plot,
                                                  ylim=ylim,
-                                                 df_mod=df_mod,
+#                                                 df_mod=df_mod,
+                                              dfs_mod=dfs_mod[flight_ID],
                                                  df_obs=df_CIMS_period,
-                                                 df_mod_period=df_mod_period,
+#                                                 df_mod_period=df_mod_period,
+                                      dfs_mod_period=dfs_mod_period[flight_ID],
+                                          plt_alt_as_shadow=plt_alt_as_shadow,
                                                  flight_ID=flight_ID,
                                                  ObsVar2PlotErr=ObsVar2PlotErr,
                                                  plt_errorbar=plt_errorbar,
@@ -4385,7 +4603,7 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
             var2plot = 'HNO3'
             ModVar2Plot = 'HNO3'
             ObsVar2Plot = 'HNO3'
-            mod_label = 'GEOS-CF'
+            mod_label = mod_label_master
             mod_scale = 1E12
             ObsVar2PlotErr = None
             plt_errorbar = False
@@ -4402,9 +4620,12 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
                                                   mod_label=mod_label,
                                                   ModVar2Plot=ModVar2Plot,
                                                   ylim=ylim,
-                                                  df_mod=df_mod,
+#                                                  df_mod=df_mod,
+                                              dfs_mod=dfs_mod[flight_ID],
                                                   df_obs=df_CIMS_period,
-                                                  df_mod_period=df_mod_period,
+#                                                  df_mod_period=df_mod_period,
+                                      dfs_mod_period=dfs_mod_period[flight_ID],
+                                          plt_alt_as_shadow=plt_alt_as_shadow,
                                                   flight_ID=flight_ID,
                                                  ObsVar2PlotErr=ObsVar2PlotErr,
                                                   plt_errorbar=plt_errorbar,
@@ -4423,7 +4644,7 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
             var2plot = 'HONO'
             ObsVar2Plot = 'hono_mr'
             ModVar2Plot = 'HNO2'
-            mod_label = 'GEOS-CF'
+            mod_label = mod_label_master
             mod_scale = 1E12
 #            yscale = 'log'
 #             yscale = 'linear'
@@ -4445,9 +4666,12 @@ def plt_timeseries_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
                                                  mod_label=mod_label,
                                                  ModVar2Plot=ModVar2Plot,
                                                  ylim=ylim,
-                                                 df_mod=df_mod,
+#                                                 df_mod=df_mod,
+                                              dfs_mod=dfs_mod[flight_ID],
                                                  df_obs=df_FAAM_period,
-                                                 df_mod_period=df_mod_period,
+#                                                 df_mod_period=df_mod_period,
+                                      dfs_mod_period=dfs_mod_period[flight_ID],
+                                          plt_alt_as_shadow=plt_alt_as_shadow,
                                                  flight_ID=flight_ID,
                                                  ObsVar2PlotErr=ObsVar2PlotErr,
                                                  plt_errorbar=plt_errorbar,
@@ -4473,6 +4697,7 @@ def plt_timeseries_comp4ARNA_flights_filters(dpi=320, show_plot=False,
                                              just_plot_GEOS_Chem=False,
                                              LatVar='model-lat',
                                              LonVar='model-lon',
+                                             plt_alt_as_shadow=False,
                                              debug=False, context='paper'):
     """
     Plot up timeseries comparisons between filter samples and model data
@@ -4618,6 +4843,7 @@ def plt_timeseries_comp4ARNA_flights_filters(dpi=320, show_plot=False,
 #                                              df_mod_period=df_mod_period,
 #                                              dfs_mod_period=dfs_mod_period,
                                       dfs_mod_period=dfs_mod_period[flight_ID],
+                                          plt_alt_as_shadow=plt_alt_as_shadow,
                                               flight_ID=flight_ID,
                                               ObsVar2PlotErr=ObsVar2PlotErr,
                                               plt_errorbar=plt_errorbar,
@@ -4651,6 +4877,7 @@ def plt_timeseries_comp4ARNA_flights_filters(dpi=320, show_plot=False,
 #                                              df_mod_period=df_mod_period,
 #                                              dfs_mod_period=dfs_mod_period,
                                       dfs_mod_period=dfs_mod_period[flight_ID],
+                                          plt_alt_as_shadow=plt_alt_as_shadow,
                                               flight_ID=flight_ID,
                                               ObsVar2PlotErr=ObsVar2PlotErr,
                                               plt_errorbar=plt_errorbar,
