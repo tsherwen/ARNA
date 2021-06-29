@@ -399,6 +399,21 @@ def get_CIMS_data4flight(flight_ID='C225', resample_data=True, debug=False):
     return dfM
 
 
+def get_CIMS_data4flight_TEMP_LOWER():
+    """
+    Temporality return the lower-upper limits for the HNO3 data
+    """
+    folder = '{}/{}/'.format(get_local_folder('ARNA_data'), 'CIMS')
+    filename = 'ARNA2_HNO3_UPPER_LOWER_PPT.csv'
+    df = pd.read_csv(folder+filename)
+    # Add a datetime object index
+    dt_var = 'date_time'
+    format = '%d/%m/%Y %H:%M'
+    df.index = pd.to_datetime(df[dt_var].values, format=format)
+    del df[dt_var]
+    return df
+
+
 def add_derived_variables2FAAM_data(df):
     """
     Add variables derived from other variables
@@ -811,8 +826,9 @@ def get_flighttracks4campaign(campaign='ARNA-2', PressVar="PS_RVSM",
             # Retrieve FAAM BAe146 Core NetCDF files
             filename = 'core_faam_*_{}_1hz.nc'.format(flight_ID.lower())
             file2use = glob.glob(folder+filename)
+            pstr = 'WARNING: more that one file found! (so using latest file)'
             if len(file2use) > 1:
-                print('WARNING: more that one file found! (so using latest file)')
+                print(pstr)
                 print(file2use)
             ds = xr.open_dataset( file2use[0] )
             # Only select the variable of intereest and drop where these are NaNs
