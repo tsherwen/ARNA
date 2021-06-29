@@ -199,7 +199,7 @@ def plot_individual_spec_alt_slices(ds, folder='./',
             date_str = date_str.format(t.year, t.month, t.day, t.hour,
                                        t.minute)
             title_date = t.strftime('%Y/%m/%d %H:%M')
-            levs2use = ds.lev.values:
+            levs2use = ds.lev.values
             if testing_mode:
                 levs2use = levs2use[:3]
             for lev2use in levs2use:
