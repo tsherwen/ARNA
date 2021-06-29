@@ -57,7 +57,6 @@ def main():
     pass
 
 
-
 def download_GEOSCF_assim_data():
     """
     Get assimilation (replay) GEOS-CF product
@@ -100,8 +99,8 @@ def download_GEOS5_assim_data(mode='assim'):
     retrieve_OPenDAP_data = True
     if retrieve_OPenDAP_data:
         #
-#        years = (2018, 2019)
-#       years = (2018, )    # For testing.
+        #        years = (2018, 2019)
+        #       years = (2018, )    # For testing.
         years = (2019, )    # For testing.
         limit_lvls = True  # Just consider the 3 sample levels for now
         for year in years:
@@ -117,12 +116,11 @@ def download_GEOS5_assim_data(mode='assim'):
             get_GEOS5_data_cubes4campaign(year=year, collection=collection,
                                           vars2use=vars2use)
 
-
     # - Now post process files into single doy files.
     post_process_GEOS5_files = True
     if post_process_GEOS5_files:
         #
-#        collection = 'inst3_3d_aer_Nv'
+        #        collection = 'inst3_3d_aer_Nv'
         data_folder = get_local_folder('NASA_data')
         folder2use = data_folder + '//GEOS_5/ARNA/assim/cuboids/'
         filestr = 'ARNA_GEO5_{}_Cape_Verde_{}_{:0>3}_*_ALL_lvls.nc'
@@ -134,14 +132,13 @@ def download_GEOS5_assim_data(mode='assim'):
 #            doys2use = np.arange(32, 46)
             # Loop by doy
 #            for doy in doys2use:
-                # Select files for doy and open
+            # Select files for doy and open
 #                files2use = glob.glob( folder2use+filestr.format( '*', year, doy) )
 #                files2use = [i for i in files2use if 'REGRIDDED' not in i ]
 #                print( files2use )
             #
             regrid_GEOS5_files_in_folder(folder=folder, doys2use=doys2use,
-                                         year=year )
-
+                                         year=year)
 
 
 def do_analysis_of_assim_GEOSCF_GEOS5(do_core_lon_analysis=True,
@@ -212,7 +209,7 @@ def do_analysis_of_assim_GEOSCF_GEOS5(do_core_lon_analysis=True,
             folder2use = GCF_folder + '/assim/lon_slice/'
             # Get the data for previous years
             file_str = '{}/ARNA*{}_0*.nc'
-            files2use = glob.glob(file_str.format( folder2use, year ) )
+            files2use = glob.glob(file_str.format(folder2use, year))
             files2use = list(sorted(files2use))
             # Open all the files as a single dataset
             ds = xr.open_mfdataset(files2use)
@@ -230,20 +227,20 @@ def do_analysis_of_assim_GEOSCF_GEOS5(do_core_lon_analysis=True,
             # Get data
             folder2use = G5_folder + '/assim/cuboids/'
             fstr = '{}/ARNA*{}_0*REGRID*.nc'
-            files2use = glob.glob(fstr.format( folder2use, year ) )
+            files2use = glob.glob(fstr.format(folder2use, year))
             files2use = list(sorted(files2use))
             # Open all the files as a single dataset
             ds5 = xr.open_mfdataset(files2use)
             print(ds5.time)
             # Only consider the slice for lon
-            lons2use = [-18 ,-19.5, -21, -22.5, -24, -25.5]
-            ds5 = ds5.isel(lon=[(i in lons2use) for i in ds5.lon]   )
+            lons2use = [-18, -19.5, -21, -22.5, -24, -25.5]
+            ds5 = ds5.isel(lon=[(i in lons2use) for i in ds5.lon])
             # Add to the GEOS-CF dataset
             ds['Dust'] = ds5['Dust']
             ds['Dust'].attrs = ds5['Dust'].attrs
             only_plot_where_GEOS5 = True
             if only_plot_where_GEOS5:
-                time_boolean = [i in ds5.time.values for i in ds.time.values ]
+                time_boolean = [i in ds5.time.values for i in ds.time.values]
                 ds = ds.isel(time=time_boolean)
             # Attributes
             attrs = ds.lev.attrs
@@ -254,9 +251,8 @@ def do_analysis_of_assim_GEOSCF_GEOS5(do_core_lon_analysis=True,
             folder4plots = folder_str.format(NASA_data)
             # GEOS-CF
             plt_spatial_2layer_vertical_lon(ds, folder=folder4plots,
-                                                   var2plot1='NOy',
-                                                   var2plot2='Dust',)
-
+                                            var2plot1='NOy',
+                                            var2plot2='Dust',)
 
 
 def do_analysis_of_assimilation_output_JUST_GEOSCF(do_core_lon_analysis=True,
@@ -271,14 +267,14 @@ def do_analysis_of_assimilation_output_JUST_GEOSCF(do_core_lon_analysis=True,
     folder = NASA_data + 'GEOS_CF/ARNA/assim/alt_slice/'
     if do_horizon_analysis:
         # Do analysis on a year by year basis
-    #    years = (2018, 2019)
+        #    years = (2018, 2019)
         years = (2018, )    # For testing.
         limit_lvls = True  # Just consider the 3 sample levels for now
         for year in years:
             print(year)
             # - Get data and process
             # Get the data for previous years
-            files2use = glob.glob('{}/ARNA*{}_0*.nc'.format( folder, year ) )
+            files2use = glob.glob('{}/ARNA*{}_0*.nc'.format(folder, year))
             # Open all the files as a single dataset
             ds = xr.open_mfdataset(files2use)
             print(ds.time)
@@ -324,21 +320,20 @@ def do_analysis_of_assimilation_output_JUST_GEOSCF(do_core_lon_analysis=True,
             region = 'Cape_Verde_LOCAL'
             plt_timeseries4ds(dsCV, region=region, year=year)
 
-
     # - Do analysis on a longitudinal basis
     # Where to look for data
     folder = NASA_data + '/GEOS_CF/ARNA//assim/lon_slice/'
     # Do vertical
     if do_core_lon_analysis:
         # Do analysis on a year by year basis
-#        years = (2018, 2019)
+        #        years = (2018, 2019)
         years = (2018, )    # For testing.
         limit_lvls = True  # Just consider the 3 sample levels for now
         for year in years:
             print('processing for:',  year)
             # - Get data and process
             # Get the data for previous years
-            files2use = glob.glob('{}/ARNA*{}_0*.nc'.format( folder, year ) )
+            files2use = glob.glob('{}/ARNA*{}_0*.nc'.format(folder, year))
             # Open all the files as a single dataset
             ds = xr.open_mfdataset(files2use)
             print(ds.time)
@@ -359,13 +354,13 @@ def do_analysis_of_assimilation_output_JUST_GEOSCF(do_core_lon_analysis=True,
             plt_spatial_2layer_vertical_lon(ds, folder=folder4plots)
 
 
-
 def get_all_surface_data_for_CVAO4dates():
     """
     Get all the GEOS-CF surface data for CVAO
     """
     # TODO
     pass
+
 
 if __name__ == "__main__":
     main()

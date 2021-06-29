@@ -10,7 +10,7 @@ def main():
     """
     Main driver for analysis for the ARNA campaign
     """
-    pass # This file is now treated as a module and not called directly
+    pass  # This file is now treated as a module and not called directly
 
 
 if __name__ == "__main__":

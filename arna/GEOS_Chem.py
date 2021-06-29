@@ -58,39 +58,39 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625',
     if res == '4x5':
         # Boundary condition resolution runs
         Run = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.PF'
-        folder = '{}/{}/'.format( RunRoot, Run )
-        d = {'BC-BASE':folder}
+        folder = '{}/{}/'.format(RunRoot, Run)
+        d = {'BC-BASE': folder}
         # Boundary condition resolution runs
         Run = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.PF'
-        folder = '{}/{}/'.format( RunRoot, Run )
-        d = {'BC-BASE-I':folder}
+        folder = '{}/{}/'.format(RunRoot, Run)
+        d = {'BC-BASE-I': folder}
         Run = '/merra2_4x5_standard.v12.9.0.BASE.2019.2020.BCs.repeat/'
-        folder = '{}/{}/'.format( RunRoot, Run )
+        folder = '{}/{}/'.format(RunRoot, Run)
         d['BC-BASE-II'] = folder
         Run = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.DustUptake.II'
-        folder = '{}/{}/'.format( RunRoot, Run )
+        folder = '{}/{}/'.format(RunRoot, Run)
         d['AcidUptake-4x5-II'] = folder
-    elif res == '0.25x0.3125' and (RunSet=='FP-MOYA-Nest'):
+    elif res == '0.25x0.3125' and (RunSet == 'FP-MOYA-Nest'):
         # GEOS-FP 0.25 nested run
         Run = 'geosfp_4x5_standard.v12.9.0.BASE.2019.2020.MOYA1.Nest'
-        folder = '{}/{}/'.format( RunRoot, Run )
-        d = {'FP-Nest':folder}
-    elif res == '0.25x0.3125': # and (RunSet=='GEOS-FP-Nest'):
+        folder = '{}/{}/'.format(RunRoot, Run)
+        d = {'FP-Nest': folder}
+    elif res == '0.25x0.3125':  # and (RunSet=='GEOS-FP-Nest'):
         # GEOS-FP 0.25 nested run
-#        Run = 'geosfp_4x5_standard.v12.9.0.BASE.2019.2020.ARNA.Nest'
+        #        Run = 'geosfp_4x5_standard.v12.9.0.BASE.2019.2020.ARNA.Nest'
         Run = 'geosfp_4x5_standard.v12.9.0.BASE.2019.2020.ARNA.Nest.repeat'
-        folder = '{}/{}/'.format( RunRoot, Run )
-        d = {'FP-Nest':folder}
-    elif res == '0.5x0.625': # and (RunSet=='MERRA2-0.5-initial'):
+        folder = '{}/{}/'.format(RunRoot, Run)
+        d = {'FP-Nest': folder}
+    elif res == '0.5x0.625':  # and (RunSet=='MERRA2-0.5-initial'):
         Run = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.1x1.PF'
-        folder = '{}/{}/'.format( RunRoot, Run )
-        d = {'BASE-0.5':folder}
+        folder = '{}/{}/'.format(RunRoot, Run)
+        d = {'BASE-0.5': folder}
         Run = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.DustUptake.0.5x0.625'
-        folder = '{}/{}/'.format( RunRoot, Run )
+        folder = '{}/{}/'.format(RunRoot, Run)
         d['AcidUptake-0.5'] = folder
         # Add BASE 4x5 run for testing
         Run = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.PF'
-        folder = '{}/{}/'.format( RunRoot, Run )
+        folder = '{}/{}/'.format(RunRoot, Run)
         d['BC-BASE'] = folder
     else:
         pass
@@ -104,12 +104,12 @@ def save_model_output2csv(RunSet='FP-MOYA-Nest', res='0.25x0.3125',
     """
     import seaborn as sns
     # Which flights to plot?
-    if (RunSet == 'FP-MOYA-Nest') and (res=='0.25x0.3125'):
+    if (RunSet == 'FP-MOYA-Nest') and (res == '0.25x0.3125'):
         # Local settings/variables
         flight_IDs = ['C006', 'C007']
         sdate_d = {
-        'C006': datetime.datetime(2017, 3, 1),
-        'C007': datetime.datetime(2017, 3, 2),
+            'C006': datetime.datetime(2017, 3, 1),
+            'C007': datetime.datetime(2017, 3, 2),
         }
         # Loop by flight and retrieve the files as dataframes
         dfs_mod = {}
@@ -122,20 +122,20 @@ def save_model_output2csv(RunSet='FP-MOYA-Nest', res='0.25x0.3125',
                                                 sdate=sdate,
                                                 )
             # Save to csv
-            df = dfs_mod_GC[ list(dfs_mod_GC.keys())[0] ]
+            df = dfs_mod_GC[list(dfs_mod_GC.keys())[0]]
             filename_str = 'GC_planeflight_data_{}_{}'
             filename = filename_str.format(RunSet, flight_ID)
 #            filename = AC.rm_spaces_and_chars_from_str(filename)
-            df.to_csv( os.path.join(folder+filename+'.csv') )
+            df.to_csv(os.path.join(folder+filename+'.csv'))
 
-    elif (res=='0.25x0.3125') and (RunSet == 'FP-Nest'):
-#        RunSet = 'FP-Nest'
-#        res='0.25x0.3125'
+    elif (res == '0.25x0.3125') and (RunSet == 'FP-Nest'):
+        #        RunSet = 'FP-Nest'
+        #        res='0.25x0.3125'
         flight_nums = [
-    #    217,
-        218, 219, 220, 221, 222, 223, 224, 225,
+            #    217,
+            218, 219, 220, 221, 222, 223, 224, 225,
         ]
-        flight_IDs = [ 'C{}'.format(i) for i in flight_nums ]
+        flight_IDs = ['C{}'.format(i) for i in flight_nums]
         # - Loop by flight and retrieve the files as dataframes (mod + obs)
         # Model
         dfs_mod_GC = {}
@@ -152,8 +152,7 @@ def save_model_output2csv(RunSet='FP-MOYA-Nest', res='0.25x0.3125',
             filename_str = 'GC_planeflight_data_{}_{}'
             filename = filename_str.format(RunSet, flight_ID)
 #            filename = AC.rm_spaces_and_chars_from_str(filename)
-            df.to_csv( os.path.join(folder+filename+'.csv') )
-
+            df.to_csv(os.path.join(folder+filename+'.csv'))
 
 
 def get_GEOSChem4flightnum(flight_ID='C225', res='0.5x0.625', sdate=None,
@@ -170,7 +169,7 @@ def get_GEOSChem4flightnum(flight_ID='C225', res='0.5x0.625', sdate=None,
     for Run in list(RunDict.keys()):
         # Extract the data for a specific flight
         folder = RunDict[Run]
-        files2use = glob.glob( os.path.join(folder,'*plane.log*') )
+        files2use = glob.glob(os.path.join(folder, '*plane.log*'))
         # Get start date of flight
         # (use the plane-flight from same day as sdate)
         if isinstance(sdate, type(None)):
@@ -179,8 +178,8 @@ def get_GEOSChem4flightnum(flight_ID='C225', res='0.5x0.625', sdate=None,
             edate = dfS.index.values.max()
             sdate, edate = AC.dt64_2_dt([sdate, edate])
         sdate_str = sdate.strftime('%Y%m%d')
-        file2use = [i for i in files2use if sdate_str in i ]
-        assert len(file2use)==1, 'WARNING: more than one planeflight found!'
+        file2use = [i for i in files2use if sdate_str in i]
+        assert len(file2use) == 1, 'WARNING: more than one planeflight found!'
         file2use = file2use[0]
         # - Instead do this manually for now
         # as cannot as output issue in v12.9 (fixed in runs > initial 4x5)
@@ -198,18 +197,19 @@ def get_GEOSChem4flightnum(flight_ID='C225', res='0.5x0.625', sdate=None,
             # Extract as raw data in chunks
             lines_1 = lines[0::2]
             header_1 = lines_1[0].decode('utf-8').split()
-            data_1 = [i.decode('utf-8').split() for i in lines_1[1:] ]
+            data_1 = [i.decode('utf-8').split() for i in lines_1[1:]]
             df = pd.DataFrame(data_1, columns=header_1)
             lines_2 = lines[1::2]
             header_2 = lines_2[0].decode('utf-8').split()
-            data_2 = [i.decode('utf-8').split() for i in lines_2[1:] ]
+            data_2 = [i.decode('utf-8').split() for i in lines_2[1:]]
             df2 = pd.DataFrame(data_2, columns=header_2)
             # Now combine
             df = pd.concat([df, df2], axis=1)
             # Now process the meta data/update type formats
             # TODO: below could be faster...
             # Use infer obects? - df.infer_objects
-            dtypes = {'POINT':object, 'TYPE':str, 'YYYYMMDD':str, 'HHMM':str}
+            dtypes = {'POINT': object, 'TYPE': str,
+                      'YYYYMMDD': str, 'HHMM': str}
             cols2use = [i for i in df.columns if i not in dtypes.keys()]
             df[cols2use] = df[cols2use].apply(pd.to_numeric)
         # Add a datetime index
@@ -223,35 +223,37 @@ def get_GEOSChem4flightnum(flight_ID='C225', res='0.5x0.625', sdate=None,
         df['U'] = df['GMAO_UWND'].copy()
         # Update the variable names
         d = v12_9_TRA_XX_2_name(None, folder=folder, RTN_dict=True)
-        d = dict( [('TRA_{:0>3}'.format(i), d[i]) for i in d.keys()] )
+        d = dict([('TRA_{:0>3}'.format(i), d[i]) for i in d.keys()])
         df = df.rename(columns=d)
         # Add NOx as combined NO and NO2
         df['NOx'] = df['NO'].values + df['NO2'].values
         # Add NOy as defined in GEOS-CF
         # NOy = no_no2_hno3_hno4_hono_2xn2o5_pan_organicnitrates_aerosolnitrates
         vars2use = [
-        'BrNO3', 'ClNO3', 'ETHLN', 'ETNO3', 'HNO2', 'HNO3', 'HNO4', 'HONIT',
-        'ICN', 'IDN', 'IHN1', 'IHN2', 'IHN3', 'IHN4', 'INDIOL',
-        'INPB', 'INPD', 'IONITA', 'IONO', 'IONO2', 'IPRNO3', 'ITCN', 'ITHN',
-        'MCRHN', 'MCRHNB', 'MENO3', 'MONITA', 'MONITS', 'MONITU', 'MPAN', 'MPN',
-        'MVKN', 'N2O5', 'NIT', 'NITs', 'NO', 'NO2', 'NO3', 'NPRNO3', 'PAN',
-        'PPN', 'PROPNN', 'R4N2',
+            'BrNO3', 'ClNO3', 'ETHLN', 'ETNO3', 'HNO2', 'HNO3', 'HNO4', 'HONIT',
+            'ICN', 'IDN', 'IHN1', 'IHN2', 'IHN3', 'IHN4', 'INDIOL',
+            'INPB', 'INPD', 'IONITA', 'IONO', 'IONO2', 'IPRNO3', 'ITCN', 'ITHN',
+            'MCRHN', 'MCRHNB', 'MENO3', 'MONITA', 'MONITS', 'MONITU', 'MPAN', 'MPN',
+            'MVKN', 'N2O5', 'NIT', 'NITs', 'NO', 'NO2', 'NO3', 'NPRNO3', 'PAN',
+            'PPN', 'PROPNN', 'R4N2',
         ]
-        df['NOy'] = df[ 'N2O5'].copy() # 2 N2O5 in NOy, so 2x via template
+        df['NOy'] = df['N2O5'].copy()  #  2 N2O5 in NOy, so 2x via template
         for var in vars2use:
-            df.loc[:,'NOy'] = df['NOy'].values + df[var].values
+            df.loc[:, 'NOy'] = df['NOy'].values + df[var].values
         # Include a variable of NOy where HNO3 is removed
         # NOy = no_no2_hno3_hno4_hono_2xn2o5_pan_organicnitrates_aerosolnitrates
         df['NOy-HNO3'] = df['NOy'].values - df['HNO3'].values
         # Include a variable of NOy where HNO3 is removed
-        df['NOy-HNO3-PAN'] = df['NOy'].values - df['HNO3'].values - df['PAN'].values
+        df['NOy-HNO3-PAN'] = df['NOy'].values - \
+            df['HNO3'].values - df['PAN'].values
         # gas-phase (exc. PAN, HNO3, HNO4, Org-NIT, N2O5)
-        df['NOy-Limited'] = df['NO'].values + df['NO2'].values + df['HNO2'].values + df['NIT'].values + df['NITs'].values
+        df['NOy-Limited'] = df['NO'].values + df['NO2'].values + \
+            df['HNO2'].values + df['NIT'].values + df['NITs'].values
         # Uset the P-I variable as a model level variable
         df['model-lev'] = df['P-I'].copy()
         # Resample the data?
         if resample_data:
-            df = df.resample('1T' ).mean()
+            df = df.resample('1T').mean()
         # save df
         dfs[Run] = df.copy()
         del df
@@ -278,7 +280,7 @@ def regrid_restart4ARNA_highres_grid(folder=None, filename=None, res='1x1'):
     lats = np.arange(-90, 90, 0.25)
 
 #    OutFile = 'GEOSChem.Restart.20200120_0000z.REGRIDED.nc4'
-    OutFile = '{}{}.nc4'.format( filename.split('nc4')[0], 'REGRIDED')
+    OutFile = '{}{}.nc4'.format(filename.split('nc4')[0], 'REGRIDED')
     ds = AC.regrid_restart_file4flexgrid(ds, OutFile=OutFile, folder=folder,
                                          lons=lons, lats=lats)
     # Now chop out the region for the restart file
@@ -292,6 +294,5 @@ def regrid_restart4ARNA_highres_grid(folder=None, filename=None, res='1x1'):
     ds = ds.isel(lon=bool1)
     ds = ds.isel(lat=bool2)
     # Save the re-gridded file
-    OutFile = '{}{}.nc4'.format( filename.split('nc4')[0], 'REGRIDED_CROPPED')
-    ds.to_netcdf(os.path.join(folder,OutFile))
-
+    OutFile = '{}{}.nc4'.format(filename.split('nc4')[0], 'REGRIDED_CROPPED')
+    ds.to_netcdf(os.path.join(folder, OutFile))

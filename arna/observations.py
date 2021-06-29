@@ -22,11 +22,11 @@ from . utils import *
 
 
 def get_coordinates_from_NetCDF_file(ds=None, folder=None, filename=None,
-                                    falt_var='PS_RVSM',
-                                    flat_var='LAT_GIN', flon_var='LON_GIN',
-                                    AltVar='hPa', LonVar='lon', LatVar='lat',
-                                    ftime_var='Time', TimeVar='time',
-                                    convert_m2hPa=False, drop_NaNs=True):
+                                     falt_var='PS_RVSM',
+                                     flat_var='LAT_GIN', flon_var='LON_GIN',
+                                     AltVar='hPa', LonVar='lon', LatVar='lat',
+                                     ftime_var='Time', TimeVar='time',
+                                     convert_m2hPa=False, drop_NaNs=True):
     """
     Get locations (lat, lon, alt) from NetCDF files
     """
@@ -43,7 +43,7 @@ def get_coordinates_from_NetCDF_file(ds=None, folder=None, filename=None,
     # NOTE: The below conversion is not advised.
     #       Use the external pressure variable instead (PS_RVSM).
     if convert_m2hPa:
-        df.loc[:,AltVar] = AC.hPa_to_Km(df[AltVar].values/1E3, reverse=True, )
+        df.loc[:, AltVar] = AC.hPa_to_Km(df[AltVar].values/1E3, reverse=True, )
     # Drop where there are not values for all coordinates
     if drop_NaNs:
         df = df.dropna()
@@ -54,16 +54,16 @@ def get_ARNA_flights_as_dfs():
     """
     Retrieve the ARNA flights as a list of dataframes
     """
-    flight_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
-    flight_IDs = [ 'C{}'.format(i) for i in flight_nums ]
+    flight_nums = [216, 217, 218, 219, 220, 221, 222, 223, 224, 225]
+    flight_IDs = ['C{}'.format(i) for i in flight_nums]
     dfs = {}
     for flight_ID in flight_IDs:
-        print( flight_ID )
+        print(flight_ID)
         try:
-            df = AC.get_FAAM_locations_as_df(flight_ID=flight_ID )
+            df = AC.get_FAAM_locations_as_df(flight_ID=flight_ID)
             dfs[flight_ID] = df
         except:
-            print( 'WARNING: failed for {}'.format( flight_ID ) )
+            print('WARNING: failed for {}'.format(flight_ID))
     return dfs
 
 
@@ -81,7 +81,7 @@ def set_flagged_data2NaNs(ds, VarName='no_mr', flag2use=0,
     # Create a boolean
     bool = ds[FlagName].values != flag2use
     # Make values without the flagged value into NaNs
-    ds[VarName].loc[ bool ] = np.NaN
+    ds[VarName].loc[bool] = np.NaN
     return ds
 
 
@@ -103,7 +103,7 @@ def get_SWAS_data4flight(flight_ID=None):
     # Update the index to use the SWAS fire fime
     var2use = 'SAMPLE START TIME'
     format = '%d/%m/%Y %H:%M:%S'
-    df.index =  pd.to_datetime(df[var2use].values, format=format)
+    df.index = pd.to_datetime(df[var2use].values, format=format)
     # If a flight ID stated, then only return points for that flight
     if isinstance(flight_ID, type(None)):
         pass
@@ -123,47 +123,47 @@ def map_SWAS_var2GEOS_var(var, invert=False):
     Map variables names from SWAS to GEOS variable names
     """
     d = {
-#    '1_3_butadiene':,
-#    '1_butene':,
-#    '2_3_methylpentane':,
-#    '224_tmp':,
-    'acetaldehyde': 'ALD2',
-    'acetone': 'ACET',
-#    'acetylene':,
-    'benzene': 'BENZ', # GEOSChem, but not GEOS-CF output
-#    'benzenechb':,
-    'cis_2_butene': 'PRPE', #  NOTE: lumped tracer for >= C3 alkenes
-    'cyclo_pentane': 'ALK4', #  NOTE: lumped tracer for >= C4 Alkanes
-    'dms': 'DMS', # GEOSChem, but not GEOS-CF output
-#    'dmschb':,
-    'ethane': 'C2H6',
-#    'ethene':,
-#    'ethylbenzene':,
-#    'extra_1':,
-#    'extra_2':,
-#    'extra_3':,
-#    'extra_4':,
-#    'extra_5':,
-#    'extra_l2':,
-    'iso_butane': 'ALK4', #  NOTE: lumped tracer for >= C4 Alkanes
-    'iso_butene': 'PRPE', #  NOTE: lumped tracer for >= C3 alkenes
-    'iso_pentane': 'ALK4', #  NOTE: lumped tracer for >= C4 Alkanes
-    'isoprene': 'PRPE', #  NOTE: lumped tracer for >= C3 alkenes
-    'methanol': 'MOH',
-    'mp_xylene': 'XYLE',
-    'n_butane': 'ALK4', #  NOTE: lumped tracer for >= C4 Alkanes
-    'n_heptane': 'ALK4', #  NOTE: lumped tracer for >= C4 Alkanes
-    'n_hexane': 'ALK4', #  NOTE: lumped tracer for >= C4 Alkanes
-    'n_octane': 'ALK4', #  NOTE: lumped tracer for >= C4 Alkanes
-    'n_pentane': 'ALK4', #  NOTE: lumped tracer for >= C4 Alkanes
-    'o_xylene': 'XYLE',
-    'pent_1_ene':  'PRPE', #  NOTE: lumped tracer for >= C3 alkenes
-    'propane': 'C3H8',
-    'propene': 'PRPE', #  NOTE: lumped tracer for >= C3 alkenes
-    'toluene': 'TOLU',
-#    'toluenechb':,
-    'trans_2_butene': 'PRPE', #  NOTE: lumped tracer for >= C3 alkenes
-    'trans_2_pentene':'PRPE', #  NOTE: lumped tracer for >= C3 alkenes
+        #    '1_3_butadiene':,
+        #    '1_butene':,
+        #    '2_3_methylpentane':,
+        #    '224_tmp':,
+        'acetaldehyde': 'ALD2',
+        'acetone': 'ACET',
+        #    'acetylene':,
+        'benzene': 'BENZ',  # GEOSChem, but not GEOS-CF output
+        #    'benzenechb':,
+        'cis_2_butene': 'PRPE',  # NOTE: lumped tracer for >= C3 alkenes
+        'cyclo_pentane': 'ALK4',  # NOTE: lumped tracer for >= C4 Alkanes
+        'dms': 'DMS',  # GEOSChem, but not GEOS-CF output
+        #    'dmschb':,
+        'ethane': 'C2H6',
+        #    'ethene':,
+        #    'ethylbenzene':,
+        #    'extra_1':,
+        #    'extra_2':,
+        #    'extra_3':,
+        #    'extra_4':,
+        #    'extra_5':,
+        #    'extra_l2':,
+        'iso_butane': 'ALK4',  # NOTE: lumped tracer for >= C4 Alkanes
+        'iso_butene': 'PRPE',  # NOTE: lumped tracer for >= C3 alkenes
+        'iso_pentane': 'ALK4',  # NOTE: lumped tracer for >= C4 Alkanes
+        'isoprene': 'PRPE',  # NOTE: lumped tracer for >= C3 alkenes
+        'methanol': 'MOH',
+        'mp_xylene': 'XYLE',
+        'n_butane': 'ALK4',  # NOTE: lumped tracer for >= C4 Alkanes
+        'n_heptane': 'ALK4',  # NOTE: lumped tracer for >= C4 Alkanes
+        'n_hexane': 'ALK4',  # NOTE: lumped tracer for >= C4 Alkanes
+        'n_octane': 'ALK4',  # NOTE: lumped tracer for >= C4 Alkanes
+        'n_pentane': 'ALK4',  # NOTE: lumped tracer for >= C4 Alkanes
+        'o_xylene': 'XYLE',
+        'pent_1_ene':  'PRPE',  # NOTE: lumped tracer for >= C3 alkenes
+        'propane': 'C3H8',
+        'propene': 'PRPE',  # NOTE: lumped tracer for >= C3 alkenes
+        'toluene': 'TOLU',
+        #    'toluenechb':,
+        'trans_2_butene': 'PRPE',  # NOTE: lumped tracer for >= C3 alkenes
+        'trans_2_pentene': 'PRPE',  # NOTE: lumped tracer for >= C3 alkenes
     }
     # Invert the dictionary?
     if invert:
@@ -176,13 +176,13 @@ def get_ARNA_flight_log_as_df():
     Make a single pd.DataFrame with all flight summaries
     """
     flight_nums = [
-#    216,
-    217, 218, 219, 220, 221, 222, 223, 224, 225
+        #    216,
+        217, 218, 219, 220, 221, 222, 223, 224, 225
     ]
-    flight_IDs = [ 'C{}'.format(i) for i in flight_nums ]
+    flight_IDs = ['C{}'.format(i) for i in flight_nums]
     dfs = []
     for flight_ID in flight_IDs:
-        dfs += [get_summary4flight( flight_ID=flight_ID )]
+        dfs += [get_summary4flight(flight_ID=flight_ID)]
     # Combine and return as a single dataframe sorted by time
     df = pd.concat(dfs)
     df = df.sort_index()
@@ -195,16 +195,16 @@ def get_summary4flight(flight_ID='C217'):
     """
     folder = '{}/{}/'.format(get_local_folder('ARNA_data'), 'CEDA/v2020_06')
     filename = 'flight-sum_faam_*_*_{}.csv'.format(flight_ID.lower())
-    file2use = glob.glob( folder+filename )
+    file2use = glob.glob(folder+filename)
     ass_str = 'WARNING: {} flight summaries found present for flight {}!'
     assert len(file2use) == 1, ass_str.format(file2use, flight_ID)
     # Add Gotcha for missing header in FAAM file archived at CEDA
     columns = [
-    'Event', 'Start', 'Start Hdg / °', 'Start Hgt / kft', 'Start Lat / °',
-    'Start Long / °', 'Stop', 'Stop Hdg / °', 'Stop Hgt / kft',
-    'Stop Lat / °', ' Stop Long / °', 'Comment',
+        'Event', 'Start', 'Start Hdg / °', 'Start Hgt / kft', 'Start Lat / °',
+        'Start Long / °', 'Stop', 'Stop Hdg / °', 'Stop Hgt / kft',
+        'Stop Lat / °', ' Stop Long / °', 'Comment',
     ]
-    if flight_ID=='C217':
+    if flight_ID == 'C217':
         header = None
         names = columns
     else:
@@ -217,7 +217,7 @@ def get_summary4flight(flight_ID='C217'):
     # Update start column to be in datatime format
     var2use = 'Start'
     format = '%Y-%m-%d %H:%M:%S'
-    df.index = pd.to_datetime( df[var2use].values, format=format)
+    df.index = pd.to_datetime(df[var2use].values, format=format)
     return df
 
 
@@ -235,8 +235,8 @@ def get_filters_data4flight(flight_ID='C217', all_flights=True):
     dfFULL = pd.read_excel(folder + filename, sheet_name=sheet_name)
     # Now Just look at core data of interest
     CoreCols = [
-    'Day', 'Flight', 'Filter', 'height', 'Time on', 'Time off',
-    'Airflow (stL)',
+        'Day', 'Flight', 'Filter', 'height', 'Time on', 'Time off',
+        'Airflow (stL)',
     ]
     # - Select nitrate data
     # Yes, GEOS-CF has sulfate variables output - 'NIT', 'NITs'
@@ -257,32 +257,32 @@ def get_filters_data4flight(flight_ID='C217', all_flights=True):
 #    SO4_idx = [list(dfFULL.columns).index(i) for i in SO4_var2use]
 
     # - Now chop off excess headers and make sure formats are correct
-    df = dfFULL.loc[dfFULL.index[2:],:]
+    df = dfFULL.loc[dfFULL.index[2:], :]
     #
 #    idx2use = [list(dfFULL.columns).index(i) for i in CoreCols]
 #    idx2use += NO3_idx + SO4_idx
 #    cols2use = [list(dfFULL.columns)[i] for i in idx2use ]
-    df = df[ CoreCols + NO3_var2use + SO4_var2use ]
+    df = df[CoreCols + NO3_var2use + SO4_var2use]
     # Replace values less than black/NaNs with np.NaN
     df = df.replace('lower than blank', np.NaN)
     df = df.replace('NaN', np.NaN)
     # Remove blanks (as these are NaNs)
     df = df.rename_axis(None)
-    df = df.loc[ (df['height'] != 'blank').values,:]
+    df = df.loc[(df['height'] != 'blank').values, :]
     # Update sampling times to date times
     # Start time
     TimeOnVar = 'Time on'
     sdate_var = 'Sample Start'
-    df[sdate_var] = df['Day'].astype(str) + ' ' +df[TimeOnVar].astype(str)
+    df[sdate_var] = df['Day'].astype(str) + ' ' + df[TimeOnVar].astype(str)
     format = '%Y-%m-%d %H:%M:%S'
-    df[sdate_var] = pd.to_datetime( df[sdate_var].values, format=format)
+    df[sdate_var] = pd.to_datetime(df[sdate_var].values, format=format)
     del df[TimeOnVar]
     # End time
     TimeOffVar = 'Time off'
     edate_var = 'Sample End'
-    df[edate_var] = df['Day'].astype(str) + ' ' +df[TimeOffVar].astype(str)
+    df[edate_var] = df['Day'].astype(str) + ' ' + df[TimeOffVar].astype(str)
     format = '%Y-%m-%d %H:%M:%S'
-    df[edate_var] = pd.to_datetime( df[edate_var].values, format=format)
+    df[edate_var] = pd.to_datetime(df[edate_var].values, format=format)
     del df[TimeOffVar]
     # calculate mid point of sampling and set this as index
     interval_var = 'Sample interval'
@@ -292,9 +292,9 @@ def get_filters_data4flight(flight_ID='C217', all_flights=True):
     df = df.rename_axis(None)
     # - Just consider totals for species of interest
     NO3_var = 'NO3.total'
-    df[NO3_var] = df[ NO3_var2use ].sum(axis=1)
+    df[NO3_var] = df[NO3_var2use].sum(axis=1)
     SO4_var = 'SO4.total'
-    df[SO4_var] = df[ SO4_var2use ].sum(axis=1)
+    df[SO4_var] = df[SO4_var2use].sum(axis=1)
     del dfFULL
     # Convert to ug/m3 from 'nanomoles/m3'
     df[NO3_var] = df[NO3_var].values / 1E9 * AC.species_mass('NIT') * 1E6
@@ -303,7 +303,7 @@ def get_filters_data4flight(flight_ID='C217', all_flights=True):
     if all_flights:
         return df
     else:
-        return df.loc[ df['Flight']==flight_ID, :]
+        return df.loc[df['Flight'] == flight_ID, :]
 
 
 def get_CIMS_data4flight(flight_ID='C225', resample_data=True, debug=False):
@@ -330,13 +330,13 @@ def get_CIMS_data4flight(flight_ID='C225', resample_data=True, debug=False):
         format = '%m/%d/%Y %H:%M:%S'
         df = pd.read_excel(folder + filename, sheet_name=sheet_name,
                            date_parser=format)
-        xl = pd.ExcelFile( folder + filename)
+        xl = pd.ExcelFile(folder + filename)
         if debug:
             print(xl.sheet_names)
         dt_var = 'Date:Time'
-        dates = AC.dt64_2_dt(df[dt_var].values )
-        dates = [i.strftime(format) for i in dates ]
-        dates = [datetime_.strptime(i,'%d/%m/%Y %H:%M:%S') for i in dates]
+        dates = AC.dt64_2_dt(df[dt_var].values)
+        dates = [i.strftime(format) for i in dates]
+        dates = [datetime_.strptime(i, '%d/%m/%Y %H:%M:%S') for i in dates]
         df.index = dates
         del df[dt_var]
         # Merge the files
@@ -347,15 +347,15 @@ def get_CIMS_data4flight(flight_ID='C225', resample_data=True, debug=False):
     # - Also get HNO3 / HONO (use the time coordinate for index)
     try:
         filename = 'ACSIS6_ARNA_1hz_HNO3_HONO_ToSend.xlsx'
-        df2 = pd.read_excel( folder + filename, sheet_name=sheet_name)
-        xl = pd.ExcelFile( folder + filename)
+        df2 = pd.read_excel(folder + filename, sheet_name=sheet_name)
+        xl = pd.ExcelFile(folder + filename)
         if debug:
             print(xl.sheet_names)
         dt_var = 'date'
     #    df2.index = pd.to_datetime( df2[dt_var].values, format='%m/%d/%Y %H:%M:%S')
-        dates = AC.dt64_2_dt(df2[dt_var].values )
-        dates = [i.strftime(format) for i in dates ]
-        dates = [datetime_.strptime(i,'%d/%m/%Y %H:%M:%S') for i in dates]
+        dates = AC.dt64_2_dt(df2[dt_var].values)
+        dates = [i.strftime(format) for i in dates]
+        dates = [datetime_.strptime(i, '%d/%m/%Y %H:%M:%S') for i in dates]
         df2.index = dates
         del df2[dt_var]
         # Merge the files
@@ -367,15 +367,15 @@ def get_CIMS_data4flight(flight_ID='C225', resample_data=True, debug=False):
     # - Also include HCN data
     try:
         filename = 'ACSIS6_ARNA2_HCN_James_TMS_Update.xlsx'
-        df = pd.read_excel( folder + filename, sheet_name=sheet_name)
-        xl = pd.ExcelFile( folder + filename)
+        df = pd.read_excel(folder + filename, sheet_name=sheet_name)
+        xl = pd.ExcelFile(folder + filename)
         if debug:
             print(xl.sheet_names)
         dt_var = 'date_time'
     #    df2.index = pd.to_datetime( df2[dt_var].values, format='%m/%d/%Y %H:%M:%S')
-        dates = AC.dt64_2_dt(df[dt_var].values )
-        dates = [i.strftime(format) for i in dates ]
-        dates = [datetime_.strptime(i,'%d/%m/%Y %H:%M:%S') for i in dates]
+        dates = AC.dt64_2_dt(df[dt_var].values)
+        dates = [i.strftime(format) for i in dates]
+        dates = [datetime_.strptime(i, '%d/%m/%Y %H:%M:%S') for i in dates]
         df.index = dates
         del df[dt_var]
         # Merge the files
@@ -386,16 +386,16 @@ def get_CIMS_data4flight(flight_ID='C225', resample_data=True, debug=False):
 
     # Update the variable names
     VarNameDict = {
-    'BrO (ppt*)':'BrO', 'Br2 + HOBr (ppt*)':'Br2+HOBr', 'HONO (ppt*)':'HONO',
-    'HNO3 (ppt*) ':'HNO3',  'HNO3 (ppt*)' : 'HNO3',
-    'HCN (ppt*)': 'HCN',
+        'BrO (ppt*)': 'BrO', 'Br2 + HOBr (ppt*)': 'Br2+HOBr', 'HONO (ppt*)': 'HONO',
+        'HNO3 (ppt*) ': 'HNO3',  'HNO3 (ppt*)': 'HNO3',
+        'HCN (ppt*)': 'HCN',
     }
     dfM = dfM.rename(columns=VarNameDict)
     # Include a flag for flight ID
     dfM['flight_ID'] = flight_ID
-	# Resample the data?
+    # Resample the data?
     if resample_data:
-        dfM = dfM.resample('1T' ).mean()
+        dfM = dfM.resample('1T').mean()
     return dfM
 
 
@@ -429,7 +429,7 @@ def add_derived_variables2FAAM_data(df):
         # Above the boundary layer - just set as 900 hPa for now
         hPa_threshold = 900
         bool = df['PS_RVSM'] >= hPa_threshold
-        df.loc[bool ,VarName] = False
+        df.loc[bool, VarName] = False
     except KeyError:
         print("Derived variable not added to dataframe ({})".format(VarName))
     # A indicator for straight and level runs (SLR)
@@ -463,11 +463,11 @@ def add_biomass_flag2df(df, CIMSdf=None, flight_ID='C225', threshold=None):
     if isinstance(threshold, type(None)):
         background = 10
         stats = df[var2use].describe()
-        sigma = stats.loc[ stats.index=='std'].values[0]
+        sigma = stats.loc[stats.index == 'std'].values[0]
         threshold = background + (sigma*3)
     # Add a boolean for biomass burning (BB)
     df[NewVar] = False
-    df.loc[df[var2use]>=threshold,  NewVar] = True
+    df.loc[df[var2use] >= threshold,  NewVar] = True
     return df
 
 
@@ -476,19 +476,19 @@ def get_FAAM_core4flightnum(flight_ID='C225', version='v2020_06',
     """
     Get the core FAAM flight data for a specific flight
     """
-	# Where are the files? Which files to use?
+    # Where are the files? Which files to use?
     if isinstance(folder, type(None)):
-        folder = '{}/CEDA/{}/'.format( get_local_folder('ARNA_data'), version)
-    files2use = glob.glob( folder + '*_{}*'.format(flight_ID.lower()) )
+        folder = '{}/CEDA/{}/'.format(get_local_folder('ARNA_data'), version)
+    files2use = glob.glob(folder + '*_{}*'.format(flight_ID.lower()))
     # Open all the files together
     # Cannot as time is not capitalised in both
 #    ds = xr.open_mfdataset(files2use)
     #
-    FAAM_filename = [ i for i in files2use if 'core_faam' in i ]
+    FAAM_filename = [i for i in files2use if 'core_faam' in i]
     asstr = 'More than one core FAAM file found for flight!'
     assert len(FAAM_filename) == 1, asstr
     ds = xr.open_dataset(FAAM_filename[0])
-    ds = ds.rename({'Time':'time'})
+    ds = ds.rename({'Time': 'time'})
     # Set flagged data to NaNs
     ds = set_flagged_data2NaNs(ds, VarName='O3_TECO', FlagName='O3_TECO_FLAG')
     ds = set_flagged_data2NaNs(ds, VarName='CO_AERO', FlagName='CO_AERO_FLAG')
@@ -506,8 +506,8 @@ def get_FAAM_core4flightnum(flight_ID='C225', version='v2020_06',
     df.index.rename(None)
     del ds
     # Check for the core NOx file
-    Nitrates_filename = [ i for i in files2use if 'core-nitrates' in i ]
-    if len(Nitrates_filename) >=1:
+    Nitrates_filename = [i for i in files2use if 'core-nitrates' in i]
+    if len(Nitrates_filename) >= 1:
         ass_str = 'More than one nitrates file found for flight!'
         assert len(Nitrates_filename) == 1, ass_str
         ds = xr.open_dataset(Nitrates_filename[0])
@@ -520,7 +520,7 @@ def get_FAAM_core4flightnum(flight_ID='C225', version='v2020_06',
         vars2use = [i for i in df2.columns if 'no' in i]
         df = pd.concat([df, df2[vars2use]], axis=1)
         del ds, df2
-		# Get the HONO data too (if it is present)
+        # Get the HONO data too (if it is present)
         try:
             ds = xr.open_dataset(Nitrates_filename[0], group='non_core_group')
             ds = ds.mean(dim='sps10')
@@ -537,11 +537,11 @@ def get_FAAM_core4flightnum(flight_ID='C225', version='v2020_06',
         except OSError:
             print('WARNING: no HONO data found for {}'.format(flight_ID))
     # Check for cloud physics file
-    cloud_phy_filenames = [ i for i in files2use if 'cloud-phy' in i ]
+    cloud_phy_filenames = [i for i in files2use if 'cloud-phy' in i]
     # Just include the main file that ends "<flight_ID>.nc"
-    suffix = '{}.nc'.format( flight_ID.lower() )
+    suffix = '{}.nc'.format(flight_ID.lower())
     cloud_phy_filename = [i for i in cloud_phy_filenames if i.endswith(suffix)]
-    if len(cloud_phy_filename) >=1:
+    if len(cloud_phy_filename) >= 1:
         ass_str = 'More than one main cloud phys file found for flight!'
         assert len(cloud_phy_filename) == 1, ass_str
         try:
@@ -552,23 +552,23 @@ def get_FAAM_core4flightnum(flight_ID='C225', version='v2020_06',
             ds = set_flagged_data2NaNs(ds, VarName=VarName, FlagName=FlagName)
             # Get values for surface area too (CDP/PCASP)
             ds = get_surface_area4flight(flight_ID=flight_ID, ds=ds,
-                                         instrument='PCASP' )
+                                         instrument='PCASP')
             PCASPvar = 'PCASP-total-surface'
             ds = get_surface_area4flight(flight_ID=flight_ID, ds=ds,
-                                         instrument='CDP' )
+                                         instrument='CDP')
             CDPvar = 'CDP-total-surface'
             # Just include PCASP/CDP variables and a flag for PCASP
-            df2 = ds[ [VarName, FlagName, PCASPvar] ].to_dataframe()
+            df2 = ds[[VarName, FlagName, PCASPvar]].to_dataframe()
             df2.index = df2.index.floor('S')
-            df2.index = df2.index.values # rm naming of time coord 'PCAS2TSPM'
+            df2.index = df2.index.values  # rm naming of time coord 'PCAS2TSPM'
             # The index is not immediately equivalent - index duplicates
             # Just use the first value if index duplicated for now.
             df2 = df2.loc[~df2.index.duplicated(keep='first')]
             # Repeat the process for the CDP time index
             # TODO: Find why 3 time indexes are used that are meant to be the same
-            df3 = ds[ [CDPvar] ].to_dataframe()
+            df3 = ds[[CDPvar]].to_dataframe()
             df3.index = df3.index.floor('S')
-            df3.index = df3.index.values # rm naming of time coord 'PCAS2TSPM'
+            df3.index = df3.index.values  # rm naming of time coord 'PCAS2TSPM'
             # The index is not immediately equivalent - index duplicates
             # Just use the first value if index duplicated for now.
             df3 = df3.loc[~df3.index.duplicated(keep='first')]
@@ -585,9 +585,9 @@ def get_FAAM_core4flightnum(flight_ID='C225', version='v2020_06',
     # Add a values for H2O
     try:
         ds = set_flagged_data2NaNs(ds, VarName='NV_LWC1_C',
-                                       FlagName='NV_LWC1_C_FLAG')
+                                   FlagName='NV_LWC1_C_FLAG')
         ds = set_flagged_data2NaNs(ds, VarName='NV_LWC2_C',
-                                       FlagName='NV_LWC2_C_FLAG')
+                                   FlagName='NV_LWC2_C_FLAG')
 
         ds['H2O'] = ds['NV_LWC1_C'].copy()
         ds['H2O'] += ds['NV_LWC2_C']
@@ -601,11 +601,10 @@ def get_FAAM_core4flightnum(flight_ID='C225', version='v2020_06',
 #        GasConst = 8.314 4621 # m3 Pa K−1 mol−1
 #        GasConst *= 0.01 # m3 hPa K−1 mol−1
 #        GasConst /= AC.constants('AVG') # m3 hPa K−1
-        GasConst = 0.167226 # J/ kg K
-        ds['AIR_DEN'] = ds["PS_RVSM"]*10 / ( GasConst * ds['TAT_DI_R'] )
+        GasConst = 0.167226  # J/ kg K
+        ds['AIR_DEN'] = ds["PS_RVSM"]*10 / (GasConst * ds['TAT_DI_R'])
         # (kg/m3) => g/m3
         ds['AIR_DEN'] = ds['AIR_DEN']*1E3
-
 
         # convert g/M3 to ppbv
         ds['H2O'] = ds['H2O'] / ds['AIR_DEN']
@@ -614,10 +613,10 @@ def get_FAAM_core4flightnum(flight_ID='C225', version='v2020_06',
         print('WARNING: failed to add H2O to flight {}'.format(flight_ID))
 
     # Include flight_ID
-    df['flight_ID'] =  flight_ID
-	# Resample the data?
+    df['flight_ID'] = flight_ID
+    # Resample the data?
     if resample_data:
-        df = df.resample('1T' ).mean()
+        df = df.resample('1T').mean()
     # Add derived variables
     df = add_derived_variables2FAAM_data(df)
     return df
@@ -642,7 +641,7 @@ def get_FAAM_mineral_dust_calibration(instrument='PCASP', rtn_values=True):
     Retrieve FAAM mineral dust calibration
     """
     # Location and name of calibration files?
-    folder = '{}/FAAM/'.format( get_local_folder('ARNA_data'))
+    folder = '{}/FAAM/'.format(get_local_folder('ARNA_data'))
     if instrument == 'PCASP':
         #  NOTE: range ~0.1-4 microns
         filename = 'PCASP1_faam_20200128_v001_r000_cal.nc'
@@ -657,7 +656,7 @@ def get_FAAM_mineral_dust_calibration(instrument='PCASP', rtn_values=True):
         # NOTE: dust values are a nc subgroup!
         group = 'master_cal/mineral_dust'
     # Open and return the widths and
-    ds = xr.open_dataset( folder+filename, group=group )
+    ds = xr.open_dataset(folder+filename, group=group)
     # Get values for bin centres and widths in microns (1E-6 metres)
     BinWidths = ds['dia_width'].values.flatten()
     BinCentres = ds['dia_centre'].values.flatten()
@@ -677,23 +676,23 @@ def get_surface_area4flight(flight_ID='C225', instrument='PCASP',
     # Retrieve calibration for mineral dust
     d = get_FAAM_mineral_dust_calibration(instrument=instrument)
     # Get the bin widths and centres (and convert to in metres)
-    BinWidths = d['BinWidths'] *1E-6
-    BinCentres = d['BinCentres'] *1E-6
+    BinWidths = d['BinWidths'] * 1E-6
+    BinCentres = d['BinCentres'] * 1E-6
     # What is the (max) radius of something in a given bin
 #    R = BinCentres + BinWidths/2 # Assume all max radius of bin?
-    R = BinCentres # assume all have same radius as middle of bin
+    R = BinCentres  # assume all have same radius as middle of bin
     # Surface area (units microns^2 / binned particule)
     S = 4*np.pi*R**2
 
     # Get the FAAM dataset for specific flight if not provided
     if isinstance(ds, type(None)):
-        folder = '{}/CEDA/{}/'.format( get_local_folder('ARNA_data'), version)
-        files2use = glob.glob( folder + '*_{}*'.format(flight_ID.lower()) )
-        cloud_phy_fnames = [ i for i in files2use if 'cloud-phy' in i ]
+        folder = '{}/CEDA/{}/'.format(get_local_folder('ARNA_data'), version)
+        files2use = glob.glob(folder + '*_{}*'.format(flight_ID.lower()))
+        cloud_phy_fnames = [i for i in files2use if 'cloud-phy' in i]
         # Just include the main file that ends "<flight_ID>.nc"
-        suffix = '{}.nc'.format( flight_ID.lower() )
+        suffix = '{}.nc'.format(flight_ID.lower())
         cloud_phy_fname = [i for i in cloud_phy_fnames if i.endswith(suffix)]
-        if len(cloud_phy_fname) >=1:
+        if len(cloud_phy_fname) >= 1:
             ass_str = 'More than one main cloud phys file found for flight!'
             assert len(cloud_phy_filename) == 1, ass_str
         try:
@@ -730,19 +729,19 @@ def get_surface_area4flight(flight_ID='C225', instrument='PCASP',
         surface = S[Python_idx]
         ds[VarName] = ds[ChannelName]*surface
         attrs = {
-        'units': 'm3/cm-3',
-        'long_name': 'Surface area of {}'.format(ChannelName),
+            'units': 'm3/cm-3',
+            'long_name': 'Surface area of {}'.format(ChannelName),
         }
         ds[VarName].attrs = attrs
     # Plot this up to sanity check
     if plt_up_values:
         vars2plt = ['{}_{}'.format(i, suffix) for i in vars2use]
         vals2plt = ds[vars2plt].copy().mean(dim=TimeVar).to_array().values
-        plt.bar(BinCentres[1:], vals2plt, width=BinWidths[1:] )
+        plt.bar(BinCentres[1:], vals2plt, width=BinWidths[1:])
         ax = plt.gca()
         plt.yscale('log')
         units = 'm${^3}$/cm$^{-3}$'
-        plt.ylabel( 'Binned surface area ({})'.format(units) )
+        plt.ylabel('Binned surface area ({})'.format(units))
         plt.title('Surface Area during ARNA-2')
         AC.save_plot('ARNA_aerosol_area_{}'.format(instrument))
         plt.close()
@@ -763,25 +762,25 @@ def mk_file_of_flags(flights_nums=[]):
     Make csv files of flagging (e.g. SLR, dust) for ARNA flights
     """
     # Which flights to plot?
-	# Just use non-transit ARNA flights
+    # Just use non-transit ARNA flights
     if len(flights_nums) == 0:
         flights_nums = [
-        217, 218, 219, 220, 221, 222, 223, 224, 225,
+            217, 218, 219, 220, 221, 222, 223, 224, 225,
         ]
-    flight_IDs = [ 'C{}'.format(i) for i in flight_nums ]
+    flight_IDs = ['C{}'.format(i) for i in flight_nums]
     # Loop by flight and retrieve flights
     dfs_obs = {}
     for flight_ID in flight_IDs:
-        df = get_FAAM_core4flightnum(flight_ID=flight_ID )
+        df = get_FAAM_core4flightnum(flight_ID=flight_ID)
         df['flight_ID'] = flight_ID
         dfs_obs[flight_ID] = df
 
     # Only include a few variables for spaces
     vars2use = [
-    'IS_DUST', 'IS_SLR', 'PS_RVSM', 'PS_RVSM_FLAG',
-    'LAT_GIN', 'LAT_GIN_FLAG',
-    'LON_GIN', 'LON_GIN_FLAG',
-    'ALT_GIN', 'ALT_GIN_FLAG', 'flight_ID',
+        'IS_DUST', 'IS_SLR', 'PS_RVSM', 'PS_RVSM_FLAG',
+        'LAT_GIN', 'LAT_GIN_FLAG',
+        'LON_GIN', 'LON_GIN_FLAG',
+        'ALT_GIN', 'ALT_GIN_FLAG', 'flight_ID',
     ]
     version = 'v1_0'
     filename = 'ARNA_FAAM_flightpath_flagging_{}_{}.csv'
@@ -804,13 +803,13 @@ def get_FAAM_flights_df():
     df = pd.read_csv(folder+filename)
     # Only consider the dates after Jan 2018
     DateVar = 'Date'
-    df[DateVar] = pd.to_datetime( df[DateVar] )
+    df[DateVar] = pd.to_datetime(df[DateVar])
     return df
 
 
 def get_flighttracks4campaign(campaign='ARNA-2', PressVar="PS_RVSM",
                               LonVar='LON_GIN', TimeVar='Time',
-                              LatVar='LAT_GIN', resample_data=True ):
+                              LatVar='LAT_GIN', resample_data=True):
     """
     Flight tracks for campaign
     """
@@ -818,7 +817,7 @@ def get_flighttracks4campaign(campaign='ARNA-2', PressVar="PS_RVSM",
     DataRoot = get_local_folder('DataRoot')
     folder = '/{}/FAAM/core_faam_NetCDFs/'.format(DataRoot)
     df = get_FAAM_flights_df()
-    flight_IDs = df.loc[df['Campaign']==campaign, :]['Flight ID']
+    flight_IDs = df.loc[df['Campaign'] == campaign, :]['Flight ID']
     # For flight in campaign flights
     dfs = []
     for flight_ID in flight_IDs:
@@ -830,9 +829,9 @@ def get_flighttracks4campaign(campaign='ARNA-2', PressVar="PS_RVSM",
             if len(file2use) > 1:
                 print(pstr)
                 print(file2use)
-            ds = xr.open_dataset( file2use[0] )
+            ds = xr.open_dataset(file2use[0])
             # Only select the variable of intereest and drop where these are NaNs
-            df = ds[ [PressVar, LatVar, LonVar, TimeVar] ].to_dataframe()
+            df = ds[[PressVar, LatVar, LonVar, TimeVar]].to_dataframe()
             df = df.dropna()
             # Remove the index name and add index values to a column
             df.index.name = None
@@ -844,9 +843,8 @@ def get_flighttracks4campaign(campaign='ARNA-2', PressVar="PS_RVSM",
     # Return
     df = pd.concat(dfs, axis=0)
     if resample_data:
-        df = df.resample('1T' ).mean()
+        df = df.resample('1T').mean()
     return df
-
 
 
 def mk_planeflight_files4FAAM_campaigns(testing_mode=False):
@@ -861,27 +859,27 @@ def mk_planeflight_files4FAAM_campaigns(testing_mode=False):
 #    if testing_mode:
     # Only consider flights in 2020
     DateVar = 'Date'
-    df = df.loc[df[DateVar]  > datetime.datetime(2020,1,1), :]
+    df = df.loc[df[DateVar] > datetime.datetime(2020, 1, 1), :]
     # flights to use?
     flight_IDs2use = [
-   'C227',
-   'C225', # Just re-done
-   'C223', 'C224', 'C222', 'C221', 'C219', 'C220', 'C218', 'C217',
-   'C212', 'C211', 'C210', 'C209', 'C208',
-   'C207',
-   'C206', 'C205', 'C204', 'C203', 'C202',
-   'C201',
-   'C200', 'C199',
-   'C190', 'C189', 'C188', 'C187', 'C186', 'C185',
-   'C184', 'C183',
-   'C182',
-   'C181',
-   'C180', 'C179', 'C178', 'C145', 'C144',
-   'C143',
-   'C142', 'C141',
-   'C140',
-   'C139', 'C134', 'C133', 'C132', 'C129',
-   'C106', 'C105', 'C104', 'C103'
+        'C227',
+        'C225',  # Just re-done
+        'C223', 'C224', 'C222', 'C221', 'C219', 'C220', 'C218', 'C217',
+        'C212', 'C211', 'C210', 'C209', 'C208',
+        'C207',
+        'C206', 'C205', 'C204', 'C203', 'C202',
+        'C201',
+        'C200', 'C199',
+        'C190', 'C189', 'C188', 'C187', 'C186', 'C185',
+        'C184', 'C183',
+        'C182',
+        'C181',
+        'C180', 'C179', 'C178', 'C145', 'C144',
+        'C143',
+        'C142', 'C141',
+        'C140',
+        'C139', 'C134', 'C133', 'C132', 'C129',
+        'C106', 'C105', 'C104', 'C103'
     ]
     print(flight_IDs2use)
 #    df = df.loc[ df['Flight ID'].isin(flight_IDs2use),:]
@@ -905,7 +903,7 @@ def mk_planeflight_files4FAAM_campaigns(testing_mode=False):
     assert isinstance(num_tracers, int), 'num_tracers must be an integer'
     slist = ['TRA_{:0>3}'.format(i) for i in np.arange(1, num_tracers+1)]
     # Add Jvals
-    JVN2use = np.arange(1,139)
+    JVN2use = np.arange(1, 139)
     JVN2drop = [4, 5, 35, 52, 57, 58, 102]
     JVN2use = [i for i in JVN2use if i not in JVN2drop]
     JVAL_list = ['JVL_{:0>3}'.format(i) for i in JVN2use]
@@ -918,11 +916,10 @@ def mk_planeflight_files4FAAM_campaigns(testing_mode=False):
                                             folder4csv=folder4csv,
                                             testing_mode=testing_mode,
                                             num_tracers=num_tracers,
-#                                            rxn_nums=rxn_nums,
+                                            #                                            rxn_nums=rxn_nums,
                                             slist=slist,
                                             flight_ID=flight_ID,)
         gc.collect()
-
 
     # - Re-process the dates with two flights on one day
     # 1st double flight
@@ -942,7 +939,7 @@ def mk_planeflight_files4FAAM_campaigns(testing_mode=False):
             filename = 'core_faam_*_{}_1hz.nc'.format(flight_ID.lower())
             file2use = glob.glob(folder+filename)
             print(flight_ID, file2use)
-            ds_l += [ xr.open_dataset( file2use[0] ) ]
+            ds_l += [xr.open_dataset(file2use[0])]
         # Now re-make file but with values for both flights
         ds = xr.concat(ds_l, dim='Time')
         AC.mk_planeflight_input4FAAM_flight(ds=ds,
@@ -950,12 +947,8 @@ def mk_planeflight_files4FAAM_campaigns(testing_mode=False):
                                             folder4csv=folder4csv,
                                             testing_mode=testing_mode,
                                             num_tracers=num_tracers,
-#                                            rxn_nums=rxn_nums,
+                                            #                                            rxn_nums=rxn_nums,
                                             slist=slist,
                                             flight_ID=flight_ID,)
         gc.collect()
         del ds, ds_l
-
-
-
-

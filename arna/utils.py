@@ -26,30 +26,30 @@ def mk_core_plot_folders_then_mv2webfiles(dt=None, mv2webfiles=True,
     """
     # Use yesterday's forecast at noon if others not available.
     if isinstance(dt, type(None)):
-        Tnow = AC.time2datetime( [gmtime()] )[0]
+        Tnow = AC.time2datetime([gmtime()])[0]
         # Get the 5-day forecast at noon...
         dt = datetime.datetime(Tnow.year, Tnow.month, Tnow.day, 12, )
         # Use yesterday
-        dt =  AC.add_days(dt, -1)
+        dt = AC.add_days(dt, -1)
     # - mv the +24/+48 files into the core folders
     dstr = dt.strftime('%Y/%m/%d %H:%M')
     copy_files2core_plot_folders(dt=dt)
     # - Now move the folder to webfiles
     if mv2webfiles:
-        TNow = AC.time2datetime( [gmtime()] )[0]
+        TNow = AC.time2datetime([gmtime()])[0]
         pstr = "Started moving files for {} to webfiles @ {}"
-        print(  pstr.format( dstr, TNow.strftime('%Y/%m/%d %H:%M') ) )
+        print(pstr.format(dstr, TNow.strftime('%Y/%m/%d %H:%M')))
         mv_plots2webfiles(dt=dt)
     # - Now move the files to google drive
-    TNow = AC.time2datetime( [gmtime()] )[0]
+    TNow = AC.time2datetime([gmtime()])[0]
     pstr = "Started moving files for {} to google drive @ {}"
-    print(  pstr.format( dstr, TNow.strftime('%Y/%m/%d %H:%M') ) )
+    print(pstr.format(dstr, TNow.strftime('%Y/%m/%d %H:%M')))
     # Move the files
     mv_plots2google_drive(dt=dt, debug=debug)
     # print that the job is finished.
-    TNow = AC.time2datetime( [gmtime()] )[0]
+    TNow = AC.time2datetime([gmtime()])[0]
     pstr = "Finished moving files for {} to google drive @ {}"
-    print(  pstr.format( dstr, TNow.strftime('%Y/%m/%d %H:%M') ) )
+    print(pstr.format(dstr, TNow.strftime('%Y/%m/%d %H:%M')))
 
 
 def which_plot_folders_are_not_complete4dt(dt):
@@ -58,22 +58,23 @@ def which_plot_folders_are_not_complete4dt(dt):
     """
     # Use yesterday's forecast at noon if others not available.
     if isinstance(dt, type(None)):
-        Tnow = AC.time2datetime( [gmtime()] )[0]
+        Tnow = AC.time2datetime([gmtime()])[0]
         # Get the 5-day forecast at noon...
         dt = datetime.datetime(Tnow.year, Tnow.month, Tnow.day, 12, )
         # Use yesterday
-        dt =  AC.add_days(dt, -1)
+        dt = AC.add_days(dt, -1)
     # Get the root plot folder
-    folder = get_GEOS_data_folder4dt(dt=dt, product='GEOS_5', inc_collection=False)
+    folder = get_GEOS_data_folder4dt(
+        dt=dt, product='GEOS_5', inc_collection=False)
     folder += '/plots/'
     # Hardwire folder names to check
-    subfolders2check =[
-    'plots.GMAO',
-    'alt_slice',
-    'lon_slice',
-    'lat_slice',
-    'alt_slice.zoomed',
-    'alt_slice.individual'
+    subfolders2check = [
+        'plots.GMAO',
+        'alt_slice',
+        'lon_slice',
+        'lat_slice',
+        'alt_slice.zoomed',
+        'alt_slice.individual'
     ]
     if not os.path.isdir(folder):
         return subfolders2check
@@ -85,7 +86,8 @@ def which_plot_folders_are_not_complete4dt(dt):
             # Evaluate full folder name
             subfolder_full = '{}/{}'.format(folder, subfolder)
             if os.path.isdir(subfolder_full):
-                d = AC.get_stats_on_files_in_folder_as_dict(folder=subfolder_full)
+                d = AC.get_stats_on_files_in_folder_as_dict(
+                    folder=subfolder_full)
             else:
                 d = {'#': 0}
             df[subfolder] = pd.Series(d)
@@ -93,27 +95,27 @@ def which_plot_folders_are_not_complete4dt(dt):
     #    df = df.T
         # Hardwire number of expected files
         nfiles4ARNA = {
-        'plots.GMAO': 169,
-        'alt_slice': 246,
-        'lon_slice': 246,
-        'lat_slice': 246,
-        'alt_slice.zoomed': 246,
-        'alt_slice.individual': 1230,
-    #    'core.plus_024H.2020_01_22_12_00': 61,
-    #    'core.plus_024H.2020_01_22_12_00': 61,
-    #    'core.plus_030H.2020_01_22_18_00': 61,
-    #    'core.plus_048H.2020_01_23_12_00': 61,
-    #    'core.plus_054H.2020_01_23_18_00': 61,
-    #    'core.plus_072H.2020_01_24_12_00': 61,
-    #    'core.plus_078H.2020_01_24_18_00': 55, # Note this should be 61!
+            'plots.GMAO': 169,
+            'alt_slice': 246,
+            'lon_slice': 246,
+            'lat_slice': 246,
+            'alt_slice.zoomed': 246,
+            'alt_slice.individual': 1230,
+            #    'core.plus_024H.2020_01_22_12_00': 61,
+            #    'core.plus_024H.2020_01_22_12_00': 61,
+            #    'core.plus_030H.2020_01_22_18_00': 61,
+            #    'core.plus_048H.2020_01_23_12_00': 61,
+            #    'core.plus_054H.2020_01_23_18_00': 61,
+            #    'core.plus_072H.2020_01_24_12_00': 61,
+            #    'core.plus_078H.2020_01_24_18_00': 55, # Note this should be 61!
         }
         # Check the right number of files are present
         correct_num_col = 'Correct #'
         for col in df.columns:
             correct_num = df[col]['#'] == nfiles4ARNA[col]
-            df.loc[ correct_num_col , col ] = correct_num
+            df.loc[correct_num_col, col] = correct_num
         # just select the name of the
-        names = df.loc[ :, df.T[correct_num_col].values == False ].columns
+        names = df.loc[:, df.T[correct_num_col].values == False].columns
         return list(names)
 
 
@@ -123,11 +125,11 @@ def copy_files2core_plot_folders(dt=None, verbose=True, debug=False):
     """
     # Use yesterday's forecast at noon if others not available.
     if isinstance(dt, type(None)):
-        Tnow = AC.time2datetime( [gmtime()] )[0]
+        Tnow = AC.time2datetime([gmtime()])[0]
         # Get the 5-day forecast at noon...
         dt = datetime.datetime(Tnow.year, Tnow.month, Tnow.day, 12, )
         # Use yesterday
-        dt =  AC.add_days(dt, -1)
+        dt = AC.add_days(dt, -1)
     # Setup a string for the date of the forecast
     dt0_Str = dt.strftime('%Y/%m/%d %H:%M')
     # Also setup datetime objects for the +24 fcast and +48 fcasts
@@ -138,7 +140,8 @@ def copy_files2core_plot_folders(dt=None, verbose=True, debug=False):
     dt72 = AC.add_days(dt, 3)
     dt78 = AC.add_hrs(dt, 72+6)
     # Get the root plot folder
-    folder = get_GEOS_data_folder4dt(dt=dt, product='GEOS_5', inc_collection=False)
+    folder = get_GEOS_data_folder4dt(
+        dt=dt, product='GEOS_5', inc_collection=False)
     folder += '/plots/'
 
     # - Copy the files for the +24 folder
@@ -151,21 +154,21 @@ def copy_files2core_plot_folders(dt=None, verbose=True, debug=False):
     dstr = '{}_{:0>2}_{:0>2}_{:0>2}_{:0>2}'
     dstr = dstr.format(dt24.year, dt24.month, dt24.day, dt24.hour, dt24.minute)
     # Get a list of files to copy
-    files = glob.glob( '{}/*/*{}.png'.format(folder, dstr) )
+    files = glob.glob('{}/*/*{}.png'.format(folder, dstr))
     # Also add the met plots into the core plots
     gstr = '*atlantic*00_024*'
-    files += glob.glob( '{}/*/*{}*'.format(folder, gstr) )
+    files += glob.glob('{}/*/*{}*'.format(folder, gstr))
     # Copy across the core z+0 datagram for total AOD at CVAO too.
     gstr = '*datagram_total*'
-    files += glob.glob( '{}/*/*{}*'.format(folder, gstr) )
+    files += glob.glob('{}/*/*{}*'.format(folder, gstr))
     # print some information about the files found
     pstr = 'Moving {:>3} files to {} from forecast started on {}'
-    print( pstr.format(len(files), fstr, dt0_Str) )
+    print(pstr.format(len(files), fstr, dt0_Str))
     # Loop by files and move
     for file in files:
-        filename  = file.split('/')[-1]
+        filename = file.split('/')[-1]
         if debug:
-            print(filename, file )
+            print(filename, file)
         os.popen('cp {} {}'.format(file, dfolder+filename))
 
     # - Copy the files for the +30 folder
@@ -175,18 +178,18 @@ def copy_files2core_plot_folders(dt=None, verbose=True, debug=False):
     fstr = 'core.plus_{:0>3}H.{}'.format(30, dstr)
     dfolder = '{}/{}/'.format(folder, fstr)
     # Get a list of files to copy
-    files = glob.glob( '{}/*/*{}.png'.format(folder, dstr) )
+    files = glob.glob('{}/*/*{}.png'.format(folder, dstr))
     # Also add the met plots into the core plots
     gstr = '*atlantic*00_030*'
-    files += glob.glob( '{}/*/*{}*'.format(folder, gstr) )
+    files += glob.glob('{}/*/*{}*'.format(folder, gstr))
     # Copy across the core z+0 datagram for total AOD at CVAO too.
     gstr = '*datagram_total*'
-    files += glob.glob( '{}/*/*{}*'.format(folder, gstr) )
+    files += glob.glob('{}/*/*{}*'.format(folder, gstr))
     # Loop by files and move
     for file in files:
-        filename  = file.split('/')[-1]
+        filename = file.split('/')[-1]
         if debug:
-            print(filename, file )
+            print(filename, file)
         os.popen('cp {} {}'.format(file, dfolder+filename))
 
     # - Copy the files for the +48 folder
@@ -196,18 +199,18 @@ def copy_files2core_plot_folders(dt=None, verbose=True, debug=False):
     fstr = 'core.plus_{:0>3}H.{}'.format(48, dstr)
     dfolder = '{}/{}/'.format(folder, fstr)
     # Get a list of files to copy
-    files = glob.glob( '{}/*/*{}.png'.format(folder, dstr) )
+    files = glob.glob('{}/*/*{}.png'.format(folder, dstr))
     # Also add the met plots into the core plots
     gstr = '*atlantic*00_048*'
-    files += glob.glob( '{}/*/*{}*'.format(folder, gstr) )
+    files += glob.glob('{}/*/*{}*'.format(folder, gstr))
     # Copy across the core z+0 datagram for total AOD at CVAO too.
     gstr = '*datagram_total*'
-    files += glob.glob( '{}/*/*{}*'.format(folder, gstr) )
+    files += glob.glob('{}/*/*{}*'.format(folder, gstr))
     # Loop by files and move
     for file in files:
-        filename  = file.split('/')[-1]
+        filename = file.split('/')[-1]
         if debug:
-            print(filename, file )
+            print(filename, file)
         os.popen('cp {} {}'.format(file, dfolder+filename))
 
     # - Copy the files for the +54 folder
@@ -217,18 +220,18 @@ def copy_files2core_plot_folders(dt=None, verbose=True, debug=False):
     fstr = 'core.plus_{:0>3}H.{}'.format(54, dstr)
     dfolder = '{}/{}/'.format(folder, fstr)
     # Get a list of files to copy
-    files = glob.glob( '{}/*/*{}.png'.format(folder, dstr) )
+    files = glob.glob('{}/*/*{}.png'.format(folder, dstr))
     # Also add the met plots into the core plots
     gstr = '*atlantic*00_054*'
-    files += glob.glob( '{}/*/*{}*'.format(folder, gstr) )
+    files += glob.glob('{}/*/*{}*'.format(folder, gstr))
     # Copy across the core z+0 datagram for total AOD at CVAO too.
     gstr = '*datagram_total*'
-    files += glob.glob( '{}/*/*{}*'.format(folder, gstr) )
+    files += glob.glob('{}/*/*{}*'.format(folder, gstr))
     # Loop by files and move
     for file in files:
-        filename  = file.split('/')[-1]
+        filename = file.split('/')[-1]
         if debug:
-            print(filename, file )
+            print(filename, file)
         os.popen('cp {} {}'.format(file, dfolder+filename))
 
     # - Copy the files for the +72 folder
@@ -238,18 +241,18 @@ def copy_files2core_plot_folders(dt=None, verbose=True, debug=False):
     fstr = 'core.plus_{:0>3}H.{}'.format(72, dstr)
     dfolder = '{}/{}/'.format(folder, fstr)
     # Get a list of files to copy
-    files = glob.glob( '{}/*/*{}.png'.format(folder, dstr) )
+    files = glob.glob('{}/*/*{}.png'.format(folder, dstr))
     # Also add the met plots into the core plots
     gstr = '*atlantic*00_072*'
-    files += glob.glob( '{}/*/*{}*'.format(folder, gstr) )
+    files += glob.glob('{}/*/*{}*'.format(folder, gstr))
     # Copy across the core z+0 datagram for total AOD at CVAO too.
     gstr = '*datagram_total*'
-    files += glob.glob( '{}/*/*{}*'.format(folder, gstr) )
+    files += glob.glob('{}/*/*{}*'.format(folder, gstr))
     # Loop by files and move
     for file in files:
-        filename  = file.split('/')[-1]
+        filename = file.split('/')[-1]
         if debug:
-            print(filename, file )
+            print(filename, file)
         os.popen('cp {} {}'.format(file, dfolder+filename))
 
     # - Copy the files for the +78 folder
@@ -259,20 +262,19 @@ def copy_files2core_plot_folders(dt=None, verbose=True, debug=False):
     fstr = 'core.plus_{:0>3}H.{}'.format(78, dstr)
     dfolder = '{}/{}/'.format(folder, fstr)
     # Get a list of files to copy
-    files = glob.glob( '{}/*/*{}.png'.format(folder, dstr) )
+    files = glob.glob('{}/*/*{}.png'.format(folder, dstr))
     # Also add the met plots into the core plots
     gstr = '*atlantic*00_078*'
-    files += glob.glob( '{}/*/*{}*'.format(folder, gstr) )
+    files += glob.glob('{}/*/*{}*'.format(folder, gstr))
     # Copy across the core z+0 datagram for total AOD at CVAO too.
     gstr = '*datagram_total*'
-    files += glob.glob( '{}/*/*{}*'.format(folder, gstr) )
+    files += glob.glob('{}/*/*{}*'.format(folder, gstr))
     # Loop by files and move
     for file in files:
-        filename  = file.split('/')[-1]
+        filename = file.split('/')[-1]
         if debug:
-            print(filename, file )
+            print(filename, file)
         os.popen('cp {} {}'.format(file, dfolder+filename))
-
 
 
 def get_Google_drive_ID4ARNA_forecast_plots():
@@ -293,11 +295,11 @@ def mv_plots2google_drive(dt=None, verbose=True, debug=False):
     from pydrive.drive import GoogleDrive
     # Use yesterday's forecast at noon if others not available.
     if isinstance(dt, type(None)):
-        Tnow = AC.time2datetime( [gmtime()] )[0]
+        Tnow = AC.time2datetime([gmtime()])[0]
         # Get the 5-day forecast at noon...
         dt = datetime.datetime(Tnow.year, Tnow.month, Tnow.day, 12, )
         # Use yesterday
-        dt =  AC.add_days(dt, -1)
+        dt = AC.add_days(dt, -1)
     # Make the datetime string to be used for folders
     dt_str = '{}_{:0>2}_{:0>2}_{:0>2}z'
     dt_str = dt_str.format(dt.year, dt.month, dt.day, dt.hour)
@@ -314,12 +316,12 @@ def mv_plots2google_drive(dt=None, verbose=True, debug=False):
     fcast_GD_folder_ID = get_Google_drive_ID4ARNA_forecast_plots()
     # Create a folder for the date (dt)
     folder_metadata = {
-#        'title' : dt_str+'_earth0_PyDrive_sync',
-        'title' : dt_str,
+        #        'title' : dt_str+'_earth0_PyDrive_sync',
+        'title': dt_str,
         #
         "parents":  [{"id": fcast_GD_folder_ID}],
         # The mimetype defines this new file as a folder
-        'mimeType' : 'application/vnd.google-apps.folder'
+        'mimeType': 'application/vnd.google-apps.folder'
     }
     GD_folder_root = drive.CreateFile(folder_metadata)
     GD_folder_root.Upload()
@@ -329,35 +331,35 @@ def mv_plots2google_drive(dt=None, verbose=True, debug=False):
     # Loop through files and directories to upload
     for path, directories, files in os.walk(folder):
         # What is the subroot for the folder?
-        subfolder = path.split( dt_str )[-1].split('/plots/')[-1]
+        subfolder = path.split(dt_str)[-1].split('/plots/')[-1]
         if verbose:
-            print( path, directories, files)
+            print(path, directories, files)
         # Create the subfolder for plots
         metadata = {
-        'title': subfolder,
-        "parents":  [{"id": root_folder_id}],
-        "mimeType": "application/vnd.google-apps.folder"
+            'title': subfolder,
+            "parents":  [{"id": root_folder_id}],
+            "mimeType": "application/vnd.google-apps.folder"
         }
         GD_subfolder = drive.CreateFile(metadata)
         GD_subfolder.Upload()
         GD_subfolder_title = GD_subfolder['title']
         GD_subfolder_id = GD_subfolder['id']
         if verbose:
-            print( subfolder, GD_subfolder_title, GD_subfolder_id )
+            print(subfolder, GD_subfolder_title, GD_subfolder_id)
         # Loop and upload by file
         for file in files:
             if debug:
                 print(file)
             # Metadata for file
             metadata = {
-            'title': file,
-            "parents":  [{"id": GD_subfolder_id}],
+                'title': file,
+                "parents":  [{"id": GD_subfolder_id}],
             }
             # Set a file space
             GD_file = drive.CreateFile(metadata)
             # point at the required file
-            GD_file.SetContentFile('{}/{}'.format(path,file))
-            GD_file.Upload() # Upload the file.
+            GD_file.SetContentFile('{}/{}'.format(path, file))
+            GD_file.Upload()  # Upload the file.
 
 
 def mv_GEOS_data_from_earth2viking(dt=None, user=None):
@@ -366,11 +368,11 @@ def mv_GEOS_data_from_earth2viking(dt=None, user=None):
     """
     # Use yesterday's forecast at noon if others not available.
     if isinstance(dt, type(None)):
-        Tnow = AC.time2datetime( [gmtime()] )[0]
+        Tnow = AC.time2datetime([gmtime()])[0]
         # Get the 5-day forecast at noon...
         dt = datetime.datetime(Tnow.year, Tnow.month, Tnow.day, 12, )
         # Use yesterday
-        dt =  AC.add_days(dt, -1)
+        dt = AC.add_days(dt, -1)
     # Which user to use?
     if isinstance(user, type(None)):
         import getpass
@@ -381,14 +383,14 @@ def mv_GEOS_data_from_earth2viking(dt=None, user=None):
     collection = 'inst3_3d_aer_Np'
     folder = get_GEOS_data_folder4dt(dt=dt, product='GEOS_5',
                                      collection=collection,
-                                     host=host )
+                                     host=host)
     # Make the local folder if it is not present
     AC.mk_folder(folder=folder)
     # Get the remote folder
     host = 'earth0'
     remote_folder = get_GEOS_data_folder4dt(dt=dt, product='GEOS_5',
                                             collection=collection,
-                                            host=host )
+                                            host=host)
     # Check that the remote folder is present?  and the files are correct?
     # TODO...
     # Call scp via os
@@ -402,14 +404,14 @@ def mv_GEOS_data_from_earth2viking(dt=None, user=None):
     collection = 'chm_inst_1hr_g1440x721_p23'
     folder = get_GEOS_data_folder4dt(dt=dt, product='GEOS_CF',
                                      collection=collection,
-                                     host=host )
+                                     host=host)
     # Make the local folder if it is not present
     AC.mk_folder(folder=folder)
     # Get the remote folder
     host = 'earth0'
     remote_folder = get_GEOS_data_folder4dt(dt=dt, product='GEOS_CF',
                                             collection=collection,
-                                            host=host )
+                                            host=host)
     # Check that the remote folder is present?  and the files are correct?
     # TODO...
     # Call scp via os
@@ -426,11 +428,11 @@ def mv_plots2webfiles(dt=None, debug=True):
     import sys
     # Use yesterday's forecast at noon if others not available.
     if isinstance(dt, type(None)):
-        Tnow = AC.time2datetime( [gmtime()] )[0]
+        Tnow = AC.time2datetime([gmtime()])[0]
         # Get the 5-day forecast at noon...
         dt = datetime.datetime(Tnow.year, Tnow.month, Tnow.day, 12, )
         # Use yesterday
-        dt =  AC.add_days(dt, -1)
+        dt = AC.add_days(dt, -1)
     # Make the datetime string to be used for folders
     dt_str = '{}_{:0>2}_{:0>2}_{:0>2}z'
     dt_str = dt_str.format(dt.year, dt.month, dt.day, dt.hour)
@@ -439,11 +441,11 @@ def mv_plots2webfiles(dt=None, debug=True):
                                      inc_collection=False)
     folder += '/plots/'
     # Define data location and ports etc
-    host = "webfiles.york.ac.uk" # hard-coded
+    host = "webfiles.york.ac.uk"  # hard-coded
     port = 22
     transport = paramiko.Transport((host, port))
-    password = "niangw?ndi" # hard-coded
-    username = "chem631" # hard-coded
+    password = "niangw?ndi"  # hard-coded
+    username = "chem631"  # hard-coded
     # Connect to webfiles
     transport.connect(username=username, password=password)
     # Open a sftp link
@@ -455,11 +457,11 @@ def mv_plots2webfiles(dt=None, debug=True):
     # Loop through files and directories to upload
     for path, directories, files in os.walk(folder):
         # What is the subroot for the folder?
-#        dt_sub_path = dt_root_path + path.split( dt_str+'_test' )[-1] # TESTING!
-        subfolder = path.split( dt_str )[-1].split('/plots/')[-1]
+        #        dt_sub_path = dt_root_path + path.split( dt_str+'_test' )[-1] # TESTING!
+        subfolder = path.split(dt_str)[-1].split('/plots/')[-1]
         dt_sub_path = '{}/{}/'.format(dt_root_path, subfolder)
         if debug:
-            print( path, directories, files)
+            print(path, directories, files)
             print('')
             print(dt_sub_path)
         # open connection
@@ -473,7 +475,7 @@ def mv_plots2webfiles(dt=None, debug=True):
             # open connection
             sftp = paramiko.SFTPClient.from_transport(transport)
             # tranfer file
-            sftp.put('{}/{}'.format(path,file), dt_sub_path+file)
+            sftp.put('{}/{}'.format(path, file), dt_sub_path+file)
             # Close connection
             sftp.close()
 
@@ -486,12 +488,12 @@ def mkdir_if_not_present(sftp=None, path=None, verbose=True):
         sftp.chdir(path)  # Test if path exists
         if verbose:
             pstr = 'WARNING: remote path exists, so folder not created - {}'
-            print( pstr.format(path) )
+            print(pstr.format(path))
     except IOError:
         sftp.mkdir(path)  # Create path
         sftp.chdir(path)
         if verbose:
-            print('CREATED remote path that did not exist - {}'.format(path) )
+            print('CREATED remote path that did not exist - {}'.format(path))
 
 
 def mk_folder_structure4fcast(dt=None, mode='fcast', verbose=False):
@@ -500,11 +502,11 @@ def mk_folder_structure4fcast(dt=None, mode='fcast', verbose=False):
     """
     # Use yesterday's forecast at noon if others not available.
     if isinstance(dt, type(None)):
-        Tnow = AC.time2datetime( [gmtime()] )[0]
+        Tnow = AC.time2datetime([gmtime()])[0]
         # Get the 5-day forecast at noon...
         dt = datetime.datetime(Tnow.year, Tnow.month, Tnow.day, 12, )
         # Use yesterday
-        dt =  AC.add_days(dt, -1)
+        dt = AC.add_days(dt, -1)
     # Check that the forecast date is for the noon forecast
     assert dt.hour == 12, 'WARNING forecast date not starting at noon!'
     # Make the datetime string to be used for folders
@@ -538,16 +540,22 @@ def mk_folder_structure4fcast(dt=None, mode='fcast', verbose=False):
     folders += ['{}/{}'.format(plots_root, ex_str)]
     # Make strings for folders for +24H and +48H
     dstr = 'core.plus_{:0>3}H.{}_{:0>2}_{:0>2}_{:0>2}_{:0>2}'
-    dstr24 = dstr.format(24, dt24.year, dt24.month, dt24.day, dt24.hour, dt24.minute)
-    dstr30 = dstr.format(30, dt30.year, dt30.month, dt30.day, dt30.hour, dt30.minute)
-    dstr48 = dstr.format(48, dt48.year, dt48.month, dt48.day, dt48.hour, dt48.minute)
-    dstr54 = dstr.format(54, dt54.year, dt54.month, dt54.day, dt54.hour, dt54.minute)
-    dstr72 = dstr.format(72, dt72.year, dt72.month, dt72.day, dt72.hour, dt72.minute)
-    dstr78 = dstr.format(78, dt78.year, dt78.month, dt78.day, dt78.hour, dt78.minute)
+    dstr24 = dstr.format(24, dt24.year, dt24.month,
+                         dt24.day, dt24.hour, dt24.minute)
+    dstr30 = dstr.format(30, dt30.year, dt30.month,
+                         dt30.day, dt30.hour, dt30.minute)
+    dstr48 = dstr.format(48, dt48.year, dt48.month,
+                         dt48.day, dt48.hour, dt48.minute)
+    dstr54 = dstr.format(54, dt54.year, dt54.month,
+                         dt54.day, dt54.hour, dt54.minute)
+    dstr72 = dstr.format(72, dt72.year, dt72.month,
+                         dt72.day, dt72.hour, dt72.minute)
+    dstr78 = dstr.format(78, dt78.year, dt78.month,
+                         dt78.day, dt78.hour, dt78.minute)
     # List of subfolders to make
     subfolders = [
-    'alt_slice', 'lon_slice', 'lat_slice', 'alt_slice.zoomed',
-    'alt_slice.individual', dstr24, dstr30, dstr48, dstr54, dstr72, dstr78,
+        'alt_slice', 'lon_slice', 'lat_slice', 'alt_slice.zoomed',
+        'alt_slice.individual', dstr24, dstr30, dstr48, dstr54, dstr72, dstr78,
     ]
     folders += ['{}/{}'.format(plots_root, i) for i in subfolders]
     # - Now loop and make folders
@@ -640,7 +648,7 @@ def mk_video_from_plts(FileStr=None):
     print('WARNING: ffmpeg calls here have been switched off')
 #    ffmpegstr = "ffmpeg -framerate 3 -pattern_type glob -i '{FileStr}' -c:v libx264 -pix_fmt yuv420p out.mp4"
 
-#ffmpeg -framerate 3 -pattern_type glob -i 'spatial_plot_NOy_PM2_5_dust__lev_500_0_dt_2019_11_*.png' -c:v libx264 -pix_fmt yuv420p out_2019_11_06_5day_fcast_500hPa.mp4
+# ffmpeg -framerate 3 -pattern_type glob -i 'spatial_plot_NOy_PM2_5_dust__lev_500_0_dt_2019_11_*.png' -c:v libx264 -pix_fmt yuv420p out_2019_11_06_5day_fcast_500hPa.mp4
     os.system(" ")
 
 
@@ -654,14 +662,14 @@ def get_reduced_cmap(cmap='Reds', minval=0.0, maxval=0.75, npoints=100):
     # Make a truncated colour map
     Nstr = 'trunc({n},{a:.2f},{b:.2f})'
     cmap = matplotlib.colors.LinearSegmentedColormap.from_list(
-                Nstr.format(n=cmap.name, a=minval, b=maxval),
-                cmap(np.linspace(minval, maxval,  npoints))
-                                                               )
+        Nstr.format(n=cmap.name, a=minval, b=maxval),
+        cmap(np.linspace(minval, maxval,  npoints))
+    )
     return cmap
 
 
 def convert_decimcal_degress2nav_format(degrees_dec, just_degrees_minutes=True,
-                                        LaTeX_format=True, debug=False ):
+                                        LaTeX_format=True, debug=False):
     """
     convert decimal degree to degrees, minutes and then decimal seconds
     """
@@ -677,18 +685,18 @@ def convert_decimcal_degress2nav_format(degrees_dec, just_degrees_minutes=True,
         else:
             print('TODO - calculation not setup!')
         if debug:
-            print( 'Conversions for: {:.7f}'.format(deg))
+            print('Conversions for: {:.7f}'.format(deg))
             # Into decimal location (the same)
             pstr = 'Decimal format for location: {:>3}{:0>5}'
-            print( pstr.format(degrees, degrees_frac) )
+            print(pstr.format(degrees, degrees_frac))
             # Into degrees, minutes and then decimal seconds
             if just_degrees_minutes:
                 pstr = "Pilot format for location: {:>3}o {:0>2}'"
-                print( pstr.format(degrees, minutes) )
+                print(pstr.format(degrees, minutes))
                 print('')
             else:
                 pstr = "Pilot format for location: {:>3}o {:0>2}.{:0>2}'"
-                print( pstr.format(degrees, minutes, seconds_dec) )
+                print(pstr.format(degrees, minutes, seconds_dec))
                 print('')
         # Return in LaTeX form?
         if LaTeX_format:
@@ -706,13 +714,13 @@ def convert_decimcal_degress2nav_format(degrees_dec, just_degrees_minutes=True,
     return vals2rtn
 
 
-def adjustFigAspect(fig,aspect=1):
+def adjustFigAspect(fig, aspect=1):
     '''
     Adjust the subplot parameters so that the figure has the correct
     aspect ratio.
     '''
-    xsize,ysize = fig.get_size_inches()
-    minsize = min(xsize,ysize)
+    xsize, ysize = fig.get_size_inches()
+    minsize = min(xsize, ysize)
     xlim = .4*minsize/xsize
     ylim = .4*minsize/ysize
     if aspect < 1:
@@ -731,7 +739,7 @@ def get_max_flying_range4BAE146(calculate_online=False):
     """
     if calculate_online:
         min_lat, max_lat, min_lon, max_lon = 90, -90, 180, -180
-        locs2plot  = 'Praia Airport', 'Dakar', 'Sao Vicente Airport',
+        locs2plot = 'Praia Airport', 'Dakar', 'Sao Vicente Airport',
         for loc2plot in locs2plot:
             lon, lat, alt = AC.get_loc(loc2plot)
             min_lat = min(min_lat, lat)
@@ -756,11 +764,11 @@ def get_max_flying_range4BAE146(calculate_online=False):
         max_lon = -21
     # Return data as a dictionary
     d = {
-    'min_lat' : min_lat,
-    'max_lat' : max_lat,
-    'min_lon' : min_lon,
-    'max_lon' : max_lon,
-    'max_alt' : 8000
+        'min_lat': min_lat,
+        'max_lat': max_lat,
+        'min_lon': min_lon,
+        'max_lon': max_lon,
+        'max_alt': 8000
     }
     return d
 
@@ -814,7 +822,7 @@ def extract_ds4df_locs(ds=None, df=None, LonVar='lon', LatVar='lat',
             # get the times for a specific data
             df_tmp = df.loc[df.index == dftime, :]
             if debug:
-                print( df_tmp.shape )
+                print(df_tmp.shape)
             lat_ = df_tmp[LatVar].values
             hPa_ = df_tmp[AltVar].values
             lon_ = df_tmp[LonVar].values
@@ -823,7 +831,7 @@ def extract_ds4df_locs(ds=None, df=None, LonVar='lon', LatVar='lat',
                             method='nearest')
             # loop and extract by data variable
             for data_var in vars2extract:
-                dfN.loc[dftime, data_var ] = ds_tmp[data_var].values
+                dfN.loc[dftime, data_var] = ds_tmp[data_var].values
             del ds_tmp, df_tmp
     else:
         # get indexes =en masse then extract with these
@@ -832,20 +840,20 @@ def extract_ds4df_locs(ds=None, df=None, LonVar='lon', LatVar='lat',
         if testing_mode:
             times2use = df.index.values[:10]
         else:
-            times2use =  df.index.values
+            times2use = df.index.values
         # Loop by timestamp
-        for n, time in enumerate( times2use ):
+        for n, time in enumerate(times2use):
             # get the times for a specific data
             lat_idx = d['lat'][n]
             lon_idx = d['lon'][n]
             lev_idx = d['hPa'][n]
-            time_idx =  d['time'][n]
+            time_idx = d['time'][n]
             # Extract nearest point using isel function
             ds_tmp = ds.isel(lat=lat_idx, lon=lon_idx, time=time_idx,
                              lev=lev_idx)
 #            d_tmp = ds_tmp.to_dict()
 #            vals = ds_tmp.to_array().values
-            vals = [ ds_tmp[i].data for i in vars2extract ]
+            vals = [ds_tmp[i].data for i in vars2extract]
             vals = np.array(vals)
             for nval, val in enumerate(vals):
                 dfN.loc[vars2extract[nval], time] = vals[nval]
@@ -902,23 +910,23 @@ def get_analysis_region(RegionName):
     """
 
     d = {
-    # "context area"
-    "context_area": {'x0':-40, 'x1': 30, 'y0': -5, 'y1': 45},
-    # Download region for GEOS-CF/5
-    'OPeNDAP_download_area': {'x0':-35, 'x1': 10, 'y0': 0, 'y1': 60},
-    # Cape Verde Regional perspective
-    # ... ?
+        # "context area"
+        "context_area": {'x0': -40, 'x1': 30, 'y0': -5, 'y1': 45},
+        # Download region for GEOS-CF/5
+        'OPeNDAP_download_area': {'x0': -35, 'x1': 10, 'y0': 0, 'y1': 60},
+        # Cape Verde Regional perspective
+        # ... ?
 
-    # Cape Verde Nested offline model region
-    # (for both 0.25x0.315 and 0.5*x.625 resolutions)
-    # ... ?
-    # TODO: Needs checking on plots (-32 or -35 in plots , rest the same )
-    'model_nest_area': {'x0':-32, 'x1': 15, 'y0':0, 'y1':34},
-    # Cape Verde "local" perspective
-    'local_CVAO_area': {'x0':-30, 'x1':-10, 'y0':0, 'y1':25},
+        # Cape Verde Nested offline model region
+        # (for both 0.25x0.315 and 0.5*x.625 resolutions)
+        # ... ?
+        # TODO: Needs checking on plots (-32 or -35 in plots , rest the same )
+        'model_nest_area': {'x0': -32, 'x1': 15, 'y0': 0, 'y1': 34},
+        # Cape Verde "local" perspective
+        'local_CVAO_area': {'x0': -30, 'x1': -10, 'y0': 0, 'y1': 25},
 
-    # Cape Verde flying area for ARNA
-    'Cape_Verde_Flying': {'x0': -29.1, 'x1':-15.9, 'y0':11.9, 'y1':21.1},
+        # Cape Verde flying area for ARNA
+        'Cape_Verde_Flying': {'x0': -29.1, 'x1': -15.9, 'y0': 11.9, 'y1': 21.1},
     }
     return d[RegionName]
 
@@ -964,13 +972,13 @@ def get_local_folder(key, host=None, rtn_dict=False):
         DataRoot = ''
         RunRoot = ''
     else:
-        print( 'NASA folder loction not known' )
+        print('NASA folder loction not known')
     # - Setup a dictionary for the variables
     d = {
-    'NASA_data': NASA_data,
-#    'folder4plots': folder4plots,
-    'ARNA_data' : ARNA_data,
-    'RunRoot' : RunRoot,
-    'DataRoot' : DataRoot,
+        'NASA_data': NASA_data,
+        #    'folder4plots': folder4plots,
+        'ARNA_data': ARNA_data,
+        'RunRoot': RunRoot,
+        'DataRoot': DataRoot,
     }
     return d[key]

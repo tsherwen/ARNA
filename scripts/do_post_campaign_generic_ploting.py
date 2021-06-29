@@ -4,6 +4,7 @@ Driver for generic plotting functions following the ARNA campaign
 """
 import arna as ar
 
+
 def main():
     """
     Main driver function
@@ -28,7 +29,7 @@ def main():
                                           RunSet='FP-Nest',
                                           res='0.25x0.3125',
                                           inc_GEOSChem=True,
-#                                                         flight_nums=flight_nums
+                                          #                                                         flight_nums=flight_nums
                                           )
 #                                          LatVar='LAT',
 #                                          LonVar='LON',)
@@ -41,8 +42,6 @@ def main():
                                              flight_nums=flight_nums,
                                              LatVar='LAT',
                                              LonVar='LON',)
-
-
 
     # Plot up nitrate aerosol data
     ar.plt_timeseries_comp4ARNA_flights_filters(context=context)
@@ -66,7 +65,7 @@ def main():
                                                       just_plot_GEOS_Chem=True,
                                                       inc_GEOSChem=True,
                                                       res='0..25x0.3125',
-                                                      RunSet='FP-Nest' )
+                                                      RunSet='FP-Nest')
     # Plot up the temperature data from Hannah Price
     # N/A? this is only for 2019. Data to be worked up for 2020.
 
@@ -76,11 +75,9 @@ def main():
                                                 RunSet='FP-Nest',
                                                 res='0.25x0.3125',
                                                 inc_GEOSChem=True,
-#                                                flight_nums=flight_nums,
+                                                #                                                flight_nums=flight_nums,
                                                 LatVar='LAT',
                                                 LonVar='LON',)
-
-
 
     # Plot up data for SLRs with and without dust
     ar.plt_comp_by_alt_4ARNA_all(just_SLR=False, context=context)
@@ -90,15 +87,14 @@ def main():
                                           RunSet='FP-Nest',
                                           res='0.25x0.3125',
                                           inc_GEOSChem=True,
-#                                          flight_nums=flight_nums,
-#                                          LatVar='LAT',
-#                                          LonVar='LON',
+                                          #                                          flight_nums=flight_nums,
+                                          #                                          LatVar='LAT',
+                                          #                                          LonVar='LON',
                                           just_SLR=True)
 
     ar.plt_comp_by_alt_4ARNA_all_DUST(plt_model=False, context=context)
     ar.plt_comp_by_alt_4ARNA_all_DUST(plt_model=True, context=context)
     ar.plt_comp_by_alt_4ARNA_CIMS_all_DUST(context=context)
-
 
     # Evaluate the high resolution modelling region
     ar.evaluate_regional_grid4GEOSChem()
@@ -107,11 +103,8 @@ def main():
     ar.plt_timeseries_comp4MOYA_flights()
     ar.plt_timeseries_comp4MOYA_flights_PHYSICAL_VARS()
 
-
     # - Other misc. plotting tasks
 #    explore_high_ozone_near_CVAO()
-
-
 
 
 def explore_high_ozone_near_CVAO():
@@ -126,10 +119,10 @@ def explore_high_ozone_near_CVAO():
     res = '0.25x0.3125'
     # Which flights to plot?
 #    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
-	# Just use non-transit ARNA flights
+    # Just use non-transit ARNA flights
     flights_nums = [
-#    217,
-    218, 219, 220, 221, 222, 223, 224, 225,
+        #    217,
+        218, 219, 220, 221, 222, 223, 224, 225,
     ]
     # Use flightnumbers with both NOy and halogens data
 #    flights_nums = [
@@ -140,27 +133,26 @@ def explore_high_ozone_near_CVAO():
 #    224,  # Missing data for C221 (BrO... )
 #    225,  # Missing data for C221 (BrO... )
 #    ]
-    flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
+    flight_IDs = ['C{}'.format(i) for i in flights_nums]
 #    flight_IDs = flight_IDs[-1:] #  Just use last one for now
 
     # Get data
     dfs_mod_GC = {}
     for flight_ID in flight_IDs:
         dfs_mod_GC[flight_ID] = ar.get_GEOSChem4flightnum(flight_ID=flight_ID,
-                                                       res=res,
-                                                       RunSet=RunSet,)
+                                                          res=res,
+                                                          RunSet=RunSet,)
     # Observations
     dfs_obs = {}
     for flight_ID in flight_IDs:
         dfs_obs[flight_ID] = ar.get_FAAM_core4flightnum(flight_ID=flight_ID)
-
 
     # Now plot high ozone locations by flight
     # Setup PDF to save PDF plots to
     savetitle = 'ARNA_flighttrack_high_ozone'
     pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
     for flight_ID in flight_IDs:
-#    for flight_ID in flight_IDs[-1:]:
+        #    for flight_ID in flight_IDs[-1:]:
         # Get dataframes for flight
         df_obs = dfs_obs[flight_ID]
         df_mod = dfs_mod_GC[flight_ID]
@@ -169,11 +161,11 @@ def explore_high_ozone_near_CVAO():
         LatVar = 'LAT'
         LonVar = 'LON'
         cut_off = 70
-        df2plot = df2plot.loc[df2plot['O3']>cut_off*1E-09, :]
+        df2plot = df2plot.loc[df2plot['O3'] > cut_off*1E-09, :]
         title_str = 'Locations with modelled ozone >{} ppbv during {}'
-        if (df2plot.shape[0] !=0):
+        if (df2plot.shape[0] != 0):
             prt_str = 'Plotting {} for values >{} ppbv'
-            print( prt_str.format(flight_ID, cut_off) )
+            print(prt_str.format(flight_ID, cut_off))
 
             title = title_str.format(cut_off, flight_ID)
             ar.plt_flightpath_spatially_over_CVAO(df=df2plot,
@@ -186,11 +178,10 @@ def explore_high_ozone_near_CVAO():
             plt.close()
         else:
             prt_str = 'WARNING: Not plotting for {} as no O3 ppbv values >{}'
-            print( prt_str.format(flight_ID, cut_off) )
+            print(prt_str.format(flight_ID, cut_off))
     # - Save entire pdf
     AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
     plt.close('all')
-
 
     # - Check the average modelled ozone vertical profile at Cape verde
 
@@ -198,14 +189,14 @@ def explore_high_ozone_near_CVAO():
     RunSet = 'FP-Nest'
     res = '0.25x0.3125'
     RunDict = ar.get_dict_of_GEOSChem_model_output(res=res, RunSet=RunSet)
-    Folder = '{}/OutputDir/'.format( RunDict[RunSet] )
+    Folder = '{}/OutputDir/'.format(RunDict[RunSet])
 
     #
     ds = AC.get_GEOSChem_files_as_ds(wd=Folder)
 #    StateMet = AC.get_StateMet_ds(wd=Folder)
     ModelAlt = AC.gchemgrid('c_km_geos5')
     prefix = 'SpeciesConc_'
-    specs2plot = [ i for i in ds.data_vars if prefix in i ]
+    specs2plot = [i for i in ds.data_vars if prefix in i]
     specs2plot = [i.split(prefix)[-1] for i in specs2plot][::-1]
 #    specs2plot = ['O3', 'CO', 'NO2'][::-1]
 
@@ -230,8 +221,8 @@ def explore_high_ozone_near_CVAO():
         ds_tmp *= scalby
         #  plot up...
         ds_tmp.plot(y='lev')
-        plt.ylabel( '{} ({})'.format('Altitude', 'km') )
-        plt.xlabel( '{} ({})'.format(spec, units) )
+        plt.ylabel('{} ({})'.format('Altitude', 'km'))
+        plt.xlabel('{} ({})'.format(spec, units))
         plt.ylim(0, 15)
         if spec == 'O3':
             plt.xlim(-20, 200)
@@ -241,7 +232,7 @@ def explore_high_ozone_near_CVAO():
             plt.xlim(40, 160)
         if save2png:
             save_str = 'ARNA_vertical_above_CVAO_GEOSChem_{}'
-            AC.save_plot( save_str.format( spec ) )
+            AC.save_plot(save_str.format(spec))
             AC.close_plot()
         else:
             # Save to PDF
@@ -253,7 +244,6 @@ def explore_high_ozone_near_CVAO():
     # - Save entire pdf
     AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
     plt.close('all')
-
 
 
 def extract_GC_data4CVAO():
@@ -310,7 +300,7 @@ def test_new_planeflight_Jrate_output():
     for file2use in files2use:
         print(file2use)
         df, NIU = AC.pf_csv2pandas(file=file2use, vars=vars, epoch=True,
-                                    r_vars=True)
+                                   r_vars=True)
         dfs += [df]
     # Append the dataframes together
     df = dfs[0].append(dfs[1:])
@@ -324,11 +314,11 @@ def test_new_planeflight_Jrate_output():
         print(file2use)
         vars, sites = AC.get_pf_headers(file2use, debug=debug)
         df, NIU = AC.pf_csv2pandas(file=file2use, vars=vars, epoch=True,
-                                    r_vars=True)
+                                   r_vars=True)
         # Update the datetime index
         df = AC.DF_YYYYMMDD_HHMM_2_dt(df, rmvars=None, epoch=False)
         df.index.name = None
-        df.to_csv( filename.format(date) )
+        df.to_csv(filename.format(date))
 
     # - Get output from NetCDF diagnostics
     # Get Get J-values
@@ -337,7 +327,7 @@ def test_new_planeflight_Jrate_output():
     # And get StateMet
     FileStr = 'GEOSChem.StateMet.*'
     ds2 = xr.open_mfdataset(folder+FileStr)
-    ds2 = ds2[ 'Met_PMID' ]
+    ds2 = ds2['Met_PMID']
     ds = xr.merge([ds2, ds])
 
     s_d = {}
@@ -356,7 +346,7 @@ def test_new_planeflight_Jrate_output():
         lev2use = AC.find_nearest(lev2use.values, alt)
 #                int(lev2use.sel(lev=alt, method='nearest').values)
         ds_tmp = ds_tmp.isel(lev=lev2use)
-        print(site, alt, lev2use, lev2use ==0 )
+        print(site, alt, lev2use, lev2use == 0)
         # extract data
         prefix = 'Jval_'
         vars2use = [i for i in ds_tmp.data_vars if prefix in i]
@@ -379,7 +369,7 @@ def test_new_planeflight_Jrate_output():
         print(site)
         #
         nc_data = s_d[site]
-        pf_data = df.loc[ df['TYPE']==site, : ]
+        pf_data = df.loc[df['TYPE'] == site, :]
         for spec in specs2plot:
             print(spec)
 
@@ -404,7 +394,7 @@ def test_new_planeflight_Jrate_output():
             else:
                 print('case not setup for species: {}'.format(spec))
             if isinstance(pf_spec, str):
-                print( spec, pf_spec)
+                print(spec, pf_spec)
                 data = pf_data[pf_spec]
                 plt.plot(data.index, data.values, label='PF')
             # Plot up NC
@@ -429,27 +419,27 @@ def test_new_planeflight_Jrate_output():
     folderGlobal = RunRoot + RunStr + 'ARNA.BCs.TEST.PF_Jrates.JVALS.GLOBAL/'
     files2useNest = list(sorted(glob.glob(folderNest + '/*plane*log*')))
     files2useGlobal = list(sorted(glob.glob(folderGlobal + '/*plane*log*')))
-    for nfile2use, file2useNest in enumerate( files2useNest ):
+    for nfile2use, file2useNest in enumerate(files2useNest):
         date = file2use.split('plane.log.')[-1]
         print(file2use)
         file2useGlobal = files2useGlobal[nfile2use]
-        file2use_dict = {'Nest':file2useNest, 'Global':file2useGlobal}
+        file2use_dict = {'Nest': file2useNest, 'Global': file2useGlobal}
         dfs = {}
         for key in file2use_dict.keys():
             file2use = file2use_dict[key]
             vars, sites = AC.get_pf_headers(file2use, debug=debug)
             df, NIU = AC.pf_csv2pandas(file=file2use, vars=vars, epoch=True,
-                                        r_vars=True)
+                                       r_vars=True)
             # Update the datetime index
             df = AC.DF_YYYYMMDD_HHMM_2_dt(df, rmvars=None, epoch=False)
             df.index.name = None
-            dfs[key]= df
+            dfs[key] = df
         # Now plot
         for nkey, key in enumerate(list(dfs.keys())):
             dfs[key]['JVL_134'].plot(label=key, color=['blue', 'red'][nkey])
             plt.title('JHNO3 for flighttrack on {}'.format(date))
         # save
-        plt.ylabel( 'J-rate (s$^{-1}$)' )
+        plt.ylabel('J-rate (s$^{-1}$)')
         plt.legend()
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
         plt.close()
@@ -469,11 +459,11 @@ def evaluate_regional_grid4GEOSChem(show_plot=False, dpi=320):
     campaign = 'ARNA-2'
     dfARNA = get_flighttracks4campaign(campaign)
     campaigns = [
-    'ARNA-2', 'ACISIS-5', 'ACRUISE', 'ACISIS-4', 'MOYA-2', 'ACISIS-3',
-    'ACISIS-2',
-#    'Clarify', # FAAM files not downloaded
-    'MOYA-1',
-#    'ACISIS-1' # FAAM files not downloaded
+        'ARNA-2', 'ACISIS-5', 'ACRUISE', 'ACISIS-4', 'MOYA-2', 'ACISIS-3',
+        'ACISIS-2',
+        #    'Clarify', # FAAM files not downloaded
+        'MOYA-1',
+        #    'ACISIS-1' # FAAM files not downloaded
     ]
     dfs = [get_flighttracks4campaign(i) for i in campaigns]
 
@@ -490,7 +480,7 @@ def evaluate_regional_grid4GEOSChem(show_plot=False, dpi=320):
     lats = df[LatVar].values
     lons = df[LonVar].values
     color_list = AC.get_CB_color_cycle()
-    projection=ccrs.PlateCarree
+    projection = ccrs.PlateCarree
     # Now scatter points on plot
     ax = add_scatter_points2cartopy_ax(ax=ax, lons=lons, lats=lats,
                                        color=color_list[0],
@@ -506,7 +496,7 @@ def evaluate_regional_grid4GEOSChem(show_plot=False, dpi=320):
 
     # - Plot up high resolution modelling region around BB FAAM flights
     fig, ax = plt_highres_modelling_region(plot_blank_data=True)
-    for n_campaign, campaign in enumerate( campaigns ):
+    for n_campaign, campaign in enumerate(campaigns):
         df = dfs[campaigns.index(campaign)]
         print(campaign)
         lats = df[LatVar].values
@@ -537,12 +527,12 @@ def evaluate_regional_grid4GEOSChem(show_plot=False, dpi=320):
     # Update lon to be in degrees West -
     var2use = 'cofire'
     ds = ds[[var2use]]
-    ds = ds.assign_coords({'lon':ds.lon.values -180})
+    ds = ds.assign_coords({'lon': ds.lon.values - 180})
     # Update name and scaling
     Uvar2use = '{} (1E-9 {})'.format(ds[var2use].long_name, ds[var2use].units)
-    ds = ds.rename({var2use:Uvar2use})
+    ds = ds.rename({var2use: Uvar2use})
     var2use = Uvar2use
-    ds = ds[[var2use]].mean(dim='time') *1E9
+    ds = ds[[var2use]].mean(dim='time') * 1E9
     # Remove zero data
     arr = ds[var2use].values
     arr[arr <= 0] = np.NaN
@@ -553,9 +543,9 @@ def evaluate_regional_grid4GEOSChem(show_plot=False, dpi=320):
     arr = np.roll(arr, -int(len(ds.lon)/2), axis=1)
     ds[var2use].values = arr
     # Plot up the data
-    fig, ax = plt_highres_modelling_region(ds=ds,var2use=var2use,
+    fig, ax = plt_highres_modelling_region(ds=ds, var2use=var2use,
                                            plot_blank_data=False,
-                                           rm_colourbar=False )
+                                           rm_colourbar=False)
 
     fig.suptitle('Biomass burning emissions (GFAS) - Feb 2020 (ARNA-2)')
     del ds
@@ -575,18 +565,18 @@ def evaluate_regional_grid4GEOSChem(show_plot=False, dpi=320):
     # Combine all dust emissions
     var2use = 'Total dust emission (kg/m2/s)'
     ds[var2use] = ds['EMIS_DST1'].copy()
-    ds[var2use] = ds[var2use].values +ds['EMIS_DST2']
-    ds[var2use] = ds[var2use].values +ds['EMIS_DST3']
-    ds[var2use] = ds[var2use].values +ds['EMIS_DST4']
+    ds[var2use] = ds[var2use].values + ds['EMIS_DST2']
+    ds[var2use] = ds[var2use].values + ds['EMIS_DST3']
+    ds[var2use] = ds[var2use].values + ds['EMIS_DST4']
     ds = ds[[var2use]].mean(dim='time')
     # Remove zero data
     arr = ds[var2use].values
     arr[arr <= 0] = np.NaN
     ds[var2use].values = arr
     # Plot up the data
-    fig, ax = plt_highres_modelling_region(ds=ds,var2use=var2use,
+    fig, ax = plt_highres_modelling_region(ds=ds, var2use=var2use,
                                            plot_blank_data=False,
-                                           rm_colourbar=False )
+                                           rm_colourbar=False)
 
     fig.suptitle('Dust emissions (online) - Feb *2019* (ARNA-2)')
     # Save to PDF
