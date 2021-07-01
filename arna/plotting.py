@@ -1735,7 +1735,11 @@ def plt_comp_by_alt_4ARNA_all(dpi=320, just_SLR=True, show_plot=False,
                               just_plot_GEOS_Chem=False,
                               inc_GEOSChem=False,
                               res='4x5', RunSet=None,
-                              flight_nums=[]):
+                              flight_nums=[],
+                              savetitle=None,
+                              pdff=None,
+                              close_pdf=False,
+                              debug=False):
     """
     Plot up altitude binned comparisons between core obs. and model data
     """
@@ -1774,12 +1778,6 @@ def plt_comp_by_alt_4ARNA_all(dpi=320, just_SLR=True, show_plot=False,
         dfs_mod_CF[flight_ID] = df
     # Model - GEOS-Chem (offline)
     if inc_GEOSChem:
-        #        RunSet='MERRA2-0.5-initial'
-        #        res='0.5x0.625'
-        #        RunSet='MERRA2-BC'
-        #        res='4x5'
-        #        RunSet='FP-Nest'
-        #        res='0.25x0.3125'
         dfs_mod_GC = {}
         for flight_ID in flight_IDs:
             dfs = get_GEOSChem4flightnum(flight_ID=flight_ID,
@@ -1801,12 +1799,12 @@ def plt_comp_by_alt_4ARNA_all(dpi=320, just_SLR=True, show_plot=False,
     else:
         print('TODO: setup plotting of GEOS-CF and GEOS-Chem')
         dfs_mod = dfs_mod_CF
-#    print(dfs_mod)
-    print(dfs_mod.keys())
-    print(list(dfs_mod.keys())[0])
-    print(dfs_mod[list(dfs_mod.keys())[0]])
-    print(dfs_mod[list(dfs_mod.keys())[0]][RunSet])
-    print(dfs_mod[list(dfs_mod.keys())[0]][RunSet].head())
+    if debug:
+        print(dfs_mod.keys())
+        print(list(dfs_mod.keys())[0])
+        print(dfs_mod[list(dfs_mod.keys())[0]])
+        print(dfs_mod[list(dfs_mod.keys())[0]][RunSet])
+        print(dfs_mod[list(dfs_mod.keys())[0]][RunSet].head())
 
     # Combine to a single dataframe
 #    df_mod = pd.concat([dfs_mod[i] for i in dfs_mod.keys()], axis=0)
@@ -1820,8 +1818,10 @@ def plt_comp_by_alt_4ARNA_all(dpi=320, just_SLR=True, show_plot=False,
     else:
         extr_str = ''
     # Setup PDF to save PDF plots to
-    savetitle = 'ARNA_altitude_binned_{}{}'.format('ALL', extr_str)
-    pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
+    if isinstance(savetitle, type(None)):
+        savetitle = 'ARNA_altitude_binned_{}{}'.format('ALL', extr_str)
+    if isinstance(pdff, type(None)):
+        pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
 
     # - Plot up location of flights
     if just_SLR:
@@ -1858,8 +1858,13 @@ def plt_comp_by_alt_4ARNA_all(dpi=320, just_SLR=True, show_plot=False,
         title_str = "Altitude binned '{}' ({}) for all 'Straight and Level Runs'"
     else:
         title_str = "Altitude binned '{}' ({}) for all flights"
-    # Setup color dictinoary
+    # Setup color dictionary for plotting...
     color_dict = {'GEOS-CF': 'red', 'Obs.': 'k', RunSet: 'Orange'}
+    colors2use = AC.get_CB_color_cycle()
+    runs2color = [i for i in data_d.keys() if i not in color_dict.keys()]
+    for n_run, run in enumerate(runs2color):
+        color_dict[run] = colors2use[n_run]
+    # And conversion scales and units for variables
     unit_d = {}
     mod2obs_varnames = {
         'CO': 'CO_AERO', 'O3': 'O3_TECO', 'NO2': 'no2_mr', 'NO': 'no_mr',
@@ -1954,7 +1959,8 @@ def plt_comp_by_alt_4ARNA_all(dpi=320, just_SLR=True, show_plot=False,
         plt.close()
 
     # - Save entire pdf
-    AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
+    if close_pdf:
+        AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
     plt.close('all')
 
 
@@ -2145,7 +2151,14 @@ def plt_comp_by_alt_4ARNA_all_DUST(dpi=320, just_SLR=True, flight_nums=[],
 def plt_comp_by_alt_4ARNA_CIMS_all_DUST(dpi=320, just_SLR=True,
                                         plt_model=False, show_plot=False,
                                         flight_nums=[],
-                                        context="paper", font_scale=0.75):
+                                        res='4x5', RunSet=None,
+                                        context="paper", font_scale=0.75,
+                                        savetitle=None, pdff=None,
+                                        plt_map=True,
+                                        filter_by_dust=False,
+                                        just_plot_GEOS_Chem=False,
+                                        inc_GEOSChem=False,
+                                        close_pdf=True):
     """
     Plot up altitude binned comparisons between core obs. and model data
     """
@@ -2167,51 +2180,102 @@ def plt_comp_by_alt_4ARNA_CIMS_all_DUST(dpi=320, just_SLR=True,
         df['flight_ID'] = flight_ID
         dfs_obs[flight_ID] = df
     # Setup dictionary of Model dataframes
-    dfs_mod = {}
+#     dfs_mod = {}
+#     for flight_ID in flight_IDs:
+#         df = get_GEOSCF4flightnum(flight_ID=flight_ID)
+#         df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
+#         df['flight_ID'] = flight_ID
+#         dfs_mod[flight_ID] = df
+    # Model - GEOS-CF (online)
+    dfs_mod_CF = {}
     for flight_ID in flight_IDs:
         df = get_GEOSCF4flightnum(flight_ID=flight_ID)
         df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
         df['flight_ID'] = flight_ID
-        dfs_mod[flight_ID] = df
+        dfs_mod_CF[flight_ID] = df
+    # Model - GEOS-Chem (offline)
+    if inc_GEOSChem:
+        dfs_mod_GC = {}
+        for flight_ID in flight_IDs:
+            dfs = get_GEOSChem4flightnum(flight_ID=flight_ID,
+                                         res=res,
+                                         RunSet=RunSet,)
+            for key in dfs.keys():
+                df = dfs[key]
+                df = add_derived_FAAM_flags2df4flight(df=df,
+                                                      flight_ID=flight_ID)
+                df['flight_ID'] = flight_ID
+
+                dfs[key] = df
+            dfs_mod_GC[flight_ID] = dfs
+            del dfs
+
+    # Kludge - for now just plot GEOS-Chem
+    if just_plot_GEOS_Chem:
+        dfs_mod = dfs_mod_GC
+    else:
+        print('TODO: setup plotting of GEOS-CF and GEOS-Chem')
+        dfs_mod = dfs_mod_CF
+
     # Combine to a single dataframe
-    df_mod = pd.concat([dfs_mod[i] for i in dfs_mod.keys()], axis=0)
+#    df_mod = pd.concat([dfs_mod[i] for i in dfs_mod.keys()], axis=0)
+    df_mod = pd.concat([dfs_mod[i][RunSet] for i in dfs_mod.keys()], axis=0)
     df_obs = pd.concat([dfs_obs[i] for i in dfs_obs.keys()], axis=0)
-    # Only consider data during SLRs?
+    # Only consider data during straight and level runs (SLRs)?
     if just_SLR:
         df_obs = df_obs.loc[df_obs['IS_SLR'] == True, :]
         df_mod = df_mod.loc[df_mod['IS_SLR'] == True, :]
         extr_str = '_JUST_SLR_DUST'
     else:
-        extr_str = '_DUST'
+        extr_str = ''
+    if filter_by_dust:
+        extr_str += '_DUST'
     # - Setup data objects or plotting
     # Force alt to be in units of km
     ALT_var = 'Altitude (km)'
     Y_unit = ALT_var
-    df_mod[ALT_var] = AC.hPa_to_Km(df_mod['model-lev'].values)
+    print('WARNING: Kludged below to only plot GEOS-Chem alt var')
+    if just_plot_GEOS_Chem:
+        df_mod[ALT_var] = AC.hPa_to_Km(df_mod['PRESS'].values)
+    else:
+        df_mod[ALT_var] = AC.hPa_to_Km(df_mod['model-lev'].values)
     df_obs[ALT_var] = df_obs['ALT_GIN'].values / 1E3
+#    df_mod[ALT_var] = AC.hPa_to_Km(df_mod['model-lev'].values)
+#    df_obs[ALT_var] = df_obs['ALT_GIN'].values / 1E3
     # Plot up just observations? Or model too?
-    data_d = {
-        'Obs.':  df_obs.loc[df_obs['IS_DUST'] == False, :],
-        'Obs. (Dust)': df_obs.loc[df_obs['IS_DUST'] == True, :],
-    }
-    if plt_model:
-        data_d['GEOS-CF'] = df_mod.loc[df_mod['IS_DUST'] == False, :]
-        data_d['GEOS-CF (dust)'] = df_mod.loc[df_mod['IS_DUST'] == True, :]
-        extr_str += '_inc_MODEL'
+    if filter_by_dust:
+        data_d = {
+            'Obs.':  df_obs.loc[df_obs['IS_DUST'] == False, :],
+            'Obs. (Dust)': df_obs.loc[df_obs['IS_DUST'] == True, :],
+        }
+        if plt_model:
+            data_d['GEOS-CF'] = df_mod.loc[df_mod['IS_DUST'] == False, :]
+            data_d['GEOS-CF (dust)'] = df_mod.loc[df_mod['IS_DUST'] == True, :]
+            extr_str += '_inc_MODEL'
+
+    else:
+        data_d = {'Obs.':  df_obs }
+        if just_plot_GEOS_Chem:
+            data_d = {RunSet: df_mod, 'Obs.': df_obs}
+        else:
+            data_d = {'GEOS-CF': df_mod, 'Obs.': df_obs}
 
     # Setup PDF to save PDF plots to
-    savetitle = 'ARNA_altitude_binned_{}_CIMS_{}'.format('ALL', extr_str)
-    pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
+    if isinstance(savetitle, type(None)):
+        savetitle = 'ARNA_altitude_binned_{}_CIMS_{}'.format('ALL', extr_str)
+    if isinstance(pdff, type(None)):
+        pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
 
     # - Plot up location of flights
     if just_SLR:
-        title = "Flight tracks for 'Straight and Level Runs' during ARNA"
+        title = "Flight tracks for 'Straight+Level Runs (SLRs)' during ARNA"
     else:
         title = 'Flight tracks for all flights during ARNA'
-    plt_flightpath_spatially_over_CVAO(df=df_obs, flight_ID=flight_ID,
-                                       title=title)
-    AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
-    plt.close()
+    if plt_map:
+        plt_flightpath_spatially_over_CVAO(df=df_obs, flight_ID=flight_ID,
+                                           title=title)
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+        plt.close()
 
     # - Put observations and vars to plot into a dictionary
     sns.set(color_codes=True)
@@ -2326,7 +2390,8 @@ def plt_comp_by_alt_4ARNA_CIMS_all_DUST(dpi=320, just_SLR=True,
         plt.close()
 
     # - Save entire pdf
-    AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
+    if close_pdf:
+        AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
     plt.close('all')
 
 
@@ -2562,6 +2627,56 @@ def plt_comp_by_alt_4ARNA_flights(dpi=320, just_SLR=True, show_plot=False,
         # - Save entire pdf
         AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
         plt.close('all')
+
+
+def plt_comp_by_alt_4ARNA_together(dpi=320, just_SLR=True, show_plot=False,
+                                   RunSet=None, res='4x5', flight_nums=[],
+                                   just_plot_GEOS_Chem=False,
+                                   inc_GEOSChem=False,
+                                   context="paper", font_scale=0.75):
+    """
+    Plot up altitude binned comparisons between core obs. and model data
+    """
+    # Setup the pdf file to use
+    savetitle = 'ARNA_altitude_binned_combined_file'
+    if just_SLR:
+        savetitle += '_JUST_SLR'
+    pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
+
+    # Call the standard species plotter
+    plt_comp_by_alt_4ARNA_all(just_SLR=just_SLR, context=context,
+                              RunSet='FP-Nest', res='0.25x0.3125',
+                              inc_GEOSChem=True,
+                              just_plot_GEOS_Chem=True,
+                              savetitle=savetitle,
+                              pdff=pdff,
+                              close_pdf=False,
+                              )
+
+    # Call the CIMS plotter
+    plt_comp_by_alt_4ARNA_CIMS_all_DUST(context=context,
+                                        inc_GEOSChem=True,
+                                        just_plot_GEOS_Chem=True,
+                                        plt_model=True,
+                                        RunSet='FP-Nest', res='0.25x0.3125',
+                                        savetitle=savetitle,
+                                        pdff=pdff,
+                                        plt_map=False,
+                                        close_pdf=False,
+                                        )
+    # And physical variables
+    #
+
+    # And SWAS
+
+    # Call ... ????
+
+    # - Save entire pdf
+    AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
+    plt.close('all')
+
+
+
 
 
 def plt_comp_by_alt_4ARNA_flights_CIMS(dpi=320, just_SLR=False,
@@ -3718,7 +3833,7 @@ def only_use_filter_times(df, FILTERdf=None, flight_ID='C225',
         # Save to list
         dfs += [df4filter.copy()]
         del df4filter
-    # return averaged over filter sample period
+    # Return averaged over filter sample period
     if average4period:
         return pd.DataFrame(dfs, index=FILTERdf.index)
     else:
@@ -3734,7 +3849,7 @@ def mk_combined_NOy_obs_variable(FAAMdf=None, CIMSdf=None, Filtersdf=None,
      - GEOS-CF NOy is
        no_no2_hno3_hno4_hono_2xn2o5_pan_organicnitrates_aerosolnitrates
     """
-    # bin data to filter observation periods
+    # Bin data to filter observation periods
     if bin_dfs4filter_periods:
         print('WARNING: binning of dataframes to filter perios not setup!')
     # Use the filter dataframe as the basis to add otther species too too
@@ -3813,7 +3928,7 @@ def plt_ts_comp4MOYA_flights(dpi=320, inc_GEOSChem=False,
     for flight_ID in flight_IDs:
         dfs_obs[flight_ID] = get_FAAM_core4flightnum(flight_ID=flight_ID,
                                                      folder=folder)
-    # -  Now plot up
+    # - Now plot up
     for flight_ID in flight_IDs:
         print(flight_ID)
         # Get observations and model timeseries data as a DataFrame
@@ -6087,7 +6202,7 @@ def plt_highres_modelling_region(ds=None, var2use='NOy', LatVar='lat',
             ds = ds.sel(model_level_number=ds.model_level_number[0])
             del ds['model_level_number']
             ds[[var2use]].attrs = {}
-            # rename lat and long
+            # Rename lat and long
             ds = ds.rename({'latitude': LatVar, 'longitude': LonVar})
     # - Extents to use
     # area of extracted data from OPeNDAP

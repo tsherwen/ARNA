@@ -847,6 +847,57 @@ def get_flighttracks4campaign(campaign='ARNA-2', PressVar="PS_RVSM",
     return df
 
 
+def mk_planeflight_files4sites(testing_mode=False):
+    """
+    Make plane-flight input files for various ground sites
+    """
+    # Location of flight data
+    locs = ['CVO{}'.format(i) for i in range(1, 8)]
+    #
+    sdate = datetime.datetime(2015, 1, 1,)
+    edate = datetime.datetime(2015, 1, 15,)
+    dates = pd.date_range(sdate, edate, freq='T')
+    #
+    LOCS_df = pd.read_csv(filename)
+    vars_ = ['LAT', 'LON', 'PRESS', 'TYPE']
+    LAT, LON, PRESS, TYPE = [LOCS_df[i].values for i in vars_]
+    # for each location make a DataFrame, then conbime
+    dfs = []
+    for n, type_ in enumerate(TYPE):
+        # dictionary of data
+        nvar = len(dates)
+        d = {
+            'datetime': dates, 'LAT': [LAT[n]]*nvar, 'LON': [LON[n]]*nvar,
+            'TYPE': [TYPE[n]]*nvar, 'PRESS': [PRESS[n]]*nvar}
+        dfs += [pd.DataFrame(d, index=np.arange(nvar)+(n*1E6))]
+    # combine all TYPE (sites) and sort by date
+    df = pd.concat(dfs).sort_values('datetime', ascending=True)
+
+
+
+
+def get_planeflight_slist2output(num_tracers=203):
+    """
+    Store of planeflight slist to request outputs for
+    """
+    # Mannually setup slist
+
+    met_vars = [
+        'GMAO_ABSH', 'GMAO_PSFC', 'GMAO_SURF', 'GMAO_TEMP', 'GMAO_UWND',
+        'GMAO_VWND', 'GMAO_PRES'
+    ]
+    species = ['OH', 'HO2']
+    assert isinstance(num_tracers, int), 'num_tracers must be an integer'
+    slist = ['TRA_{:0>3}'.format(i) for i in np.arange(1, num_tracers+1)]
+    # Add Jvals
+    JVN2use = np.arange(1, 139)
+    JVN2drop = [4, 5, 35, 52, 57, 58, 102]
+    JVN2use = [i for i in JVN2use if i not in JVN2drop]
+    JVAL_list = ['JVL_{:0>3}'.format(i) for i in JVN2use]
+    slist = slist + species + met_vars + JVAL_list
+    return slist
+
+
 def mk_planeflight_files4FAAM_campaigns(testing_mode=False):
     """
     Make plane-flight input files for various FAAM campaigns
@@ -887,27 +938,7 @@ def mk_planeflight_files4FAAM_campaigns(testing_mode=False):
     flight_IDs = df['Flight ID'].values
     #
     num_tracers = 203
-#    rxn_nums = [
-    # Just extract, HNO3, NO2, O3, NIT(s) for now
-    # Numbers in *.eqn file for
-#    1, 2, 3, 11, 16, 130, 131, 132, 133,
-    # Index numbers for RCONST array
-#    699, 700, 701, 702, 707, 803, 804, 805, 806
-#    ]
-    # Mannually setup slist
-    met_vars = [
-        'GMAO_ABSH', 'GMAO_PSFC', 'GMAO_SURF', 'GMAO_TEMP', 'GMAO_UWND',
-        'GMAO_VWND', 'GMAO_PRES'
-    ]
-    species = ['OH', 'HO2']
-    assert isinstance(num_tracers, int), 'num_tracers must be an integer'
-    slist = ['TRA_{:0>3}'.format(i) for i in np.arange(1, num_tracers+1)]
-    # Add Jvals
-    JVN2use = np.arange(1, 139)
-    JVN2drop = [4, 5, 35, 52, 57, 58, 102]
-    JVN2use = [i for i in JVN2use if i not in JVN2drop]
-    JVAL_list = ['JVL_{:0>3}'.format(i) for i in JVN2use]
-    slist = slist + species + met_vars + JVAL_list
+    slist = get_planeflight_slist2output(num_tracers=num_tracers)
 
     # Loop and extract FAAM BAe146 flights
     for flight_ID in flight_IDs:

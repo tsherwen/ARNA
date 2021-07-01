@@ -12,15 +12,12 @@ import AC_tools as AC
 import pandas as pd
 from netCDF4 import Dataset
 from datetime import datetime as datetime_
-#import matplotlib.dates as mdates
-#import time
 import datetime as datetime
 import time
 from time import gmtime, strftime
 import matplotlib.pyplot as plt
 import seaborn as sns
 import gc
-#import matplotlib
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 import matplotlib.patches as mpatches
@@ -28,19 +25,15 @@ import seaborn as sns
 import matplotlib.ticker as mticker
 import cartopy.crs as ccrs
 from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
-#from cartopy.mpl.ticker import LatitudeFormatter, LongitudeFormatter
-#from cartopy.mpl.ticker import LatitudeLocator, LongitudeLocator
 from shapely.geometry.polygon import LinearRing
 import xesmf as xe
 import os
-#from bs4 import BeautifulSoup
 import requests
 from PIL import Image, ImageDraw
 import PIL
 from multiprocessing import Pool
 from functools import partial
 import matplotlib
-
 # import ARNA analysis/campaign code as a module
 import arna as ar
 #from arna import mk_core_plts4fcast_GEOSCF_GEOS5
@@ -602,7 +595,7 @@ def get_latest_GEOSCF_fcast_data_ALL(dt=None, just_check_yesterday=True,
             dt = last_fcast_start
             ass_str = 'The most recent data is already locally available'
             assert last_fcast_start > last_local_data_date, ass_str
-            # Download data if available from nasa
+            # Download data if available from NASA
 #            lastest_GEOSCF_avail = check_if_latest_GEOSCF_is_available(last_fcast_start)
     else:
         # Using the provided datetime (dt)

@@ -63,10 +63,10 @@ def explore_NOy_with_acid_uptake():
 
     # Get generic stats on runs
     dates2use = None
-    extra_burden_specs = NOySpecs + ['SO2', 'SO4']
+    extra_specs = NOySpecs + ['SO2', 'SO4']
     df = AC.get_general_stats4run_dict_as_df(run_dict=d,
                                              dates2use=dates2use,
-                                             extra_burden_specs=extra_burden_specs)
+                                             extra_burden_specs=extra_specs)
 
     # Just get NOy species in N Tg equilivents
     avg_over_time = True  # Note: burdens area averaged overtime
@@ -243,7 +243,6 @@ def explore_NOy_with_acid_uptake():
         VarName = 'aer. NIT (% of NOy)'
         ds[VarName] = ds[list(ds.data_vars)[0]].copy()
         ds[VarName] = ds['NIT_all'] / ds['NOy'] * 100
-
         # add % NITD
         try:
             ds['NITD']
