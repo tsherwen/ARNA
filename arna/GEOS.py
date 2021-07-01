@@ -32,13 +32,13 @@ def get_data_for_fcasts4datetimes(dts=None):
     """
     # Use the last 18 days, unless specific dates are provided
     if isinstance(dts, type(None)):
-        Tnow = AC.time2datetime( [gmtime()] )[0]
+        Tnow = AC.time2datetime([gmtime()])[0]
         # Get the 5-day forecast at noon...
         dt = datetime.datetime(Tnow.year, Tnow.month, Tnow.day, 12, )
         # Use yesterday
-        dt =  AC.add_days(dt, -1)
+        dt = AC.add_days(dt, -1)
         # Use the last 18 days
-        dts = [AC.add_days(dt, i*-1) for i in range(1, 18) ]
+        dts = [AC.add_days(dt, i*-1) for i in range(1, 18)]
     # Loop by date and download data if available and not downloaded.
     for dt in dts:
         dstr = dt.strftime('%Y/%m/%d %H:%M')
@@ -55,7 +55,6 @@ def get_data_for_fcasts4datetimes(dts=None):
         n_failed_doys = check4failed_downloads(dt=dt, retry=True,
                                                inc_GEOS5_Nv_collection=True)
         print(n_failed_doys)
-
 
 
 def get_expanded_variable_GMAO_files(verbose=True, debug=False):
@@ -77,14 +76,14 @@ def get_expanded_variable_GMAO_files(verbose=True, debug=False):
     assert len(links) > 0, 'WARNING: No links found @ URL ({})'.format(URL)
     # Get the one image
     for link in links:
-        filename =  link['href']
+        filename = link['href']
         # Check it file present...
         if os.path.isfile(folder+filename):
             pstr = 'WARNING: Not downloading GMAO file as it exists! ({})'
-            print(pstr.format(folder+filename) )
+            print(pstr.format(folder+filename))
         # If not, download
         else:
-            print( URL+filename )
+            print(URL+filename)
             wget.download(URL+filename, folder+filename)
 
 
@@ -94,12 +93,12 @@ def mk_test_plots_from_GMAO_output(dt=None, load_all_dates=True):
     """
     # Which day(s) to use for testing output?
     if isinstance(dt, type(None)) and (not load_all_dates):
-    # Use the last 18 days, unless specific dates are provided
-        Tnow = AC.time2datetime( [gmtime()] )[0]
+        # Use the last 18 days, unless specific dates are provided
+        Tnow = AC.time2datetime([gmtime()])[0]
         # Get the 5-day forecast at noon...
         dt = datetime.datetime(Tnow.year, Tnow.month, Tnow.day, 12, )
         # Use yesterday
-        dt =  AC.add_days(dt, -1)
+        dt = AC.add_days(dt, -1)
         # Setup the glob string for the files
         dstr = dt.strftime('%Y/%m/%d')
         gfstr = 'GEOS-CF.v01.rpl.ACSIS-ARNA.{}*.nc4'.format(dstr)
@@ -123,29 +122,29 @@ def mk_test_plots_from_GMAO_output(dt=None, load_all_dates=True):
     attrs['standard_name'] = 'Pressure'
     attrs['long_name'] = 'Pressure'
     ds.lev.attrs = attrs
-    ds.lev.values = [ HPa_l[int(i)] for i in ds.lev.values -1]
+    ds.lev.values = [HPa_l[int(i)] for i in ds.lev.values - 1]
 
     # Update units
     ds = convert_GEOSCF_units(ds=ds, debug=True)
     # Now do a handful of quick plots
 #    extra_str = 'GMAO_EXPANDED_TEST'
 #    vars2plot = [i for i in ds.data_vars]
-    vars2plot = ['O3', 'CO', 'Cl', 'U' , 'V', 'T', 'IO', 'BrO']
+    vars2plot = ['O3', 'CO', 'Cl', 'U', 'V', 'T', 'IO', 'BrO']
     title_date = 'avg 24/25th jan'
     folder = './'
 #    for var2plot in vars2plot[:3]:
     for var2plot in vars2plot:
-#        for lev2use in ds.lev.values:
-#        for lev2use in [72, 51]:
+        #        for lev2use in ds.lev.values:
+        #        for lev2use in [72, 51]:
         for lev2use in [525., 985.]:
-#            for lev2use in ds.lev.values[:2]: # unhash if testing
-            print( var2plot, lev2use, title_date)
+            #            for lev2use in ds.lev.values[:2]: # unhash if testing
+            print(var2plot, lev2use, title_date)
 #            ds_tmp = ds[[var2plot]].sel(lev=lev2use)
             bool1 = ds.lev.values == lev2use
             ds_tmp = ds[[var2plot]].isel(lev=bool1)
             ds_tmp.squeeze()
             #
-            ds_tmp =  ds_tmp.mean(dim='time')
+            ds_tmp = ds_tmp.mean(dim='time')
 #            if not isinstance(extr_title_str, type(None)):
 #                title += '\n '+ extr_title_str
             # Get the LateX for of the species name
@@ -167,12 +166,12 @@ def mk_test_plots_from_GMAO_output(dt=None, load_all_dates=True):
                                                     'GMAO_EXPANDED_TEST')
             # Now plot
             quick_map_plt_CV_1layer(ds_tmp, var2plot=var2plot,
-                                             use_local_CVAO_area=True,
-                                             extra_str=extra_str,
-                                             extend='both',
-                                             title=title,
-                                             folder=folder,
-                                             save_plot=True )
+                                    use_local_CVAO_area=True,
+                                    extra_str=extra_str,
+                                    extend='both',
+                                    title=title,
+                                    folder=folder,
+                                    save_plot=True)
 
             # Do some garbage collecting
             gc.collect()
@@ -181,7 +180,7 @@ def mk_test_plots_from_GMAO_output(dt=None, load_all_dates=True):
 def regrid_GEOS5_files_in_folder(folder=None, dt=None, doys2use=None,
                                  year=None,
                                  collection='inst3_3d_aer_Np',
-                                 remake_files=False, debug=False ):
+                                 remake_files=False, debug=False):
     """
     Regrid all GEOS-5 NetCDF files in folder to GEOS-CF format
     """
@@ -191,26 +190,26 @@ def regrid_GEOS5_files_in_folder(folder=None, dt=None, doys2use=None,
         # Use yesterday as the date if this is not provided
         if isinstance(dt, type(None)):
             # Just use yesterday for Now
-            Tnow = AC.time2datetime( [gmtime()] )[0]
+            Tnow = AC.time2datetime([gmtime()])[0]
             # Get the 5-day forecast at noon...
             dt = datetime.datetime(Tnow.year, Tnow.month, Tnow.day, 12, )
             # Use yesterday
-            dt =  AC.add_days(dt, -1)
+            dt = AC.add_days(dt, -1)
         # Get the GEOS5 folder for a given date
         folder = get_GEOS_data_folder4dt(dt=dt, product='GEOS_5',
                                          collection=collection)
 
     # Get current year if a year not specified
     if isinstance(year, type(None)):
-        year = AC.time2datetime( [gmtime()] )[0].year
+        year = AC.time2datetime([gmtime()])[0].year
     # Which files are available
     files_in_folder = glob.glob(folder+'ARNA*_{}_*.nc'.format(year))
     # Make sure already regridded files are not used
-    files_in_folder = [i for i in files_in_folder if 'REGRIDDED' not in i ]
+    files_in_folder = [i for i in files_in_folder if 'REGRIDDED' not in i]
     # Which doys to use
     if isinstance(doys2use, type(None)):
-        doys2use = [i.split('/')[-1] for i in files_in_folder ]
-        doys2use = [i.split(str(year))[-1][1:4] for i in doys2use ]
+        doys2use = [i.split('/')[-1] for i in files_in_folder]
+        doys2use = [i.split(str(year))[-1][1:4] for i in doys2use]
         doys2use = list(sorted((set(doys2use))))
     # Save name for the regridded file?
     writestr = 'ARNA_GEO5_Combined_Cape_Verde_{}_{:0>3}_REGRIDDED_ALL_lvls.nc'
@@ -222,7 +221,7 @@ def regrid_GEOS5_files_in_folder(folder=None, dt=None, doys2use=None,
         if debug:
             print(len(files2use), [i.split('/')[-1] for i in files2use], '')
         # Set the name of the file to save
-        filename2save = writestr.format( year, doy)
+        filename2save = writestr.format(year, doy)
         if os.path.isfile(folder + filename2save) and not remake_files:
             if debug:
                 pstr = 'WARNING: not regridding file as file already present'
@@ -252,7 +251,7 @@ def regrid_GEOS5_files_in_folder(folder=None, dt=None, doys2use=None,
 
 def regrid_GEOS52GEOSCF_coordinates(ds=None, collection='inst3_3d_aer_Np',
                                     tplate_folder=None, tplate_fname=None,
-#                                    regrid_vertically=False,
+                                    #                                    regrid_vertically=False,
                                     lat_var='lat', lon_var='lon',
                                     vars2regrid=None):
     """
@@ -264,7 +263,7 @@ def regrid_GEOS52GEOSCF_coordinates(ds=None, collection='inst3_3d_aer_Np',
 
     # - Regrid horizontally (lat, lon)
     # Get lats and lons to regrid to
-    dsT = xr.open_dataset( tplate_folder+tplate_fname )
+    dsT = xr.open_dataset(tplate_folder+tplate_fname)
     lat = dsT[lat_var]
     lon = dsT[lon_var]
     # Create a new dataset to template to from this
@@ -279,7 +278,7 @@ def regrid_GEOS52GEOSCF_coordinates(ds=None, collection='inst3_3d_aer_Np',
     for var2use in vars2regrid:
         # Create a dataset to re-grid into
         ds_out = xr.Dataset({
-#            'time': ( ['time'], ds['time'] ),
+            #            'time': ( ['time'], ds['time'] ),
             'lat': (['lat'], lat),
             'lon': (['lon'], lon),
         })
@@ -311,8 +310,8 @@ def regrid_GEOS52GEOSCF_coordinates(ds=None, collection='inst3_3d_aer_Np',
         # NOTE: GEOS-5 output has its z axis flipped.
         dsN.lev.values = alt[::-1]
         # Which
-        HPa_l = AC.get_GEOSCF_vertical_levels( native_levels=True )
-        hPa_as_km = [i for i in AC.hPa_to_Km(HPa_l) ]
+        HPa_l = AC.get_GEOSCF_vertical_levels(native_levels=True)
+        hPa_as_km = [i for i in AC.hPa_to_Km(HPa_l)]
         # Now interpolate
         dsN = dsN.interp(lev=hPa_as_km)
         # Put the units back as millibar
@@ -328,17 +327,17 @@ def convert_GEOS5_dust2_single_var_in_ug_m3(ds=None, rtn_just_new_var=True):
     # Name for combined data
     NewVar = 'Dust'
     # If more than 3 dust tracers, then sum up the dust tracers
-    if len( [i for i in ds.data_vars if 'du' in i ] ) > 3:
-        dust_tracers = ['du{:0>3}'.format(i) for i in range(1,6) ]
+    if len([i for i in ds.data_vars if 'du' in i]) > 3:
+        dust_tracers = ['du{:0>3}'.format(i) for i in range(1, 6)]
         ds[NewVar] = ds[dust_tracers[0]].copy()
         for tra in dust_tracers[1:]:
             ds[NewVar].values = ds[NewVar].values + ds[tra].values
     else:
-        ds = ds.rename( {'du': NewVar} )
+        ds = ds.rename({'du': NewVar})
     # Now convert to ug/3m
     print(ds.time)
     data = ds[NewVar].values
-    ds[NewVar].values = AC.convert_spec_v_v_2_ugm3( data=data, spec='DST1' )
+    ds[NewVar].values = AC.convert_spec_v_v_2_ugm3(data=data, spec='DST1')
     # Update the units
     attrs = ds[NewVar].attrs
     attrs['units'] = '$\mu$g m$^{-3}$'
@@ -360,16 +359,16 @@ def get_most_recent_GEOSCF_data(dt=None,
     """
     if isinstance(dt, type(None)):
         # Just use yesterday for Now
-        Tnow = AC.time2datetime( [gmtime()] )[0]
+        Tnow = AC.time2datetime([gmtime()])[0]
         # Get the 5-day forecast at noon...
         dt = datetime.datetime(Tnow.year, Tnow.month, Tnow.day, 12, )
         # Use yesterday
-        dt =  AC.add_days(dt, -1)
+        dt = AC.add_days(dt, -1)
     # Get the date/location string for data
-    filename = filestr.format( dt.year )
+    filename = filestr.format(dt.year)
     folder2use = get_GEOS_data_folder4dt(dt=dt, product='GEOS_CF',
                                          collection=collection)
-    glob_str = '{}/{}'.format( folder2use, filename )
+    glob_str = '{}/{}'.format(folder2use, filename)
     files2use = glob.glob(glob_str)
     files2use = list(sorted(files2use))
     asstr = 'WARNING no files found matching {}'
@@ -400,9 +399,9 @@ def get_GEOS_data_folder4dt(dt=None, product='GEOS_CF', host=None,
     date_str = date_str.format(dt.year, dt.month, dt.day, dt.hour)
     # Return the string including collection and production mode
     if inc_collection:
-        return '{}/{}/{}/data.{}/'.format( folder, mode, date_str, collection )
+        return '{}/{}/{}/data.{}/'.format(folder, mode, date_str, collection)
     else:
-        return '{}/{}/{}/'.format( folder, mode, date_str )
+        return '{}/{}/{}/'.format(folder, mode, date_str)
 
 
 def get_latest_GEOSCF_fcast_data(dt=None, just_check_yesterday=True,
@@ -417,12 +416,12 @@ def get_latest_GEOSCF_fcast_data(dt=None, just_check_yesterday=True,
     if debug:
         pstr = 'limit_lons={}, limit_lvls={}, limit_lats={} - in {}'
         func = 'get_latest_GEOSCF_fcast_data'
-        print( pstr.format( limit_lons, limit_lvls, limit_lats, func ) )
+        print(pstr.format(limit_lons, limit_lvls, limit_lats, func))
     # Set date to use if not provided
     if isinstance(dt, type(None)):
         if just_check_yesterday:
             # Just use yesterday for Now
-            TNow = AC.time2datetime( [gmtime()] )[0]
+            TNow = AC.time2datetime([gmtime()])[0]
             dt = AC.add_days(TNow, -1)
             dt = datetime.datetime(dt.year, dt.month, dt.day, 12)
         else:
@@ -462,11 +461,11 @@ def get_latest_GEOSCF_fcast_data(dt=None, just_check_yesterday=True,
         times2wait = 30
         min2wait = 4
         pstr = 'WARNING: data not availible ({}), so trying every {} min.({}x)'
-        print( pstr.format(dstr, min2wait, times2wait) )
+        print(pstr.format(dstr, min2wait, times2wait))
         for time2wait in range(times2wait):
             pstr = 'WARNING: Wait for {:>2} min @ {}, then retrying download'
-            TNow = AC.time2datetime( [gmtime()] )[0]
-            print( pstr.format(min2wait, TNow.strftime('%Y/%m/%d %H:%M') ) )
+            TNow = AC.time2datetime([gmtime()])[0]
+            print(pstr.format(min2wait, TNow.strftime('%Y/%m/%d %H:%M')))
             time.sleep(min2wait*60)
             pstr = 'Finished waiting @ {}'
             print(pstr.format(TNow.strftime('%Y/%m/%d %H:%M')))
@@ -476,7 +475,7 @@ def get_latest_GEOSCF_fcast_data(dt=None, just_check_yesterday=True,
                 print('Data now available! Attempting download.')
                 # - Retrieve the latest GEOS-CF data - sliced by alt, lat, or lon
                 download_GEOSCF_fcast_data4date(dt=dt,
-                                             rm_existing_file=rm_existing_file,
+                                                rm_existing_file=rm_existing_file,
                                                 vars2use=vars2use,
                                                 doys2use=doys2use,
                                                 limit_lvls=limit_lvls,
@@ -495,13 +494,13 @@ def get_latest_GEOSCF_fcast_data_alt_slice(dt=None, debug=True):
     Wrapper to get alt slices from the latest GEOS-CF forecast data
     """
     # Hardcode options here for now.
-    limit_lvls=True
-    limit_lons=False
+    limit_lvls = True
+    limit_lons = False
     # Call the main fcast data retrieval function
     get_latest_GEOSCF_fcast_data(dt=dt,
                                  limit_lvls=limit_lvls,
                                  limit_lons=limit_lons,
-#                                 limit_lats=limit_lats
+                                 #                                 limit_lats=limit_lats
                                  )
 
 
@@ -519,15 +518,15 @@ def check4GEOSCF_failed_downloads(dt=None, folder=None, n_doys=6,
     if debug:
         pstr = 'limit_lons={}, limit_lvls={}, limit_lats={} - in {}'
         func = 'check4GEOSCF_failed_downloads'
-        print( pstr.format( limit_lons, limit_lvls, limit_lats, func ) )
+        print(pstr.format(limit_lons, limit_lvls, limit_lats, func))
     # Sliced by longitude
-    if (limit_lvls == True) and (limit_lons==False) and (limit_lats==False):
+    if (limit_lvls == True) and (limit_lons == False) and (limit_lats == False):
         ext_str = '*lvls_1000_900_800_700_600_500*'
     # Sliced by altitude
-    if (limit_lvls==False) and (limit_lons==True) and (limit_lats==False):
+    if (limit_lvls == False) and (limit_lons == True) and (limit_lats == False):
         ext_str = '*_lons_*'
     # Sliced by latitude
-    if (limit_lvls==False) and (limit_lons==False) and (limit_lats==True):
+    if (limit_lvls == False) and (limit_lons == False) and (limit_lats == True):
         ext_str = '*_lats_*'
     # Also only consider one variable at a fime
     file_str = '*{}*{}*'.format(var2use, ext_str)
@@ -542,7 +541,7 @@ def check4GEOSCF_failed_downloads(dt=None, folder=None, n_doys=6,
     # Check if any files were found?
     if len(files) > 0:
         # Get size(s) of files  and the doys they are for
-        doys = [i.split(str(dt.year))[-1][1:4] for i in files ]
+        doys = [i.split(str(dt.year))[-1][1:4] for i in files]
         sizes = [os.path.getsize(i) for i in files]
         # Compile into a dataframe
         df = pd.DataFrame({'doy': doys, 'sizes': sizes})
@@ -563,7 +562,7 @@ def check4GEOSCF_failed_downloads(dt=None, folder=None, n_doys=6,
         for n_file, file in enumerate(files):
             dims4file = dims[n_file]
             for key in dims4file.keys():
-                df.loc[n_file,key ] = dims4file[key]
+                df.loc[n_file, key] = dims4file[key]
         # - Add checks that all the lat, lon and, lev dims are the same length?
         if debug:
             print(df)
@@ -577,16 +576,16 @@ def check4GEOSCF_failed_downloads(dt=None, folder=None, n_doys=6,
         failed_doys = []
         # - Check if all coords are modal
         # Check that all coords are the same
-        cols2use = [i for i in df.columns if 'mode' in i ]
+        cols2use = [i for i in df.columns if 'mode' in i]
         if debug:
-            print( df[cols2use].values.all() )
-            print( '')
-            print( df )
+            print(df[cols2use].values.all())
+            print('')
+            print(df)
         if df[cols2use].values.all():
             pass
         else:
             for doy in df['doy'].values:
-                tmp = df.loc[df['doy']==doy,:]
+                tmp = df.loc[df['doy'] == doy, :]
                 if debug:
                     print(tmp)
                 if tmp[cols2use].values.all():
@@ -630,7 +629,7 @@ def check4GEOS5_failed_downloads(dt=None, folder=None, n_doys=6, var2use='du',
     # Also only consider one variable at a fime
     files = glob.glob(folder+'*_{}_*.nc*'.format(var2use))
     # Make sure only none regridded files are checked
-    files = [i for i in files if 'REGRIDDED' not in i ]
+    files = [i for i in files if 'REGRIDDED' not in i]
     files = list(sorted(files))
     # - Work out what the expected files for a date are
     expected_dates = [AC.add_days(dt, i) for i in range(n_doys)]
@@ -639,7 +638,7 @@ def check4GEOS5_failed_downloads(dt=None, folder=None, n_doys=6, var2use='du',
     # Check if any files were found?
     if len(files) > 0:
         # Get size(s) of files  and the doys they are for
-        doys = [i.split(str(dt.year))[-1][1:4] for i in files ]
+        doys = [i.split(str(dt.year))[-1][1:4] for i in files]
         sizes = [os.path.getsize(i) for i in files]
         # Compile into a dataframe
         df = pd.DataFrame({'doy': doys, 'sizes': sizes})
@@ -652,7 +651,7 @@ def check4GEOS5_failed_downloads(dt=None, folder=None, n_doys=6, var2use='du',
                 dims2add = [[]]
             # Add the dimensions to the save list
             if debug:
-                print(len(dims2add), dims2add )
+                print(len(dims2add), dims2add)
             if (len(dims2add[0]) != 4):
                 dims2add = [{'lat': 0, 'lev': 0, 'lon': 0, 'time': 0}]
             dims += dims2add
@@ -660,7 +659,7 @@ def check4GEOS5_failed_downloads(dt=None, folder=None, n_doys=6, var2use='du',
         for n_file, file in enumerate(files):
             dims4file = dims[n_file]
             for key in dims4file.keys():
-                df.loc[n_file,key ] = dims4file[key]
+                df.loc[n_file, key] = dims4file[key]
         # Do tests on other variables
     #    assert len(set(df['lat'])) == 1, 'WARNING: files do not have the same # of lats!'
     #    assert len(set(df['lon'])) == 1, 'WARNING: files do not have the same # of lats!'
@@ -676,12 +675,12 @@ def check4GEOS5_failed_downloads(dt=None, folder=None, n_doys=6, var2use='du',
         failed_doys = []
         # - Check if all coords are modal
         # Check that all coords are the same
-        cols2use = [i for i in df.columns if 'mode' in i ]
+        cols2use = [i for i in df.columns if 'mode' in i]
         if df[cols2use].values.all():
             pass
         else:
             for doy in df['doy'].values:
-                tmp = df.loc[df['doy']==doy,:]
+                tmp = df.loc[df['doy'] == doy, :]
                 if tmp[cols2use].values.all():
                     pass
                 else:
@@ -693,7 +692,7 @@ def check4GEOS5_failed_downloads(dt=None, folder=None, n_doys=6, var2use='du',
         df[var2use] = df['time'].values == expected_times
         # Save a list of the doys for which the retrieval failed for
         df_tmp = df.loc[df['expected_time'] == False, :]['doy']
-        failed_doys += list( df_tmp.values.astype(int) )
+        failed_doys += list(df_tmp.values.astype(int))
         # - Check if all the expected doys are present
         expected_doys = list(dfT.index.dayofyear.values)
         retrieved_doys = [int(i) for i in df['doy'].values]
@@ -713,7 +712,6 @@ def check4GEOS5_failed_downloads(dt=None, folder=None, n_doys=6, var2use='du',
         return expected_doys
 
 
-
 def get_latest_GEOSCF_fcast_data_lon_slice(dt=None, debug=True):
     """
     Wrapper to get lon slices from the latest GEOS-CF forecast data
@@ -725,7 +723,7 @@ def get_latest_GEOSCF_fcast_data_lon_slice(dt=None, debug=True):
     get_latest_GEOSCF_fcast_data(dt=dt,
                                  limit_lvls=limit_lvls,
                                  limit_lons=limit_lons,
-#                                 limit_lats=limit_lats
+                                 #                                 limit_lats=limit_lats
                                  )
 
 
@@ -748,8 +746,8 @@ def get_latest_GEOSCF_fcast_data_lat_slice(dt=None, debug=True):
 def get_latest_GEOS5_fcast_data(dt=None, mode='fcast',
                                 collection='inst3_3d_aer_Np', doys2use=None,
                                 vars2use=None,
-#                                collection='inst3_3d_aer_Nv',
-#                                dt=None,
+                                #                                collection='inst3_3d_aer_Nv',
+                                #                                dt=None,
                                 retry_download_if_data_not_present=True,
                                 rm_existing_file=False,
                                 debug=True):
@@ -758,7 +756,7 @@ def get_latest_GEOS5_fcast_data(dt=None, mode='fcast',
     """
     # Use yesterday at noon if no date provided
     if isinstance(dt, type(None)):
-        TNow = AC.time2datetime( [gmtime()] )[0]
+        TNow = AC.time2datetime([gmtime()])[0]
         dt = AC.add_days(TNow, -1)
         dt = datetime.datetime(dt.year, dt.month, dt.day, 12)
     # Setup a text string with for dt
@@ -766,23 +764,23 @@ def get_latest_GEOS5_fcast_data(dt=None, mode='fcast',
     # NOTE: this is current dealt with in get_GEOS5_as_ds_via_OPeNDAP (in fcast mode)
     try:
         ds = AC.get_GEOS5_as_ds_via_OPeNDAP(dt=dt, mode=mode,
-                                            collection=collection )
+                                            collection=collection)
         # Temporarily do not allow passing of date to OPeNDAP fetcher
 #        ds = AC.get_GEOS5_as_ds_via_OPeNDAP(dt=None, mode=mode, collection=collection)
     # Check it has files...
     except OSError:
-        print('GEOS5 - Failure loading data for ', dt )
+        print('GEOS5 - Failure loading data for ', dt)
         try:
             dt = AC.add_days(dt, -1)
-            print('GEOS5 - Looking on the day before', dt )
+            print('GEOS5 - Looking on the day before', dt)
             ds = AC.get_GEOS5_as_ds_via_OPeNDAP(dt=dt, mode=mode,
                                                 collection=collection)
             # Temporarily do not allow passing of date to OPeNDAP fetcher
 #            ds = AC.get_GEOS5_as_ds_via_OPeNDAP(dt=None, mode=mode, collection=collection)
         except:
-            print( 'WARNING: FAILED to find GEOS5 latest dt... stopping now.')
+            print('WARNING: FAILED to find GEOS5 latest dt... stopping now.')
     # Get initial date in forecast
-    dt = AC.dt64_2_dt( [ds['time'].values[0]])[0]
+    dt = AC.dt64_2_dt([ds['time'].values[0]])[0]
     # What would the folder be called for this noon forecast?
     NASA_data = get_local_folder('NASA_data')
     folder = NASA_data + 'GEOS_5/ARNA/fcast/'
@@ -819,11 +817,11 @@ def get_latest_GEOS5_fcast_data(dt=None, mode='fcast',
         times2wait = 5
         min2wait = 4
         pstr = 'WARNING: data not availible ({}), so trying again every {} minutes ({}x)'
-        print( pstr.format(dstr, min2wait, times2wait) )
+        print(pstr.format(dstr, min2wait, times2wait))
         for time2wait in range(times2wait):
             pstr = 'WARNING: Waiting for {:>2} min @ {}, then re-attempting download'
-            TNow = AC.time2datetime( [gmtime()] )[0]
-            print( pstr.format(min2wait, TNow.strftime('%Y/%m/%d %H:%M') ) )
+            TNow = AC.time2datetime([gmtime()])[0]
+            print(pstr.format(min2wait, TNow.strftime('%Y/%m/%d %H:%M')))
             time.sleep(min2wait*60)
             print('Finished waiting @ {}'.format(TNow.strftime('%Y/%m/%d %H:%M')))
             # Check if the data is availible
@@ -849,16 +847,16 @@ def get_latest_GEOS5_fcast_data(dt=None, mode='fcast',
     # Force a garbage clean up
     gc.collect()
     # - Regrid the files if all are present
-    print( 'Checking if files sucessfully downloaded. If so, regridding them!')
+    print('Checking if files sucessfully downloaded. If so, regridding them!')
     #
     folder = get_GEOS_data_folder4dt(dt=dt, product='GEOS_5',
                                      collection=collection)
     failed_doys = check4GEOS5_failed_downloads(dt=dt, folder=folder)
     # If there are no failed days, then regrid
     if len(failed_doys) == 0:
-        print( 'Attempting to regrid GEOS5 files')
+        print('Attempting to regrid GEOS5 files')
         regrid_GEOS5_files_in_folder(folder=folder)
-        print( 'Regridded GEOS5 files')
+        print('Regridded GEOS5 files')
     else:
         print('Not all files present so, ')
 
@@ -871,7 +869,7 @@ def check4failed_downloads(dt=None, retry=True, n_doys=6,
     """
     # Just use noon yesterday if no date tis provided
     if isinstance(dt, type(None)):
-        TNow = AC.time2datetime( [gmtime()] )[0]
+        TNow = AC.time2datetime([gmtime()])[0]
         dt = AC.add_days(TNow, -1)
         dt = datetime.datetime(dt.year, dt.month, dt.day, 12)
 
@@ -903,7 +901,7 @@ def check4failed_downloads(dt=None, retry=True, n_doys=6,
         collection = 'inst3_3d_aer_Nv'
         folder = get_GEOS_data_folder4dt(dt=dt, product='GEOS_5',
                                          collection=collection)
-        vars2use = ['du{:0>3}'.format(i) for i in range(1,6)]
+        vars2use = ['du{:0>3}'.format(i) for i in range(1, 6)]
         for var2use in vars2use:
             failed_doys = check4GEOS5_failed_downloads(dt=dt, folder=folder,
                                                        var2use=var2use)
@@ -1017,8 +1015,6 @@ def check4failed_downloads(dt=None, retry=True, n_doys=6,
     return sum_n_failed_doys
 
 
-
-
 def is_dt_latest_GEOSCF(dt=None, mode='fcast',
                         collection='chm_inst_1hr_g1440x721_p23'):
     """
@@ -1026,7 +1022,7 @@ def is_dt_latest_GEOSCF(dt=None, mode='fcast',
     """
     # Just use noon yesterday if no date tis provided
     if isinstance(dt, type(None)):
-        TNow = AC.time2datetime( [gmtime()] )[0]
+        TNow = AC.time2datetime([gmtime()])[0]
         dt = AC.add_days(TNow, -1)
         dt = datetime.datetime(dt.year, dt.month, dt.day, 12)
     # Check  containers
@@ -1034,7 +1030,7 @@ def is_dt_latest_GEOSCF(dt=None, mode='fcast',
     # Temporarily do not allow passing of date to OPeNDAP fetcher
     ds = AC.get_GEOSCF_as_ds_via_OPeNDAP(collection=collection, mode=mode,
                                          date=None)
-    last_start_date = AC.dt64_2_dt( [ds.time.values[0]] )[0]
+    last_start_date = AC.dt64_2_dt([ds.time.values[0]])[0]
     # Return check of files
     if last_start_date == dt:
         return True
@@ -1049,14 +1045,14 @@ def is_dt_latest_GEOS5(dt=None, mode='fcast',
     """
     # Just use noon yesterday if no date tis provided
     if isinstance(dt, type(None)):
-        TNow = AC.time2datetime( [gmtime()] )[0]
+        TNow = AC.time2datetime([gmtime()])[0]
         dt = AC.add_days(TNow, -1)
         dt = datetime.datetime(dt.year, dt.month, dt.day, 12)
     # Check  containers
     # Temporarily do not allow passing of date to OPeNDAP fetcher
     ds = AC.get_GEOS5_as_ds_via_OPeNDAP(collection=collection, mode=mode,
                                         dt=dt)
-    last_start_date = AC.dt64_2_dt( [ds.time.values[0]] )[0]
+    last_start_date = AC.dt64_2_dt([ds.time.values[0]])[0]
     # Return check of files
     if last_start_date == dt:
         return True
@@ -1075,14 +1071,14 @@ def download_GEOSCF_fcast_data4date(dt=None, ds=None, mode='fcast',
     """
     # Get a pointer at the latest forecast data
     if isinstance(ds, type(None)):
-#        ds = AC.get_GEOSCF_as_ds_via_OPeNDAP(collection=collection, mode=mode, date=dt)
+        #        ds = AC.get_GEOSCF_as_ds_via_OPeNDAP(collection=collection, mode=mode, date=dt)
         ds = AC.get_GEOSCF_as_ds_via_OPeNDAP(collection=collection, mode=mode,
                                              date=None)
     # use the latest forecast data in the dataset if one not provided
     if isinstance(dt, type(None)):
-        dt = AC.dt64_2_dt( [ds.time.values[0]] )[0]
+        dt = AC.dt64_2_dt([ds.time.values[0]])[0]
     pstr = 'Attempting to download GEOS-CF data ({}) starting on {}'
-    print( pstr.format( collection, dt.strftime('%Y/%m/%d %H:%M')) )
+    print(pstr.format(collection, dt.strftime('%Y/%m/%d %H:%M')))
     # Where to save the data
     folder = get_GEOS_data_folder4dt(dt=dt, product='GEOS_CF',
                                      collection=collection)
@@ -1103,7 +1099,7 @@ def download_GEOSCF_fcast_data4date(dt=None, ds=None, mode='fcast',
                                      limit_lvls=limit_lvls,
                                      limit_lons=limit_lons,
                                      rm_existing_file=rm_existing_file,
-                                     limit_lats=limit_lats )
+                                     limit_lats=limit_lats)
 
     # - Get the 2D data
 #    collection = 'chm_inst_1hr_g1440x721_p23'
@@ -1116,7 +1112,7 @@ def when_should_GEOSCF_have_last_run_from():
     GEOS-CF is run every midnight
     """
     # Time now (GMT)
-    TNow = AC.time2datetime( [gmtime()] )[0]
+    TNow = AC.time2datetime([gmtime()])[0]
     # Therefore most recent forecast started when?
     dt = datetime.datetime(TNow.year, TNow.month, TNow.day, 12, )
     # Return as datetime
@@ -1139,11 +1135,11 @@ def what_is_latest_data_locally(only_check_last5dates=True, debug=True):
     dates4folders = [i.split(folder)[-1].split('_') for i in subfolders]
     print(dates4folders)
 #    dates4folders = [i for i in dates4folders if ('z' not in i) ]
-    dates4folders = [[int(ii) for ii in i[:3]] for i in dates4folders ]
+    dates4folders = [[int(ii) for ii in i[:3]] for i in dates4folders]
     dates4folders = [datetime.datetime(*i) for i in dates4folders]
     # Does the folder actually contain the data?
     CF_data_present_list = []
-    for n_folder, folders in enumerate( subfolders ):
+    for n_folder, folders in enumerate(subfolders):
         date = dates4folders[n_folder]
         if debug:
             pstr = "Checking data in folder for date '{}': {}"
@@ -1151,7 +1147,7 @@ def what_is_latest_data_locally(only_check_last5dates=True, debug=True):
         CF_data_present_list += [is_GEOSCF_data_in_folder(folder)]
     #
     set_of_bools = list(set(CF_data_present_list))
-    if len(set_of_bools) ==1:
+    if len(set_of_bools) == 1:
         if set_of_bools[0] == True:
             if debug:
                 print('Data present locally for all dates checked!')
@@ -1181,7 +1177,7 @@ def get_latest_GEOS5_diagnostics(dt=None,
     # If no day given, use previous day
     if isinstance(dt, type(None)):
         # Just use yesterday for Now
-        TNow = AC.time2datetime( [gmtime()] )[0]
+        TNow = AC.time2datetime([gmtime()])[0]
         dt = AC.add_days(TNow, -1)
         dt = datetime.datetime(dt.year, dt.month, dt.day, 12)
     # Folder to dave plots
@@ -1200,21 +1196,22 @@ def get_latest_GEOS5_diagnostics(dt=None,
 
     #  - Get the latest datagram plots
     plts2get = [
-    # Dust at Cape Verde
-    'du_16.7_-23.0', 'dumass_16.7_-23.0',
-    # Nitrate, CO, BC at Cape Verde
-    'nimass_16.7_-23.0', 'bc_16.7_-23.0', 'bcmass_16.7_-23.0',
-    # Total aerosol at Cape Verde
-    'total_16.7_-23.0', 'co_16.7_-23.0',
-    # Dust and total at Dakar
-    'du_14.4_-17.0', 'dumass_14.4_-17.0', 'total_14.4_-17.0',
+        # Dust at Cape Verde
+        'du_16.7_-23.0', 'dumass_16.7_-23.0',
+        # Nitrate, CO, BC at Cape Verde
+        'nimass_16.7_-23.0', 'bc_16.7_-23.0', 'bcmass_16.7_-23.0',
+        # Total aerosol at Cape Verde
+        'total_16.7_-23.0', 'co_16.7_-23.0',
+        # Dust and total at Dakar
+        'du_14.4_-17.0', 'dumass_14.4_-17.0', 'total_14.4_-17.0',
     ]
     AC.get_GEOS5_datagram_plots(folder=folder2save, dt=dt, plts2get=plts2get,
                                 prefix=prefix)
     # - Get Weather maps
     ptype = 'wxmaps'
     taus = [i*24 for i in range(6)]
-    taus += [0+(3*i) for i in range(3*9)] # Get 3 hourly values for the 1st 72 hours
+    # Get 3 hourly values for the 1st 72 hours
+    taus += [0+(3*i) for i in range(3*9)]
     taus = list(sorted(set(taus)))
     field = 'precip'
     AC.get_GEOS5_online_diagnostic_plots(folder=folder2save, ptype=ptype,
@@ -1224,7 +1221,8 @@ def get_latest_GEOS5_diagnostics(dt=None,
     # - Get composition maps
     ptype = 'chem2d'
     taus = [i*24 for i in range(6)]
-    taus += [0+(3*i) for i in range(3*9)] # Get 3 hourly values for the 1st 72 hours
+    # Get 3 hourly values for the 1st 72 hours
+    taus += [0+(3*i) for i in range(3*9)]
     taus = list(sorted(set(taus)))
     fields = ['duaot', 'cobbaf', 'bcsmass', 'niaot', 'nismass', ]
     for field in fields:
@@ -1234,30 +1232,30 @@ def get_latest_GEOS5_diagnostics(dt=None,
 
     # - Add a circle over Dakar and Sao Vicente
     if add_circles2GMAO_spatial_maps:
-        files = glob.glob( folder2save+'*.png')
-        files = [i for i in files if ('chem2d' in i) or ('wxmaps' in i) ]
+        files = glob.glob(folder2save+'*.png')
+        files = [i for i in files if ('chem2d' in i) or ('wxmaps' in i)]
         for file in files:
             if debug:
-                print('Adding Circles to file: {}'.format( file ) )
+                print('Adding Circles to file: {}'.format(file))
             # Open the image
             image = PIL.Image.open(file)
             draw = ImageDraw.Draw(image)
             # Add circles
             r = 39
-            coords_list = [(774, 410), (840, 434) ]
+            coords_list = [(774, 410), (840, 434)]
             for coords in coords_list:
-                x,y = coords
+                x, y = coords
                 # Calculate the locations
                 leftUpPoint = (x-r, y-r)
                 rightDownPoint = (x+r, y+r)
                 twoPointList = [leftUpPoint, rightDownPoint]
                 draw.ellipse(twoPointList, fill=None,
                              outline='Grey',
-                             width=3 )
+                             width=3)
             # Save resulting image
-            image.save( file )
+            image.save(file)
     dt_str = dt.strftime('%Y/%m/%d %H:%M')
-    print( 'Finished get_latest_GEOS5_diagnostics for {}'.format(dt_str) )
+    print('Finished get_latest_GEOS5_diagnostics for {}'.format(dt_str))
 
 
 def get_GEOSCF4flightnum(flight_ID='C225', resample_data=True):
@@ -1268,8 +1266,8 @@ def get_GEOSCF4flightnum(flight_ID='C225', resample_data=True):
     ARNA_data = get_local_folder('ARNA_data')
     folder = '{}/GEOS-CF/extracted_planeflight/'.format(ARNA_data)
     # Extract the data for a specific flight
-    file2use = glob.glob( folder + '*_{}.csv'.format(flight_ID) )[0]
-    df = pd.read_csv( file2use )
+    file2use = glob.glob(folder + '*_{}.csv'.format(flight_ID))[0]
+    df = pd.read_csv(file2use)
     # NOTE: this is a kludge for an early version of the file
 #    df = df.T
 #    new_header = df.iloc[0] #grab the first row for the header
@@ -1277,7 +1275,7 @@ def get_GEOSCF4flightnum(flight_ID='C225', resample_data=True):
 #    df.columns = new_header #set the header row as the df header
     # Make the datatime the index and remove and unneeded columns
     df.index = df['Datetime'].values
-    df.index = pd.to_datetime( df.index.values )
+    df.index = pd.to_datetime(df.index.values)
     # Add temperature in deg C
     df['TempK'] = df['T'].copy()
     df['T'] = df['T'].values - 273.15
@@ -1287,31 +1285,31 @@ def get_GEOSCF4flightnum(flight_ID='C225', resample_data=True):
     # NOy = no_no2_hno3_hno4_hono_2xn2o5_pan_organicnitrates_aerosolnitrates
     df['NOy-HNO3'] = df['NOy'].values - df['HNO3'].values
     # Include a variable of NOy where HNO3 is removed
-    df['NOy-HNO3-PAN'] = df['NOy'].values - df['HNO3'].values - df['PAN'].values
+    df['NOy-HNO3-PAN'] = df['NOy'].values - \
+        df['HNO3'].values - df['PAN'].values
     # gas-phase (exc. PAN, HNO3, HNO4, Org-NIT, N2O5)
-    df['NOy-Limited'] = df['NO'].values + df['NO2'].values + df['HNO2'].values + df['NIT'].values + df['NITs'].values
-	# Resample the data?
+    df['NOy-Limited'] = df['NO'].values + df['NO2'].values + \
+        df['HNO2'].values + df['NIT'].values + df['NITs'].values
+    # Resample the data?
     if resample_data:
-        df = df.resample('1T' ).mean()
+        df = df.resample('1T').mean()
     return df
 
 
-def extract_GEOS54all_ARNA_flights(debug=True):
+def extract_GEOS54all_ARNA_flights(flight_nums=[], debug=True):
     """
     Extract GEOS-CF model data for all ARNA flights
     """
     # Which flights to plot
-#    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
-	# Just use non-transit ARNA flights
-    flights_nums = [
-#   217, 218, 219, 220, 221, 222, 223, 224,
-    225
-    ]
-    flight_IDs = [ 'C{}'.format(i) for i in flights_nums ]
+    if len(flights_nums) == 0:
+        flights_nums = [
+            217, 218, 219, 220, 221, 222, 223, 224, 225,
+        ]
+    flight_IDs = ['C{}'.format(i) for i in flight_nums]
     # Loop by flight and extract the files
     for flight_ID in flight_IDs:
         if debug:
-            print( flight_ID )
+            print(flight_ID)
         # Extract data for flight
         df = extract_GEOS54ARNA_flight(flight_ID=flight_ID)
         # Save to csv.
@@ -1332,16 +1330,16 @@ def extract_GEOS54all_ARNA_surface_dates(testing_mode=False, debug=True):
     folder = '{}/GEOS-CF/extracted_surface4CVAO/'.format(ARNA_data)
     # Which dates to use?
     d = {
-    'ARNA-1' : (datetime.datetime(2019, 8, 6), datetime.datetime(2019, 9, 3)),
-    'ARNA-Winter-1': (datetime.datetime(2019, 11, 26),
-                datetime.datetime(2019, 12, 14)),
-    'ARNA-2' : (datetime.datetime(2020, 2, 5), datetime.datetime(2020, 2, 27)),
-#    'CVAO-ALL' : (datetime.datetime(2018, 1, 1), datetime.datetime.now()),
-        }
+        'ARNA-1': (datetime.datetime(2019, 8, 6), datetime.datetime(2019, 9, 3)),
+        'ARNA-Winter-1': (datetime.datetime(2019, 11, 26),
+                          datetime.datetime(2019, 12, 14)),
+        'ARNA-2': (datetime.datetime(2020, 2, 5), datetime.datetime(2020, 2, 27)),
+        #    'CVAO-ALL' : (datetime.datetime(2018, 1, 1), datetime.datetime.now()),
+    }
     # Variables for CVAO location
     location = 'CVO'
     LON, LAT, ALT = AC.get_loc(location)
-    hPa_ = 985 # Note: this is the lowest level saved!
+    hPa_ = 985  # Note: this is the lowest level saved!
     # Loop by campaign and store data
     for campaign in list(sorted(d.keys()))[::-1]:
         # Start and end of campaign
@@ -1359,27 +1357,28 @@ def extract_GEOS54all_ARNA_surface_dates(testing_mode=False, debug=True):
         df[TimeVar] = df.index.values
         df[PressVar] = hPa_
         # Extract the standard output for dates
-            # (only hourly as this is the natively save resolution)
+        # (only hourly as this is the natively save resolution)
 #            dfE = extract_ds4df_locs(ds=dsGCF, df=df,)
-            #
+        #
         # Add date column to dataframe
+
         def datetime2date(x):
-            return datetime.datetime( x.year, x.month, x.day )
+            return datetime.datetime(x.year, x.month, x.day)
         df['date'] = df.index.map(datetime2date)
-        dates2use = list(set(df.resample('D').sum().index.values ))
+        dates2use = list(set(df.resample('D').sum().index.values))
         # Loop by collections to extract
         FileStr = 'ARNA_CVAO_extracted_GEOSCF_surface_{}hPa_{}_{}_{}_{}'
         folder = './'
         mode = 'assim'
         collections2use = [
-        # Below are the core chemistry related collections
-        'aqc_tavg_1hr_g1440x721_v1',
-        'chm_tavg_1hr_g1440x721_v1',
-        # Also a higher-resolution chemistry collection
-        'htf_inst_15mn_g1440x721_x1',
-        # And more model related output
-#        'met_tavg_1hr_g1440x721_x1',
-#        'xgc_tavg_1hr_g1440x721_x1',
+            # Below are the core chemistry related collections
+            'aqc_tavg_1hr_g1440x721_v1',
+            'chm_tavg_1hr_g1440x721_v1',
+            # Also a higher-resolution chemistry collection
+            'htf_inst_15mn_g1440x721_x1',
+            # And more model related output
+            #        'met_tavg_1hr_g1440x721_x1',
+            #        'xgc_tavg_1hr_g1440x721_x1',
         ]
 #        collections2use += ['chm_inst_1hr_g1440x721_p23', 'met_inst_1hr_g1440x721_p23']
         for collection in collections2use[::-1]:
@@ -1397,7 +1396,7 @@ def extract_GEOS54all_ARNA_surface_dates(testing_mode=False, debug=True):
             for date in dates2use:
                 date_dt = AC.dt64_2_dt([date])[0]
                 date_str = '{}{:0>2}{:0>2}'.format(date_dt.year, date_dt.month,
-                                           date_dt.day)
+                                                   date_dt.day)
                 # Loop by variable to extract
                 for var2extract in vars2extract:
                     print(campaign, collection, date_str, var2extract)
@@ -1423,10 +1422,11 @@ def extract_GEOS54all_ARNA_surface_dates(testing_mode=False, debug=True):
                                                              LonVar=LonVar,
                                                              LatVar=LatVar,
                                                              TimeVar=TimeVar,
-                                                      collection=collection,
-                                                      resample_df2ds_freq=True,
-                                                    vars2extract=[var2extract],
-                                                            spatial_buffer=1.5,
+                                                             collection=collection,
+                                                             resample_df2ds_freq=True,
+                                                             vars2extract=[
+                                                                 var2extract],
+                                                             spatial_buffer=1.5,
                                                              debug=True)
                             # Save to csv.
                             _df.to_csv(folder+filename+'.csv')
@@ -1467,10 +1467,10 @@ def extract_GEOS54ARNA_flight(flight_ID='C225'):
     # -  Get the measurement flight tracks
     # Manually set FAAM flight file to use for now...
     filename = 'core_faam_*_*_r*_{}_1hz.nc'.format(flight_ID.lower())
-    folder =  '{}/CEDA/v2020_05/'.format(get_local_folder('ARNA_data'))
+    folder = '{}/CEDA/v2020_05/'.format(get_local_folder('ARNA_data'))
     file2use = glob.glob(folder+filename)
     assert len(file2use) == 1, 'WARNING: more that one file found!'
-    ds = xr.open_dataset( file2use[0] )
+    ds = xr.open_dataset(file2use[0])
     # Get a dataframe of the coordinates to extract
     df = get_coordinates_from_NetCDF_file(ds=ds, falt_var='PS_RVSM',
                                           convert_m2hPa=False)
@@ -1493,9 +1493,9 @@ def get_GEOS_assim_expanded_dataset4ARNA(dts=None, update_lvl_units=True):
     file_str = '*.nc4'
     # Make a dataframe of available files
     files = list(sorted(glob.glob(folder+file_str)))
-    dates = [i.split('.nc4')[0][-14:] for i in files ]
+    dates = [i.split('.nc4')[0][-14:] for i in files]
     dates2dt = [datetime.datetime.strptime(i, '%Y%m%d_%H%Mz') for i in dates]
-    df = pd.DataFrame({'files':files}, index=dates2dt)
+    df = pd.DataFrame({'files': files}, index=dates2dt)
     # If a date is given, only open dates a day before and after
     if not isinstance(dts, type(None)):
         # Use one dat before and after
@@ -1506,7 +1506,7 @@ def get_GEOS_assim_expanded_dataset4ARNA(dts=None, update_lvl_units=True):
             sdate = dts[0]
             edate = dts[-1]
         # Limit data to one day before or after
-        bool1 = (df.index >=sdate) & (df.index <= edate)
+        bool1 = (df.index >= sdate) & (df.index <= edate)
         df = df.loc[bool1, :]
     # Get a list of those to extract
     files = df['files'].values.astype(list)
@@ -1524,10 +1524,9 @@ def get_GEOS_assim_expanded_dataset4ARNA(dts=None, update_lvl_units=True):
         # NOTE: Only 39 levels were saved offline
         #       so we're extracting these using there pythonic (-1) index
 #        ds.lev.values = [ HPa_l[int(i)] for i in ds.lev.values -1]
-        ds = ds.assign( lev= [ HPa_l[int(i)] for i in ds.lev.values -1] )
+        ds = ds.assign(lev=[HPa_l[int(i)] for i in ds.lev.values - 1])
     # Return the updated ds
     return ds
-
 
 
 def get_GEOSCF_data_cubes4collection(ds=None, region='Cape_Verde',
@@ -1535,7 +1534,7 @@ def get_GEOSCF_data_cubes4collection(ds=None, region='Cape_Verde',
                                      limit_lvls=True, limit_lons=False,
                                      limit_lats=True,
                                      vars2use=None, dt=None,
-                                     collection = 'chm_inst_1hr_g1440x721_p23',
+                                     collection='chm_inst_1hr_g1440x721_p23',
                                      rm_existing_file=False,
                                      dates2use=None, mode='fcast',
                                      folder=None):
@@ -1544,13 +1543,13 @@ def get_GEOSCF_data_cubes4collection(ds=None, region='Cape_Verde',
     """
     # Which variables to use
     if isinstance(vars2use, type(None)):
-    #    vars2use = ("pm25du_rh35_gcc", "pm25_rh35_gcc", "noy", "co", "no2", "o3",)
+        #    vars2use = ("pm25du_rh35_gcc", "pm25_rh35_gcc", "noy", "co", "no2", "o3",)
         vars2use = list(convert_GEOSCF_var2GEOSChem_name(rtn_dict=True).keys())
     #    vars2use = ('pm25su_rh35_gcc', 'pm25ni_rh35_gcc', 'pm25soa_rh35_gc', 'pm25ss_rh35_gcc', 'so2')
 
     # - Get the data as dataset via OPeNDAP
     if not isinstance(ds, type(None)):
-#        ds = C2BR2F4CF_as_ds_via_OPeNDAP(collection=collection, mode=mode, date=dt)
+        #        ds = C2BR2F4CF_as_ds_via_OPeNDAP(collection=collection, mode=mode, date=dt)
         # Temporarily do not allow passing of date to OPeNDAP fetcher
         ds = AC.get_GEOSCF_as_ds_via_OPeNDAP(collection=collection, mode=mode,
                                              date=None)
@@ -1569,8 +1568,8 @@ def get_GEOSCF_data_cubes4collection(ds=None, region='Cape_Verde',
     t0_CF_str = AC.dt64_2_dt([t0_CF])[0].strftime('%Y/%m/%d %H:%M')
     if dt_str != t0_CF_str:
         pstr = 'WARNING: provided date ({}) is not 1st date ({}) in dataset!'
-        print( pstr.format( dt_str, t0_CF_str ) )
-        print( 'WARNING: this data is being saved here: {}'.format(folder) )
+        print(pstr.format(dt_str, t0_CF_str))
+        print('WARNING: this data is being saved here: {}'.format(folder))
 
     # - Subset the dataset by region
     if region == 'Cape_Verde':
@@ -1589,7 +1588,7 @@ def get_GEOSCF_data_cubes4collection(ds=None, region='Cape_Verde',
 
     # - Limit the vertical levels
     if limit_lvls:
-#        lvls = [1000, 850, 500]
+        #        lvls = [1000, 850, 500]
         lvls = [1000, 900, 800, 700, 600, 500]
         bool_lvls = [i in lvls for i in ds['lev']]
         ds = ds.isel(lev=bool_lvls)
@@ -1599,9 +1598,9 @@ def get_GEOSCF_data_cubes4collection(ds=None, region='Cape_Verde',
 
     # - Limit the number of longitudes?
     if limit_lons:
-        lons2check = [-18 ,-19.5, -21, -22.5, -24, -25.5]
-        idx = [ AC.find_nearest(ds.lon.values, i) for i in  lons2check]
-        lons2use = ds.lon.values[ idx ]
+        lons2check = [-18, -19.5, -21, -22.5, -24, -25.5]
+        idx = [AC.find_nearest(ds.lon.values, i) for i in lons2check]
+        lons2use = ds.lon.values[idx]
         bool_lons = [i in lons2use for i in ds['lon'].values]
         ds = ds.isel(lon=bool_lons)
         extr_str += '_lons_'+'_'.join([str(i) for i in lons2use])
@@ -1610,8 +1609,8 @@ def get_GEOSCF_data_cubes4collection(ds=None, region='Cape_Verde',
     # - Limit the number of latitudes?
     if limit_lats:
         lats2check = [12, 13, 14, 15, 16, 17]
-        idx = [ AC.find_nearest(ds.lat.values, i) for i in lats2check]
-        lats2use = ds.lat.values[ idx ]
+        idx = [AC.find_nearest(ds.lat.values, i) for i in lats2check]
+        lats2use = ds.lat.values[idx]
         bool_lats = [i in lats2use for i in ds['lat'].values]
         ds = ds.isel(lat=bool_lats)
         extr_str += '_lats_'+'_'.join([str(i) for i in lats2use])
@@ -1626,7 +1625,7 @@ def get_GEOSCF_data_cubes4collection(ds=None, region='Cape_Verde',
     elif limit_lats:
         pstr = 'sliced by lats'
     else:
-        pstr =''
+        pstr = ''
 
     # -  Save the data by variable and day of year reduce packet size of transfers
     # Where to save?
@@ -1664,8 +1663,8 @@ def get_GEOSCF_data_cubes4collection(ds=None, region='Cape_Verde',
                 pstr = "WARNING: no data for '{}' on doy ({}) - CALLING STOP!"
                 print(pstr.format(var, doy_int))
                 pstr = 'Please check the correct doys are downloaded for {}'
-                print( pstr.format( dt_str ) )
-                print( 'doys downloading: ', doys2use )
+                print(pstr.format(dt_str))
+                print('doys downloading: ', doys2use)
                 sys.exit()
 
 
@@ -1674,7 +1673,7 @@ def get_GEOS5_data_cubes4collection(ds=None, region='Cape_Verde',
                                     vars2use=None,
                                     collection='inst3_3d_aer_Nv',
                                     folder=None, dates2use=None,
-#                                    limit_lvls=False, limit_lons=False
+                                    #                                    limit_lvls=False, limit_lons=False
                                     rm_existing_file=False,
                                     ):
     """
@@ -1683,7 +1682,7 @@ def get_GEOS5_data_cubes4collection(ds=None, region='Cape_Verde',
     # Which variables to use
     if isinstance(vars2use, type(None)):
         # Below are the dust variables for inst3_3d_aer_Nv
-        vars2use = ['du{:0>3}'.format(i) for i in range(1,6)]
+        vars2use = ['du{:0>3}'.format(i) for i in range(1, 6)]
     # Get the data as dataset via OPeNDAP
     if isinstance(ds, type(None)):
         ds = AC.get_GEOS5_as_ds_via_OPeNDAP(collection=collection, mode=mode,
@@ -1763,7 +1762,7 @@ def get_GEOSCF_data_cubes4campaign(year=2018, region='Cape_Verde',
     """
     # Which variables to use
     if isinstance(vars2use, type(None)):
-    #    vars2use = ("pm25du_rh35_gcc", "pm25_rh35_gcc", "noy", "co", "no2", "o3",)
+        #    vars2use = ("pm25du_rh35_gcc", "pm25_rh35_gcc", "noy", "co", "no2", "o3",)
         vars2use = list(convert_GEOSCF_var2GEOSChem_name(rtn_dict=True).keys())
     #    vars2use = ('pm25su_rh35_gcc', 'pm25ni_rh35_gcc', 'pm25soa_rh35_gc', 'pm25ss_rh35_gcc', 'so2')
 
@@ -1800,7 +1799,7 @@ def get_GEOSCF_data_cubes4campaign(year=2018, region='Cape_Verde',
     # - Limit the vertical levels
     extr_str = ''
     if limit_lvls:
-#        lvls = [1000, 850, 500]
+        #        lvls = [1000, 850, 500]
         lvls = [1000, 900, 800, 700, 600, 500]
         bool_lvls = [i in lvls for i in ds['lev']]
         ds = ds.isel(lev=bool_lvls)
@@ -1809,9 +1808,9 @@ def get_GEOSCF_data_cubes4campaign(year=2018, region='Cape_Verde',
         extr_str += 'ALL_lvls'
     # - Limit the longitudes levels
     if limit_lons:
-        lons2check = [-18 ,-19.5, -21, -22.5, -24, -25.5]
-        idx = [ AC.find_nearest(ds.lon.values, i) for i in  lons2check]
-        lons2use = ds.lon.values[ idx ]
+        lons2check = [-18, -19.5, -21, -22.5, -24, -25.5]
+        idx = [AC.find_nearest(ds.lon.values, i) for i in lons2check]
+        lons2use = ds.lon.values[idx]
         bool_lons = [i in lons2use for i in ds['lon'].values]
         ds = ds.isel(lon=bool_lons)
         extr_str += '_lons_'+'_'.join([str(i) for i in lons2use])
@@ -1834,7 +1833,7 @@ def get_GEOSCF_data_cubes4campaign(year=2018, region='Cape_Verde',
     elif limit_lons:
         pstr = 'sliced by lons'
     else:
-        pstr =''
+        pstr = ''
 
     # Loop by var and save
     for var in vars2use:
@@ -1866,7 +1865,7 @@ def get_GEOS5_data_cubes4campaign(ds=None, year=2018, region='Cape_Verde',
     """
     # Which variables to use
     if isinstance(vars2use, type(None)):
-        vars2use = ['du{:0>3}'.format(i) for i in range(1,6)]
+        vars2use = ['du{:0>3}'.format(i) for i in range(1, 6)]
     # Setup lists of days to use
     dates2use = get_dates4campaigns(year=year)
     print('Using dates:', dates2use)
@@ -1913,7 +1912,7 @@ def get_GEOS5_data_cubes4campaign(ds=None, year=2018, region='Cape_Verde',
     elif limit_lons:
         pstr = 'sliced by lons'
     else:
-        pstr =''
+        pstr = ''
 
     # Loop by var and save
     for var in vars2use:
@@ -2103,4 +2102,3 @@ def add_extra_derived_species(ds, debug=False):
         print('-'*10, [i for i in ds.data_vars], '-'*10)
 
     return ds
-
