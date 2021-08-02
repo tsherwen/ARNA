@@ -25,6 +25,9 @@ def main():
     # Explore NOy/NIT after inclusion of acid uptake
     explore_NOy_with_acid_uptake()
 
+    #
+    explore_ARNA_period_with_acid_uptake()
+
 
 def explore_NOy_with_acid_uptake():
     """
@@ -281,6 +284,55 @@ def explore_NOy_with_acid_uptake():
             plt.close('all')
         except KeyError:
             pass
+
+
+
+def explore_ARNA_period_with_acid_uptake():
+    """
+    Explore the 3rd set of acid uptake runs over the ARNA time/space
+    """
+    RunDir = '/users/ts551/scratch/GC/rundirs/'
+    BASEprefix = 'geosfp_4x5_standard.v12.9.0.BASE.2019.2020.'
+#     geosfp_4x5_standard.v12.9.0.BASE.2019.2020./OutputDir/
+
+    ACIDprefix = 'geosfp_4x5_aciduptake.v12.9.0.BASE.2019.2020.'
+    REF1 = 'BASE.BC'
+    d = {
+#    'JNITS': RunDir+BASEprefix+'ARNA.Nest.repeat.IV.JNIT.x25.Dust/',
+#    'GFASx2': RunDir+BASEprefix+'ARNA.Nest.repeat.GFASx2/',
+#    'JNITSx25':RunDir+BASEprefix+'ARNA.Nest.repeat.JNITs.x25/',
+#    'ACID.BC': RunDir+ACIDprefix+'ARNA.DustUptake.BCs/', # failed run... re-start
+    'BASE.BC': RunDir+BASEprefix+'ARNA.BCs.repeat/',
+    'ACID.BC': RunDir+ACIDprefix+'ARNA.DustUptake.BCs/',
+    #  'ACID.JNIT.BC' only has partial NetCDF output (for the campaign period)
+
+#    'ACID.JNIT.BC': RunDir+ACIDprefix+'ARNA.DustUptake.JNIT.BCs/',
+    'ACID.JNITx25.BC': RunDir+ACIDprefix+'ARNA.DustUptake.JNITx25.BCs/',
+    }
+    #
+    for key in d.keys():
+#        d[key] = d[key]+'OutputDir/'
+        d[key] = d[key]+'spin_up/'
+
+    # Get Key statistics for run
+    df = AC.get_general_stats4run_dict_as_df(run_dict=d,
+                                             REF_wd=d[REF1],
+                                             use_REF_wd4Met=True)
+
+    # Calculate lightning source and add to pd.DataFrame
+    var2use = 'EmisNO_Lightning'
+    varName = 'Lightning (Tg N/yr)'
+    dsD = {}
+    for key in d.keys():
+        dsD[key] = AC.get_HEMCO_diags_as_ds(wd=d[key])
+    df = df.T
+    for key in d.keys():
+        ds = dsD[key]
+        val = (ds[var2use].mean(dim='time').sum(dim='lev') * ds['AREA'] )
+        val2 = val.values.sum() * 60 * 60 * 24 * 365 # => /yr
+        df.loc[key,varName] = val2*1E3/1E12
+    df = df.T
+
 
 
 if __name__ == "__main__":

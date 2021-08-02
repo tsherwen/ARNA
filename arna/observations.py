@@ -191,7 +191,7 @@ def get_ARNA_flight_log_as_df():
 
 def get_summary4flight(flight_ID='C217'):
     """
-    retrieve a FAAM flight summary as a dataframe
+    Retrieve a FAAM flight summary as a dataframe
     """
     folder = '{}/{}/'.format(get_local_folder('ARNA_data'), 'CEDA/v2020_06')
     filename = 'flight-sum_faam_*_*_{}.csv'.format(flight_ID.lower())
@@ -497,7 +497,7 @@ def get_FAAM_core4flightnum(flight_ID='C225', version='v2020_06',
     VarName = 'ROLL_GIN'
     FlagName = 'ROLL_GIN_FLAG'
     ds = set_flagged_data2NaNs(ds, VarName=VarName, FlagName=FlagName)
-    # 'Aircraft velocity down from POS AV 510 GPS-aided Inertial Navigation     # 'Aircraft velocity down from POS AV 510 GPS-aided Inertial Navigation unit'
+    # 'Aircraft velocity down from POS AV 510 GPS-aided Inertial Navigation
     VarName = 'VELD_GIN'
     FlagName = 'VELD_GIN_FLAG'
     ds = set_flagged_data2NaNs(ds, VarName=VarName, FlagName=FlagName)
@@ -852,36 +852,40 @@ def mk_planeflight_files4sites(testing_mode=False):
     Make plane-flight input files for various ground sites
     """
     # Location of flight data
-    locs = ['CVO{}'.format(i) for i in range(1, 8)]
+    TYPE = ['CVO{}'.format(i) for i in range(1, 8)]
     #
     sdate = datetime.datetime(2015, 1, 1,)
-    edate = datetime.datetime(2015, 1, 15,)
+    edate = datetime.datetime(2021, 1, 1,)
     dates = pd.date_range(sdate, edate, freq='T')
-    #
-    LOCS_df = pd.read_csv(filename)
-    vars_ = ['LAT', 'LON', 'PRESS', 'TYPE']
-    LAT, LON, PRESS, TYPE = [LOCS_df[i].values for i in vars_]
+    # Get list of species
+    num_tracers = 203
+    slist = get_planeflight_slist2output(num_tracers=num_tracers)
+
     # for each location make a DataFrame, then conbime
     dfs = []
     for n, type_ in enumerate(TYPE):
+        # Get locations
+        LON, LAT, ALT = AC.get_loc(type_)
+        PRESS = 1013.25 #AC.hPa_to_Km([ALT/1E3], reverse=True, )
+        print(n, type_, LON, LAT, ALT )
         # dictionary of data
         nvar = len(dates)
         d = {
-            'datetime': dates, 'LAT': [LAT[n]]*nvar, 'LON': [LON[n]]*nvar,
-            'TYPE': [TYPE[n]]*nvar, 'PRESS': [PRESS[n]]*nvar}
+            'datetime': dates, 'LAT': [LAT]*nvar, 'LON': [LON]*nvar,
+            'TYPE': [type_]*nvar, 'PRESS': [PRESS]*nvar}
         dfs += [pd.DataFrame(d, index=np.arange(nvar)+(n*1E6))]
     # combine all TYPE (sites) and sort by date
     df = pd.concat(dfs).sort_values('datetime', ascending=True)
 
-
-
+    # Now print as files
+    AC.prt_PlaneFlight_files_v12_plus(df=df, slist=slist,
+                                      Extra_spacings=Extra_spacings)
 
 def get_planeflight_slist2output(num_tracers=203):
     """
     Store of planeflight slist to request outputs for
     """
     # Mannually setup slist
-
     met_vars = [
         'GMAO_ABSH', 'GMAO_PSFC', 'GMAO_SURF', 'GMAO_TEMP', 'GMAO_UWND',
         'GMAO_VWND', 'GMAO_PRES'
@@ -936,7 +940,7 @@ def mk_planeflight_files4FAAM_campaigns(testing_mode=False):
 #    df = df.loc[ df['Flight ID'].isin(flight_IDs2use),:]
     # Extract variables of interest
     flight_IDs = df['Flight ID'].values
-    #
+    # Get list of species
     num_tracers = 203
     slist = get_planeflight_slist2output(num_tracers=num_tracers)
 
