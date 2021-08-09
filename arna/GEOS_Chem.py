@@ -185,7 +185,7 @@ def get_GEOSChem4flightnum(flight_ID='C225', res='0.5x0.625', sdate=None,
         # as cannot as output issue in v12.9 (fixed in runs > initial 4x5)
         try:
             # - Use standard AC_tool extraction
-            # Get Header infomation from first file
+            # Get Header information from first file
             vars, sites = AC.get_pf_headers(file2use, debug=debug)
             # Extract all points from file
             df, vars = AC.pf_csv2pandas(file=file2use, vars=vars, epoch=True,
@@ -258,6 +258,108 @@ def get_GEOSChem4flightnum(flight_ID='C225', res='0.5x0.625', sdate=None,
         dfs[Run] = df.copy()
         del df
     return dfs
+
+
+def get_whole_related_campaign_data( save2csv=True, campaign='ARNA-1',
+                                    resample_data=False ):
+    """
+    Get model data from additional CVAO campaigns (surface+airborne)
+    """
+    # Which data to use?
+    RunDir = '/users/ts551/scratch/GC/rundirs/'
+    BASE_str = 'geosfp_4x5_standard.v12.9.0.BASE'
+    ARNA1Var = BASE_str+'.2019.2020.ARNA1.Nest.repeat.JVALS/'
+    ARNA1SurVar = BASE_str+'.2019.2020.ARNA1.Nest.repeat.JVALS.CVAO.PF/'
+    CVAO2015 = BASE_str+'.2015.Aug.Nest.repeat.JVALS.CVAO.PF/'
+    run_dict = {
+    'ARNA-1' : RunDir+ARNA1Var,
+    'ARNA-1-surface' : RunDir+ARNA1SurVar,
+    'CVAO-2015-surface' : RunDir+CVAO2015,
+    }
+    # NetCDF directory
+    sanity_check_model_runs = False
+    if sanity_check_model_runs:
+        for key in run_dict.keys():
+            run_dict[key] = run_dict[key]+'/OutputDir/'
+        # check generic stats
+        RunStr = '/geosfp_4x5_standard.v12.9.0.BASE.2019.2020.ARNA.BCs.repeat/'
+        RunStr += 'OutputDir/'
+        REF_wd = RunDir + RunStr
+        use_REF_wd4Met = True
+        df = AC.get_general_stats4run_dict_as_df(run_dict=run_dict,
+                                                 use_REF_wd4Met=use_REF_wd4Met,
+                                                 REF_wd=REF_wd,
+                                                 )
+    # Extract the planeflight files
+    folder = run_dict[campaign]
+    files2use = list(sorted(glob.glob(os.path.join(folder, '*plane.log*'))))
+    file2use = files2use[0]
+    # Get Header information from first file
+    vars, sites = AC.get_pf_headers(file2use, debug=debug)
+    # Extract all points from file
+    dfs = []
+    for file2use in files2use:
+        df, vars = AC.pf_csv2pandas(file=file2use, vars=vars, epoch=True,
+                                    r_vars=True)
+
+        # Add a datetime index
+        df = AC.DF_YYYYMMDD_HHMM_2_dt(df, rmvars=None, epoch=False)
+        df.index.name = None
+        # Add temperature in deg C
+        df['T'] = df['GMAO_TEMP'].copy()
+        df['T'] = df['GMAO_TEMP'].values - 273.15
+        # Inc. V nd U with same variable names as GEOS-CF
+        df['V'] = df['GMAO_VWND'].copy()
+        df['U'] = df['GMAO_UWND'].copy()
+        # Update the variable names
+        d = v12_9_TRA_XX_2_name(None, folder=folder, RTN_dict=True)
+        d = dict([('TRA_{:0>3}'.format(i), d[i]) for i in d.keys()])
+        df = df.rename(columns=d)
+        # Add NOx as combined NO and NO2
+        df['NOx'] = df['NO'].values + df['NO2'].values
+        # Add NOy as defined in GEOS-CF
+        # NOy = no_no2_hno3_hno4_hono_2xn2o5_pan_organicnitrates_aerosolnitrates
+        vars2use = [
+            'BrNO3', 'ClNO3', 'ETHLN', 'ETNO3', 'HNO2', 'HNO3', 'HNO4', 'HONIT',
+            'ICN', 'IDN', 'IHN1', 'IHN2', 'IHN3', 'IHN4', 'INDIOL',
+            'INPB', 'INPD', 'IONITA', 'IONO', 'IONO2', 'IPRNO3', 'ITCN', 'ITHN',
+            'MCRHN', 'MCRHNB', 'MENO3', 'MONITA', 'MONITS', 'MONITU', 'MPAN', 'MPN',
+            'MVKN', 'N2O5', 'NIT', 'NITs', 'NO', 'NO2', 'NO3', 'NPRNO3', 'PAN',
+            'PPN', 'PROPNN', 'R4N2',
+        ]
+        df['NOy'] = df['N2O5'].copy()  #  2 N2O5 in NOy, so 2x via template
+        for var in vars2use:
+            df.loc[:, 'NOy'] = df['NOy'].values + df[var].values
+        # Include a variable of NOy where HNO3 is removed
+        # NOy = no_no2_hno3_hno4_hono_2xn2o5_pan_organicnitrates_aerosolnitrates
+        df['NOy-HNO3'] = df['NOy'].values - df['HNO3'].values
+        # Include a variable of NOy where HNO3 is removed
+        df['NOy-HNO3-PAN'] = df['NOy'].values - \
+            df['HNO3'].values - df['PAN'].values
+        # gas-phase (exc. PAN, HNO3, HNO4, Org-NIT, N2O5)
+        df['NOy-Limited'] = df['NO'].values + df['NO2'].values + \
+            df['HNO2'].values + df['NIT'].values + df['NITs'].values
+        # Uset the P-I variable as a model level variable
+        df['model-lev'] = df['P-I'].copy()
+        # Resample the data?
+        if ('surface' not in campaign) or resample_data:
+            df = df.resample('1T').mean()
+        dfs += [df]
+    # Concat the data frames
+    df2 = pd.concat(dfs, axis=0)
+    # Save to disk
+    if save2csv:
+        SaveName = 'GC_model_output_{}'.format(campaign)
+        SaveName = AC.rm_spaces_and_chars_from_str(SaveName)
+        if ('surface' not in campaign):
+            df2.to_csv(SaveName+'.csv')
+        else:
+            TYPES = list(set(df2['TYPE'].values))
+            print(TYPES)
+            for TYPE in TYPES:
+                df2save = df.loc[ df['TYPE'] == TYPE, : ]
+                df2save.to_csv('{}_{}.csv'.format(SaveName, TYPE))
+    return df2
 
 
 def regrid_restart4ARNA_highres_grid(folder=None, filename=None, res='1x1'):

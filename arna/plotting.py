@@ -6290,3 +6290,44 @@ def add_scatter_points2cartopy_ax(ax=None, projection=ccrs.PlateCarree,
                transform=projection(),
                zorder=zorder, label=label)
     return ax
+
+
+
+def plot_up_pNO3_photolysis_params():
+    """
+    Plot up the various pNO3 photolysis parameterisation
+    """
+    # - Simone's one copied from google colab notes
+    no3 = np.arange(0.,10000,0.01)
+    f = 0.7*4000./(1.+0.7*no3)/2800
+
+    photo = 2800*f+1.*(1-f)
+    plt.loglog(no3*1e-9*(14+16+16+16)*1e6,photo, label='fbulk=1')
+
+    photo = 2800*f+0.*(1-f)
+    plt.loglog(no3*1e-9*(14+16+16+16)*1e6,photo, label='fbulk=0')
+
+    x = np.array([1,70])*1e-9*(14+16+16+16)*1e6
+    plt.fill_between(x, 56, 2800,color='r', alpha=0.5)
+
+    plt.legend()
+
+    plt.xlabel('bulk [NO$_{3}^{-}$] (ug m$^{-3}$)')
+    plt.ylabel('enhancement factor (f)')
+
+    plt.show()
+
+    # Check numbers
+    no3=np.arange(0,70)
+    f=0.7*4000./(1.+0.7*no3)
+    print( min(f), max(f) )
+    print(0.7*4000./(1+0.7*16.))
+
+
+    # - And ones from Ye et al
+
+    # - And...
+
+    # What about other nitrate on other species? We have nitrate on sulfate, seasalt, and dust in the GEOS-Chem model.
+
+

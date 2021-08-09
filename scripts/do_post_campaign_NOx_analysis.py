@@ -286,7 +286,6 @@ def explore_NOy_with_acid_uptake():
             pass
 
 
-
 def explore_ARNA_period_with_acid_uptake():
     """
     Explore the 3rd set of acid uptake runs over the ARNA time/space
