@@ -14,8 +14,12 @@ def main():
     context = 'paper'
 
     # - Plot up all comparisons by altitude together
-    ar.plt_comp_by_alt_4ARNA_together(context=context, just_SLR=True)
-    ar.plt_comp_by_alt_4ARNA_together(context=context, just_SLR=False)
+    ar.plt_comp_by_alt_4ARNA_together(context=context,
+                                      res='0.25x0.3125',
+                                      just_SLR=True)
+    ar.plt_comp_by_alt_4ARNA_together(context=context,
+                                      res='0.25x0.3125',
+                                      just_SLR=False)
 
     # The same plots as above, but split by their own PDF file..
     ar.plt_comp_by_alt_4ARNA_all(just_SLR=True, context=context,

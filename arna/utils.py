@@ -924,7 +924,8 @@ def get_analysis_region(RegionName):
         'local_CVAO_area': {'x0': -30, 'x1': -10, 'y0': 0, 'y1': 25},
 
         # Cape Verde flying area for ARNA
-        'Cape_Verde_Flying': {'x0': -29.1, 'x1': -15.9, 'y0': 11.9, 'y1': 21.1},
+        'Cape_Verde_Flying': {'x0': -29.1, 'x1': -15.9, 'y0': 11.9,
+                              'y1': 21.1},
     }
     return d[RegionName]
 

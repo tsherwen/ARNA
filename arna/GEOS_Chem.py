@@ -16,20 +16,6 @@ import AC_tools as AC
 import datetime as datetime
 import time
 from time import gmtime, strftime
-from bs4 import BeautifulSoup
-#
-import matplotlib.pyplot as plt
-import seaborn as sns
-import cartopy.crs as ccrs
-import cartopy.feature as cfeature
-import matplotlib.patches as mpatches
-import seaborn as sns
-import matplotlib.ticker as mticker
-import cartopy.crs as ccrs
-from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
-from shapely.geometry.polygon import LinearRing
-import matplotlib
-
 # Import from elsewhere in ARNA module
 from . core import *
 from . utils import *
@@ -41,7 +27,6 @@ def v12_9_TRA_XX_2_name(TRA_XX, folder=None, RTN_dict=False):
     Convert tracer number to tracer name in GEOS-Chem v12.9
     """
     TRAs = AC.get_specieslist_from_input_geos(folder=folder)
-#     TRAs = ['ACET', 'ACTA', 'AERI', 'ALD2', 'ALK4', 'ATOOH', 'BCPI', 'BCPO', 'BENZ', 'Br', 'Br2', 'BrCl', 'BrNO2', 'BrNO3', 'BrO', 'BrSALA', 'BrSALC', 'C2H6', 'C3H8', 'CCl4', 'CFC11', 'CFC113', 'CFC114', 'CFC115', 'CFC12', 'CH2Br2', 'CH2Cl2', 'CH2I2', 'CH2IBr', 'CH2ICl', 'CH2O', 'CH3Br', 'CH3CCl3', 'CH3Cl', 'CH3I', 'CH4', 'CHBr3', 'CHCl3', 'Cl', 'Cl2', 'Cl2O2', 'ClNO2', 'ClNO3', 'ClO', 'ClOO', 'CO', 'DMS', 'DST1', 'DST2', 'DST3', 'DST4', 'EOH', 'ETHLN', 'ETNO3', 'ETP', 'GLYC', 'GLYX', 'H1211', 'H1301', 'H2402', 'H2O', 'H2O2', 'HAC', 'HBr', 'HC5A', 'HCFC123', 'HCFC141b', 'HCFC142b', 'HCFC22', 'HCl', 'HCOOH', 'HI', 'HMHP', 'HMML', 'HNO2', 'HNO3', 'HNO4', 'HOBr', 'HOCl', 'HOI', 'HONIT', 'HPALD1', 'HPALD2', 'HPALD3', 'HPALD4', 'HPETHNL', 'I', 'I2', 'I2O2', 'I2O3', 'I2O4', 'IBr', 'ICHE', 'ICl', 'ICN', 'ICPDH', 'IDC', 'IDCHP', 'IDHDP', 'IDHPE', 'IDN', 'IEPOXA', 'IEPOXB', 'IEPOXD', 'IHN1', 'IHN2', 'IHN3', 'IHN4', 'INDIOL', 'INO', 'INPB', 'INPD', 'IO', 'IONITA', 'IONO', 'IONO2', 'IPRNO3', 'ISALA', 'ISALC', 'ISOP', 'ITCN', 'ITHN', 'LIMO', 'LVOC', 'LVOCOA', 'MACR', 'MACR1OOH', 'MAP', 'MCRDH', 'MCRENOL', 'MCRHN', 'MCRHNB', 'MCRHP', 'MEK', 'MENO3', 'MGLY', 'MOH', 'MONITA', 'MONITS', 'MONITU', 'MP', 'MPAN', 'MPN', 'MSA', 'MTPA', 'MTPO', 'MVK', 'MVKDH', 'MVKHC', 'MVKHCB', 'MVKHP', 'MVKN', 'MVKPC', 'N2O', 'N2O5', 'NH3', 'NH4', 'NIT', 'NITs', 'NO', 'NO2', 'NO3', 'NPRNO3', 'O3', 'OClO', 'OCPI', 'OCPO', 'OCS', 'OIO', 'PAN', 'pFe', 'PIP', 'PP', 'PPN', 'PROPNN', 'PRPE', 'PRPN', 'PYAC', 'R4N2', 'R4P', 'RA3P', 'RB3P', 'RCHO', 'RIPA', 'RIPB', 'RIPC', 'RIPD', 'RP', 'SALA', 'SALAAL', 'SALACL', 'SALC', 'SALCAL', 'SALCCL', 'SO2', 'SO4', 'SO4s', 'SOAGX', 'SOAIE', 'SOAP', 'SOAS', 'TOLU', 'XYLE']
     nums = np.arange(1, len(TRAs)+1)
     if RTN_dict:
         return dict(zip(nums, TRAs))
@@ -56,31 +41,71 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625',
     """
     RunRoot = get_local_folder('RunRoot')
     if res == '4x5':
+        CoreRunStr = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.'
+        AcidRunStr = 'geosfp_4x5_aciduptake.v12.9.0.BASE.2019.2020.ARNA.'
+        d = {}
         # Boundary condition resolution runs
-        Run = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.PF'
-        folder = '{}/{}/'.format(RunRoot, Run)
-        d = {'BC-BASE': folder}
-        # Boundary condition resolution runs
-        Run = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.PF'
-        folder = '{}/{}/'.format(RunRoot, Run)
-        d = {'BC-BASE-I': folder}
-        Run = '/merra2_4x5_standard.v12.9.0.BASE.2019.2020.BCs.repeat/'
-        folder = '{}/{}/'.format(RunRoot, Run)
+#        Run = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.PF'
+#        folder = '{}/{}/'.format(RunRoot, Run)
+#        d = {'BC-BASE': folder}
+        # Boundary condition (BC) resolution runs
+#        Run = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.PF'
+#        folder = '{}/{}/'.format(RunRoot, Run)
+#        d = {'BC-BASE-I': folder}
+        # Current Boundary condition (BC) resolution runs
+        RunStr = 'BCs.repeat/'
+        folder = '{}/{}{}/'.format(RunRoot, CoreRunStr, RunStr)
         d['BC-BASE-II'] = folder
-        Run = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.DustUptake.II'
-        folder = '{}/{}/'.format(RunRoot, Run)
+        RunStr = 'DustUptake.II'
+        folder = '{}/{}{}/'.format(RunRoot, CoreRunStr, RunStr)
         d['AcidUptake-4x5-II'] = folder
+        # re-run boundary conditions?
+        RunStr = 'DustUptake.BCs'
+        folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
+        d['AcidUptake-4x5-III'] = folder
+        # JNITs
+        RunStr = 'DustUptake.JNIT.BCs'
+        folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
+        d['AcidUptake-4x5-JNIT'] = folder
+        # JNITx25
+        RunStr = 'DustUptake.JNITx25.BCs'
+        folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
+        d['AcidUptake-4x5-JNITx25'] = folder
+        # Isotherm
+#        RunStr = 'DustUptake.JNIT.Isotherm.BCs'
+        RunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON'
+        folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
+        d['AcidUptake-4x5-Isotherm'] = folder
+        # CVAO campaign in Reed et al 2017
+        RunStr = 'geosfp_4x5_standard.v12.9.0.BASE.2015.Aug.ARNA.BCs.repeat'
+        folder = '{}/{}/'.format(RunRoot, RunStr)
+        d['BC-BASE-2015'] = folder
     elif res == '0.25x0.3125' and (RunSet == 'FP-MOYA-Nest'):
         # GEOS-FP 0.25 nested run
         Run = 'geosfp_4x5_standard.v12.9.0.BASE.2019.2020.MOYA1.Nest'
         folder = '{}/{}/'.format(RunRoot, Run)
         d = {'FP-Nest': folder}
     elif res == '0.25x0.3125':  # and (RunSet=='GEOS-FP-Nest'):
+        CoreRunStr = 'geosfp_4x5_standard.v12.9.0.BASE.2019.2020.ARNA.Nest.'
         # GEOS-FP 0.25 nested run
-        #        Run = 'geosfp_4x5_standard.v12.9.0.BASE.2019.2020.ARNA.Nest'
-        Run = 'geosfp_4x5_standard.v12.9.0.BASE.2019.2020.ARNA.Nest.repeat'
-        folder = '{}/{}/'.format(RunRoot, Run)
+        RunStr = 'repeat'
+        folder = '{}/{}{}/'.format(RunRoot, CoreRunStr, RunStr)
         d = {'FP-Nest': folder}
+        # GFAS x2
+        RunStr = 'repeat.GFASx2'
+        folder = '{}/{}{}/'.format(RunRoot, CoreRunStr, RunStr)
+        d['FP-Nest-BBx2'] = folder
+#       d = {'FP-Nest-BBx2': folder}
+        # JNITs x25
+        RunStr = 'repeat.JNITs.x25'
+        folder = '{}/{}{}/'.format(RunRoot, CoreRunStr, RunStr)
+        d['FP-Nest-JNITx25'] = folder
+#        d = {'FP-Nest-JNITx25': folder}
+        # With Dust active
+#        RunStr = 'repeat.IV.JNIT.x25.Dust'
+#        folder = '{}/{}{}/'.format(RunRoot, CoreRunStr, RunStr)
+#        d['FP-Nest-Dust'] folder}
+
     elif res == '0.5x0.625':  # and (RunSet=='MERRA2-0.5-initial'):
         Run = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.1x1.PF'
         folder = '{}/{}/'.format(RunRoot, Run)
@@ -129,8 +154,6 @@ def save_model_output2csv(RunSet='FP-MOYA-Nest', res='0.25x0.3125',
             df.to_csv(os.path.join(folder+filename+'.csv'))
 
     elif (res == '0.25x0.3125') and (RunSet == 'FP-Nest'):
-        #        RunSet = 'FP-Nest'
-        #        res='0.25x0.3125'
         flight_nums = [
             #    217,
             218, 219, 220, 221, 222, 223, 224, 225,
@@ -146,7 +169,6 @@ def save_model_output2csv(RunSet='FP-MOYA-Nest', res='0.25x0.3125',
             # Add the derived variables to the dataframe
             df = add_deriv_vars2df(df=df)
 #            dfs_mod[flight_ID] = df
-
             # Save to csv
 #            df = dfs_mod_GC[ list(dfs_mod_GC.keys())[0] ]
             filename_str = 'GC_planeflight_data_{}_{}'
@@ -170,6 +192,7 @@ def get_GEOSChem4flightnum(flight_ID='C225', res='0.5x0.625', sdate=None,
         # Extract the data for a specific flight
         folder = RunDict[Run]
         files2use = glob.glob(os.path.join(folder, '*plane.log*'))
+        files2use = list(sorted(files2use))
         # Get start date of flight
         # (use the plane-flight from same day as sdate)
         if isinstance(sdate, type(None)):
@@ -179,7 +202,8 @@ def get_GEOSChem4flightnum(flight_ID='C225', res='0.5x0.625', sdate=None,
             sdate, edate = AC.dt64_2_dt([sdate, edate])
         sdate_str = sdate.strftime('%Y%m%d')
         file2use = [i for i in files2use if sdate_str in i]
-        assert len(file2use) == 1, 'WARNING: more than one planeflight found!'
+        AssStr = 'WARNING: more than one ({}) planeflight file found! - {}'
+        assert len(file2use) == 1, AssStr.format(len(file2use),file2use)
         file2use = file2use[0]
         # - Instead do this manually for now
         # as cannot as output issue in v12.9 (fixed in runs > initial 4x5)
@@ -215,42 +239,12 @@ def get_GEOSChem4flightnum(flight_ID='C225', res='0.5x0.625', sdate=None,
         # Add a datetime index
         df = AC.DF_YYYYMMDD_HHMM_2_dt(df, rmvars=None, epoch=False)
         df.index.name = None
-        # Add temperature in deg C
-        df['T'] = df['GMAO_TEMP'].copy()
-        df['T'] = df['GMAO_TEMP'].values - 273.15
-        # Inc. V nd U with same variable names as GEOS-CF
-        df['V'] = df['GMAO_VWND'].copy()
-        df['U'] = df['GMAO_UWND'].copy()
         # Update the variable names
         d = v12_9_TRA_XX_2_name(None, folder=folder, RTN_dict=True)
         d = dict([('TRA_{:0>3}'.format(i), d[i]) for i in d.keys()])
         df = df.rename(columns=d)
-        # Add NOx as combined NO and NO2
-        df['NOx'] = df['NO'].values + df['NO2'].values
-        # Add NOy as defined in GEOS-CF
-        # NOy = no_no2_hno3_hno4_hono_2xn2o5_pan_organicnitrates_aerosolnitrates
-        vars2use = [
-            'BrNO3', 'ClNO3', 'ETHLN', 'ETNO3', 'HNO2', 'HNO3', 'HNO4', 'HONIT',
-            'ICN', 'IDN', 'IHN1', 'IHN2', 'IHN3', 'IHN4', 'INDIOL',
-            'INPB', 'INPD', 'IONITA', 'IONO', 'IONO2', 'IPRNO3', 'ITCN', 'ITHN',
-            'MCRHN', 'MCRHNB', 'MENO3', 'MONITA', 'MONITS', 'MONITU', 'MPAN', 'MPN',
-            'MVKN', 'N2O5', 'NIT', 'NITs', 'NO', 'NO2', 'NO3', 'NPRNO3', 'PAN',
-            'PPN', 'PROPNN', 'R4N2',
-        ]
-        df['NOy'] = df['N2O5'].copy()  #  2 N2O5 in NOy, so 2x via template
-        for var in vars2use:
-            df.loc[:, 'NOy'] = df['NOy'].values + df[var].values
-        # Include a variable of NOy where HNO3 is removed
-        # NOy = no_no2_hno3_hno4_hono_2xn2o5_pan_organicnitrates_aerosolnitrates
-        df['NOy-HNO3'] = df['NOy'].values - df['HNO3'].values
-        # Include a variable of NOy where HNO3 is removed
-        df['NOy-HNO3-PAN'] = df['NOy'].values - \
-            df['HNO3'].values - df['PAN'].values
-        # gas-phase (exc. PAN, HNO3, HNO4, Org-NIT, N2O5)
-        df['NOy-Limited'] = df['NO'].values + df['NO2'].values + \
-            df['HNO2'].values + df['NIT'].values + df['NITs'].values
-        # Uset the P-I variable as a model level variable
-        df['model-lev'] = df['P-I'].copy()
+        # Add derived (GEOSchem) variables to df
+        df = add_derived_GEOSChem_specs2df(df)
         # Resample the data?
         if resample_data:
             df = df.resample('1T').mean()
@@ -260,8 +254,100 @@ def get_GEOSChem4flightnum(flight_ID='C225', res='0.5x0.625', sdate=None,
     return dfs
 
 
-def get_whole_related_campaign_data( save2csv=True, campaign='ARNA-1',
-                                    resample_data=False ):
+def add_derived_GEOSChem_specs2ds(ds, prefix=''):
+    """
+    Add derived GEOS-Chem variables to xr.Dataset
+    """
+    # Add NOx as combined NO and NO2
+    ds[prefix+'NOx'] = ds[prefix+'NO'].copy()
+    ds[prefix+'NOx'] = ds[prefix+'NOx'] + ds[prefix+'NO2']
+    # Add NOy as defined in GEOS-CF
+    # NOy = no_no2_hno3_hno4_hono_2xn2o5_pan_organicnitrates_aerosolnitrates
+    vars2use = [
+        'BrNO3', 'ClNO3', 'ETHLN', 'ETNO3', 'HNO2', 'HNO3', 'HNO4',
+        'HONIT',
+        'ICN', 'IDN', 'IHN1', 'IHN2', 'IHN3', 'IHN4', 'INDIOL',
+        'INPB', 'INPD', 'IONITA', 'IONO', 'IONO2', 'IPRNO3', 'ITCN',
+        'ITHN',
+        'MCRHN', 'MCRHNB', 'MENO3', 'MONITA', 'MONITS', 'MONITU', 'MPAN',
+        'MPN',
+        'MVKN', 'N2O5', 'NIT', 'NITs', 'NO', 'NO2', 'NO3', 'NPRNO3', 'PAN',
+        'PPN', 'PROPNN', 'R4N2',
+    ]
+    # 2 N2O5 in NOy, so 2x via template
+    ds[prefix+'NOy'] = ds[prefix+'N2O5'].copy()
+    for var in vars2use:
+        ds[prefix+'NOy'] = ds[prefix+'NOy'] + ds[prefix+var]
+    # Include a variable of NOy where HNO3 is removed
+    # NOy = no_no2_hno3_hno4_hono_2xn2o5_pan_organicnitrates_aerosolnitrates
+    ds[prefix+'NOy-HNO3'] = ds[prefix+'NOy'] - ds[prefix+'HNO3']
+    # Include a variable of NOy where HNO3 is removed
+    ds[prefix+'NOy-HNO3-PAN'] = ds[prefix+'NOy'] -  \
+                                ds[prefix+'HNO3'] -  \
+                                ds[prefix+'PAN']
+    # gas-phase (exc. PAN, HNO3, HNO4, Org-NIT, N2O5)
+    ds[prefix+'NOy-Limited'] = ds[prefix+'NO'] + \
+                               ds[prefix+'NO2'] + \
+                               ds[prefix+'HNO2'] + \
+                               ds[prefix+'NIT'] + \
+                               ds[prefix+'NITs']
+    # NITs - all
+    ds[prefix+'NIT-all'] = ds[prefix+'NIT'] + \
+                           ds[prefix+'NITs']
+    # Add dust nitrates if present.
+    ExtraNITs = 'NITD1', 'NITD2', 'NITD3', 'NITD4'
+    for var in ExtraNITs:
+        try:
+            ds[prefix+'NIT-all'] = ds[prefix+'NIT-all'] + ds[prefix+var]
+        except KeyError:
+            pass
+    return ds
+
+
+def add_derived_GEOSChem_specs2df(df):
+    """
+    Add derived GEOS-Chem variables to pd.DataFrame
+    """
+    # Add temperature in deg C
+    df['T'] = df['GMAO_TEMP'].copy()
+    df['T'] = df['GMAO_TEMP'].values - 273.15
+    # Inc. V nd U with same variable names as GEOS-CF
+    df['V'] = df['GMAO_VWND'].copy()
+    df['U'] = df['GMAO_UWND'].copy()
+    # Add NOx as combined NO and NO2
+    df['NOx'] = df['NO'].values + df['NO2'].values
+    # Add NOy as defined in GEOS-CF
+    # NOy = no_no2_hno3_hno4_hono_2xn2o5_pan_organicnitrates_aerosolnitrates
+    vars2use = [
+        'BrNO3', 'ClNO3', 'ETHLN', 'ETNO3', 'HNO2', 'HNO3', 'HNO4',
+        'HONIT',
+        'ICN', 'IDN', 'IHN1', 'IHN2', 'IHN3', 'IHN4', 'INDIOL',
+        'INPB', 'INPD', 'IONITA', 'IONO', 'IONO2', 'IPRNO3', 'ITCN',
+        'ITHN',
+        'MCRHN', 'MCRHNB', 'MENO3', 'MONITA', 'MONITS', 'MONITU', 'MPAN',
+        'MPN',
+        'MVKN', 'N2O5', 'NIT', 'NITs', 'NO', 'NO2', 'NO3', 'NPRNO3', 'PAN',
+        'PPN', 'PROPNN', 'R4N2',
+    ]
+    df['NOy'] = df['N2O5'].copy()  #  2 N2O5 in NOy, so 2x via template
+    for var in vars2use:
+        df.loc[:, 'NOy'] = df['NOy'].values + df[var].values
+    # Include a variable of NOy where HNO3 is removed
+    # NOy = no_no2_hno3_hno4_hono_2xn2o5_pan_organicnitrates_aerosolnitrates
+    df['NOy-HNO3'] = df['NOy'].values - df['HNO3'].values
+    # Include a variable of NOy where HNO3 is removed
+    df['NOy-HNO3-PAN'] = df['NOy'].values - \
+        df['HNO3'].values - df['PAN'].values
+    # gas-phase (exc. PAN, HNO3, HNO4, Org-NIT, N2O5)
+    df['NOy-Limited'] = df['NO'].values + df['NO2'].values + \
+        df['HNO2'].values + df['NIT'].values + df['NITs'].values
+    # Uset the P-I variable as a model level variable
+    df['model-lev'] = df['P-I'].copy()
+    return df
+
+
+def get_whole_related_campaign_data(save2csv=True, campaign='ARNA-1',
+                                    resample_data=False, debug=False):
     """
     Get model data from additional CVAO campaigns (surface+airborne)
     """
@@ -276,6 +362,9 @@ def get_whole_related_campaign_data( save2csv=True, campaign='ARNA-1',
     'ARNA-1-surface' : RunDir+ARNA1SurVar,
     'CVAO-2015-surface' : RunDir+CVAO2015,
     }
+    # Name of file to save?
+    SaveName = 'GC_model_output_{}'.format(campaign)
+    SaveName = AC.rm_spaces_and_chars_from_str(SaveName)
     # NetCDF directory
     sanity_check_model_runs = False
     if sanity_check_model_runs:
@@ -305,42 +394,19 @@ def get_whole_related_campaign_data( save2csv=True, campaign='ARNA-1',
         # Add a datetime index
         df = AC.DF_YYYYMMDD_HHMM_2_dt(df, rmvars=None, epoch=False)
         df.index.name = None
-        # Add temperature in deg C
-        df['T'] = df['GMAO_TEMP'].copy()
-        df['T'] = df['GMAO_TEMP'].values - 273.15
-        # Inc. V nd U with same variable names as GEOS-CF
-        df['V'] = df['GMAO_VWND'].copy()
-        df['U'] = df['GMAO_UWND'].copy()
+        # Set the out of (nested) box values to NaNs
+        OutOfBoxValue =  -1000.0
+        for col in df.columns:
+            try:
+                df.loc[ df[col].values == OutOfBoxValue, col] = np.NaN
+            except TypeError:
+                print('{} - TypeError found for {} '.format(campaign, col))
         # Update the variable names
         d = v12_9_TRA_XX_2_name(None, folder=folder, RTN_dict=True)
         d = dict([('TRA_{:0>3}'.format(i), d[i]) for i in d.keys()])
         df = df.rename(columns=d)
-        # Add NOx as combined NO and NO2
-        df['NOx'] = df['NO'].values + df['NO2'].values
-        # Add NOy as defined in GEOS-CF
-        # NOy = no_no2_hno3_hno4_hono_2xn2o5_pan_organicnitrates_aerosolnitrates
-        vars2use = [
-            'BrNO3', 'ClNO3', 'ETHLN', 'ETNO3', 'HNO2', 'HNO3', 'HNO4', 'HONIT',
-            'ICN', 'IDN', 'IHN1', 'IHN2', 'IHN3', 'IHN4', 'INDIOL',
-            'INPB', 'INPD', 'IONITA', 'IONO', 'IONO2', 'IPRNO3', 'ITCN', 'ITHN',
-            'MCRHN', 'MCRHNB', 'MENO3', 'MONITA', 'MONITS', 'MONITU', 'MPAN', 'MPN',
-            'MVKN', 'N2O5', 'NIT', 'NITs', 'NO', 'NO2', 'NO3', 'NPRNO3', 'PAN',
-            'PPN', 'PROPNN', 'R4N2',
-        ]
-        df['NOy'] = df['N2O5'].copy()  #  2 N2O5 in NOy, so 2x via template
-        for var in vars2use:
-            df.loc[:, 'NOy'] = df['NOy'].values + df[var].values
-        # Include a variable of NOy where HNO3 is removed
-        # NOy = no_no2_hno3_hno4_hono_2xn2o5_pan_organicnitrates_aerosolnitrates
-        df['NOy-HNO3'] = df['NOy'].values - df['HNO3'].values
-        # Include a variable of NOy where HNO3 is removed
-        df['NOy-HNO3-PAN'] = df['NOy'].values - \
-            df['HNO3'].values - df['PAN'].values
-        # gas-phase (exc. PAN, HNO3, HNO4, Org-NIT, N2O5)
-        df['NOy-Limited'] = df['NO'].values + df['NO2'].values + \
-            df['HNO2'].values + df['NIT'].values + df['NITs'].values
-        # Uset the P-I variable as a model level variable
-        df['model-lev'] = df['P-I'].copy()
+        # Add derived (GEOSchem) variables to df
+        df = add_derived_GEOSChem_specs2df(df)
         # Resample the data?
         if ('surface' not in campaign) or resample_data:
             df = df.resample('1T').mean()
@@ -349,15 +415,13 @@ def get_whole_related_campaign_data( save2csv=True, campaign='ARNA-1',
     df2 = pd.concat(dfs, axis=0)
     # Save to disk
     if save2csv:
-        SaveName = 'GC_model_output_{}'.format(campaign)
-        SaveName = AC.rm_spaces_and_chars_from_str(SaveName)
         if ('surface' not in campaign):
             df2.to_csv(SaveName+'.csv')
         else:
             TYPES = list(set(df2['TYPE'].values))
             print(TYPES)
             for TYPE in TYPES:
-                df2save = df.loc[ df['TYPE'] == TYPE, : ]
+                df2save = df2.loc[ df2['TYPE'] == TYPE, : ]
                 df2save.to_csv('{}_{}.csv'.format(SaveName, TYPE))
     return df2
 

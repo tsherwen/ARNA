@@ -1791,11 +1791,12 @@ def plt_comp_by_alt_4ARNA_all(dpi=320, just_SLR=True, show_plot=False,
 
                 dfs[key] = df
             dfs_mod_GC[flight_ID] = dfs
-            del dfs
+#            del dfs
     # TODO: Combine to a single DataFrame to plot GEOS-CF and GEOS-Chem
     # Kludge - for now just plot GEOS-Chem
     if just_plot_GEOS_Chem:
         dfs_mod = dfs_mod_GC
+        print('TEMP DEBUG:', dfs_mod_GC.keys(), dfs_mod.keys(), dfs.keys())
     else:
         print('TODO: setup plotting of GEOS-CF and GEOS-Chem')
         dfs_mod = dfs_mod_CF
@@ -1809,6 +1810,15 @@ def plt_comp_by_alt_4ARNA_all(dpi=320, just_SLR=True, show_plot=False,
     # Combine to a single dataframe
 #    df_mod = pd.concat([dfs_mod[i] for i in dfs_mod.keys()], axis=0)
     df_mod = pd.concat([dfs_mod[i][RunSet] for i in dfs_mod.keys()], axis=0)
+    dfs_mod_ALL = {}
+    if len(dfs.keys()) > 1:
+        for key in dfs.keys():
+#            pd.concat([dfs_mod[i][RunSet] for i in dfs_mod.keys()], axis=0)
+            ModByFlight = [dfs_mod[i][key] for i in dfs_mod.keys()]
+            dfs_mod_ALL[key] = pd.concat(ModByFlight, axis=0)
+#    dfs_mod[key] = pd.concat([dfs_mod[i][key] for i in dfs_mod.keys()], axis=0)
+
+    print('TEMP DEBUG:', df_mod)
     df_obs = pd.concat([dfs_obs[i] for i in dfs_obs.keys()], axis=0)
     # Only consider data during SLRs?
     if just_SLR:
@@ -1844,23 +1854,38 @@ def plt_comp_by_alt_4ARNA_all(dpi=320, just_SLR=True, show_plot=False,
     print('WARNING: Kludged below to only plot GEOS-Chem alt var')
     if just_plot_GEOS_Chem:
         df_mod[ALT_var] = AC.hPa_to_Km(df_mod['PRESS'].values)
+        if len(dfs.keys()) > 1:
+            for key in dfs_mod_ALL.keys():
+                df_tmp = dfs_mod_ALL[key]
+                df_tmp[ALT_var] = AC.hPa_to_Km(df_mod['PRESS'].values)
+                dfs_mod_ALL[key] = df_tmp
     else:
         df_mod[ALT_var] = AC.hPa_to_Km(df_mod['model-lev'].values)
     df_obs[ALT_var] = df_obs['ALT_GIN'].values / 1E3
     #
     if just_plot_GEOS_Chem:
-        data_d = {RunSet: df_mod, 'Obs.': df_obs}
+        if ( len(list(dfs_mod.keys())) > 1):
+            # If more than one set of model output provided?
+            data_d = AC.merge_two_dicts({'Obs.': df_obs}, dfs_mod_ALL)
+        else:
+            data_d = {RunSet: df_mod, 'Obs.': df_obs}
     else:
         data_d = {'GEOS-CF': df_mod, 'Obs.': df_obs}
 
     # - Now plot up flight time series plots by variable
     if just_SLR:
-        title_str = "Altitude binned '{}' ({}) for all 'Straight and Level Runs'"
+        title_str = "Altitude binned '{}' ({}) for all 'Straight + Level Runs'"
     else:
         title_str = "Altitude binned '{}' ({}) for all flights"
     # Setup color dictionary for plotting...
-    color_dict = {'GEOS-CF': 'red', 'Obs.': 'k', RunSet: 'Orange'}
     colors2use = AC.get_CB_color_cycle()
+    color_dict = {
+    'GEOS-CF': 'red',
+    'Obs.': 'k',
+    RunSet: colors2use[0],
+    'FP-Nest-JNITx25': colors2use[1],
+    'FP-Nest-BBx2' : colors2use[2],
+    }
     runs2color = [i for i in data_d.keys() if i not in color_dict.keys()]
     for n_run, run in enumerate(runs2color):
         color_dict[run] = colors2use[n_run]
@@ -2220,6 +2245,7 @@ def plt_comp_by_alt_4ARNA_CIMS_all_DUST(dpi=320, just_SLR=True,
     # Combine to a single dataframe
 #    df_mod = pd.concat([dfs_mod[i] for i in dfs_mod.keys()], axis=0)
     df_mod = pd.concat([dfs_mod[i][RunSet] for i in dfs_mod.keys()], axis=0)
+    print('TEMP DEBUG:', df_mod)
     df_obs = pd.concat([dfs_obs[i] for i in dfs_obs.keys()], axis=0)
     # Only consider data during straight and level runs (SLRs)?
     if just_SLR:
@@ -2257,6 +2283,8 @@ def plt_comp_by_alt_4ARNA_CIMS_all_DUST(dpi=320, just_SLR=True,
         data_d = {'Obs.':  df_obs }
         if just_plot_GEOS_Chem:
             data_d = {RunSet: df_mod, 'Obs.': df_obs}
+            # Add extra runs via dfs_mod dictionary
+#            AC.merge_two_dicts(data_d, dfs_mod)
         else:
             data_d = {'GEOS-CF': df_mod, 'Obs.': df_obs}
 
@@ -2287,11 +2315,17 @@ def plt_comp_by_alt_4ARNA_CIMS_all_DUST(dpi=320, just_SLR=True,
     else:
         title_str = "Altitude binned '{}' ({}) for all flights"
     # Setup color dictinoary
-    color_dict = {'GEOS-CF': 'red', 'Obs.': 'k'}
     colors2use = AC.get_CB_color_cycle()
+    color_dict = {
+    'GEOS-CF': 'red',
+    'Obs.': 'k',
+    RunSet: colors2use[0],
+    'FP-Nest-JNITx25': colors2use[1],
+    'FP-Nest-BBx2' : colors2use[2],
+    }
     runs2color = [i for i in data_d.keys() if i not in color_dict.keys()]
     for n_run, run in enumerate(runs2color):
-        color_dict[run] = colors2use[n_run]
+        color_dict[run] = colors2use[1:n_run]
     NOx_specs = ['HNO2', 'NOx', 'NO', 'NO2', 'HONO']
     mod2obs_varnames = {
         'BrO': 'BrO',
@@ -2643,9 +2677,11 @@ def plt_comp_by_alt_4ARNA_together(dpi=320, just_SLR=True, show_plot=False,
         savetitle += '_JUST_SLR'
     pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
 
+    if isinstance(RunSet, type(None)):
+        RunSet='FP-Nest'
     # Call the standard species plotter
     plt_comp_by_alt_4ARNA_all(just_SLR=just_SLR, context=context,
-                              RunSet='FP-Nest', res='0.25x0.3125',
+                              RunSet=RunSet, res='0.25x0.3125',
                               inc_GEOSChem=True,
                               just_plot_GEOS_Chem=True,
                               savetitle=savetitle,
@@ -2658,7 +2694,7 @@ def plt_comp_by_alt_4ARNA_together(dpi=320, just_SLR=True, show_plot=False,
                                         inc_GEOSChem=True,
                                         just_plot_GEOS_Chem=True,
                                         plt_model=True,
-                                        RunSet='FP-Nest', res='0.25x0.3125',
+                                        RunSet=RunSet, res='0.25x0.3125',
                                         savetitle=savetitle,
                                         pdff=pdff,
                                         plt_map=False,
@@ -2674,9 +2710,6 @@ def plt_comp_by_alt_4ARNA_together(dpi=320, just_SLR=True, show_plot=False,
     # - Save entire pdf
     AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
     plt.close('all')
-
-
-
 
 
 def plt_comp_by_alt_4ARNA_flights_CIMS(dpi=320, just_SLR=False,
@@ -6329,5 +6362,56 @@ def plot_up_pNO3_photolysis_params():
     # - And...
 
     # What about other nitrate on other species? We have nitrate on sulfate, seasalt, and dust in the GEOS-Chem model.
+
+
+def plt_quick_ts4df(df, vars2plot=None, savetitle=None, save2pdf=True,
+                           dpi=320, context='paper', debug=False):
+    """
+    Plot up a quick timeseries plot for variables in DataFrame
+    """
+    import seaborn as sns
+    sns.set(color_codes=True)
+    sns.set_context(context)
+    # which variables to plot?
+    if isinstance(vars2plot, type(None)):
+        vars2plot = ['LAT', 'LON', 'PRESS', 'V', 'U', 'T', 'OH', 'O3', 'CO']
+    if isinstance(savetitle, type(None)):
+        savetitle = 'timeseries_plot_of_df'
+    pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
+
+    # - Plot entire data
+    for var in vars2plot:
+        try:
+            units, scaleby, adjustby = AC.tra_unit(var, scale=True,
+                                                   adjustment=True)
+        except:
+            units = ''
+            scaleby = 1
+            adjustby = 0
+        if debug:
+            print(var, units, scaleby, adjustby)
+            df[var].dropna().describe()
+
+        Y = (df[var].values * scaleby) + adjustby
+        X = df.index.values
+        plt.plot(X, Y)
+        plt.ylabel("'{}' ({})".format(var, units))
+        ax = plt.gca()
+        labels = ax.get_xticklabels()
+        ax.set_xticklabels(labels, rotation=45)
+        # Beatify
+        plt.title("'Timeseries plot of '{}' ({})".format(var, units))
+        # Save to PDF and close the plot
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+        plt.close()
+
+    # Save to PDF
+    if save2pdf:
+        # Save entire pdf
+        AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
+        plt.close('all')
+
+
+
 
 

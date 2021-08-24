@@ -290,11 +290,16 @@ def explore_ARNA_period_with_acid_uptake():
     """
     Explore the 3rd set of acid uptake runs over the ARNA time/space
     """
+    from arna import add_derived_GEOSChem_specs2ds
+    from funcs4obs import gaw_2_loc
+    from matplotlib.ticker import FormatStrFormatter
+
     RunDir = '/users/ts551/scratch/GC/rundirs/'
     BASEprefix = 'geosfp_4x5_standard.v12.9.0.BASE.2019.2020.'
 #     geosfp_4x5_standard.v12.9.0.BASE.2019.2020./OutputDir/
 
-    ACIDprefix = 'geosfp_4x5_aciduptake.v12.9.0.BASE.2019.2020.'
+    ACIDprefix = 'geosfp_4x5_aciduptake.v12.9.0.BASE.2019.2020.ARNA.'
+    ACIDprefix += 'DustUptake.'
     REF1 = 'BASE.BC'
     d = {
 #    'JNITS': RunDir+BASEprefix+'ARNA.Nest.repeat.IV.JNIT.x25.Dust/',
@@ -302,20 +307,31 @@ def explore_ARNA_period_with_acid_uptake():
 #    'JNITSx25':RunDir+BASEprefix+'ARNA.Nest.repeat.JNITs.x25/',
 #    'ACID.BC': RunDir+ACIDprefix+'ARNA.DustUptake.BCs/', # failed run... re-start
     'BASE.BC': RunDir+BASEprefix+'ARNA.BCs.repeat/',
-    'ACID.BC': RunDir+ACIDprefix+'ARNA.DustUptake.BCs/',
+    'BASE.GFASx2.BC': RunDir+BASEprefix+'ARNA.GFASx2.BCs/',
+    'ACID.BC': RunDir+ACIDprefix+'BCs/',
     #  'ACID.JNIT.BC' only has partial NetCDF output (for the campaign period)
 
-#    'ACID.JNIT.BC': RunDir+ACIDprefix+'ARNA.DustUptake.JNIT.BCs/',
-    'ACID.JNITx25.BC': RunDir+ACIDprefix+'ARNA.DustUptake.JNITx25.BCs/',
+#   'ACID.JNIT.BC': RunDir+ACIDprefix+'JNIT.BCs/',
+    'ACID.JNITx25.BC': RunDir+ACIDprefix+'JNITx25.BCs/',
+#    'ACID.BC.Isotherm': RunDir+ACIDprefix+'JNIT.Isotherm.BCs.repeat.ON/',
     }
     #
     for key in d.keys():
-#        d[key] = d[key]+'OutputDir/'
-        d[key] = d[key]+'spin_up/'
+        d[key] = d[key]+'OutputDir/'
+#        d[key] = d[key]+'spin_up/'
+
+    # Use spun up year before the campaign (2019)
+    sdate = datetime.datetime(2019, 1, 1, )
+    edate = datetime.datetime(2020, 1, 1, )
+    # Just use the dates of the ARNA campaign
+#    sdate = datetime.datetime(2020, 1, 1, )
+#    edate = datetime.datetime(2020, 3, 1, )
+    dates2use = pd.date_range(sdate, edate, freq='1H')
 
     # Get Key statistics for run
     df = AC.get_general_stats4run_dict_as_df(run_dict=d,
                                              REF_wd=d[REF1],
+                                             dates2use=dates2use,
                                              use_REF_wd4Met=True)
 
     # Calculate lightning source and add to pd.DataFrame
@@ -332,6 +348,217 @@ def explore_ARNA_period_with_acid_uptake():
         df.loc[key,varName] = val2*1E3/1E12
     df = df.T
 
+    # Rename the keys to more readable names
+    rename_dict = {
+    'BASE.BC': 'BASE',
+    'BASE.GFASx2.BC': 'BASE.BBx2',
+    'ACID.BC': 'ACID',
+    'ACID.JNITx25.BC': 'ACID.JNITx25'
+    }
+    for key in list(d.keys()):
+        print(key, (key in rename_dict.keys()))
+        if (key in rename_dict.keys()):
+            NewKey = rename_dict[key]
+            d[NewKey] = d[key]
+            d.pop(key)
+
+    # Get the model for all species by run
+    prefix = 'SpeciesConc_'
+    dsD = {}
+    for key in d.keys():
+        ds =  AC.get_GEOSChem_files_as_ds(wd=d[key], dates2use=dates2use)
+        ds = add_derived_GEOSChem_specs2ds(ds, prefix=prefix)
+        dsD[key] = ds
+
+#    StateMet = AC.get_StateMet_ds(wd=Folder)
+    ModelAlt = AC.gchemgrid('c_km_geos5')
+    specs2plot = [i for i in ds.data_vars if prefix in i]
+    specs2plot = [i.split(prefix)[-1] for i in specs2plot][::-1]
+
+    import seaborn as sns
+    sns.set(color_codes=True)
+    sns.color_palette('colorblind')
+    sns.set_context(context)
+    save2png = False
+    show_plot = False
+    font_scale = 1
+    site = 'CVO'
+    lat, lon, alt, TZ = gaw_2_loc(site)
+
+    def __get_data4plotting(ds, spec='O3', lat=lat, lon=lon,
+                            ModelAlt=ModelAlt):
+        """
+        Helper function to get data for plotting at a given location
+        """
+        ds_tmp = ds[prefix+spec].sel(lat=lat, lon=lon, method='nearest')
+        ds_tmp = ds_tmp.mean(dim='time')
+        ds_tmp['lev'] = ModelAlt
+        units, scalby = AC.tra_unit(spec, scale=True)
+        # Override default scaling for HONO (HNO2)
+        force_units_as_pptv = ['NO', 'NO2', 'NOx', 'HNO2']
+        if (spec in force_units_as_pptv):
+            units = 'pptv'
+            scalby = 1E12
+        ds_tmp *= scalby
+        return ds_tmp, units
+
+    def __beautify_plot(spec='O3', units='ppbv', ylim=(0, 15), ax=None,
+                        yscale='linear', xscale='linear'):
+        """
+        Helper function to beautify the plot
+        """
+        if isinstance(ax, type(None)):
+            ax = plt.gca()
+        plt.ylabel('{} ({})'.format('Altitude', 'km'))
+        plt.xlabel('{} ({})'.format(spec, units))
+        plt.title('Annual mean vertical profile of {} at CVAO'.format(spec))
+        plt.legend()
+        plt.ylim(ylim)
+        ax.set_yscale(yscale)
+        ax.set_xscale(xscale)
+        # Set ranges for species of interest
+        if spec == 'O3':
+            plt.xlim(-5, 125)
+        elif spec == 'NO' and (xscale != 'log'):
+            plt.xlim(-0.1, 100)
+        elif spec == 'NO2' and (xscale != 'log'):
+            plt.xlim(-0.05, 0.2*1E3)
+        elif (spec == 'NOx') and (xscale != 'log'):
+            plt.xlim(-0.05, 0.4*1E3)
+        elif spec == 'HNO2':
+            plt.xlim(-0.001, 0.002*1E3)
+        elif spec == 'HNO3':
+            plt.xlim(-0.05, 0.5)
+        elif spec == 'NOy':
+            plt.xlim(-0.05, 1.0)
+        elif spec == 'NOy-HNO3':
+            plt.xlim(-0.05, 1000)
+        elif spec == 'NOy-HNO3-PAN':
+            plt.xlim(-0.05, 500)
+        elif spec == 'NOy-Limited':
+            plt.xlim(-0.05, 500)
+        elif spec == 'CO':
+            plt.xlim(25, 120)
+        else:
+            pass
+        # update the range for log scale plots
+        if xscale == 'log':
+            plt.xlim(0.1, 300)
+#            plt.tick_params(axis='x', which='minor')
+#            ax.xaxis.set_minor_formatter(FormatStrFormatter("%.1f"))
+
+    # -- Plot and save to single PDF file
+    specs2plot = [
+    'O3', 'CO', 'NOx', 'NO2', 'NO', 'HNO2', 'NOy', 'HNO3', 'NIT-all',
+    'NOy-HNO3', 'NOy-HNO3-PAN', 'NOy-Limited',
+    ]
+    # Setup PDF to save PDF plots to
+    savetitle = 'ARNA_vertical_above_CVAO_GEOSChem_campaign_global'
+    pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
+    # Species list, then loop dictionary of datasets
+    for spec in specs2plot:
+        for key in dsD.keys():
+            ds = dsD[key].copy()
+            ds, units = __get_data4plotting(ds, spec=spec)
+            #  plot up...
+            ds.plot(y='lev', label=key)
+            __beautify_plot(spec=spec, units=units)
+        # Save to PDF
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+        if show_plot:
+            plt.show()
+        plt.close()
+        # Do some memory management...
+        gc.collect()
+
+
+    # - Also add specific ratio plots
+
+    # NO / NOx
+    spec = 'NO:NOx'
+    for key in dsD.keys():
+        ds = dsD[key].copy()
+        dsI, units = __get_data4plotting(ds, spec='NO')
+        dsII, units = __get_data4plotting(ds, spec='NOx')
+        ds = dsI / dsII
+        #  plot up...
+        ds.plot(y='lev', label=key)
+        __beautify_plot(spec=spec, units=units)
+    # Save to PDF
+    AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+    if show_plot:
+        plt.show()
+    plt.close()
+
+    # NO2 / NOx
+#     spec = 'NO2:NOx'
+#     for key in dsD.keys():
+#         ds = dsD[key].copy()
+#         dsI, units = __get_data4plotting(ds, spec='NO2')
+#         dsII, units = __get_data4plotting(ds, spec='NOx')
+#         ds = dsI / dsII
+#         #  plot up...
+#         ds.plot(y='lev', label=key)
+#         __beautify_plot(spec=spec, units=units)
+#     # Save to PDF
+#     AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+#     if show_plot:
+#         plt.show()
+#     plt.close()
+
+    # HONO / NOx
+    spec = 'HONO:NOx'
+    for key in dsD.keys():
+        ds = dsD[key].copy()
+        dsI, units = __get_data4plotting(ds, spec='HNO2')
+        dsII, units = __get_data4plotting(ds, spec='NOx')
+        ds = dsI / dsII
+        #  plot up...
+        ds.plot(y='lev', label=key)
+        __beautify_plot(spec=spec, units=units)
+    # Save to PDF
+    AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+    if show_plot:
+        plt.show()
+    plt.close()
+
+    # HONO / NOy
+    spec = 'HONO:NOy'
+    for key in dsD.keys():
+        ds = dsD[key].copy()
+        dsI, units = __get_data4plotting(ds, spec='HNO2')
+        dsII, units = __get_data4plotting(ds, spec='NOy')
+        ds = dsI / dsII
+        #  plot up...
+        ds.plot(y='lev', label=key)
+        __beautify_plot(spec=spec, units=units)
+    # Save to PDF
+    AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+    if show_plot:
+        plt.show()
+    plt.close()
+
+    # Add a log NO, NO2 and NOx plot
+    specs2plot_AsLog = ['NO', 'NO2', 'NOx',]# 'HNO2']
+    # Species list, then loop dictionary of datasets
+    for spec in specs2plot_AsLog:
+        for key in dsD.keys():
+            ds = dsD[key].copy()
+            ds, units = __get_data4plotting(ds, spec=spec)
+            #  plot up...
+            ds.plot(y='lev', label=key)
+            __beautify_plot(spec=spec, units=units, xscale='log')
+        # Save to PDF
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+        if show_plot:
+            plt.show()
+        plt.close()
+        # Do some memory management...
+        gc.collect()
+
+    # Save entire pdf
+    AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
+    plt.close('all')
 
 
 if __name__ == "__main__":
