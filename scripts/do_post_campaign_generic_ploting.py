@@ -430,6 +430,8 @@ def test_new_planeflight_Jrate_output():
                 pf_spec = 'JVL_016'
             elif spec == 'HNO2':
                 pf_spec = 'JVL_015'
+            elif spec == 'O1D':
+                pf_spec = 'JVL_002' # Also ???
             else:
                 print('case not setup for species: {}'.format(spec))
             if isinstance(pf_spec, str):
