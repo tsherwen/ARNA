@@ -239,30 +239,22 @@ def get_filters_data4flight(flight_ID='C217', all_flights=True):
         'Airflow (stL)',
     ]
     # - Select nitrate data
-    # Yes, GEOS-CF has sulfate variables output - 'NIT', 'NITs'
-    NO3cols = [i for i in dfFULL.columns if 'NO3' in i]
-    dfN = dfFULL[CoreCols + NO3cols]
-    #
-#    NO3_var = 'NO3.total'
+    # NOTE: GEOS-CF has only sulfate + nitrate variables output
+    # ('NIT', 'NITs', 'SO4', 'SO4s')
+    # Observational variables (columns) to use
     NO3_var2use = ['NO3.2', 'NO3.5']
-    units = 'nanomoles/m3'
-#    NO3_idx = [list(dfFULL.columns).index(i) for i in var2inc]
-
-    # - Also save sulfate?
-    # Yes, GEOS-CF has sulfate variables output - 'SO4', 'SO4s'
-#    SO4cols = [i for i in dfFULL.columns if 'SO4' in i]
-#    dfS = dfFULL[CoreCols + SO4cols]
     SO4_var2use = ['SO4.2', 'SO4.5']
+    Cl_var2use = ['Cl.2', 'Cl.5']
+    NO2_var2use = ['NO2.2', 'NO2.5']
+    C2O4_var2use = ['C2O4.2', 'C2O4.5']
     units = 'nanomoles/m3'
-#    SO4_idx = [list(dfFULL.columns).index(i) for i in SO4_var2use]
 
     # - Now chop off excess headers and make sure formats are correct
     df = dfFULL.loc[dfFULL.index[2:], :]
-    #
-#    idx2use = [list(dfFULL.columns).index(i) for i in CoreCols]
-#    idx2use += NO3_idx + SO4_idx
-#    cols2use = [list(dfFULL.columns)[i] for i in idx2use ]
-    df = df[CoreCols + NO3_var2use + SO4_var2use]
+    # Just consider the available data in comparisons
+    vars2use = NO3_var2use + SO4_var2use + Cl_var2use + NO2_var2use
+    vars2use += C2O4_var2use
+    df = df[CoreCols + vars2use]
     # Replace values less than black/NaNs with np.NaN
     df = df.replace('lower than blank', np.NaN)
     df = df.replace('NaN', np.NaN)
@@ -295,10 +287,19 @@ def get_filters_data4flight(flight_ID='C217', all_flights=True):
     df[NO3_var] = df[NO3_var2use].sum(axis=1)
     SO4_var = 'SO4.total'
     df[SO4_var] = df[SO4_var2use].sum(axis=1)
+    Cl_var = 'Cl.total'
+    df[Cl_var] = df[Cl_var2use].sum(axis=1)
+    NO2_var = 'NO2.total'
+    df[NO2_var] = df[NO2_var2use].sum(axis=1)
+    C2O4_var = 'C2O4.total'
+    df[C2O4_var] = df[C2O4_var2use].sum(axis=1)
     del dfFULL
     # Convert to ug/m3 from 'nanomoles/m3'
     df[NO3_var] = df[NO3_var].values / 1E9 * AC.species_mass('NIT') * 1E6
     df[SO4_var] = df[SO4_var].values / 1E9 * AC.species_mass('SO4') * 1E6
+    df[Cl_var] = df[Cl_var].values / 1E9 * AC.species_mass('Cl') * 1E6
+    df[NO2_var] = df[NO2_var].values / 1E9 * AC.species_mass('NO2') * 1E6
+    df[C2O4_var] = df[C2O4_var].values / 1E9 * AC.species_mass('C2O4') * 1E6
     # Return all flights unless a specific flight requested
     if all_flights:
         return df
@@ -577,14 +578,20 @@ def get_FAAM_core4flightnum(flight_ID='C225', version='v2020_06',
         except KeyError:
             print('WARNING: no PCASP data found for {}'.format(flight_ID))
     # Include the latest NOx data from Simone and Chris
-#     dfHONO = get_latest_NOx_HONO_data(flight_ID=flight_ID)
-#     df = pd.concat( [df, dfHONO] )
+    dfHONO = get_latest_NOx_HONO_data(flight_ID=flight_ID)
+#    if not isinstance(dfHONO, type(None)):
+    df = pd.concat( [df, dfHONO] )
 
     # Add NOx as combined NO and NO2
     try:
-        df['NOx'] = df['no_mr'].values + df['no2_mr'].values
+        df['NOx_mr'] = df['no_mr'].values + df['no2_mr'].values
     except:
         print('WARNING: failed to add NOx to flight {}'.format(flight_ID))
+    try:
+        df['NOx'] = df['NO_pptV'].values + df['NO2_pptV'].values
+    except:
+        print('WARNING: failed to add NOx to flight {}'.format(flight_ID))
+
     # Add a values for H2O
     try:
         ds = set_flagged_data2NaNs(ds, VarName='NV_LWC1_C',
@@ -630,7 +637,7 @@ def get_latest_NOx_HONO_data(flight_ID=None, version='v1'):
     Use the latest NOx/HONO data from Simone and Chris
     """
     # Locations of data
-    folder = '/users/ts551/scratch/data/ARNA/FAAM/'
+    folder = '{}/{}/'.format(get_local_folder('ARNA_data'), 'FAAM')
     folder += 'ARNA_NOx_HONO_data/'
     FileStr = 'NOx_and_HONO'
     files2use = glob.glob('{}*{}*{}*'.format(folder, FileStr, version) )
@@ -647,13 +654,20 @@ def get_latest_NOx_HONO_data(flight_ID=None, version='v1'):
         df = pd.concat(dfs)
     else:
         file2use = [i for i in files2use if flight_ID in i]
-        assert len(file2use) == 1, 'STOPPING: more than one file!'
-        file2use = file2use[0]
-        df = pd.read_csv(file2use)
-        flight_ID = file2use.split('/')[-1][:4]
-        df['flight_ID'] = flight_ID
+        if len(file2use) == 0:
+            print('WARNING: No NOx/HONO data for {}'.format(flight_ID))
+            return None
+        else:
+            assert len(file2use) == 1, 'STOPPING: more than one file!'
+            file2use = file2use[0]
+            df = pd.read_csv(file2use)
+            flight_ID = file2use.split('/')[-1][:4]
+            df['flight_ID'] = flight_ID
     # ... and make index the datetime
+    df = df.sort_index()
+    df.index.name = None
     df.index = pd.to_datetime(df[df.columns[0]])
+    df.index = pd.to_datetime(df.index.values)
     del df[df.columns[0]]
     return df
 

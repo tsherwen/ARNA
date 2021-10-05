@@ -16,24 +16,26 @@ def main():
     # - Plot up all comparisons by altitude together
     ar.plt_comp_by_alt_4ARNA_together(context=context,
                                       res='0.25x0.3125',
-                                      just_SLR=True)
+                                      just_SLR=True,)
+    # NOTE: below function now failing with a ValueError (05/10/21)
     ar.plt_comp_by_alt_4ARNA_together(context=context,
                                       res='0.25x0.3125',
                                       just_SLR=False)
 
     # The same plots as above, but split by their own PDF file..
+    # NOTE: below function fails with a ValueError
     ar.plt_comp_by_alt_4ARNA_all(just_SLR=True, context=context,
                                  RunSet='FP-Nest',inc_GEOSChem=True,
                                  just_plot_GEOS_Chem=True,
-                                 res='0.25x0.3125',just_SLR=False,)
+                                 res='0.25x0.3125', close_pdf=True)
 
     # Plot up data for SLRs with and without dust
 #    ar.plt_comp_by_alt_4ARNA_all(just_SLR=False, context=context)
 #    ar.plt_comp_by_alt_4ARNA_all(just_SLR=True, context=context)
-    ar.plt_comp_by_alt_4ARNA_all(just_SLR=True, context=context,
+    ar.plt_comp_by_alt_4ARNA_all(just_SLR=False, context=context,
                                  RunSet='FP-Nest',inc_GEOSChem=True,
                                  just_plot_GEOS_Chem=True,
-                                 res='0.25x0.3125',just_SLR=True,)
+                                 res='0.25x0.3125', close_pdf=True)
 
     ar.plt_comp_by_alt_4ARNA_flights_CIMS(context=context,
                                           RunSet='FP-Nest',
@@ -120,11 +122,6 @@ def main():
                                         inc_GEOSChem=True,
                                         LatVar='LAT',
                                         LonVar='LON',)
-
-
-
-
-
 
     # - Other misc. plotting tasks
 #    explore_high_ozone_near_CVAO()

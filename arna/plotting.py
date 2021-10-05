@@ -1892,8 +1892,8 @@ def plt_comp_by_alt_4ARNA_all(dpi=320, just_SLR=True, show_plot=False,
     # And conversion scales and units for variables
     unit_d = {}
     mod2obs_varnames = {
-        'CO': 'CO_AERO', 'O3': 'O3_TECO', 'NO2': 'no2_mr', 'NO': 'no_mr',
-        'HNO2': 'hono_mr',
+        'CO': 'CO_AERO', 'O3': 'O3_TECO', 'NO2': 'NO2_pptV', 'NO': 'NO_pptV',
+        'HNO2': 'HONO_pptV',
         'NOx': 'NOx'
     }
     units_d = {
@@ -2078,8 +2078,8 @@ def plt_comp_by_alt_4ARNA_all_DUST(dpi=320, just_SLR=True, flight_nums=[],
         color_dict[run] = colors2use[n_run]
     unit_d = {}
     mod2obs_varnames = {
-        'CO': 'CO_AERO', 'O3': 'O3_TECO', 'NO2': 'no2_mr', 'NO': 'no_mr',
-        'HNO2': 'hono_mr',
+        'CO': 'CO_AERO', 'O3': 'O3_TECO', 'NO2': 'NO2_pptV', 'NO': 'NO_pptV',
+        'HNO2': 'HONO_pptV',
         'NOx': 'NOx'
     }
     units_d = {
@@ -2331,17 +2331,11 @@ def plt_comp_by_alt_4ARNA_CIMS_all_DUST(dpi=320, just_SLR=True,
         'BrO': 'BrO',
         'HNO3': 'HNO3',
         'HNO2': 'HONO',
-        #        'CO':'CO_AERO', 'O3':'O3_TECO', 'NO2':'no2_mr', 'NO':'no_mr',
-        #        'HNO2':'hono_mr',
-        #        'NOx':'NOx'
     }
     units_d = {
-        #        'CO':'ppbv', 'O3':'ppbv', 'NO2':'pptv', 'NO':'pptv', 'NOx':'pptv',
         'BrO': 'pptv', 'HNO3': 'pptv', 'HNO2': 'pptv', 'HONO': 'pptv',
     }
     range_d = {
-        #        'CO':(50, 400), 'O3':(-10, 100), 'NO2':(-50, 500), 'NO':(-50, 500),
-        #        'NOx':(-50, 500),
         'HNO2': (-10, 60),
         'HNO3': (-30, 1500),
         'BrO': (-0.2, 1.0),
@@ -2567,9 +2561,8 @@ def plt_comp_by_alt_4ARNA_flights(dpi=320, just_SLR=True, show_plot=False,
                 color_dict[key] = CB_color_cycle[n_key]
         unit_d = {}
         mod2obs_varnames = {
-            'CO': 'CO_AERO', 'O3': 'O3_TECO', 'NO2': 'no2_mr', 'NO': 'no_mr',
-            'HNO2': 'hono_mr',
-            'NOx': 'NOx'
+            'CO': 'CO_AERO', 'O3': 'O3_TECO', 'NO2': 'NO2_pptV',
+            'NO': 'NO_pptV', 'HNO2': 'HONO_pptV', 'NOx': 'NOx'
         }
         units_d = {
             'CO': 'ppbv', 'O3': 'ppbv', 'NO2': 'pptv', 'NO': 'pptv', 'NOx': 'pptv',
@@ -2854,17 +2847,11 @@ def plt_comp_by_alt_4ARNA_flights_CIMS(dpi=320, just_SLR=False,
             'BrO': 'BrO',
             'HNO3': 'HNO3',
             'HNO2': 'HONO',
-            #        'CO':'CO_AERO', 'O3':'O3_TECO', 'NO2':'no2_mr', 'NO':'no_mr',
-            #        'HNO2':'hono_mr',
-            #        'NOx':'NOx'
         }
         units_d = {
-            #        'CO':'ppbv', 'O3':'ppbv', 'NO2':'pptv', 'NO':'pptv', 'NOx':'pptv',
             'BrO': 'pptv', 'HNO3': 'pptv', 'HNO2': 'pptv', 'HONO': 'pptv',
         }
         range_d = {
-            #        'CO':(50, 400), 'O3':(-10, 100), 'NO2':(-50, 500), 'NO':(-50, 500),
-            #        'NOx':(-50, 500),
             'HNO2': (-10, 60),
             'HNO3': (-30, 1500),
             'BrO': (-0.2, 1.0),
@@ -3890,13 +3877,13 @@ def mk_combined_NOy_obs_variable(FAAMdf=None, CIMSdf=None, Filtersdf=None,
     Filtersdf[NOyVar] = Filtersdf['NO3.total'].copy()
     # add NO, NO2 - from Faam obs
     FAAMdf = FAAMdf.copy().replace(np.NaN, 0)
-    var2use = 'no_mr'
+    var2use = 'NO_pptV'
     try:
         Filtersdf.loc[:, NOyVar] += FAAMdf[var2use].values
     except KeyError:
         pstr = "WARNING: '{}' not added to '{}' variable for flight '{}'"
         print(pstr.format(var2use, NOyVar, flight_ID))
-    var2use = 'no2_mr'
+    var2use = 'NO2_pptV'
     try:
         Filtersdf.loc[:, NOyVar] += FAAMdf[var2use].values
     except KeyError:
@@ -4750,7 +4737,7 @@ def plt_ts_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
         try:
             units = 'pptv'
             var2plot = 'HONO'
-            ObsVar2Plot = 'hono_mr'
+            ObsVar2Plot = 'HONO_pptV'
             ModVar2Plot = 'HNO2'
             mod_label = mod_label_master
             mod_scale = 1E12
@@ -4890,11 +4877,18 @@ def plt_ts_comp4ARNA_flights_filters(dpi=320, show_plot=False,
     # unit on recipt were 'nanomoles/m3', which were updated to ug/m3
     # model units? 'pptv'
     NIT_obs_var = 'NO3.total'
-    data = dfs_obs[NIT_obs_var].values
-    dfs_obs[NIT_obs_var] = AC.convert_ug_per_m3_2_ppbv(data, spec='NIT')*1E3
     SO4_obs_var = 'SO4.total'
-    data = dfs_obs[SO4_obs_var].values
-    dfs_obs[SO4_obs_var] = AC.convert_ug_per_m3_2_ppbv(data, spec='SO4')*1E3
+    Cl_var2use = 'Cl.total'
+    NO2_var2use = 'NO2.total'
+    C2O4_var2use = 'C2O4.total'
+    mod2obsName = {
+        NIT_obs_var:'NIT', SO4_obs_var:'SO4', Cl_var2use:'Cl',
+        NO2_var2use: 'NO2'
+        }
+    for var2use in [NIT_obs_var, SO4_obs_var]:
+        spec = mod2obsName[var2use]
+        data = dfs_obs[var2use].values
+        dfs_obs[var2use] = AC.convert_ug_per_m3_2_ppbv(data, spec=spec)*1E3
 
     # -  Now plot up
     for flight_ID in flight_IDs:
@@ -5692,7 +5686,7 @@ def plt_ts_comp4ARNA_flights(dpi=320, inc_GEOSChem=False,
         try:
             units = 'pptv'
             var2plot = 'NO2'
-            ObsVar2Plot = 'no2_mr'
+            ObsVar2Plot = 'NO2_pptV'
             ModVar2Plot = 'NO2'
             mod_label = mod_label_master
             mod_scale = 1E12
@@ -5725,7 +5719,7 @@ def plt_ts_comp4ARNA_flights(dpi=320, inc_GEOSChem=False,
         try:
             units = 'pptv'
             var2plot = 'NO'
-            ObsVar2Plot = 'no_mr'
+            ObsVar2Plot = 'NO_pptV'
             ModVar2Plot = 'NO'
             mod_label = mod_label_master
             mod_scale = 1E12
@@ -5791,7 +5785,7 @@ def plt_ts_comp4ARNA_flights(dpi=320, inc_GEOSChem=False,
         try:
             units = 'pptv'
             var2plot = 'HONO'
-            ObsVar2Plot = 'hono_mr'
+            ObsVar2Plot = 'HONO_pptV'
             ModVar2Plot = 'HNO2'
             mod_label = mod_label_master
             mod_scale = 1E12
