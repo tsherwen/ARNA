@@ -259,27 +259,11 @@ def add_derived_GEOSChem_specs2ds(ds, prefix=''):
     Add derived GEOS-Chem variables to xr.Dataset
     """
     # Add NOx as combined NO and NO2
-    ds[prefix+'NOx'] = ds[prefix+'NO'].copy()
-    ds[prefix+'NOx'] = ds[prefix+'NOx'] + ds[prefix+'NO2']
-    # Add NOy as defined in GEOS-CF
+    ds = AC.AddChemicalFamily2Dataset(ds, fam='NOx', prefix=prefix)
     # NOy = no_no2_hno3_hno4_hono_2xn2o5_pan_organicnitrates_aerosolnitrates
-    vars2use = [
-        'BrNO3', 'ClNO3', 'ETHLN', 'ETNO3', 'HNO2', 'HNO3', 'HNO4',
-        'HONIT',
-        'ICN', 'IDN', 'IHN1', 'IHN2', 'IHN3', 'IHN4', 'INDIOL',
-        'INPB', 'INPD', 'IONITA', 'IONO', 'IONO2', 'IPRNO3', 'ITCN',
-        'ITHN',
-        'MCRHN', 'MCRHNB', 'MENO3', 'MONITA', 'MONITS', 'MONITU', 'MPAN',
-        'MPN',
-        'MVKN', 'N2O5', 'NIT', 'NITs', 'NO', 'NO2', 'NO3', 'NPRNO3', 'PAN',
-        'PPN', 'PROPNN', 'R4N2',
-    ]
-    # 2 N2O5 in NOy, so 2x via template
-    ds[prefix+'NOy'] = ds[prefix+'N2O5'].copy()
-    for var in vars2use:
-        ds[prefix+'NOy'] = ds[prefix+'NOy'] + ds[prefix+var]
+    ds = AC.AddChemicalFamily2Dataset(ds, fam='NOy', prefix=prefix)
+    ds = AC.AddChemicalFamily2Dataset(ds, fam='NOy-gas', prefix=prefix)
     # Include a variable of NOy where HNO3 is removed
-    # NOy = no_no2_hno3_hno4_hono_2xn2o5_pan_organicnitrates_aerosolnitrates
     ds[prefix+'NOy-HNO3'] = ds[prefix+'NOy'] - ds[prefix+'HNO3']
     # Include a variable of NOy where HNO3 is removed
     ds[prefix+'NOy-HNO3-PAN'] = ds[prefix+'NOy'] -  \
@@ -291,16 +275,7 @@ def add_derived_GEOSChem_specs2ds(ds, prefix=''):
                                ds[prefix+'HNO2'] + \
                                ds[prefix+'NIT'] + \
                                ds[prefix+'NITs']
-    # NITs - all
-    ds[prefix+'NIT-all'] = ds[prefix+'NIT'] + \
-                           ds[prefix+'NITs']
-    # Add dust nitrates if present.
-    ExtraNITs = 'NITD1', 'NITD2', 'NITD3', 'NITD4'
-    for var in ExtraNITs:
-        try:
-            ds[prefix+'NIT-all'] = ds[prefix+'NIT-all'] + ds[prefix+var]
-        except KeyError:
-            pass
+    ds = AC.AddChemicalFamily2Dataset(ds, fam='NIT-all', prefix=prefix)
     return ds
 
 
@@ -318,20 +293,21 @@ def add_derived_GEOSChem_specs2df(df):
     df['NOx'] = df['NO'].values + df['NO2'].values
     # Add NOy as defined in GEOS-CF
     # NOy = no_no2_hno3_hno4_hono_2xn2o5_pan_organicnitrates_aerosolnitrates
-    vars2use = [
-        'BrNO3', 'ClNO3', 'ETHLN', 'ETNO3', 'HNO2', 'HNO3', 'HNO4',
-        'HONIT',
-        'ICN', 'IDN', 'IHN1', 'IHN2', 'IHN3', 'IHN4', 'INDIOL',
-        'INPB', 'INPD', 'IONITA', 'IONO', 'IONO2', 'IPRNO3', 'ITCN',
-        'ITHN',
-        'MCRHN', 'MCRHNB', 'MENO3', 'MONITA', 'MONITS', 'MONITU', 'MPAN',
-        'MPN',
-        'MVKN', 'N2O5', 'NIT', 'NITs', 'NO', 'NO2', 'NO3', 'NPRNO3', 'PAN',
-        'PPN', 'PROPNN', 'R4N2',
-    ]
+    vars2use = AC.GC_var('NOy-all')
     df['NOy'] = df['N2O5'].copy()  #  2 N2O5 in NOy, so 2x via template
     for var in vars2use:
-        df.loc[:, 'NOy'] = df['NOy'].values + df[var].values
+        try:
+            df.loc[:, 'NOy'] = df['NOy'].values + df[var].values
+        except KeyError:
+            pass
+    # Add a variable for gas-phase NOy (by subtracting aerosol nitrate)
+    vars2use = AC.GC_var('NOy-gas')
+    df['NOy-gas'] = df['N2O5'].copy()  #  2 N2O5 in NOy, so 2x via template
+    for var in vars2use:
+        try:
+            df.loc[:, 'NOy-gas'] = df['NOy-gas'].values + df[var].values
+        except KeyError:
+            pass
     # Include a variable of NOy where HNO3 is removed
     # NOy = no_no2_hno3_hno4_hono_2xn2o5_pan_organicnitrates_aerosolnitrates
     df['NOy-HNO3'] = df['NOy'].values - df['HNO3'].values

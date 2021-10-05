@@ -576,6 +576,9 @@ def get_FAAM_core4flightnum(flight_ID='C225', version='v2020_06',
             df = pd.concat([df, df2, df3], axis=1)
         except KeyError:
             print('WARNING: no PCASP data found for {}'.format(flight_ID))
+    # Include the latest NOx data from Simone and Chris
+#     dfHONO = get_latest_NOx_HONO_data(flight_ID=flight_ID)
+#     df = pd.concat( [df, dfHONO] )
 
     # Add NOx as combined NO and NO2
     try:
@@ -619,6 +622,39 @@ def get_FAAM_core4flightnum(flight_ID='C225', version='v2020_06',
         df = df.resample('1T').mean()
     # Add derived variables
     df = add_derived_variables2FAAM_data(df)
+    return df
+
+
+def get_latest_NOx_HONO_data(flight_ID=None, version='v1'):
+    """
+    Use the latest NOx/HONO data from Simone and Chris
+    """
+    # Locations of data
+    folder = '/users/ts551/scratch/data/ARNA/FAAM/'
+    folder += 'ARNA_NOx_HONO_data/'
+    FileStr = 'NOx_and_HONO'
+    files2use = glob.glob('{}*{}*{}*'.format(folder, FileStr, version) )
+    files2use = list(sorted(files2use))
+    # Process entire dataset or just one flight
+    if isinstance(flight_ID, type(None)):
+        dfs = []
+        for file2use in files2use:
+            df = pd.read_csv(file2use)
+            flight_ID = file2use.split('/')[-1][:4]
+            df['flight_ID'] = flight_ID
+            dfs += [df]
+        # Combine
+        df = pd.concat(dfs)
+    else:
+        file2use = [i for i in files2use if flight_ID in i]
+        assert len(file2use) == 1, 'STOPPING: more than one file!'
+        file2use = file2use[0]
+        df = pd.read_csv(file2use)
+        flight_ID = file2use.split('/')[-1][:4]
+        df['flight_ID'] = flight_ID
+    # ... and make index the datetime
+    df.index = pd.to_datetime(df[df.columns[0]])
+    del df[df.columns[0]]
     return df
 
 
