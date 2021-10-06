@@ -970,6 +970,11 @@ def get_local_folder(key, host=None, rtn_dict=False):
         ARNA_data = ''
         DataRoot = ''
         RunRoot = ''
+    elif ('Tomas' in host):
+        NASA_data = '/work/data/NASA/'
+        ARNA_data = ''
+        DataRoot = ''
+        RunRoot = ''
     else:
         print('NASA folder loction not known')
     # - Setup a dictionary for the variables

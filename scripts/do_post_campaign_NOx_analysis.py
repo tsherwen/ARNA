@@ -292,7 +292,7 @@ def explore_ARNA_period_with_acid_uptake():
     """
     from arna import add_derived_GEOSChem_specs2ds
     from funcs4obs import gaw_2_loc
-    from matplotlib.ticker import FormatStrFormatter
+#    from matplotlib.ticker import FormatStrFormatter
 
     RunDir = '/users/ts551/scratch/GC/rundirs/'
     BASEprefix = 'geosfp_4x5_standard.v12.9.0.BASE.2019.2020.'
@@ -329,6 +329,9 @@ def explore_ARNA_period_with_acid_uptake():
     # Just use the dates of the ARNA campaign
 #    sdate = datetime.datetime(2020, 1, 1, )
 #    edate = datetime.datetime(2020, 3, 1, )
+    # Just use the dates of the ARNA campaign - but in 2019
+    sdate = datetime.datetime(2019, 1, 1, )
+    edate = datetime.datetime(2019, 3, 1, )
     dates2use = pd.date_range(sdate, edate, freq='1H')
 
     # Get Key statistics for run
@@ -587,52 +590,16 @@ def explore_ARNA_period_with_acid_uptake():
     # plot up the difference between the runs
     REF = 'BASE'
     DIFF = 'ACID.BC.Isotherm'
+    prefix = 'SpeciesConc_'
     vars2plot = ['O3', 'CO', 'NOx', 'NO2', 'NO', 'HNO2',
                 'NOy', 'HNO3', 'NIT-all','NOy-gas',
                 ]
+    vars2plot = [prefix+i for i in vars2plot]
     plot_up_surface_diff_between_runs(dsD, REF=REF, DIFF=DIFF,
-                                      vars2plot=vars2plot)
+                                         vars2plot=vars2plot,
+                                         prefix=prefix)
 
 
-
-def plot_up_surface_diff_between_runs(dsD, REF=None, DIFF=None, lvl=0,
-                                      savetitle=None,
-                                      pcent=None, vars2plot=None, **kwargs):
-    """
-    plot up differences between two datasets for a list of variables
-    """
-    if isinstance(REF, type(None)):
-        REF = list(sorted(dsD.keys())[0]
-    if isinstance(DIFF, type(None)):
-        DIFF = list(sorted(dsD.keys())[-1]
-    if isinstance(vars2plot, type(None)):
-        vars2plot = list(dsD[REF].data_vars)
-
-    if isinstance(savetitle, type(None)):
-        savetitle = 'surface_plots_{}_vs_{}'.format(REF, DIFF)
-        savetitle = AC.rm_spaces_and_chars_from_str(savetitle)
-    pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
-    for var2plot in vars2plot:
-        ds1 = dsD[REF][var2plot].sel(lev=ds.lev.values[lvl]).mean(dim='time')
-        ds2 = ds[DIFF][var2plot].sel(lev=ds.lev.values[lvl]).mean(dim='time')
-
-        if pcent:
-            ds2plot = (ds1-ds2)/ds1 *100
-        else:
-            ds2plot = (ds1-ds2)
-        # plot
-        AC.quick_map_plot(ds2plot, var2plot=var2plot, show_plot=False)
-        # Save to PDF
-        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
-#        if show_plot:
-#            plt.show()
-        plt.close()
-        # Do some memory management...
-        gc.collect()
-
-    # Save entire pdf
-    AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
-    plt.close('all')
 
 
 def tag_GC_simulations():

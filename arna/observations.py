@@ -221,7 +221,60 @@ def get_summary4flight(flight_ID='C217'):
     return df
 
 
+
+
 def get_filters_data4flight(flight_ID='C217', all_flights=True):
+    """
+    Retrieve filters data from ARNA flights
+    """
+    # Where is the data?
+    folder = '{}/{}/'.format(get_local_folder('ARNA_data'), 'Filters')
+    # What is the name of the sheet in the excel file?
+    filename = 'Aerosol_composition_for_submission.xlsx'
+    xl = pd.ExcelFile(folder + filename)
+    species = xl.sheet_names  # see all sheet names (species)
+    dfs = [pd.read_excel(folder+filename, sheet_name=i) for i in species]
+    # Now Just look at core data of interest
+    TimeOnVar = 'Start_time'
+    TimeOffVar = 'End_time'
+    # Setup the main Dataframe, then add additional dataframes to this
+    df = dfs[0]
+    labels2drop = [
+        TimeOnVar, TimeOffVar, 'Filter', 'Campaign','Flight', 'Airflow_stL',
+        'Average_altitude_m', 'moles_m-3_in_air',
+        ]
+    for __df in dfs[1:]:
+        __df = __df.drop(labels=labels2drop, axis=1)
+        df = pd.concat([df, __df], axis=1)
+    # Update sampling times to date times
+    df[TimeOnVar] = pd.to_datetime(df[TimeOnVar].values)
+    # End time
+    edate_var = TimeOffVar
+    df[TimeOffVar] = pd.to_datetime(df[TimeOffVar].values)
+    # calculate mid point of sampling and set this as index
+    interval_var = 'Sample interval'
+    df[interval_var] = df[edate_var] - df[TimeOnVar]
+    # Just use the middle of the timestep
+    df.index = df[TimeOnVar] + (df[interval_var]/2)
+    df = df.rename_axis(None)
+    # Setup total values in ug/m3 (from nM/m3)
+    units = 'nmoles_m-3'
+    NewUnits = 'ug_m-3'
+    UncertaintyStr = 'Total_{}_uncertainty_{}'
+    SpeciesStr = 'Total_{}_{}'
+    for spec in species:
+        ObsVar = SpeciesStr.format( spec, units )
+        UncertVar = UncertaintyStr.format( spec, units )
+        SpecMass = AC.species_mass(spec)
+        #  Add in new variables
+        NewVar = SpeciesStr.format( spec, NewUnits )
+        df[NewVar] = df[ObsVar].values / 1E9 * SpecMass * 1E6
+        NewUncert = SpeciesStr.format( spec, NewUnits )
+        df[NewUncert] = df[UncertVar].values / 1E9 * SpecMass * 1E6
+    return df
+
+
+def get_filters_data4flight_REDUNDANT(flight_ID='C217', all_flights=True):
     """
     Retrieve filters data from ARNA flights
     """

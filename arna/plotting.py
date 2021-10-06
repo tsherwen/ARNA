@@ -1739,6 +1739,7 @@ def plt_comp_by_alt_4ARNA_all(dpi=320, just_SLR=True, show_plot=False,
                               savetitle=None,
                               pdff=None,
                               close_pdf=False,
+                              plt_point_obs=False,
                               debug=False):
     """
     Plot up altitude binned comparisons between core obs. and model data
@@ -1976,6 +1977,12 @@ def plt_comp_by_alt_4ARNA_all(dpi=320, just_SLR=True, show_plot=False,
             plt.legend()
             plt.title(title_str.format(var2plot, units, flight_ID))
             plt.xlim(range_d[var2plot])
+
+        # Add point / time limited observations?
+        if plt_point_obs:
+            pass
+
+
 
         # Save to PDF
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
@@ -2680,6 +2687,7 @@ def plt_comp_by_alt_4ARNA_together(dpi=320, just_SLR=True, show_plot=False,
                               savetitle=savetitle,
                               pdff=pdff,
                               close_pdf=False,
+                              plt_point_obs=False,
                               )
 
     # Call the CIMS plotter
@@ -2693,8 +2701,6 @@ def plt_comp_by_alt_4ARNA_together(dpi=320, just_SLR=True, show_plot=False,
                                         plt_map=False,
                                         close_pdf=False,
                                         )
-    # And physical variables
-    #
 
     # And SWAS
 
@@ -3171,8 +3177,8 @@ def plt_ts4ARNA_flt_period_obs(df_obs=None,
                                plt_dust_as_backfill=True,
                                plt_errorbar=False,
                                ObsVar2PlotErr='',
-                               StartVar='Sample Start',
-                               EndVar='Sample End',
+                               StartVar='Start_time',
+                               EndVar='End_time',
                                context="paper", font_scale=0.75,
                                title=None,
                                debug=False,
@@ -3828,13 +3834,13 @@ def plt_ts_comp4ARNA_flights_CIMS(dpi=320, context='paper',
 
 
 def only_use_filter_times(df, FILTERdf=None, flight_ID='C225',
-                          average4period=True):
+                          average4period=True,
+                          StartVar='Start_time', EndVar='End_time',
+                          ):
     """
     Chop out only the values for the filter sample periods
     """
     # Loop by filter
-    StartVar = 'Sample Start'
-    EndVar = 'Sample End'
     dfs = []
     for filter in FILTERdf['Filter'].values:
         #        print( filter )
@@ -4416,7 +4422,7 @@ def plt_ts_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
         df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
         df['flight_ID'] = flight_ID
         dfs_CIMS[flight_ID] = df.copy()
-        # Just consider values during filer observation period
+        # Just consider values during filter observation period
         FILTERdf = dfs_obs.loc[dfs_obs['Flight'] == flight_ID, :]
         df = only_use_filter_times(df=df, FILTERdf=FILTERdf,
                                    flight_ID=flight_ID)
@@ -4876,19 +4882,28 @@ def plt_ts_comp4ARNA_flights_filters(dpi=320, show_plot=False,
     # Convert observation units into model units
     # unit on recipt were 'nanomoles/m3', which were updated to ug/m3
     # model units? 'pptv'
-    NIT_obs_var = 'NO3.total'
-    SO4_obs_var = 'SO4.total'
-    Cl_var2use = 'Cl.total'
-    NO2_var2use = 'NO2.total'
-    C2O4_var2use = 'C2O4.total'
-    mod2obsName = {
-        NIT_obs_var:'NIT', SO4_obs_var:'SO4', Cl_var2use:'Cl',
-        NO2_var2use: 'NO2'
+    NewUnits = 'ug_m-3'
+    UncertaintyStr = 'Total_{}_uncertainty_{}'
+    SpeciesStr = 'Total_{}_{}'
+    # NOTE: TODO, include uncertainty for plots
+    ['Cl', 'NO3', 'NO2', 'SO4', 'C2O4', 'Na', 'K', 'NH4', 'Ca', 'Mg']
+
+    NIT_obs_var = SpeciesStr.format('NO3', 'ppt')
+    SO4_obs_var = SpeciesStr.format('SO4', 'ppt')
+    Cl_obs_var = SpeciesStr.format('Cl', 'ppt')
+    NO2_obs_var = SpeciesStr.format('NO2', 'ppt')
+    C2O4_obs_var = SpeciesStr.format('C2O4', 'ppt')
+    NH4_obs_var = SpeciesStr.format('NH4', 'ppt')
+
+    # No need to convert as using ppt values (provided in new dataset)
+    obs2ModName = {
+        NIT_obs_var:'NIT', SO4_obs_var:'SO4', Cl_obs_var:'Cl',
+        NO2_obs_var: 'NO2'
         }
-    for var2use in [NIT_obs_var, SO4_obs_var]:
-        spec = mod2obsName[var2use]
-        data = dfs_obs[var2use].values
-        dfs_obs[var2use] = AC.convert_ug_per_m3_2_ppbv(data, spec=spec)*1E3
+#     for var2use in [NIT_obs_var, SO4_obs_var, NH4_var2use]:
+#         spec = obs2ModName[var2use]
+#         data = dfs_obs[var2use].values
+#         dfs_obs[var2use] = AC.convert_ug_per_m3_2_ppbv(data, spec=spec)*1E3
 
     # -  Now plot up
     for flight_ID in flight_IDs:
@@ -4955,6 +4970,37 @@ def plt_ts_comp4ARNA_flights_filters(dpi=320, show_plot=False,
         var2plot = 'SO4'
         ModVar2Plot = 'SO4.total'
         ObsVar2Plot = SO4_obs_var
+        mod_label = mod_label_master
+        mod_scale = 1E12
+        ObsVar2PlotErr = None
+        plt_errorbar = False
+#        ylim = (-0.2, 1)
+        ylim = None
+        # Call timeseries plotter function
+        plt_ts4ARNA_flt_period_obs(var2plot=var2plot, units=units,
+                                   ObsVar2Plot=ObsVar2Plot,
+                                   mod_scale=mod_scale,
+                                   mod_label=mod_label,
+                                   ModVar2Plot=ModVar2Plot,
+                                   ylim=ylim,
+                                   dfs_mod=dfs_mod[flight_ID],
+                                   df_obs=df_obs,
+                                   dfs_mod_period=dfs_mod_period[flight_ID],
+                                   plt_alt_shadow=plt_alt_shadow,
+                                   flight_ID=flight_ID,
+                                   ObsVar2PlotErr=ObsVar2PlotErr,
+                                   plt_errorbar=plt_errorbar,
+                                   context=context,
+                                   )
+        # Save to PDF and close the plot
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+        plt.close()
+
+        # - Plot up Ammonium
+        units = 'pptv'
+        var2plot = 'NH4'
+        ModVar2Plot = 'NH4'
+        ObsVar2Plot = NH4_obs_var
         mod_label = mod_label_master
         mod_scale = 1E12
         ObsVar2PlotErr = None
@@ -6406,6 +6452,47 @@ def plt_quick_ts4df(df, vars2plot=None, savetitle=None, save2pdf=True,
         plt.close('all')
 
 
+def plot_up_surface_diff_between_runs(dsD, REF=None, DIFF=None, lvl_idx=0,
+                                      savetitle=None,
+                                      pcent=None, vars2plot=None, debug=False,
+                                      dpi=320, **kwargs):
+    """
+    plot up differences between two datasets for a list of variables
+    """
+    if isinstance(REF, type(None)):
+        REF = list(sorted(dsD.keys()))[0]
+    if isinstance(DIFF, type(None)):
+        DIFF = list(sorted(dsD.keys()))[-1]
+    if isinstance(vars2plot, type(None)):
+        vars2plot = list(dsD[REF].data_vars)
+    if isinstance(savetitle, type(None)):
+        savetitle = 'surface_plots_{}_vs_{}'.format(REF, DIFF)
+        savetitle = AC.rm_spaces_and_chars_from_str(savetitle)
+    if debug:
+        print(DIFF, REF, vars2plot)
+
+    pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
+    for var2plot in vars2plot:
+        ds1 = dsD[REF][[var2plot]].isel(lev=lvl_idx).mean(dim='time')
+        ds2 = dsD[DIFF][[var2plot]].isel(lev=lvl_idx).mean(dim='time')
+
+        if pcent:
+            ds2plot = (ds1-ds2)/ds1 *100
+        else:
+            ds2plot = (ds1-ds2)
+        # plot
+        AC.quick_map_plot(ds2plot, var2plot=var2plot, show_plot=False)
+        # Save to PDF
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+#        if show_plot:
+#            plt.show()
+        plt.close()
+        # Do some memory management...
+        gc.collect()
+
+    # Save entire pdf
+    AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
+    plt.close('all')
 
 
 
