@@ -637,6 +637,35 @@ def tag_GC_simulations():
         print(ptr_str.format(d[key], '{'+key+'}' ) )
 
 
+def plt_lightning_by_month():
+    """
+    plot lightning seasonally
+    """
+#    folder = '/Users/tomassherwen/tmp/ARNA_TMP_RUNS/'
+    folder = ar.get_local_folder('RunRoot')
+    folder += 'geosfp_4x5_aciduptake.v12.9.0.BASE.2019.2020.ARNA.'
+    folder += 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags'
+#    folder += 'OutputDir/' #
+    folder += '.ToGetNetCDFOutput/OutputAndSpinUpSymLink/'
+    var2use = 'EmisNO_Lightning'
+    varName = 'Lightning (Tg N/yr)'
+    ds = AC.get_HEMCO_diags_as_ds(wd=folder)
+    val = (ds[var2use].sum(dim='lev') * ds['AREA'] )
+    val2 = val.sum('lat').sum('lon') * 60 * 60 * 24 * 365 # => /month
+    units = 'Lightning (Tg N/month)'
+    val2 = val2*1E3/1E12
+    val2 = val2.to_pandas()
+    # plot up
+    val2.plot()
+    plt.title('Global Lightning NOx source in {}'.format(units))
+    plt.ylabel(units)
+    AC.save_plot(title='ARNA_Global_lightning_source_GEOSFP')
+#    plt.show()
+    plt.close()
+
+    # print out the annual values
+
+
 
 
 
