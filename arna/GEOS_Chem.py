@@ -22,7 +22,7 @@ from . utils import *
 from . observations import *
 
 
-def v12_9_TRA_XX_2_name(TRA_XX, folder=None, RTN_dict=False):
+def PF_TRAXXX_2TracerName(TRA_XX, folder=None, RTN_dict=False):
     """
     Convert tracer number to tracer name in GEOS-Chem v12.9
     """
@@ -41,7 +41,8 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625',
     """
     RunRoot = get_local_folder('RunRoot')
     if res == '4x5':
-        CoreRunStr = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.'
+        CoreRunStrMERRA2 = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.'
+        CoreRunStrGEOSFP ='geosfp_4x5_standard.v12.9.0.BASE.2019.2020.'
         AcidRunStr = 'geosfp_4x5_aciduptake.v12.9.0.BASE.2019.2020.ARNA.'
         d = {}
         # Boundary condition resolution runs
@@ -53,33 +54,84 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625',
 #        folder = '{}/{}/'.format(RunRoot, Run)
 #        d = {'BC-BASE-I': folder}
         # Current Boundary condition (BC) resolution runs
-        RunStr = 'BCs.repeat/'
-        folder = '{}/{}{}/'.format(RunRoot, CoreRunStr, RunStr)
+        RunStr = 'ARNA.BCs.repeat'
+        folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
         d['BC-BASE-II'] = folder
-        RunStr = 'DustUptake.II'
-        folder = '{}/{}{}/'.format(RunRoot, CoreRunStr, RunStr)
-        d['AcidUptake-4x5-II'] = folder
-        # re-run boundary conditions?
-        RunStr = 'DustUptake.BCs'
-        folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-        d['AcidUptake-4x5-III'] = folder
-        # JNITs
-        RunStr = 'DustUptake.JNIT.BCs'
-        folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-        d['AcidUptake-4x5-JNIT'] = folder
-        # JNITx25
-        RunStr = 'DustUptake.JNITx25.BCs'
-        folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-        d['AcidUptake-4x5-JNITx25'] = folder
-        # Isotherm
-#        RunStr = 'DustUptake.JNIT.Isotherm.BCs'
-        RunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON'
-        folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-        d['AcidUptake-4x5-Isotherm'] = folder
-        # CVAO campaign in Reed et al 2017
-        RunStr = 'geosfp_4x5_standard.v12.9.0.BASE.2015.Aug.ARNA.BCs.repeat'
-        folder = '{}/{}/'.format(RunRoot, RunStr)
-        d['BC-BASE-2015'] = folder
+        # J25
+        RunStr = 'ARNA.BCs.repeat.JNITx25'
+        folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
+        d['BC-BASE-II-J25'] = folder
+        # BASE runs, but with increases in JNITs/BB
+#         RunStr = 'BCs.repeat.JNITx100.GFASx3/'
+#         folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
+#         d['BC-BASE-BBx3-J100'] = folder
+#         RunStr = 'BCs.repeat.JNITx50.GFASx3/'
+#         folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
+#         d['BC-BASE-BBx3-J50'] = folder
+#         RunStr = 'BCs.repeat.JNITx25.GFASx3/'
+#         folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
+#         d['BC-BASE-BBx3-J25'] = folder
+        # Using the dust uptake setup
+#         RunStr = 'DustUptake.II'
+#         folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
+#         d['Acid-4x5-II'] = folder
+        # JNIT and extra acid runs
+        if RunSet == 'ACID':
+            # re-run boundary conditions?
+            RunStr = 'DustUptake.BCs'
+            folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
+            d['Acid-4x5-III'] = folder
+            RunStr = 'DustUptake.JNIT.BCs'
+            folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
+            d['Acid-4x5-JNIT'] = folder
+            # JNITx25
+            RunStr = 'DustUptake.JNITx25.BCs'
+            folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
+            d['Acid-4x5-JNITx25'] = folder
+            # Isotherm
+    #        RunStr = 'DustUptake.JNIT.Isotherm.BCs'
+            RunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II'
+            folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
+            d['Acid-4x5-Isotherm'] = folder
+            # Isotherm + BBx3
+            RunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags.BBx3'
+            folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
+            d['Acid-4x5-Isotherm-BBx3'] = folder
+            # Isotherm + HONO 100%
+            RunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags.HONO100'
+            folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
+            d['Acid-4x5-Isotherm-HONO100'] = folder
+        else: # consider the variants on base runs (e.g. Biomass burning)
+            # BBx2
+            RunStr = 'ARNA.GFASx2.BCs'
+            folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
+            d['BC-BASE-BBx2'] = folder
+            # BBx3
+            RunStr = 'ARNA.GFASx3.BCs'
+            folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
+            d['BC-BASE-BBx3'] = folder
+            # BBx3 + J100
+            RunStr = 'ARNA.BCs.repeat.JNITx100.GFASx3'
+            folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
+            d['BC-BASE-BBx3-J100'] = folder
+            # BBx3 + J25
+#             RunStr = 'ARNA.BCs.repeat.JNITx25.GFASx3'
+#             folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
+#             d['BC-BASE-BBx3-J25'] = folder
+            # BBx3 + J50
+#             RunStr = 'ARNA.BCs.repeat.JNITx50.GFASx3'
+#             folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
+#             d['BC-BASE-BBx3-J50'] = folder
+            # BBx4
+            RunStr = 'ARNA.GFASx4.BCs'
+            folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
+            d['BC-BASE-BBx4'] = folder
+
+        # Extra runs...
+        # CVAO campaign during 2015 (Reed et al 2017)
+#         RunStr = 'geosfp_4x5_standard.v12.9.0.BASE.2015.Aug.ARNA.BCs.repeat'
+#         folder = '{}/{}/'.format(RunRoot, RunStr)
+#         d['BC-BASE-2015'] = folder
     elif res == '0.25x0.3125' and (RunSet == 'FP-MOYA-Nest'):
         # GEOS-FP 0.25 nested run
         Run = 'geosfp_4x5_standard.v12.9.0.BASE.2019.2020.MOYA1.Nest'
@@ -112,7 +164,7 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625',
         d = {'BASE-0.5': folder}
         Run = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.DustUptake.0.5x0.625'
         folder = '{}/{}/'.format(RunRoot, Run)
-        d['AcidUptake-0.5'] = folder
+        d['Acid-0.5'] = folder
         # Add BASE 4x5 run for testing
         Run = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.PF'
         folder = '{}/{}/'.format(RunRoot, Run)
@@ -202,8 +254,10 @@ def get_GEOSChem4flightnum(flight_ID='C225', res='0.5x0.625', sdate=None,
             sdate, edate = AC.dt64_2_dt([sdate, edate])
         sdate_str = sdate.strftime('%Y%m%d')
         file2use = [i for i in files2use if sdate_str in i]
-        AssStr = 'WARNING: more than one ({}) planeflight file found! - {}'
-        assert len(file2use) == 1, AssStr.format(len(file2use),file2use)
+        AssStr = 'WARNING: More than one ({}) planeflight file found! - {}'
+        assert len(file2use) <= 1, AssStr.format(len(file2use),file2use)
+        AssStr = 'WARNING: No planeflight files found in folder: {}'
+        assert len(file2use) != 0, AssStr.format(folder)
         file2use = file2use[0]
         # - Instead do this manually for now
         # as cannot as output issue in v12.9 (fixed in runs > initial 4x5)
@@ -240,7 +294,7 @@ def get_GEOSChem4flightnum(flight_ID='C225', res='0.5x0.625', sdate=None,
         df = AC.DF_YYYYMMDD_HHMM_2_dt(df, rmvars=None, epoch=False)
         df.index.name = None
         # Update the variable names
-        d = v12_9_TRA_XX_2_name(None, folder=folder, RTN_dict=True)
+        d = PF_TRAXXX_2TracerName(None, folder=folder, RTN_dict=True)
         d = dict([('TRA_{:0>3}'.format(i), d[i]) for i in d.keys()])
         df = df.rename(columns=d)
         # Add derived (GEOSchem) variables to df
@@ -317,6 +371,24 @@ def add_derived_GEOSChem_specs2df(df):
     # gas-phase (exc. PAN, HNO3, HNO4, Org-NIT, N2O5)
     df['NOy-Limited'] = df['NO'].values + df['NO2'].values + \
         df['HNO2'].values + df['NIT'].values + df['NITs'].values
+    # Add an all sulfate tracer
+    NewVar = 'SO4-all'
+    vars2use = AC.GC_var(NewVar)
+    df[NewVar] = df['NIT'].values
+    for var2use in vars2use:
+        try:
+            df[NewVar] = df[NewVar].values + df[var2use].values
+        except KeyError:
+            pass
+    # And a all nitrate tracer
+    NewVar = 'NIT-all'
+    vars2use = AC.GC_var(NewVar)
+    df[NewVar] = df['NIT'].values
+    for var2use in vars2use:
+        try:
+            df[NewVar] = df[NewVar].values + df[var2use].values
+        except KeyError:
+            pass
     # Uset the P-I variable as a model level variable
     df['model-lev'] = df['P-I'].copy()
     return df
@@ -378,7 +450,7 @@ def get_whole_related_campaign_data(save2csv=True, campaign='ARNA-1',
             except TypeError:
                 print('{} - TypeError found for {} '.format(campaign, col))
         # Update the variable names
-        d = v12_9_TRA_XX_2_name(None, folder=folder, RTN_dict=True)
+        d = PF_TRAXXX_2TracerName(None, folder=folder, RTN_dict=True)
         d = dict([('TRA_{:0>3}'.format(i), d[i]) for i in d.keys()])
         df = df.rename(columns=d)
         # Add derived (GEOSchem) variables to df
