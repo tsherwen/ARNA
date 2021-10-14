@@ -295,27 +295,32 @@ def explore_ARNA_period_with_acid_uptake():
 #    from matplotlib.ticker import FormatStrFormatter
 
     RunDir = '/users/ts551/scratch/GC/rundirs/'
-    BASEprefix = 'geosfp_4x5_standard.v12.9.0.BASE.2019.2020.'
+#    BASEprefix = 'geosfp_4x5_standard.v12.9.0.BASE.2019.2020.'
 #     geosfp_4x5_standard.v12.9.0.BASE.2019.2020./OutputDir/
-
-    ACIDprefix = 'geosfp_4x5_aciduptake.v12.9.0.BASE.2019.2020.ARNA.'
-    ACIDprefix += 'DustUptake.'
+#    ACIDprefix = 'geosfp_4x5_aciduptake.v12.9.0.BASE.2019.2020.ARNA.'
+#    ACIDprefix += 'DustUptake.'
     REF1 = 'BASE.BC'
     d = {
+    # Nested runs
+#    RunSet = 'FP-Nest'
 #    'JNITS': RunDir+BASEprefix+'ARNA.Nest.repeat.IV.JNIT.x25.Dust/',
 #    'GFASx2': RunDir+BASEprefix+'ARNA.Nest.repeat.GFASx2/',
 #    'JNITSx25':RunDir+BASEprefix+'ARNA.Nest.repeat.JNITs.x25/',
 #    'ACID.BC': RunDir+ACIDprefix+'ARNA.DustUptake.BCs/', # failed run... re-start
-    'BASE.BC': RunDir+BASEprefix+'ARNA.BCs.repeat/',
-    'BASE.GFASx2.BC': RunDir+BASEprefix+'ARNA.GFASx2.BCs/',
-    'ACID.BC': RunDir+ACIDprefix+'BCs/',
+    # Boundary condition (4x5) runs
+#    'BASE.BC': RunDir+BASEprefix+'ARNA.BCs.repeat/',
+#    'BASE.GFASx2.BC': RunDir+BASEprefix+'ARNA.GFASx2.BCs/',
+#    'ACID.BC': RunDir+ACIDprefix+'BCs/',
     #  'ACID.JNIT.BC' only has partial NetCDF output (for the campaign period)
-
 #   'ACID.JNIT.BC': RunDir+ACIDprefix+'JNIT.BCs/',
-    'ACID.JNITx25.BC': RunDir+ACIDprefix+'JNITx25.BCs/',
-    'ACID.BC.Isotherm': RunDir+ACIDprefix+'JNIT.Isotherm.BCs.repeat.ON.II/',
+#    'ACID.JNITx25.BC': RunDir+ACIDprefix+'JNITx25.BCs/',
+#    'ACID.BC.Isotherm': RunDir+ACIDprefix+'JNIT.Isotherm.BCs.repeat.ON.II/',
     }
-    #
+    # Just use the runs from the core code
+    RunSet = 'ACID'
+#    RunSet = 'FP-Nest'
+    d = ar.get_dict_of_GEOSChem_model_output(res='4x5', RunSet=RunSet)
+    # Use the spun up or un spun up output?
     for key in d.keys():
         d[key] = d[key]+'OutputDir/'
 #        d[key] = d[key]+'spin_up/'

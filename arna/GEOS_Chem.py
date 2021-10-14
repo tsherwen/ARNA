@@ -45,36 +45,6 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625',
         CoreRunStrGEOSFP ='geosfp_4x5_standard.v12.9.0.BASE.2019.2020.'
         AcidRunStr = 'geosfp_4x5_aciduptake.v12.9.0.BASE.2019.2020.ARNA.'
         d = {}
-        # Boundary condition resolution runs
-#        Run = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.PF'
-#        folder = '{}/{}/'.format(RunRoot, Run)
-#        d = {'BC-BASE': folder}
-        # Boundary condition (BC) resolution runs
-#        Run = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.PF'
-#        folder = '{}/{}/'.format(RunRoot, Run)
-#        d = {'BC-BASE-I': folder}
-        # Current Boundary condition (BC) resolution runs
-        RunStr = 'ARNA.BCs.repeat'
-        folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
-        d['BC-BASE-II'] = folder
-        # J25
-        RunStr = 'ARNA.BCs.repeat.JNITx25'
-        folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
-        d['BC-BASE-II-J25'] = folder
-        # BASE runs, but with increases in JNITs/BB
-#         RunStr = 'BCs.repeat.JNITx100.GFASx3/'
-#         folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
-#         d['BC-BASE-BBx3-J100'] = folder
-#         RunStr = 'BCs.repeat.JNITx50.GFASx3/'
-#         folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
-#         d['BC-BASE-BBx3-J50'] = folder
-#         RunStr = 'BCs.repeat.JNITx25.GFASx3/'
-#         folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
-#         d['BC-BASE-BBx3-J25'] = folder
-        # Using the dust uptake setup
-#         RunStr = 'DustUptake.II'
-#         folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
-#         d['Acid-4x5-II'] = folder
         # JNIT and extra acid runs
         if RunSet == 'ACID':
             # re-run boundary conditions?
@@ -102,6 +72,37 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625',
             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
             d['Acid-4x5-Isotherm-HONO100'] = folder
         else: # consider the variants on base runs (e.g. Biomass burning)
+        # Boundary condition resolution runs
+#        Run = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.PF'
+#        folder = '{}/{}/'.format(RunRoot, Run)
+#        d = {'BC-BASE': folder}
+        # Boundary condition (BC) resolution runs
+#        Run = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.PF'
+#        folder = '{}/{}/'.format(RunRoot, Run)
+#        d = {'BC-BASE-I': folder}
+
+        # BASE runs, but with increases in JNITs/BB
+#         RunStr = 'BCs.repeat.JNITx100.GFASx3/'
+#         folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
+#         d['BC-BASE-BBx3-J100'] = folder
+#         RunStr = 'BCs.repeat.JNITx50.GFASx3/'
+#         folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
+#         d['BC-BASE-BBx3-J50'] = folder
+#         RunStr = 'BCs.repeat.JNITx25.GFASx3/'
+#         folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
+#         d['BC-BASE-BBx3-J25'] = folder
+        # Using the dust uptake setup
+#         RunStr = 'DustUptake.II'
+#         folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
+#         d['Acid-4x5-II'] = folder
+            # Current Boundary condition (BC) resolution runs
+            RunStr = 'ARNA.BCs.repeat'
+            folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
+            d['BC-BASE'] = folder
+            # J25
+            RunStr = 'ARNA.BCs.repeat.JNITx25'
+            folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
+            d['BC-BASE-J25'] = folder
             # BBx2
             RunStr = 'ARNA.GFASx2.BCs'
             folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)

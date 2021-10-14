@@ -17,10 +17,34 @@ def main():
     ar.plt_comp_by_alt_4ARNA_together(context=context,
                                       res='0.25x0.3125',
                                       just_SLR=True,)
-    # NOTE: below function now failing with a ValueError (05/10/21)
     ar.plt_comp_by_alt_4ARNA_together(context=context,
                                       res='0.25x0.3125',
                                       just_SLR=False)
+    ar.plt_comp_by_alt_4ARNA_together(context=context,
+                                      res='4x5', RunSet=None,
+                                      just_SLR=False,)
+    # temp for testing
+    flight_nums = []
+    RunSet = None
+    res = '4x5'
+    savetitle = 'ARNA_altitude_binned_combined_file_{}'.format(res)
+#    flight_nums=[223,224,225]; RunSet=None; res='4x5'; just_SLR=False; PltPointObs=True; JustPlotModel=True; inc_GEOSChem=True; just_plot_GEOS_Chem=True; pdff=None
+#    from arna import get_FAAM_core4flightnum, get_filters_data4flight, get_GEOSCF4flightnum, add_derived_FAAM_flags2df4flight, get_GEOSChem4flightnum, plt_flightpath_spatially_over_CVAO, get_CIMS_data4flight
+    ar.plt_comp_by_alt_4ARNA_together(context=context,
+                                      res=res, RunSet=RunSet,
+                                      flight_nums=flight_nums,
+                                      savetitle=savetitle,
+                                      just_SLR=False, debug=True)
+    # Output the same bulk plots for the ACID runs
+    RunSet = 'ACID'
+    res = '4x5'
+    savetitle = 'ARNA_altitude_binned_combined_file_{}_{}'
+    savetitle =  savetitle.format(res, RunSet)
+    ar.plt_comp_by_alt_4ARNA_together(context=context,
+                                      res=res, RunSet=RunSet,
+                                      flight_nums=flight_nums,
+                                      savetitle=savetitle,
+                                      just_SLR=False, debug=True)
 
     # The same plots as above, but split by their own PDF file..
     # NOTE: below function fails with a ValueError
@@ -46,8 +70,6 @@ def main():
     ar.plt_comp_by_alt_4ARNA_all_DUST(plt_model=False, context=context)
     ar.plt_comp_by_alt_4ARNA_all_DUST(plt_model=True, context=context)
     ar.plt_comp_by_alt_4ARNA_CIMS_all_DUST(context=context)
-
-
 
     # - Plot up core comparisons by flight as
     # As timeseries ...
@@ -89,6 +111,12 @@ def main():
                                         inc_GEOSChem=True,
                                         LatVar='LAT',
                                         LonVar='LON',)
+    ar.plt_ts_comp4ARNA_flights_filters(context=context,
+                                        res='4x5',
+                                        inc_GEOSChem=True,
+                                        LatVar='LAT',
+                                        LonVar='LON',
+                                        )
 
     # - Plot up SWAS data by flight
     # Plot up SWAS data
