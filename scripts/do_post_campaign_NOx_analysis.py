@@ -220,7 +220,6 @@ def explore_NOy_with_acid_uptake():
     #
     for key in dsD_NOy.keys():
         ds = dsD_NOy[key]
-
         # Make a total NOy value
         VarName = 'NOy'
         ds[VarName] = ds[list(ds.data_vars)[0]].copy()
@@ -293,13 +292,12 @@ def explore_ARNA_period_with_acid_uptake():
     from arna import add_derived_GEOSChem_specs2ds
     from funcs4obs import gaw_2_loc
 #    from matplotlib.ticker import FormatStrFormatter
-
-    RunDir = '/users/ts551/scratch/GC/rundirs/'
+    RunDir = get_local_folder('RunRoot')
 #    BASEprefix = 'geosfp_4x5_standard.v12.9.0.BASE.2019.2020.'
 #     geosfp_4x5_standard.v12.9.0.BASE.2019.2020./OutputDir/
 #    ACIDprefix = 'geosfp_4x5_aciduptake.v12.9.0.BASE.2019.2020.ARNA.'
 #    ACIDprefix += 'DustUptake.'
-    REF1 = 'BASE.BC'
+    REF1 = 'BC-BASE'
     d = {
     # Nested runs
 #    RunSet = 'FP-Nest'
@@ -307,14 +305,6 @@ def explore_ARNA_period_with_acid_uptake():
 #    'GFASx2': RunDir+BASEprefix+'ARNA.Nest.repeat.GFASx2/',
 #    'JNITSx25':RunDir+BASEprefix+'ARNA.Nest.repeat.JNITs.x25/',
 #    'ACID.BC': RunDir+ACIDprefix+'ARNA.DustUptake.BCs/', # failed run... re-start
-    # Boundary condition (4x5) runs
-#    'BASE.BC': RunDir+BASEprefix+'ARNA.BCs.repeat/',
-#    'BASE.GFASx2.BC': RunDir+BASEprefix+'ARNA.GFASx2.BCs/',
-#    'ACID.BC': RunDir+ACIDprefix+'BCs/',
-    #  'ACID.JNIT.BC' only has partial NetCDF output (for the campaign period)
-#   'ACID.JNIT.BC': RunDir+ACIDprefix+'JNIT.BCs/',
-#    'ACID.JNITx25.BC': RunDir+ACIDprefix+'JNITx25.BCs/',
-#    'ACID.BC.Isotherm': RunDir+ACIDprefix+'JNIT.Isotherm.BCs.repeat.ON.II/',
     }
     # Just use the runs from the core code
     RunSet = 'ACID'
@@ -326,17 +316,17 @@ def explore_ARNA_period_with_acid_uptake():
 #        d[key] = d[key]+'spin_up/'
 
     # Use spin up year - just for testing
-    sdate = datetime.datetime(2018, 1, 1, )
-    edate = datetime.datetime(2019, 1, 1, )
+#    sdate = datetime.datetime(2018, 1, 1, )
+#    edate = datetime.datetime(2019, 1, 1, )
     # Use spun up year before the campaign (2019)
-#    sdate = datetime.datetime(2019, 1, 1, )
-#    edate = datetime.datetime(2020, 1, 1, )
+    sdate = datetime.datetime(2019, 1, 1, )
+    edate = datetime.datetime(2020, 1, 1, )
     # Just use the dates of the ARNA campaign
 #    sdate = datetime.datetime(2020, 1, 1, )
 #    edate = datetime.datetime(2020, 3, 1, )
     # Just use the dates of the ARNA campaign - but in 2019
-    sdate = datetime.datetime(2019, 1, 1, )
-    edate = datetime.datetime(2019, 3, 1, )
+#    sdate = datetime.datetime(2019, 1, 1, )
+#    edate = datetime.datetime(2019, 3, 1, )
     dates2use = pd.date_range(sdate, edate, freq='1H')
 
     # Get Key statistics for run
@@ -344,7 +334,7 @@ def explore_ARNA_period_with_acid_uptake():
     'HNO2', 'HNO3', 'NIT', 'NITs',
 #    'NOy'
 #    'NOx',
-#    'NIT-all', 'NOy-gas','NOy',
+    'NIT-all', 'NOy-gas','NOy', 'SO2', 'SOx', 'SO4-all', 'SO4', 'SO4s',
     ]
     df = AC.get_general_stats4run_dict_as_df(run_dict=d,
                                              REF_wd=d[REF1],
@@ -605,8 +595,6 @@ def explore_ARNA_period_with_acid_uptake():
                                          prefix=prefix)
 
 
-
-
 def tag_GC_simulations():
     """
     Setup tagging of NOx/HNO2 prod etc in KPP
@@ -628,9 +616,6 @@ def tag_GC_simulations():
     # Also print out just using "P" as the prefix.
     for key in d.keys():
         print('P{} : {};'.format(d[key], d[key]) )
-
-
-
     # prepare other output for GEOS-Chem input files
     extr_str = 'ARNA_Standard'
     AC.print_out_lines_for_gckpp_file(tags=tags, extr_str=extr_str)
@@ -644,35 +629,226 @@ def tag_GC_simulations():
 
 def plt_lightning_by_month():
     """
-    plot lightning seasonally
+    Plot lightning seasonally and explore high values (~10 Tg/year equiv.)
     """
-#    folder = '/Users/tomassherwen/tmp/ARNA_TMP_RUNS/'
     folder = ar.get_local_folder('RunRoot')
     folder += 'geosfp_4x5_aciduptake.v12.9.0.BASE.2019.2020.ARNA.'
     folder += 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags'
-#    folder += 'OutputDir/' #
     folder += '.ToGetNetCDFOutput/OutputAndSpinUpSymLink/'
     var2use = 'EmisNO_Lightning'
     varName = 'Lightning (Tg N/yr)'
+    MetFields = 'GEOSFP'
+    MetFields = 'MERRA2'
     ds = AC.get_HEMCO_diags_as_ds(wd=folder)
     val = (ds[var2use].sum(dim='lev') * ds['AREA'] )
     val2 = val.sum('lat').sum('lon') * 60 * 60 * 24 * 365 # => /month
-    units = 'Lightning (Tg N/month)'
+    units = 'Lightning (Tg N/year (equiv.))'
     val2 = val2*1E3/1E12
     val2 = val2.to_pandas()
     # plot up
     val2.plot()
     plt.title('Global Lightning NOx source in {}'.format(units))
     plt.ylabel(units)
-    AC.save_plot(title='ARNA_Global_lightning_source_GEOSFP')
-#    plt.show()
+    AC.save_plot(title='ARNA_Global_lightning_source_{}'.format(MetFields))
+    plt.close()
+    # Plot up with an assumed *1/3 reduction
+    df = pd.DataFrame()
+    df['v12.9 (GEOS-FP)'] = val2
+    df['v12.9 (GEOS-FP) - reduced by 1/3'] = val2*(1-0.33)
+    df['v12.9 (GEOS-FP) - reduced by 1/4'] = val2*(1-0.25)
+    df['v12.9 (GEOS-FP) - reduced by 1/2'] = val2*(1-0.5)
+    df.index.name = None
+    # Add means to plot
+    df['dates'] = pd.to_datetime(df.index.values)
+    means = df.groupby(df.dates.dt.year).mean().round(1)
+    del df['dates']
+    print(means.T)
+    df.plot()
+    AC.save_plot(title='ARNA_Global_lightning_source_GEOSFP_SCALED')
     plt.close()
 
-    # print out the annual values
+
+def explore_JVALS_in_JNITs_runs():
+    """
+    Plotting of J-rates for nitrate and sulfate species
+    """
+    folder = ar.get_local_folder('RunRoot')
+    folder += 'geosfp_4x5_aciduptake.v12.9.0.BASE.2019.2020.ARNA.'
+    folder += 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags/'
+    folder += 'OutputDir/'
+    # Species to use?
+    TRAs = ['HNO3', 'NIT', 'NITs', 'NITD1', 'NITD2', 'NITD3', 'NITD4']
+    prefix = 'Jval_'
+    vars2use = [prefix+i for i in TRAs]
+    dates2use = None
+    # Get photolysis data
+    dsP = AC.GetJValuesDataset(wd=folder, dates2use=dates2use)
+    dsP = dsP[vars2use]
+    # Get surface photolysis data
+    TRAs += ['SO2', 'SO4', 'SO4s', 'SO4D1', 'SO4D2', 'SO4D3', 'SO4D4']
+    dsS = AC.GetSpeciesConcDataset(wd=folder, dates2use=dates2use)
+    # Work out which idx to use
+    NIU, NIU, alt = AC.get_latlonalt4res(res='4x5')
+    lvl_dict = {1: 0.071, 13:1.999, 21:4.886,}
+
+    # Setup a PDF
+    savetitle = 'ARNA_spatial_photolysis_analysis'
+    pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
+
+    # Loop and plot photolysis rates
+    for var in vars2use:
+        for lvl_idx in [1, 13, 21]:
+            ds2plot = dsP[[var]].mean(dim='time').isel(lev=lvl_idx)
+
+            # Plot up the photolysis rates
+            AC.quick_map_plot(ds2plot, var2plot=var, title=title,
+                              save_plot=False)
+            title = "Average '{}' @ {:.1f}km".format( var, lvl_dict[lvl_idx] )
+            plt.title(title)
+            # Save to PDF
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+            plt.close()
+
+            # Plot up the photolysis rates (as a fraction of JHNO3)
+            REF = ds[[prefix+'HNO3']].mean(dim='time').isel(lev=lvl_idx)
+            AC.quick_map_plot(ds2plot/REF, var2plot=var, title=title,
+                              save_plot=False)
+            TitleStr = "Ratio of '{}':JHNO3 @ {:.1f}km"
+            plt.title( TitleStr.format( var, lvl_dict[lvl_idx] ) )
+            # Save to PDF
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+            plt.close()
+            del ds2plot
+
+
+    # Also plot up the average surface concentrations of related species
+    prefix = 'SpeciesConc_'
+    vars2use = [ prefix+i for i in TRAs]
+    for var in vars2use:
+#        for lvl_idx in [1, 13, 21]:
+        for lvl_idx in [13]:
+            ds2plot = dsS[[var]].mean(dim='time').isel(lev=lvl_idx)
+
+            # Plot up the photolysis rates
+            AC.quick_map_plot(ds2plot, var2plot=var, title=title,
+                              save_plot=False)
+            title = "Average '{}' @ {:.1f}km".format( var, lvl_dict[lvl_idx] )
+            plt.title(title)
+            # Save to PDF
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+            plt.close()
+
+
+    # Save entire pdf
+#    if close_pdf:
+    AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
+    plt.close('all')
 
 
 
+def explore_print_statement_debug_of_aciduptake_photolysis():
+    """
+    Explore the "print statement" debugging...
+    """
+    # Data to use and its location?
+    folder = ar.get_local_folder('RunRoot')
+    folder += 'geosfp_4x5_aciduptake.v12.9.0.BASE.2019.2020.ARNA.'
+    folder += 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags.TEMP_TEST/'
+#    filename = 'geos.log.Andersen.v006'
+#    filename = 'geos.log.Andersenv007'
+    filename = 'geos.log.Andersenv008'
 
+    def __convert2float(x):
+        """ helper function to process print statement ouput """
+        try:
+            return float(x)
+        except ValueError:
+            return np.NaN
+
+    # Get data from log file and store in data DataFrame
+    df = pd.DataFrame()
+    with open(folder+filename) as f:
+        lines = [i for i in f]
+        # Get all nitrate conc (molec/cm3)
+        PrefixStr = ' @@@ NO3_CONC II (molec/cm3) - NIT(s)+NITD1-4'
+        NIT_all_molec_cm3 = 'NIT-all (molec/cm3)'
+        data = [i for i in lines if PrefixStr in i]
+        data = [float(i.split(PrefixStr)[-1].strip()) for i in data]
+        df[NIT_all_molec_cm3] = data
+        # Get all NIT+NITS conc (molec/cm3)
+        PrefixStr = '@@@ NO3_CONC I (molec/cm3) - NIT+NITs'
+        NITs_molec_cm3 = 'NIT+NITs (molec/cm3)'
+        data = [i for i in lines if PrefixStr in i]
+        data = [float(i.split(PrefixStr)[-1].strip()) for i in data]
+        df[NITs_molec_cm3] = data
+        # Get all nites in nM/m3
+        PrefixStr = '@@@ NO3_CONC IV (nM m^-3)'
+        NITs_mN_m3 = 'NIT-all (nM/m3)'
+        data = [i for i in lines if PrefixStr in i]
+        data = [float(i.split(PrefixStr)[-1].strip()) for i in data]
+        df[NITs_mN_m3] = data
+        # Get JScale
+        PrefixStr = '@@@ Jscale '
+        JScale = 'JScale'
+        data = [i for i in lines if PrefixStr in i]
+        data = [float(i.split(PrefixStr)[-1].strip()) for i in data]
+        df[JScale] = data
+        # Get JNIT and JNITs
+        PrefixStr = '@@@ JscaleNIT/s'
+        JScaleNIT = 'JScale NIT'
+        JScaleNITs = 'JScale NITs'
+        data = [i for i in lines if PrefixStr in i]
+        dataA = [i.split(PrefixStr)[-1].strip().split(' ')[-1] for i in data]
+        dataA = [__convert2float(i) for i in dataA]
+        dataB = [i.split(PrefixStr)[-1].strip().split(' ')[0] for i in data]
+        dataB = [__convert2float(i) for i in dataB]
+        df[JScaleNIT] = dataA
+        df[JScaleNITs] = dataB
+        # Get Channels
+        PrefixStr = '@@@ JNITChanA/B'
+        ChanA = 'Frac HONO'
+        ChanB = 'Frac NO2'
+        data = [i for i in lines if PrefixStr in i]
+        dataA = [i.split(PrefixStr)[-1].strip().split(' ')[-1] for i in data]
+        dataA = [__convert2float(i) for i in dataA]
+        dataB = [i.split(PrefixStr)[-1].strip().split(' ')[0] for i in data]
+        dataB = [__convert2float(i) for i in dataB]
+        df[ChanA] = dataA
+        df[ChanB] = dataB
+    print(df)
+
+    for col in df.columns:
+        print(col)
+        print(df[col].describe())
+    df_BACKUP = df.copy()
+
+    # Only show where nitrate >10 pptv
+    pptv_in_molec_cm3 = 255440.55029432118 # '2.6E+05'
+    __df = df.loc[ df[NIT_all_molec_cm3]>pptv_in_molec_cm3, : ]
+    for col in __df.columns:
+        print(col)
+        print(__df[col].describe())
+
+    # Only show where nitrate >100 pptv
+    pptv_in_molec_cm3 = 2554405.502943212  # '2.6E+06'
+    __df = df.loc[ df[NIT_all_molec_cm3]>pptv_in_molec_cm3, : ]
+    for col in __df.columns:
+        print(col)
+        print(__df[col].describe())
+
+    # Only show where nitrate >500 pptv
+    pptv_in_molec_cm3 = 12772027.514716059 # '1.3E+07'
+    __df = df.loc[ df[NIT_all_molec_cm3]>pptv_in_molec_cm3, : ]
+    for col in __df.columns:
+        print(col)
+        print(__df[col].describe())
+
+    # Only show where nitrate >1000 pptv
+    pptv_in_molec_cm3 = 25543799.588881828 # '2.6E+07'
+    __df = df.loc[ df[NIT_all_molec_cm3]>pptv_in_molec_cm3, : ]
+    for col in __df.columns:
+        print(col)
+        print(__df[col].describe())
 
 
 if __name__ == "__main__":

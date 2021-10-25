@@ -9,6 +9,8 @@ def main():
     """
     Main driver function
     """
+#    from arna import get_FAAM_core4flightnum, get_filters_data4flight, get_GEOSCF4flightnum, add_derived_FAAM_flags2df4flight, get_GEOSChem4flightnum, plt_flightpath_spatially_over_CVAO, get_CIMS_data4flight
+
     # Seaborn context for plots?
 #    context = 'talk'
     context = 'paper'
@@ -27,14 +29,17 @@ def main():
     flight_nums = []
     RunSet = None
     res = '4x5'
+    NOxAsLog = True
+    CoreRunsOnly = False
     savetitle = 'ARNA_altitude_binned_combined_file_{}'.format(res)
-#    flight_nums=[223,224,225]; RunSet=None; res='4x5'; just_SLR=False; PltPointObs=True; JustPlotModel=True; inc_GEOSChem=True; just_plot_GEOS_Chem=True; pdff=None
-#    from arna import get_FAAM_core4flightnum, get_filters_data4flight, get_GEOSCF4flightnum, add_derived_FAAM_flags2df4flight, get_GEOSChem4flightnum, plt_flightpath_spatially_over_CVAO, get_CIMS_data4flight
     ar.plt_comp_by_alt_4ARNA_together(context=context,
                                       res=res, RunSet=RunSet,
                                       flight_nums=flight_nums,
                                       savetitle=savetitle,
-                                      just_SLR=False, debug=True)
+                                      just_SLR=False,
+                                      NOxAsLog=NOxAsLog,
+                                      CoreRunsOnly=CoreRunsOnly,
+                                      debug=True)
     # Output the same bulk plots for the ACID runs
     RunSet = 'ACID'
     res = '4x5'
@@ -44,6 +49,8 @@ def main():
                                       res=res, RunSet=RunSet,
                                       flight_nums=flight_nums,
                                       savetitle=savetitle,
+                                      NOxAsLog=NOxAsLog,
+                                      CoreRunsOnly=CoreRunsOnly,
                                       just_SLR=False, debug=True)
 
     # The same plots as above, but split by their own PDF file..
@@ -169,32 +176,14 @@ def explore_high_ozone_near_CVAO():
     """
     import seaborn as sns
     import gc
-#    sns.color_palette('colorblind')
-#    sns.set_context(context)
     # - plot up locations of high ozone by flight.
     # Use the high res model
     RunSet = 'FP-Nest'
     res = '0.25x0.3125'
-    # Which flights to plot?
-#    flights_nums = [ 216, 217, 218, 219, 220, 221, 222, 223, 224, 225 ]
-    # Just use non-transit ARNA flights
-    flights_nums = [
-        #    217,
-        218, 219, 220, 221, 222, 223, 224, 225,
-    ]
-    # Use flightnumbers with both NOy and halogens data
-#    flights_nums = [
-#    217, # Missing data for C217 (NOy)
-#    218, 219, 220,
-#    221, # Missing data for C221 (NOy)
-#    222, 223,
-#    224,  # Missing data for C221 (BrO... )
-#    225,  # Missing data for C221 (BrO... )
-#    ]
+    # Which flights to plot? - Just use non-transit ARNA flights
+    flights_nums = [218, 219, 220, 221, 222, 223, 224, 225,]
     flight_IDs = ['C{}'.format(i) for i in flights_nums]
-#    flight_IDs = flight_IDs[-1:] #  Just use last one for now
-
-    # Get data
+    # Get model data
     dfs_mod_GC = {}
     for flight_ID in flight_IDs:
         dfs_mod_GC[flight_ID] = ar.get_GEOSChem4flightnum(flight_ID=flight_ID,

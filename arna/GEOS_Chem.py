@@ -35,7 +35,8 @@ def PF_TRAXXX_2TracerName(TRA_XX, folder=None, RTN_dict=False):
 
 
 def get_dict_of_GEOSChem_model_output(res='0.5x0.625',
-                                      RunSet='MERRA2-0.5-initial'):
+                                      RunSet='MERRA2-0.5-initial',
+                                      CoreRunsOnly=False):
     """
     Retrieve dictionary of model run names and their full location paths
     """
@@ -50,10 +51,11 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625',
             # re-run boundary conditions?
             RunStr = 'DustUptake.BCs'
             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-            d['Acid-4x5-III'] = folder
-            RunStr = 'DustUptake.JNIT.BCs'
-            folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-            d['Acid-4x5-JNIT'] = folder
+            d['Acid-4x5'] = folder
+#            d['Acid-4x5-III'] = folder
+#             RunStr = 'DustUptake.JNIT.BCs'
+#             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
+#             d['Acid-4x5-JNIT'] = folder
             # JNITx25
             RunStr = 'DustUptake.JNITx25.BCs'
             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
@@ -71,6 +73,14 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625',
             RunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags.HONO100'
             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
             d['Acid-4x5-Isotherm-HONO100'] = folder
+            # Only return the core runs
+            if CoreRunsOnly:
+                runs2use = ['Acid-4x5', 'Acid-4x5-JNITx25']
+                dNew = {}
+                for run in runs2use:
+                    dNew[run] = d[run]
+                d = dNew
+
         else: # consider the variants on base runs (e.g. Biomass burning)
         # Boundary condition resolution runs
 #        Run = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.PF'
@@ -127,7 +137,13 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625',
             RunStr = 'ARNA.GFASx4.BCs'
             folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
             d['BC-BASE-BBx4'] = folder
-
+            # Only return the core runs
+            if CoreRunsOnly:
+                runs2use = ['BC-BASE', 'BC-BASE-BBx3', 'BC-BASE-J25' ]
+                dNew = {}
+                for run in runs2use:
+                    dNew[run] = d[run]
+                d = dNew
         # Extra runs...
         # CVAO campaign during 2015 (Reed et al 2017)
 #         RunStr = 'geosfp_4x5_standard.v12.9.0.BASE.2015.Aug.ARNA.BCs.repeat'
@@ -232,12 +248,14 @@ def save_model_output2csv(RunSet='FP-MOYA-Nest', res='0.25x0.3125',
 
 def get_GEOSChem4flightnum(flight_ID='C225', res='0.5x0.625', sdate=None,
                            RunSet='MERRA2-0.5-initial', resample_data=True,
+                           CoreRunsOnly=False,
                            debug=False):
     """
     Retrieve GEOS-Chem output for FAAM flight
     """
     # Where is the extract GEOS-CF data?
-    RunDict = get_dict_of_GEOSChem_model_output(res=res, RunSet=RunSet,)
+    RunDict = get_dict_of_GEOSChem_model_output(res=res, RunSet=RunSet,
+                                                CoreRunsOnly=CoreRunsOnly)
     # Asume just one run for now...
 #    folder = RunDict[ list(RunDict.keys())[0] ]
     dfs = {}

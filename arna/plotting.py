@@ -1741,8 +1741,10 @@ def plt_comp_by_alt_4ARNA_all(dpi=320, just_SLR=True, show_plot=False,
                               close_pdf=False,
                               PltPointObs=False,
                               JustPlotModel=False,
+                              CoreRunsOnly=False,
                               PltSpatialLocsOfdata=True,
                               vars2plot=None,
+                              NOxAsLog=False,
                               debug=False):
     """
     Plot up altitude binned comparisons between core obs. and model data
@@ -1778,6 +1780,7 @@ def plt_comp_by_alt_4ARNA_all(dpi=320, just_SLR=True, show_plot=False,
         for flight_ID in flight_IDs:
             dfs = get_GEOSChem4flightnum(flight_ID=flight_ID,
                                          res=res,
+                                         CoreRunsOnly=CoreRunsOnly,
                                          RunSet=RunSet,)
             for key in dfs.keys():
                 df = dfs[key]
@@ -1972,22 +1975,25 @@ def plt_comp_by_alt_4ARNA_all(dpi=320, just_SLR=True, show_plot=False,
                                                color=color_dict[key_])
             except:
                 pass
-            # Make NOx species be on a log scale
-            xscale = 'linear'
-            if (var2plot in NOx_specs):
-                xscale = 'linear'
-#                xscale = 'log'
-            ax.set_xscale(xscale)
-            if xscale == 'log':
-                xlim = xlim(0.3, 400)
-                ax.set_xlim(xlim)
             # Beautify plot
             plt.legend()
             plt.title(title_str.format(var2plot, units, flight_ID))
-            try:
-                plt.xlim(range_d[var2plot])
-            except KeyError:
-                pass
+            # Make NOx species be on a log scale
+            xscale = 'linear'
+            if (var2plot in NOx_specs) and NOxAsLog:
+                xscale = 'log'
+            ax.set_xscale(xscale)
+            if xscale == 'log':
+                if var2plot in ['HONO', 'HNO2']:
+                    xlim = (0.03, 400)
+                else:
+                    xlim = (0.3, 400)
+                ax.set_xlim(xlim)
+            else:
+                try:
+                    plt.xlim(range_d[var2plot])
+                except KeyError:
+                    pass
 
         # Add point / time limited observations?
         if PltPointObs:
@@ -2022,7 +2028,8 @@ def plt_comp_by_alt_4ARNA_all(dpi=320, just_SLR=True, show_plot=False,
 
 def plt_comp_by_alt_4ARNA_all_DUST(dpi=320, just_SLR=True, flight_nums=[],
                                    plt_model=False, show_plot=False,
-                                   context="paper", font_scale=0.75):
+                                   context="paper", font_scale=0.75,
+                                   NOxAsLog=False):
     """
     Plot up altitude binned comparisons between core obs. and model data
     """
@@ -2175,19 +2182,26 @@ def plt_comp_by_alt_4ARNA_all_DUST(dpi=320, just_SLR=True, flight_nums=[],
                                                color=color_dict[key_])
             except:
                 pass
-            # Make NOx species be on a log scale
-            xscale = 'linear'
-            if (var2plot in NOx_specs):
-                xscale = 'linear'
-#                xscale = 'log'
-            ax.set_xscale(xscale)
-            if xscale == 'log':
-                xlim = xlim(0.3, 400)
-                ax.set_xlim(xlim)
+
             # Beautify plot
             plt.legend()
             plt.title(title_str.format(var2plot, units, flight_ID))
-            plt.xlim(range_d[var2plot])
+            # Make NOx species be on a log scale
+            xscale = 'linear'
+            if (var2plot in NOx_specs) and NOxAsLog:
+                xscale = 'log'
+            ax.set_xscale(xscale)
+            if xscale == 'log':
+                if var2plot in ['HONO', 'HNO2']:
+                    xlim = (0.03, 400)
+                else:
+                    xlim = (0.3, 400)
+                ax.set_xlim(xlim)
+            else:
+                try:
+                    plt.xlim(range_d[var2plot])
+                except KeyError:
+                    pass
 
         # Save to PDF
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
@@ -2211,7 +2225,9 @@ def plt_comp_by_alt_4ARNA_CIMS_all_DUST(dpi=320, just_SLR=True,
                                         filter_by_dust=False,
                                         just_plot_GEOS_Chem=False,
                                         inc_GEOSChem=False,
+                                        CoreRunsOnly=False,
                                         close_pdf=True,
+                                        NOxAsLog=False,
                                         debug=False):
     """
     Plot up altitude binned comparisons between core obs. and model data
@@ -2243,6 +2259,7 @@ def plt_comp_by_alt_4ARNA_CIMS_all_DUST(dpi=320, just_SLR=True,
         for flight_ID in flight_IDs:
             dfs = get_GEOSChem4flightnum(flight_ID=flight_ID,
                                          res=res,
+                                         CoreRunsOnly=CoreRunsOnly,
                                          RunSet=RunSet,)
             for key in dfs.keys():
                 df = dfs[key]
@@ -2448,17 +2465,23 @@ def plt_comp_by_alt_4ARNA_CIMS_all_DUST(dpi=320, just_SLR=True,
                 pass
             # Make NOx species be on a log scale
             xscale = 'linear'
-            if (var2plot in NOx_specs):
-                xscale = 'linear'
-#                xscale = 'log'
+            if (var2plot in NOx_specs) and NOxAsLog:
+                xscale = 'log'
             ax.set_xscale(xscale)
-            if xscale == 'log':
-                xlim = xlim(0.3, 400)
-                ax.set_xlim(xlim)
             # Beautify plot
             plt.legend()
             plt.title(title_str.format(var2plot, units, flight_ID))
-            plt.xlim(range_d[var2plot])
+            if xscale == 'log':
+                if var2plot in ['HONO', 'HNO2']:
+                    xlim = (0.03, 400)
+                else:
+                    xlim = (0.3, 400)
+                ax.set_xlim(xlim)
+            else:
+                try:
+                    plt.xlim(range_d[var2plot])
+                except KeyError:
+                    pass
 
         # Save to PDF
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
@@ -2476,7 +2499,8 @@ def plt_comp_by_alt_4ARNA_flights(dpi=320, just_SLR=True, show_plot=False,
                                   RunSet=None, res='4x5', flight_nums=[],
                                   just_plot_GEOS_Chem=False,
                                   inc_GEOSChem=False,
-                                  context="paper", font_scale=0.75):
+                                  context="paper", font_scale=0.75,
+                                  NOxAsLog=False):
     """
     Plot up altitude binned comparisons between core obs. and model data
     """
@@ -2680,19 +2704,25 @@ def plt_comp_by_alt_4ARNA_flights(dpi=320, just_SLR=True, show_plot=False,
                                                    color=color_dict[key_])
                 except:
                     pass
-                # Make NOx species be on a log scale
-                xscale = 'linear'
-                if (var2plot in NOx_specs):
-                    xscale = 'linear'
-    #                xscale = 'log'
-                ax.set_xscale(xscale)
-                if xscale == 'log':
-                    xlim = xlim(0.3, 400)
-                    ax.set_xlim(xlim)
                 # Beautify plot
                 plt.legend()
                 plt.title(title_str.format(var2plot, units, flight_ID))
-                plt.xlim(range_d[var2plot])
+                # Make NOx species be on a log scale
+                xscale = 'linear'
+                if (var2plot in NOx_specs) and NOxAsLog:
+                     xscale = 'log'
+                ax.set_xscale(xscale)
+                if xscale == 'log':
+                    if var2plot in ['HONO', 'HNO2']:
+                        xlim = (0.03, 400)
+                    else:
+                        xlim = (0.3, 400)
+                    ax.set_xlim(xlim)
+                else:
+                    try:
+                        plt.xlim(range_d[var2plot])
+                    except KeyError:
+                        pass
 
             # Save to PDF
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
@@ -2711,6 +2741,8 @@ def plt_comp_by_alt_4ARNA_together(dpi=320, just_SLR=True, show_plot=False,
                                    just_plot_GEOS_Chem=False,
                                    inc_GEOSChem=False,
                                    context="paper", font_scale=0.75,
+                                   NOxAsLog=False,
+                                   CoreRunsOnly=False,
                                    debug=False):
     """
     Plot up altitude binned comparisons between core obs. and model data
@@ -2730,11 +2762,13 @@ def plt_comp_by_alt_4ARNA_together(dpi=320, just_SLR=True, show_plot=False,
                               RunSet=RunSet, res=res,
                               inc_GEOSChem=True,
                               just_plot_GEOS_Chem=True,
+                              CoreRunsOnly=CoreRunsOnly,
                               savetitle=savetitle,
                               flight_nums=flight_nums,
                               pdff=pdff,
                               close_pdf=False,
                               PltPointObs=False,
+                              NOxAsLog=NOxAsLog,
                               debug=debug,
                               )
 
@@ -2746,6 +2780,7 @@ def plt_comp_by_alt_4ARNA_together(dpi=320, just_SLR=True, show_plot=False,
                               RunSet=RunSet, res=res,
                               inc_GEOSChem=True,
                               just_plot_GEOS_Chem=True,
+                              CoreRunsOnly=CoreRunsOnly,
                               savetitle=savetitle,
                               flight_nums=flight_nums,
                               pdff=pdff,
@@ -2762,6 +2797,7 @@ def plt_comp_by_alt_4ARNA_together(dpi=320, just_SLR=True, show_plot=False,
     plt_comp_by_alt_4ARNA_CIMS_all_DUST(context=context,
                                         inc_GEOSChem=True,
                                         just_plot_GEOS_Chem=True,
+                                        CoreRunsOnly=CoreRunsOnly,
                                         plt_model=True,
                                         RunSet=RunSet, res=res,
                                         savetitle=savetitle,
@@ -2769,15 +2805,28 @@ def plt_comp_by_alt_4ARNA_together(dpi=320, just_SLR=True, show_plot=False,
                                         pdff=pdff,
                                         PltSpatialLocsOfdata=False,
                                         close_pdf=False,
+                                        NOxAsLog=NOxAsLog,
                                         debug=debug,
                                         )
+    # Add total NOy (inc. filters)
+    vars2plot = ['NOy', 'NOy-gas']
+    plt_comp_by_alt_4ARNA_NOy(vars2plot=vars2plot,
+                              flight_nums=flight_nums,
+                              context=context,
+                              RunSet=RunSet, res=res,
+                              inc_GEOSChem=True,
+                              inc_GEOSCF=False,
+                              CoreRunsOnly=CoreRunsOnly,
+                              savetitle=savetitle,
+                              pdff=pdff,
+                              close_pdf=False,
+                              show_plot=False,
+                              debug=debug,
+                              )
 
+    # And SWAS ...
 
-    # And SWAS
-
-    #
-
-    # Call ... ????
+    # Add any other plotter calls here  ...
 
     # - Save entire pdf
     AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
@@ -2789,7 +2838,8 @@ def plt_comp_by_alt_4ARNA_flights_CIMS(dpi=320, just_SLR=False,
                                        RunSet=None, res='4x5', flight_nums=[],
                                        just_plot_GEOS_Chem=False,
                                        inc_GEOSChem=False,
-                                       context="paper", font_scale=0.75):
+                                       context="paper", font_scale=0.75,
+                                       NOxAsLog=False):
     """
     Plot up altitude binned comparisons between core obs. and model data
     """
@@ -2992,19 +3042,25 @@ def plt_comp_by_alt_4ARNA_flights_CIMS(dpi=320, just_SLR=False,
                                                    color=color_dict[key_])
                 except:
                     pass
-                # Make NOx species be on a log scale
-                xscale = 'linear'
-                if (var2plot in NOx_specs):
-                    xscale = 'linear'
-    #                xscale = 'log'
-                ax.set_xscale(xscale)
-                if xscale == 'log':
-                    xlim = xlim(0.3, 400)
-                    ax.set_xlim(xlim)
                 # Beautify plot
                 plt.legend()
                 plt.title(title_str.format(var2plot, units, flight_ID))
-                plt.xlim(range_d[var2plot])
+                # Make NOx species be on a log scale
+                xscale = 'linear'
+                if (var2plot in NOx_specs) and NOxAsLog:
+                    xscale = 'log'
+                ax.set_xscale(xscale)
+                if xscale == 'log':
+                    if var2plot in ['HONO', 'HNO2']:
+                        xlim = (0.03, 400)
+                    else:
+                        xlim = (0.3, 400)
+                    ax.set_xlim(xlim)
+                else:
+                    try:
+                        plt.xlim(range_d[var2plot])
+                    except KeyError:
+                        pass
 
             # Save to PDF
         #        fig.legend(loc='best', bbox_to_anchor=(1,1), bbox_transform=ax.transAxes)
@@ -3291,15 +3347,13 @@ def plt_ts4ARNA_flt_period_obs(df_obs=None,
         # Now just loop and plot
         if debug:
             print(mods2plot)
-#        plt.plot(df_mod.index, df_mod[ ModVar2Plot ].values*mod_scale,
-#                 label=mod_label, color='red' )
         for mod2plot in mods2plot:
             df_mod_period = dfs_mod_period[mod2plot]
             xmin = df_mod_period[StartVar]
             xmax = df_mod_period[EndVar]
             plt.hlines(df_mod_period[ModVar2Plot].values*mod_scale,
                        xmin, xmax,
-                       label=mod_label, color=mod_colours[mod2plot])
+                       label=mod2plot, color=mod_colours[mod2plot])
 
     else:
         # Use the first model input
@@ -3354,8 +3408,6 @@ def plt_ts4ARNA_flt_period_obs(df_obs=None,
     plt.xlim(xylim_min, xylim_max)
     ax.set_xticks(xticks)
     ax.set_xticklabels(xticks_labels, rotation=45)
-#    print(xticks_labels)
-    # Invert the second y-axis
     if plt_alt_shadow:
         # Add a shadow of the altitude
         ax2 = ax.twinx()
@@ -3921,7 +3973,8 @@ def mk_combined_NOy_obs_variable(FAAMdf=None, CIMSdf=None, Filtersdf=None,
         print('WARNING: binning of dataframes to filter perios not setup!')
     # Use the filter dataframe as the basis to add otther species too too
     # NOTE: conversion to pptv hs already been done!
-    Filtersdf[NOyVar] = Filtersdf['NO3.total'].copy()
+    SpeciesVar = 'Total_{}_{}'.format('NO3', 'ppt')
+    Filtersdf[NOyVar] = Filtersdf[SpeciesVar].copy()
     # add NO, NO2 - from Faam obs
     FAAMdf = FAAMdf.copy().replace(np.NaN, 0)
     var2use = 'NO_pptV'
@@ -4361,83 +4414,39 @@ def plt_ts_comp4MOYA_flights_PHYSICAL_VARS(dpi=320, show_plot=False,
         plt.close('all')
 
 
-def plt_ts_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
-                                     flight_nums=[],
-                                     res='4x5', RunSet=None,
-                                     inc_GEOSChem=False,
-                                     just_plot_GEOS_Chem=False,
-                                     LatVar='model-lat',
-                                     LonVar='model-lon',
-                                     plt_alt_shadow=False,
-                                     debug=False, context='paper'):
+
+def get_derived_total_NOy4flights(flight_nums=[], res='4x5', RunSet=None,
+                                  inc_GEOSChem=True,
+                                  inc_GEOSCF=False,
+                                  debug=False):
     """
-    Plot up timeseries comparisons between filter samples and model data
+    Get derived total NOy from observations (and equivalent model values)
     """
-    import seaborn as sns
-    # Which flights to plot?
-    # Just use non-transit ARNA flights
+    # Which flights to plot? - Just use non-transit ARNA flights
     if len(flight_nums) == 0:
-        flight_nums = [
-            #        217,
-            #        218, # No NOx on this flight
-            219, 220, 221, 222, 223, 224, 225,
-        ]
+        flight_nums = [219, 220, 221, 222, 223, 224, 225,]
     flight_IDs = ['C{}'.format(i) for i in flight_nums]
     # - Loop by flight and retrieve the files as dataframes (mod + obs)
     # Setup Observation (filters) dataframe
     dfs_obs = get_filters_data4flight()
     dfs_obs = add_secs2duplicate_index_values(dfs_obs)
-    # Convert observation units into model units
-    # unit on recipt were 'nanomoles/m3', which were updated to ug/m3
-    # model units? 'pptv'
-    NIT_obs_var = 'NO3.total'
-    data = dfs_obs[NIT_obs_var].values
-    dfs_obs[NIT_obs_var] = AC.convert_ug_per_m3_2_ppbv(data, spec='NIT')*1E3
-    SO4_obs_var = 'SO4.total'
-    data = dfs_obs[SO4_obs_var].values
-    dfs_obs[SO4_obs_var] = AC.convert_ug_per_m3_2_ppbv(data, spec='SO4')*1E3
-    # Setup dictionary of Model (GEOS-CF) dataframes
-
     # Model
-    dfs_mod_CF = {}
-#    dfs_mod_CF_period = {}
-    for flight_ID in flight_IDs:
-        df = get_GEOSCF4flightnum(flight_ID=flight_ID)
-        # Add the derived variables to the dataframe
-        df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
-        df = add_deriv_vars2df(df=df)
-        # Extra actions for this specific function
-        df['flight_ID'] = flight_ID
-        dfs_mod_CF[flight_ID] = df.copy()
-        # Just consider values during filer observation period
-#        FILTERdf = dfs_obs.loc[ dfs_obs['Flight']==flight_ID, :]
-#        df = only_use_filter_times(df=df,
-#                                                    FILTERdf=FILTERdf,
-#                                                    flight_ID=flight_ID)
-#        dfs_mod_CF_period[flight_ID] = df
-
-        dfs_mod_CF[flight_ID] = df
+    if inc_GEOSCF:
         mod_label_master = 'GEOS-CF'
-
-#     dfs_mod = {}
-#     dfs_mod_period = {}
-#     for flight_ID in flight_IDs:
-#         df = get_GEOSCF4flightnum(flight_ID=flight_ID)
-#         df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
-#         df['flight_ID'] = flight_ID
-#         dfs_mod[flight_ID] = df.copy()
-#         # Just consider values during filer observation period
-#         FILTERdf = dfs_obs.loc[ dfs_obs['Flight']==flight_ID, :]
-#         df = only_use_filter_times(df=df,
-#                                                     FILTERdf=FILTERdf,
-#                                                     flight_ID=flight_ID)
-#         dfs_mod_period[flight_ID] = df
-
+        dfs_mod_CF = {}
+        for flight_ID in flight_IDs:
+            df = get_GEOSCF4flightnum(flight_ID=flight_ID)
+            # Add the derived variables to the dataframe
+            df = add_derived_FAAM_flags2df4flight(df=df, flight_ID=flight_ID)
+            df = add_deriv_vars2df(df=df)
+            # Extra actions for this specific function
+            df['flight_ID'] = flight_ID
+            dfs_mod_CF[flight_ID] = df.copy()
+            dfs_mod_CF[flight_ID] = df
     # Model - GEOS-Chem (offline)
     if inc_GEOSChem:
         mod_label_master = RunSet
         dfs_mod_GC = {}
-#        dfs_mod_GC_period = {}
         for flight_ID in flight_IDs:
             dfs = get_GEOSChem4flightnum(flight_ID=flight_ID, res=res,
                                          RunSet=RunSet,)
@@ -4455,7 +4464,7 @@ def plt_ts_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
     dfs_mod = dfs_mod_GC
 #    dfs_mod_period = dfs_mod_GC_period
 
-    # Setup dictionary of Observation (CIMS) dataframes
+    # Setup dictionary of observation dataframes (CIMS)
     dfs_CIMS = {}
     dfs_CIMS_period = {}
     for flight_ID in flight_IDs:
@@ -4468,7 +4477,7 @@ def plt_ts_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
         df = only_use_filter_times(df=df, FILTERdf=FILTERdf,
                                    flight_ID=flight_ID)
         dfs_CIMS_period[flight_ID] = df
-    # Setup dictionary of Observation (FAAM) dataframes
+    # Setup dictionary of observation dataframes (FAAM)
     dfs_FAAM = {}
     dfs_FAAM_period = {}
     for flight_ID in flight_IDs:
@@ -4480,7 +4489,7 @@ def plt_ts_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
         df = only_use_filter_times(df=df, FILTERdf=FILTERdf,
                                    flight_ID=flight_ID)
         dfs_FAAM_period[flight_ID] = df
-    # Observations  - Combine to make NOy variables
+    # Observations - combine to make a single NOy variable
     dfs_obs_NOy = {}
     for flight_ID in flight_IDs:
         # Get observations and model timeseries data as a DataFrame
@@ -4517,6 +4526,133 @@ def plt_ts_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
             dfs_mod4flight[key] = df_mod
         dfs_mod_period[flight_ID] = dfs_mod4flight
 
+    # Return a list of dictionaries
+    gc.collect()
+    RtnList = dfs_obs, dfs_mod, dfs_mod_period, dfs_obs_NOy, dfs_CIMS_period, dfs_FAAM_period
+    return RtnList
+
+
+def plt_comp_by_alt_4ARNA_NOy(vars2plot=['NOy', 'NOy-gas' ],
+                              flight_nums=[],
+                              res='4x5', RunSet=None,
+                              inc_GEOSChem=True,
+                              inc_GEOSCF=False,
+                              CoreRunsOnly=False,
+                              pdff=None, savetitle=None,
+                              show_plot=False, close_pdf=True,
+                              debug=False, context='paper', dpi=320,
+                              ):
+    """
+    Plot up a comparison of derived NOy for all flights
+    """
+    import seaborn as sns
+    sns.set(color_codes=True)
+    sns.set_context(context)
+    # Which flights to plot? - Just use non-transit ARNA flights
+    if len(flight_nums) == 0:
+        flight_nums = [219, 220, 221, 222, 223, 224, 225,]
+    flight_IDs = ['C{}'.format(i) for i in flight_nums]
+    # Get model and observation data for filter periods
+    DataList = get_derived_total_NOy4flights(flight_nums=flight_nums,
+                                             res=res, RunSet=RunSet,
+                                             inc_GEOSChem=inc_GEOSChem,
+                                             inc_GEOSCF=inc_GEOSCF,
+                                             debug=debug)
+#    dfs_obs, dfs_mod, dfs_mod_period, dfs_obs_NOy, dfs_CIMS_period, dfs_FAAM_period = DataList
+    NIU, NIU, dfs_mod_period, dfs_obs_NOy, NIU, NIU = DataList
+
+    # Make a single DataFrame
+    Mods2Plot = list(dfs_mod_period[flight_IDs[0]].keys())
+    dfsMod = {}
+    for mod in Mods2Plot:
+        ModByFlight = [dfs_mod_period[i][mod] for i in dfs_mod_period.keys()]
+        dfsMod[mod] = pd.concat(ModByFlight, axis=0)
+    # Convert observations to points?
+    dfObs = pd.concat([dfs_obs_NOy[i] for i in dfs_obs_NOy.keys()], axis=0)
+
+    # Setup PDF to save PDF plots to
+    if isinstance(savetitle, type(None)):
+        savetitle = 'ARNA_altitude_binned_{}{}'.format('NOy', '')
+    if isinstance(pdff, type(None)):
+        pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
+
+    # Loop by species to plot
+    colors2use = AC.get_CB_color_cycle()
+    markers2use = [
+        'o', 'v', '^', '<', '>', 'p', '*', 'h', 'H', 'D', 'd', 'P',
+        'X'
+        '8', 's',
+        ]
+    for n_var2plot, var2plot in enumerate(vars2plot):
+        # Plot observations
+        plt.scatter(dfObs['NOy'].values,
+                    dfObs['Average_altitude_m'].values/1E3,
+                    label='Obs.',
+                    color='k',
+                    alpha=0.75)
+
+        # loop by model and plot
+        for n_Mod2Plot, Mod2Plot in enumerate(Mods2Plot):
+            # Get pressure variable and plot
+            df2plot = dfsMod[Mod2Plot]
+            plt.scatter(df2plot[var2plot].values*1E12,
+                         AC.hPa_to_Km(df2plot['PRESS'].values),
+                         label=Mod2Plot,
+                         color=colors2use[n_Mod2Plot],
+                         marker=markers2use[n_Mod2Plot],
+                         alpha=0.6
+                         )
+            # TODO: Add option to optionally plot model as a line
+
+        # Beautify plot
+        TitleStr = "Vertical distribution of '{}' during all ARNA-2 flights"
+        plt.title( TitleStr.format(var2plot) )
+        ALT_var = 'Altitude (km)'
+        plt.ylabel(ALT_var)
+        plt.xlabel('{} (pptv)'.format('NOy') )
+        plt.legend()
+        # Save to PDF
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+        if show_plot:
+            plt.show()
+        plt.close()
+
+    # Save entire pdf
+    if close_pdf:
+        AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
+    plt.close('all')
+
+
+def plt_ts_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
+                                     flight_nums=[],
+                                     res='4x5', RunSet=None,
+                                     inc_GEOSChem=True,
+                                     inc_GEOSCF=False,
+                                     just_plot_GEOS_Chem=False,
+                                     LatVar='model-lat',
+                                     LonVar='model-lon',
+                                     plt_alt_shadow=False,
+                                     PltSpatialLocsOfdata=True,
+                                     debug=False, context='paper'):
+    """
+    Plot up timeseries comparisons between filter samples and model data
+    """
+    import seaborn as sns
+    # Which flights to plot? - Just use non-transit ARNA flights
+    if len(flight_nums) == 0:
+        flight_nums = [219, 220, 221, 222, 223, 224, 225,]
+    flight_IDs = ['C{}'.format(i) for i in flight_nums]
+    # Get model and observation data for filter periods
+    DataList = get_derived_total_NOy4flights(flight_nums=flight_nums,
+                                             res=res, RunSet=RunSet,
+                                             inc_GEOSChem=inc_GEOSChem,
+                                             inc_GEOSCF=inc_GEOSCF,
+                                             debug=debug)
+    dfs_obs, dfs_mod, dfs_mod_period, dfs_obs_NOy, dfs_CIMS_period, dfs_FAAM_period = DataList
+
+    # TODO - Update code to make temp variables below redundant
+    mod_label_master = None
+
     # -  Now plot up
     for flight_ID in flight_IDs:
         print(flight_ID)
@@ -4524,8 +4660,7 @@ def plt_ts_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
         df_obs = dfs_obs.loc[dfs_obs['Flight'] == flight_ID, :]
         print('WARNING: TODO setup to plot multiple model runs')
 #        df_mod = dfs_mod[flight_ID]
-        df_mod = dfs_mod[flight_ID][ModelVarName]
-
+        df_mod = dfs_mod[flight_ID][ list(dfs_mod[flight_ID].keys())[0] ]
         df_mod_period = dfs_mod_period[flight_ID]
         df_obs_NOy = dfs_obs_NOy[flight_ID]
         df_CIMS_period = dfs_CIMS_period[flight_ID]
@@ -4537,10 +4672,11 @@ def plt_ts_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
         savetitle = 'ARNA_timeseries_flighttrack_{}_NOy'.format(flight_ID)
         pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
         # - Plot up location of flights
-        plt_flightpath_spatially_over_CVAO(df=df_mod, flight_ID=flight_ID,
-                                           LatVar=LatVar,
-                                           LonVar=LonVar,
-                                           )
+        if PltSpatialLocsOfdata:
+            plt_flightpath_spatially_over_CVAO(df=df_mod, flight_ID=flight_ID,
+                                               LatVar=LatVar,
+                                               LonVar=LonVar,
+                                               )
         # Save to PDF
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
         plt.close()
@@ -4578,6 +4714,37 @@ def plt_ts_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
         plt.close()
 
+        # - Plot up NOy (just gas phase species)
+#         units = 'pptv'
+#         var2plot = 'NOy-all'
+#         ModVar2Plot = 'NOy-all'
+#         ObsVar2Plot = 'NOy'
+#         mod_label = mod_label_master
+#         mod_scale = 1E12
+#         ObsVar2PlotErr = None
+#         plt_errorbar = False
+# #        ylim = (-0.2, 1)
+#         ylim = None
+#         # Call timeseries plotter function
+#         plt_ts4ARNA_flt_period_obs(var2plot=var2plot, units=units,
+#                                    ObsVar2Plot=ObsVar2Plot,
+#                                    mod_scale=mod_scale,
+#                                    mod_label=mod_label,
+#                                    ModVar2Plot=ModVar2Plot,
+#                                    ylim=ylim,
+#                                    dfs_mod=dfs_mod[flight_ID],
+#                                    df_obs=df_obs_NOy,
+#                                    dfs_mod_period=dfs_mod_period[flight_ID],
+#                                    plt_alt_shadow=plt_alt_shadow,
+#                                    flight_ID=flight_ID,
+#                                    ObsVar2PlotErr=ObsVar2PlotErr,
+#                                    plt_errorbar=plt_errorbar,
+#                                    context=context,
+#                                    )
+#         # Save to PDF and close the plot
+#         AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+#         plt.close()
+
         # - Plot up NOy-HNO3
         units = 'pptv'
         var2plot = 'NOy (model-HNO3)'
@@ -4613,37 +4780,6 @@ def plt_ts_comp4ARNA_flights_NOy_ALL(dpi=320, show_plot=False,
         units = 'pptv'
         var2plot = 'NOy (model-HNO3-PAN)'
         ModVar2Plot = 'NOy-HNO3'
-        ObsVar2Plot = 'NOy'
-        mod_label = mod_label_master
-        mod_scale = 1E12
-        ObsVar2PlotErr = None
-        plt_errorbar = False
-#        ylim = (-0.2, 1)
-        ylim = None
-        # Call timeseries plotter function
-        plt_ts4ARNA_flt_period_obs(var2plot=var2plot, units=units,
-                                   ObsVar2Plot=ObsVar2Plot,
-                                   mod_scale=mod_scale,
-                                   mod_label=mod_label,
-                                   ModVar2Plot=ModVar2Plot,
-                                   ylim=ylim,
-                                   dfs_mod=dfs_mod[flight_ID],
-                                   df_obs=df_obs_NOy,
-                                   dfs_mod_period=dfs_mod_period[flight_ID],
-                                   plt_alt_shadow=plt_alt_shadow,
-                                   flight_ID=flight_ID,
-                                   ObsVar2PlotErr=ObsVar2PlotErr,
-                                   plt_errorbar=plt_errorbar,
-                                   context=context,
-                                   )
-        # Save to PDF and close the plot
-        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
-        plt.close()
-
-        # - Plot up 'NOy-HNO3-PAN'
-        units = 'pptv'
-        var2plot = 'NOy (NOx+HONO+NIT(s))'
-        ModVar2Plot = 'NOy-Limited'
         ObsVar2Plot = 'NOy'
         mod_label = mod_label_master
         mod_scale = 1E12
@@ -4843,14 +4979,9 @@ def plt_ts_comp4ARNA_flights_filters(dpi=320, show_plot=False,
     Plot up timeseries comparisons between filter samples and model data
     """
     import seaborn as sns
-    # Which flights to plot?
-    # Just use non-transit ARNA flights
+    # Which flights to plot? - Just use non-transit ARNA flights
     if len(flight_nums) == 0:
-        flight_nums = [
-            #        216,
-            #        217,
-            218, 219, 220, 221, 222, 223, 224, 225,
-        ]
+        flight_nums = [218, 219, 220, 221, 222, 223, 224, 225,]
     flight_IDs = ['C{}'.format(i) for i in flight_nums]
     # - Loop by flight and retrieve the files as dataframes (mod + obs)
     # Model
@@ -4865,12 +4996,6 @@ def plt_ts_comp4ARNA_flights_filters(dpi=320, show_plot=False,
 
     # Model - GEOS-Chem (offline)
     if inc_GEOSChem:
-        #        RunSet='MERRA2-0.5-initial'
-        #        res='0.5x0.625'
-        #        RunSet='MERRA2-BC'
-        #        res='4x5'
-        #        RunSet='FP-Nest'
-        #        res='0.25x0.3125'
         mod_label_master = RunSet
         dfs_mod_GC = {}
         for flight_ID in flight_IDs:

@@ -984,10 +984,19 @@ def mk_planeflight_files4sites(testing_mode=False):
     AC.prt_PlaneFlight_files_v12_plus(df=df, slist=slist,
                                       Extra_spacings=Extra_spacings)
 
-def get_planeflight_slist2output(num_tracers=203):
+
+def get_planeflight_slist2output(num_tracers=None, folder=None,
+                                 OutputJVALs=False):
     """
     Store of planeflight slist to request outputs for
     """
+    # Use the number of tracers in the input.geos file, unless specified
+    if isinstance(num_tracers, type(None)):
+        if isinstance(folder, type(None)):
+            TRAs = AC.get_specieslist_from_input_geos(folder=folder)
+            num_tracers = len(TRAs)
+        else:
+            num_tracers = 203 # Use value for GEOS-Chem v12.9.0
     # Mannually setup slist
     met_vars = [
         'GMAO_ABSH', 'GMAO_PSFC', 'GMAO_SURF', 'GMAO_TEMP', 'GMAO_UWND',
@@ -996,23 +1005,26 @@ def get_planeflight_slist2output(num_tracers=203):
     species = ['OH', 'HO2']
     assert isinstance(num_tracers, int), 'num_tracers must be an integer'
     slist = ['TRA_{:0>3}'.format(i) for i in np.arange(1, num_tracers+1)]
+    slist = slist + species + met_vars
     # Add Jvals
-    JVN2use = np.arange(1, 139)
-    JVN2drop = [4, 5, 35, 52, 57, 58, 102]
-    JVN2use = [i for i in JVN2use if i not in JVN2drop]
-    JVAL_list = ['JVL_{:0>3}'.format(i) for i in JVN2use]
-    slist = slist + species + met_vars + JVAL_list
+    if OutputJVALs:
+        JVN2use = np.arange(1, 139)
+        JVN2drop = [4, 5, 35, 52, 57, 58, 102]
+        JVN2use = [i for i in JVN2use if i not in JVN2drop]
+        JVAL_list = ['JVL_{:0>3}'.format(i) for i in JVN2use]
+        slist += JVAL_list
     return slist
 
 
-def mk_planeflight_files4FAAM_campaigns(testing_mode=False):
+def mk_planeflight_files4FAAM_campaigns(folder=None, testing_mode=False,
+                                        num_tracers=None):
     """
     Make plane-flight input files for various FAAM campaigns
     """
     # Location of flight data
     DataRoot = get_local_folder('DataRoot')
-    folder = '/{}/FAAM/core_faam_NetCDFs/'.format(DataRoot)
-    folder4csv = '/{}/FAAM/GEOSChem_planeflight_inputs/'.format(DataRoot)
+    folderFAAMnetCDF = '/{}/FAAM/core_faam_NetCDFs/'.format(DataRoot)
+    folder4csv = '/{}/FAAM/GEOSChem_planeflight_inputs.ACID/'.format(DataRoot)
     df = get_FAAM_flights_df()
 #    if testing_mode:
     # Only consider flights in 2020
@@ -1043,18 +1055,17 @@ def mk_planeflight_files4FAAM_campaigns(testing_mode=False):
 #    df = df.loc[ df['Flight ID'].isin(flight_IDs2use),:]
     # Extract variables of interest
     flight_IDs = df['Flight ID'].values
-    # Get list of species
-    num_tracers = 203
-    slist = get_planeflight_slist2output(num_tracers=num_tracers)
-
+    # Get list of species to output from plane flight diagnostic
+    slist = get_planeflight_slist2output(folder=folder,
+                                         num_tracers=num_tracers,
+                                         OutputJVALs=False)
     # Loop and extract FAAM BAe146 flights
     for flight_ID in flight_IDs:
         print(flight_ID)
-        AC.mk_planeflight_input4FAAM_flight(folder=folder,
+        AC.mk_planeflight_input4FAAM_flight(folder=folderFAAMnetCDF,
                                             folder4csv=folder4csv,
                                             testing_mode=testing_mode,
                                             num_tracers=num_tracers,
-                                            #                                            rxn_nums=rxn_nums,
                                             slist=slist,
                                             flight_ID=flight_ID,)
         gc.collect()
@@ -1075,18 +1086,20 @@ def mk_planeflight_files4FAAM_campaigns(testing_mode=False):
         ds_l = []
         for flight_ID in flight_IDs2use:
             filename = 'core_faam_*_{}_1hz.nc'.format(flight_ID.lower())
-            file2use = glob.glob(folder+filename)
+            file2use = glob.glob(folderFAAMnetCDF+filename)
             print(flight_ID, file2use)
             ds_l += [xr.open_dataset(file2use[0])]
         # Now re-make file but with values for both flights
         ds = xr.concat(ds_l, dim='Time')
         AC.mk_planeflight_input4FAAM_flight(ds=ds,
-                                            folder=folder,
+                                            folder=folderFAAMnetCDF,
                                             folder4csv=folder4csv,
                                             testing_mode=testing_mode,
                                             num_tracers=num_tracers,
-                                            #                                            rxn_nums=rxn_nums,
                                             slist=slist,
                                             flight_ID=flight_ID,)
         gc.collect()
         del ds, ds_l
+    gc.collect()
+
+
