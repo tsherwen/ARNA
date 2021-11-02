@@ -30,7 +30,8 @@ def main():
     RunSet = None
     res = '4x5'
     NOxAsLog = True
-    CoreRunsOnly = False
+#    CoreRunsOnly = False
+    CoreRunsOnly = True
     savetitle = 'ARNA_altitude_binned_combined_file_{}'.format(res)
     ar.plt_comp_by_alt_4ARNA_together(context=context,
                                       res=res, RunSet=RunSet,
@@ -125,6 +126,12 @@ def main():
                                         LonVar='LON',
                                         )
 
+
+    # Plot up nitrate, JNIT, and their project
+#    AC.mk_tri_NO3_JNIT_combination_plt()
+
+
+
     # - Plot up SWAS data by flight
     # Plot up SWAS data
     ar.plt_ts_comp4ARNA_flights_SWAS(context=context)
@@ -168,6 +175,10 @@ def main():
     # Also plot up for related biomass-burning flights in MOYA campaign
     ar.plt_ts_comp4MOYA_flights()
     ar.plt_ts_comp4MOYA_flights_PHYSICAL_VARS()
+
+
+
+
 
 
 def explore_high_ozone_near_CVAO():

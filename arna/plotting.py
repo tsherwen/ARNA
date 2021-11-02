@@ -4416,7 +4416,7 @@ def plt_ts_comp4MOYA_flights_PHYSICAL_VARS(dpi=320, show_plot=False,
 
 
 def get_derived_total_NOy4flights(flight_nums=[], res='4x5', RunSet=None,
-                                  inc_GEOSChem=True,
+                                  inc_GEOSChem=True, CoreRunsOnly=False,
                                   inc_GEOSCF=False,
                                   debug=False):
     """
@@ -4449,6 +4449,7 @@ def get_derived_total_NOy4flights(flight_nums=[], res='4x5', RunSet=None,
         dfs_mod_GC = {}
         for flight_ID in flight_IDs:
             dfs = get_GEOSChem4flightnum(flight_ID=flight_ID, res=res,
+                                         CoreRunsOnly=CoreRunsOnly,
                                          RunSet=RunSet,)
             for key in dfs.keys():
                 df = dfs[key]
@@ -4555,6 +4556,7 @@ def plt_comp_by_alt_4ARNA_NOy(vars2plot=['NOy', 'NOy-gas' ],
     # Get model and observation data for filter periods
     DataList = get_derived_total_NOy4flights(flight_nums=flight_nums,
                                              res=res, RunSet=RunSet,
+                                             CoreRunsOnly=CoreRunsOnly,
                                              inc_GEOSChem=inc_GEOSChem,
                                              inc_GEOSCF=inc_GEOSCF,
                                              debug=debug)
@@ -6618,47 +6620,89 @@ def plt_quick_ts4df(df, vars2plot=None, savetitle=None, save2pdf=True,
         plt.close('all')
 
 
-def plot_up_surface_diff_between_runs(dsD, REF=None, DIFF=None, lvl_idx=0,
-                                      savetitle=None,
-                                      pcent=None, vars2plot=None, debug=False,
-                                      dpi=320, **kwargs):
+def mk_trifigure_NO3_JNIT_combination_plt(context='paper'):
     """
-    plot up differences between two datasets for a list of variables
+    Make a tri plot of nitrate, JNIT, and their product
     """
-    if isinstance(REF, type(None)):
-        REF = list(sorted(dsD.keys()))[0]
-    if isinstance(DIFF, type(None)):
-        DIFF = list(sorted(dsD.keys()))[-1]
-    if isinstance(vars2plot, type(None)):
-        vars2plot = list(dsD[REF].data_vars)
-    if isinstance(savetitle, type(None)):
-        savetitle = 'surface_plots_{}_vs_{}'.format(REF, DIFF)
-        savetitle = AC.rm_spaces_and_chars_from_str(savetitle)
+    #
+    import seaborn as sns
+    sns.set(color_codes=True)
+    sns.set_context(context)
+    # Plottting settings (shouldn't these be arguemnets ... )
+    RunSet = 'ACID'
+    res = '4x5'
+    trop_limit = False
+    dates2use = [datetime.datetime(2019, i+1, 1) for i in range(12)]
+    ColorList = AC.get_CB_color_cycle()
+    # Get data into a single dictionary
+    RunDict = ar.get_dict_of_GEOSChem_model_output(res=res, RunSet=RunSet)
+    NOxD = get_NOx_budget_ds_dict_for_runs(RunDict=RunDict,
+#                                           RunSet=RunSet, res=res,
+                                           trop_limit=trop_limit,
+                                           dates2use=dates2use)
+    runs2use = [
+        'Acid-4x5-Isotherm.v2',
+#        'Acid-4x5-J25',
+        'Acid-4x5-J50',
+#        'Acid-4x5-Isotherm-BBx3'
+        'Acid-4x5-J50-AfBBx3-NH3x3',
+        ]
+    for key in list(sorted(NOxD.keys())):
+        if (key not in runs2use):
+            del NOxD[key]
+
+    # Add data to plot into a single DataFrame
+    dfs = {}
+    for key in NOxD.keys():
+        ds = NOxD[key]
+        ds = NOxD[key].sel(lev=ds.lev.values[0]).mean(dim='time')
+        df = pd.DataFrame()
+
+        # Get Nitrate concentration
+        NITvar = 'SpeciesConc_NIT'
+        data = ds[NITvar].values.flatten()
+        df[NITvar] = data * 1E12
+
+        # JNIT
+        JNITvar = 'Jval_NIT'
+        data1 = ds[JNITvar].values.flatten()
+        JHNO3var = 'Jval_HNO3'
+        data2 = ds[JHNO3var].values.flatten()
+        JScaleVar = 'Jscale'
+        df[JScaleVar] = data1/data2
+
+        # JNIT * NIT
+        ProdJNIT = 'ProdHNO2fromHvNIT-all'
+        data = ds[ProdJNIT].values.flatten()
+        df[ProdJNIT] = data
+
+        dfs[key] = df
+
+    # Plot up seperately
     if debug:
-        print(DIFF, REF, vars2plot)
+        for var in [NITvar, JScaleVar, ProdJNIT]:
+            fig, ax = plt.subplots()
+            for nKey, key in enumerate( dfs.keys() ):
+                sns.histplot(data=dfs[key], x=var, ax=ax, kde=True, label=key,
+                             color=ColorList[nKey])
+                plt.title(" '{}' in '{}'".format(var, key))
+#                FileStr = 'ARNA_PDF_of_NIT_JNIT_and_product_{}_{}'
+#                AC.save_plot(FileStr.format(key, var), tight=True)
+                FileStr = 'ARNA_PDF_of_NIT_JNIT_and_product_{}'
+                AC.save_plot(FileStr.format(var), tight=True)
+                plt.close('all')
 
-    pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
-    for var2plot in vars2plot:
-        ds1 = dsD[REF][[var2plot]].isel(lev=lvl_idx).mean(dim='time')
-        ds2 = dsD[DIFF][[var2plot]].isel(lev=lvl_idx).mean(dim='time')
-
-        if pcent:
-            ds2plot = (ds1-ds2)/ds1 *100
-        else:
-            ds2plot = (ds1-ds2)
-        # plot
-        AC.quick_map_plot(ds2plot, var2plot=var2plot, show_plot=False)
-        # Save to PDF
-        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
-#        if show_plot:
-#            plt.show()
-        plt.close()
-        # Do some memory management...
-        gc.collect()
-
-    # Save entire pdf
-    AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
+    # Plot up as a single plot
+    fig, [ax1, ax2, ax3] = plt.subplots(nrows=3, ncols=1)
+    for nKey, key in enumerate( dfs.keys() ):
+        sns.histplot(data=dfs[key], x=NITvar, ax=ax1, kde=True, label=key,
+                     color=ColorList[nKey])
+        ax1.legend()
+        sns.histplot(data=dfs[key], x=JScaleVar, ax=ax2, kde=True, label=key,
+                     color=ColorList[nKey])
+        sns.histplot(data=dfs[key], x=ProdJNIT, ax=ax3, kde=True, label=key,
+                     color=ColorList[nKey])
+    AC.save_plot('ARNA_PDF_of_NIT_JNIT_and_product', tight=True)
     plt.close('all')
-
 
 

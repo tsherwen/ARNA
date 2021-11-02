@@ -360,7 +360,8 @@ def get_filters_data4flight_REDUNDANT(flight_ID='C217', all_flights=True):
         return df.loc[df['Flight'] == flight_ID, :]
 
 
-def get_CIMS_data4flight(flight_ID='C225', resample_data=True, debug=False):
+def get_CIMS_data4flight(flight_ID='C225', resample_data=True,
+                         verbose=False, debug=False):
     """
     Retrieve ToF-CIMS data from ARNA flights
     """
@@ -397,25 +398,54 @@ def get_CIMS_data4flight(flight_ID='C225', resample_data=True, debug=False):
         dfM = pd.concat([dfM, df], axis="index")
     except:
         pstr = "WARNING: failed to include CIMS halogen data for '{}' in df"
-        print(pstr.format(flight_ID))
+        if verbose:
+            print(pstr.format(flight_ID))
     # - Also get HNO3 / HONO (use the time coordinate for index)
     try:
         filename = 'ACSIS6_ARNA_1hz_HNO3_HONO_ToSend.xlsx'
-        df2 = pd.read_excel(folder + filename, sheet_name=sheet_name)
+        df = pd.read_excel(folder + filename, sheet_name=sheet_name)
         xl = pd.ExcelFile(folder + filename)
         if debug:
             print(xl.sheet_names)
         dt_var = 'date'
-    #    df2.index = pd.to_datetime( df2[dt_var].values, format='%m/%d/%Y %H:%M:%S')
-        dates = AC.dt64_2_dt(df2[dt_var].values)
+        dates = AC.dt64_2_dt(df[dt_var].values)
         dates = [i.strftime(format) for i in dates]
         dates = [datetime_.strptime(i, '%d/%m/%Y %H:%M:%S') for i in dates]
-        df2.index = dates
-        del df2[dt_var]
+        df.index = dates
+        del df[dt_var]
         # Merge the files
-        dfM = pd.concat([dfM, df2], axis="index")
+        dfM = pd.concat([dfM, df], axis="index")
     except:
         pstr = "WARNING: failed to include CIMS NOy data for '{}' in df"
+        if verbose:
+            print(pstr.format(flight_ID))
+
+    # Remove the existing HNO3 variables and then include the latest data
+    redundant_HNO3_vars = ['HNO3 (ppt*) ', 'HNO3 (ppt*)']
+    pstr = "NOTE: Removed redundant HNO3 data ('{}') for flight '{}'"
+    try:
+        for var in redundant_HNO3_vars:
+            if var in dfM.columns:
+                del dfM[var]
+                if verbose:
+                    print(pstr.format(var, flight_ID))
+    except KeyError:
+        pass
+    try:
+        filename = 'ARNA2_HNO3_YORK_1Hz.csv'
+        df = pd.read_csv(folder + filename)
+        dt_var = 'date_time'
+        format = '%Y-%m-%d %H:%M:%S'
+        df.index = pd.to_datetime( df[dt_var].values, format=format)
+        del df[dt_var]
+        # Merge the files
+        bool = df['flight_id'].values == flight_ID
+        Nvals = df.loc[bool, :].shape[0]
+        AssStr = "WARNING: No values found for CIMS HNO3 on flight '({})"
+        assert Nvals>0, AssStr.format( flight_ID )
+        dfM = pd.concat([dfM, df.loc[bool, :] ], axis="index")
+    except:
+        pstr = "WARNING: failed to include CIMS HNO3 data for '{}' in df"
         print(pstr.format(flight_ID))
 
     # - Also include HCN data
@@ -429,7 +459,8 @@ def get_CIMS_data4flight(flight_ID='C225', resample_data=True, debug=False):
     #    df2.index = pd.to_datetime( df2[dt_var].values, format='%m/%d/%Y %H:%M:%S')
         dates = AC.dt64_2_dt(df[dt_var].values)
         dates = [i.strftime(format) for i in dates]
-        dates = [datetime_.strptime(i, '%d/%m/%Y %H:%M:%S') for i in dates]
+        format = '%Y-%m-%d %H:%M:%S'
+        dates = [datetime_.strptime(i, format) for i in dates]
         df.index = dates
         del df[dt_var]
         # Merge the files
@@ -440,8 +471,10 @@ def get_CIMS_data4flight(flight_ID='C225', resample_data=True, debug=False):
 
     # Update the variable names
     VarNameDict = {
-        'BrO (ppt*)': 'BrO', 'Br2 + HOBr (ppt*)': 'Br2+HOBr', 'HONO (ppt*)': 'HONO',
-        'HNO3 (ppt*) ': 'HNO3',  'HNO3 (ppt*)': 'HNO3',
+        'BrO (ppt*)': 'BrO',
+        'Br2 + HOBr (ppt*)': 'Br2+HOBr',
+        'HONO (ppt*)': 'HONO',
+        'HNO3 (ppt*) ': 'HNO3', 'HNO3 (ppt*)': 'HNO3', 'HNO3_ppt': 'HNO3',
         'HCN (ppt*)': 'HCN',
     }
     dfM = dfM.rename(columns=VarNameDict)

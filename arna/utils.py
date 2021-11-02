@@ -961,7 +961,9 @@ def get_local_folder(key, host=None, rtn_dict=False):
     host = platform.node()
     # - Set locations of York HPC
     if ('viking' in host):
-        NASA_data = '/mnt/lustre/groups/chem-acm-2018/earth0_data/NASA/'
+        earth0_data_shelf = '/mnt/lustre/groups/chem-acm-2018/'
+        NASA_data = earth0_data_shelf + 'earth0_data/NASA/'
+        HEMCO_data = earth0_data_shelf + 'earth0_data/GEOS/ExtData/HEMCO/'
         ARNA_data = '/users/ts551/scratch/data/ARNA/'
         DataRoot = '/users/ts551/scratch/data/'
         RunRoot = '/users/ts551/scratch/GC/rundirs/'
@@ -981,6 +983,7 @@ def get_local_folder(key, host=None, rtn_dict=False):
     d = {
         'NASA_data': NASA_data,
         #    'folder4plots': folder4plots,
+        'HEMCO_data': HEMCO_data,
         'ARNA_data': ARNA_data,
         'RunRoot': RunRoot,
         'DataRoot': DataRoot,
