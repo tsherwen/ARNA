@@ -12,6 +12,7 @@ import sys
 import pandas as pd
 # import ARNA analysis/campaign code as a module
 import arna as ar
+from matplotlib.colors import LogNorm
 
 
 def main():
@@ -371,8 +372,10 @@ def explore_ARNA_period_with_acid_uptake():
         ds = AC.get_GEOSChem_files_as_ds(wd=RunDict[key], dates2use=dates2use)
         ds = add_derived_GEOSChem_specs2ds(ds, prefix=prefix)
         dsD[key] = ds
+    dsS = {}
+    for key in RunDict.keys():
+        dsS[key] = AC.get_StateMet_ds(wd=RunDict[key])
 
-#    StateMet = AC.get_StateMet_ds(wd=Folder)
     ModelAlt = AC.gchemgrid('c_km_geos5')
     specs2plot = [i for i in ds.data_vars if prefix in i]
     specs2plot = [i.split(prefix)[-1] for i in specs2plot][::-1]
@@ -557,35 +560,43 @@ def explore_ARNA_period_with_acid_uptake():
     matplotlib.rc_file_defaults()
     sns.reset_orig()
     REF = 'Acid-4x5-J00'
-    DIFF = 'Acid-4x5-J50'
-#    DIFF = 'Acid-4x5-Isotherm.v2'
+#    DIFF = 'Acid-4x5-J50'
+    DIFF = 'Acid-4x5-Isotherm.v2'
     prefix = 'SpeciesConc_'
     vars2plot = ['O3', 'CO', 'NOx', 'NO2', 'NO', 'HNO2',
                 'NOy', 'HNO3', 'NIT-all','NOy-gas',
                 ]
     vars2plot = [prefix+i for i in vars2plot]
     pcent = True
-    savetitle = 'ARNA_surface_plots_{}_vs_{}'.format(REF, DIFF)
-    AC.plt_spatial_diff_between_runs_at_lvl(dsD, REF=REF, DIFF=DIFF,
-                                            pcent=pcent,
-                                            savetitle=savetitle,
-                                            vars2plot=vars2plot,
-                                            prefix=prefix)
+    for DIFF in ['Acid-4x5-J50', 'Acid-4x5-Isotherm.v2']:
+        savetitle = 'ARNA_surface_plots_{}_vs_{}'.format(REF, DIFF)
+        AC.plt_spatial_diff_between_runs_at_lvl(dsD, REF=REF, DIFF=DIFF,
+                                                pcent=pcent,
+                                                savetitle=savetitle,
+                                                vars2plot=vars2plot,
+                                                prefix=prefix)
 
 
     # - Plot up the zonal difference in concentration between the runs
     REF = 'Acid-4x5-J00'
-    DIFF = 'Acid-4x5-J50'
-#    DIFF = 'Acid-4x5-Isotherm.v2'
+#    DIFF = 'Acid-4x5-J50'
+    DIFF = 'Acid-4x5-Isotherm.v2'
     prefix = 'SpeciesConc_'
     vars2plot = ['O3', 'CO', 'NOx', 'NO2', 'NO', 'HNO2',
                 'NOy', 'HNO3', 'NIT-all','NOy-gas',
                 ]
     vars2plot = [prefix+i for i in vars2plot]
     pcent = True
-    savetitle = 'ARNA_surface_plots_{}_vs_{}'.format(REF, DIFF)
-
-
+#    for key in dsD.keys():
+#        dsD[key] =  dsD[key].mean(dim='time')
+    for DIFF in ['Acid-4x5-J50', 'Acid-4x5-Isotherm.v2']:
+        savetitle = 'ARNA_zonal_plots_{}_vs_{}'.format(REF, DIFF)
+        AC.plt_zonal_diff_between_runs(dsD, REF=REF, DIFF=DIFF,
+                                       StateMet=dsS[DIFF],
+                                       pcent=pcent,
+                                       savetitle=savetitle,
+                                       vars2plot=vars2plot,
+                                       prefix=prefix)
 
 
 def plt_key_NOx_budget_terms():
@@ -600,54 +611,162 @@ def plt_key_NOx_budget_terms():
     # Get the tags for the Prod/Loss tagging as a dictionary
     tags = ar.get_tags_for_NOx_HONO()
     ProdVars =['ProdHNO2fromHvNIT-all','ProdHNO2fromOHandNO','ProdHNO2fromHET']
-
-#    for run in NOxD.keys():
 #    for run in ['Acid-4x5-J50']
 #    run2use = 'Acid-4x5-J50'
+#    run2use = 'Acid-4x5-Isotherm.v2'
+    PltAsLog = True
+    verbose =  True
+    # - Plot up the annual mean surface values
+    for run2use in ['Acid-4x5-Isotherm.v2', 'Acid-4x5-J50', 'Acid-4x5-J00', ]:
+        ds = NOxD[run2use].copy()
+        ds = ds.mean(dim='time').sel(lev=ds.lev[0])
+        norm = LogNorm(vmin=0.5, vmax=2000)
+#        norm = LogNorm(vmin=10, vmax=1000)
+#        norm = LogNorm(vmin=10, vmax=1000)
+#        norm = LogNorm(vmin=50, vmax=1000)
+        norm = LogNorm(vmin=100, vmax=1000)
+        savetitle = 'ARNA_spatial_NOx_budget_{}'.format(run2use)
+        if PltAsLog:
+            kwargs = {'norm': norm}
+            savetitle += '_Log'
+        else:
+            kwargs = {}
+        # Setup a PDF
+        pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
+        # Plot key route totals
+        for var2plot in ['Prod_OH', 'Prod_HNO2', 'Jscale']:
+    #    for var2plot in [ 'Prod_HNO2']:
+            AC.quick_map_plot(ds, var2plot=var2plot, verbose=verbose, **kwargs)
+            # Save to PDF
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+            plt.close()
+    #        del ds2plot
+
+        # Plot routes
+        ds2plot = ds[ProdVars].copy()
+        for var2plot in ProdVars:
+            AC.quick_map_plot(ds2plot, var2plot=var2plot,
+                              verbose=verbose, **kwargs)
+            # Save to PDF
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+            plt.close()
+    #        del ds2plot
+
+        # Now plot routes as % of total HNO2 production
+        ds2plot = ds[ProdVars].copy() / ds['Prod_HNO2']
+        for var2plot in ProdVars:
+            AC.quick_map_plot(ds2plot, var2plot=var2plot, verbose=verbose,
+                              **kwargs)
+            # Save to PDF
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+            plt.close()
+    #        del ds2plot
+
+        # Save entire pdf
+        AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
+        plt.close('all')
+
+
+        # - Zonally plot up the NOx budget values
+        savetitle = 'ARNA_zonal_NOx_budget_{}'.format(run2use)
+        if PltAsLog:
+            kwargs = {'norm': norm}
+            savetitle += '_Log'
+        else:
+            kwargs = {}
+        pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
+        # Plot routes
+        ds = NOxD[run2use].copy().mean(dim='time')
+        vars2plot = ['Prod_OH', 'Prod_HNO2', 'Jscale'] + ProdVars
+        ds2plot = ds[vars2plot]
+        for var2plot in vars2plot:
+            fig, ax = plt.subplots()
+            im = AC.ds2zonal_plot(ds2plot, var2plot=var2plot, StateMet=ds,
+                             fig=fig, ax=ax, **kwargs)
+            TitleStr = "{}"
+            plt.title(TitleStr.format(var2plot))
+
+            # Add a colourbar
+    #        kwargs = {'extend':'both'}
+            fig.colorbar(im, orientation="horizontal", pad=0.2, extend='both',
+                         **kwargs)
+    #                     format=format, label=units)
+            # Save to PDF
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+            plt.close()
+    #        del ds2plot
+
+        # Now plot routes as % of total HNO2 production
+        ds = NOxD[run2use].copy().mean(dim='time')
+        ds2plot = ds[ProdVars] / ds['Prod_HNO2']
+    #    kwargs = {'vmin': 0, 'vmax': 1, }
+        for var2plot in ProdVars:
+            fig, ax = plt.subplots()
+            im = AC.ds2zonal_plot(ds2plot, var2plot=var2plot, StateMet=ds,
+                             fig=fig, ax=ax, **kwargs)
+            TitleStr = "'{}' / total HONO production"
+            plt.title(TitleStr.format(var2plot))
+
+            # Add a colourbar
+            fig.colorbar(im, orientation="horizontal", pad=0.2, extend='both',
+                         **kwargs)
+            # Save to PDF
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+            plt.close()
+    #        del ds2plot
+
+        # Save entire pdf
+        AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
+        plt.close('all')
+
+    # --- Plot up source of HONO in isotherm runs relative to J50 and J00
+    REF_list = ['Acid-4x5-J50', 'Acid-4x5-J00']
     run2use = 'Acid-4x5-Isotherm.v2'
-    # Setup a PDF
-    savetitle = 'ARNA_spatial_NOx_budget_{}'.format(run2use)
-    pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
-    # - Plot up the annual mean values
-#    for key in NOxD.keys():
-    ds = NOxD[run2use]
-    ds = ds.mean(dim='time').sel(lev=ds.lev[0])
-    # Plot key route totals
-    for var2plot in ['Prod_OH', 'Prod_HNO2']:
-#    for var2plot in [ 'Prod_HNO2']:
-        AC.quick_map_plot(ds, var2plot=var2plot, )
-        # Save to PDF
-        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
-        plt.close()
-#        del ds2plot
 
-    # Plot routes
-    ds2plot = ds[ProdVars].copy()
-    for var2plot in ProdVars:
-        AC.quick_map_plot(ds2plot, var2plot=var2plot, )
-        # Save to PDF
-        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
-        plt.close()
-#        del ds2plot
+    for REFrun in REF_list:
+        savetitle = 'ARNA_NOx_budget_REF_{}_vs_{}'.format(REFrun, run2use)
+        # Plot routes
+        REF = NOxD[REFrun].copy().mean(dim='time')
+        ds = NOxD[run2use].copy().mean(dim='time')
+        vars2plot = ['Prod_OH', 'Prod_HNO2', 'Jscale'] + ProdVars
+        ds2plot = ds[vars2plot] / REF[vars2plot]
+        # Log plots?
+        if PltAsLog:
+            kwargs = {'norm': norm}
+            savetitle += '_Log'
+        else:
+            kwargs = {}
+        pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
+        for var2plot in vars2plot:
+            fig, ax = plt.subplots()
 
-    # Now plot routes as % of total HNO2 production
-    ds2plot = ds[ProdVars].copy() / ds['Prod_HNO2']
-    for var2plot in ProdVars:
-        AC.quick_map_plot(ds2plot, var2plot=var2plot, )
-        # Save to PDF
-        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
-        plt.close()
-#        del ds2plot
+            # - Spatial plot
+            AC.quick_map_plot(ds2plot.sel(lev=ds.lev[0]), var2plot=var2plot,
+                              verbose=verbose, **kwargs)
+            TitleStr = "{} ({} vs. {})"
+            plt.title( TitleStr.format(var2plot, REFrun, run2use) )
+
+            # Save to PDF
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+            plt.close()
+
+            # - Zonal plot
+            im = AC.ds2zonal_plot(ds2plot, var2plot=var2plot, StateMet=ds,
+                             fig=fig, ax=ax, **kwargs)
+            TitleStr = "{} ({} vs. {})"
+            plt.title( TitleStr.format(var2plot, REFrun, run2use) )
+            # Add a colourbar
+    #        kwargs = {'extend':'both'}
+            fig.colorbar(im, orientation="horizontal", pad=0.2, extend='both',
+                         **kwargs)
+    #                     format=format, label=units)
+            # Save to PDF
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+            plt.close()
 
     # Save entire pdf
     AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
     plt.close('all')
-
-
-    # - zonally plot
-
-
-
 
 
 def analyse_NOx_budget():

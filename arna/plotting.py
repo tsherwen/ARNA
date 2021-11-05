@@ -6706,3 +6706,168 @@ def mk_trifigure_NO3_JNIT_combination_plt(context='paper'):
     plt.close('all')
 
 
+def mk_Andersen2021_figure_02(dpi=720, aspect=4):
+    """
+    Make figure 2 for Andersen et al 2021
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+    (None)
+
+    Original version author: Simone T. Andersen (Fri Nov  5th)
+    """
+    import pandas as pd
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from matplotlib.lines import Line2D
+    from matplotlib.patches import Rectangle
+
+    # Boxes showing previous measurements
+    e1 = Rectangle((0.04, 150), 1.96, 300, color = "cyan", fill = True,
+                   label = "Ye et al. (2016)")
+    e2 = Rectangle(((1*0.0409*10**3), 1), (5.5*0.0409*10**3), 29,
+                   color = "green", fill = True, label = "Romer et al. (2018)")
+    e3 = Rectangle(((40*0.0409*10**3), 0), (210*0.0409*10**3), 10,
+                   color = "coral", fill = True, label = "Shi et al. (2021)")
+
+    # Dataset of aircraft SLR measurements
+    folder = get_local_folder('ARNA_data') + '/Filters/'
+    filename = 'FAAM_data_for_missing_HONO_source_plot.csv'
+    FAAM_df = pd.read_csv(folder+filename,index_col = 0)
+
+    # Dataset of ground HONO and pNO3 data combined with modelled photolysis rates
+    filename = 'CV_data_for_missing_HONO_source_plot.csv'
+    CV_2019_df = pd.read_csv(folder+filename, index_col = 0,
+                             parse_dates = True, dayfirst = True)
+    CV_2019_df = CV_2019_df.loc[(CV_2019_df.index.hour > 10)
+                                & (CV_2019_df.index.hour < 16)]
+
+    # Ye et al. (????) individual measurements
+    Ye_et_al_df = pd.DataFrame()
+    Ye_et_al_df["nmoles_m-3"] = [36.8, 14.8, 31.9, 39.5,
+                                 8.9, 7.1, 6.1, 1.5,
+                                 1.3, 12.3, 8.7, 9.3,
+                                 1.3, 7.5, 3.8, 5.5,
+                                 7.8, 7.5, 8.1, 6.7,
+                                 0.33, 0.81, 0.66, 8.3,
+                                 1.2, 2.2, 2.8, 4.0,
+                                 6.8]
+    Ye_et_al_df["JpNO3"] = [2.2*10**-5, 2.3*10**-5, 1.0*10**-5, 6.2*10**-6,
+                            7.8*10**-5, 5.2*10**-5, 4.2*10**-5, 1.3*10**-4,
+                            1.1*10**-4, 1.1*10**-4, 8.2*10**-5, 6.8*10**-5,
+                            4.3*10**-4, 1.7*10**-4, 1.8*10**-4, 1.5*10**-4,
+                            7.4*10**-5, 8.2*10**-5, 6.1*10**-5, 7.9*10**-5,
+                            1.0*10**-4, 5.0*10**-4, 8.3*10**-5, 1.3*10**-5,
+                            1.3*10**-4, 2.8*10**-4, 3.1*10**-4, 2.6*10**-4,
+                            1.2*10**-4]
+    Ye_et_al_df["Enhancement"] = Ye_et_al_df["JpNO3"]/(7*10**-7)
+
+    #Creating legend elements
+    from matplotlib.patches import Patch
+    legend_elements = [Line2D([0], [0], marker = 'o', color='white',
+                            label='Sea-salt',
+                              markerfacecolor = "blue", markersize = 10),
+                        Line2D([0], [0], marker='o', color='white',
+                            label='Dust',
+                              markerfacecolor='red', markersize=10),
+                        Line2D([0], [0], marker='o', color='white',
+                            label=r'Biomass burning',
+                              markerfacecolor='black', markersize=10),
+                        Line2D([0], [0], marker='o', color='white',
+                            label=r'Free troposphere',
+                              markerfacecolor='lime', markersize=10),
+                        Line2D([0], [0], marker='o', color='white',
+                            label='Mixed dust/biomass burning',
+                              markerfacecolor='orange', markersize=10),
+                        Line2D([0], [0], marker='o', color='white',
+                            label='CVAO 2019',
+                              markerfacecolor='purple', markersize=10),
+                        Line2D([0], [0], marker='o', color='white',
+                              label='Ye et al. 2017',
+                              markerfacecolor='lightgrey', markersize=10),
+                        Patch(facecolor='cyan', edgecolor='cyan',
+                              label="Ye et al. 2016"),
+                        Patch(facecolor='green', edgecolor='green',
+                              label="Romer et al. 2018"),
+                        Patch(facecolor='coral', edgecolor='coral',
+                              label="Shi et al. 2021"),
+                        Line2D([0], [0], color='black', linestyle = "dashed",
+                               lw=4, label='Ye et al. 2017 fit'),
+                        Line2D([0], [0], color='black', lw=4,
+                               label='Langmuir fit (this study)')]
+
+
+    #Creating colourscheme for scatterplots - should probably consider changing the colours...
+    c1_new = np.where(FAAM_df["Categories"] == 1, "blue", "orange")
+    c2_new = np.where(FAAM_df["Categories"] == 2, "lime", c1_new)
+    c3_new = np.where(FAAM_df["Categories"] == 4, "black", c2_new)
+    c4_new = np.where(FAAM_df["Categories"] == 3, "red", c3_new)
+
+    #Creating the Langmuir fit and the Ye et al. fit.
+    x = np.linspace(0.1,10000,100000)
+    y = (100*18.8*0.9)/(1+0.9*x)
+    y2 = ((6.1*10**-4*np.log(1+4.4*10**-1*x))/x)-3.5*10**-5
+    y3 = y2/(7*10**-7)
+
+
+
+    #Plotting all the data
+    f = plt.figure(dpi=dpi)
+    adjustFigAspect(f, aspect=aspect)
+    ax1 = plt.subplot2grid((1,2), (0,0), colspan = 1)
+    ax2 = plt.subplot2grid((1,2), (0,1), colspan = 1)
+
+    ax1.errorbar(x = 3600*FAAM_df["J_HNO3"]*FAAM_df["NO3_ppt"],
+                 y = 3600*FAAM_df["Missing_HONO_source"],
+                 xerr = (FAAM_df["Photolysis_nitrate_uncertainty"]*3600*FAAM_df["J_HNO3"]*FAAM_df["NO3_ppt"]),
+                 yerr = FAAM_df["Missing_HONO_source_uncertainty"]*3600,
+                 ecolor = c4_new, fmt = "none", alpha = 0.2)
+    ax1.scatter(x = 3600*FAAM_df["J_HNO3"]*FAAM_df["NO3_ppt"],
+                y = 3600*FAAM_df["Missing_HONO_source"],
+                c = c4_new, zorder = 100)
+    ax1.scatter(x = CV_2019_df["JVL_016"]*3600*((CV_2019_df["Nitrate.ug_m3"])/(62*4.09*10**-5)),
+                y = CV_2019_df["Missing_HONO_source_per_hour"],
+                color = "purple")
+    ax1.tick_params(axis = "both", labelsize = 16)
+    ax1.set_xlim(0,5.5)
+    ax1.set_ylim(0,180)
+    ax1.text(0.02, 170, "(A)", fontsize = 20)
+    ax1.set_ylabel("Missing HONO source (ppt h$^{-1}$)", fontsize = 20)
+    ax1.set_xlabel(r"$\it{j}_\mathrm{HNO_3}$ $\times$ [pNO$_3^-$]$_\mathrm{bulk}$ (ppt h$^{-1}$)", fontsize = 20)
+
+    ax2.add_artist(e1)
+    ax2.add_artist(e2)
+    ax2.add_artist(e3)
+    ax2.errorbar(FAAM_df["Total_NO3_nmoles_m-3"],
+                 FAAM_df["Enhancement"],
+                 xerr = FAAM_df["Total_NO3_nmoles_m-3_uncertainty"],
+                 yerr = (FAAM_df["Enhancement_uncertainty_%"]*FAAM_df["Enhancement"]),
+                 ecolor = c4_new, fmt = "none", alpha = 0.2)
+    ax2.scatter(FAAM_df["Total_NO3_nmoles_m-3"],
+                FAAM_df["Enhancement"],
+                c = c4_new, zorder = 100)
+    ax2.scatter(x = (CV_2019_df["Nitrate.ug_m3"]/(0.062)),
+                y = CV_2019_df["Missing_HONO_source"]/(CV_2019_df["JVL_016"]*(CV_2019_df["Nitrate.ug_m3"]/(62*4.09*10**-5))),
+                color = "purple", zorder = 99)
+    ax2.scatter(x = Ye_et_al_df["nmoles_m-3"],
+                y = Ye_et_al_df["Enhancement"],
+                color = "lightgrey", zorder = 99)
+    ax2.plot(x,y, color = "black")
+    ax2.plot(x,y3, color = "black", linestyle = "dashed")
+    ax2.set_xlim(0.1,10000)
+    ax2.set_ylim(0, 20000)
+    ax2.set_xscale("log")
+    ax2.set_yscale("log")
+    ax2.tick_params(axis = "both", labelsize = 16)
+    ax2.set_xlabel("[pNO$_3^-$]$_\mathrm{bulk}$ (10$^{-9}$ moles m$^{-3}$)", fontsize = 20)
+    ax2.set_ylabel("Enhancement Factor ($\it{f}$)", fontsize = 20)
+    ax2.text(0.105, 9900, "(B)", fontsize = 20)
+    ax2.text(20, 2000, r"$\it{f}$ = $\frac{\it{a Q^0 K_{ads}}}{1 + \it{K_{ads}} [\mathrm{pNO_3^-}]_\mathrm{bulk}}$", fontsize = 20)
+
+    f.legend(handles=legend_elements,
+             fontsize=16, ncol=1, loc = "right", frameon = False)
+#    plt.show()
+    AC.save_plot('ARNA_Andersen_figure_02', dpi=dpi)
