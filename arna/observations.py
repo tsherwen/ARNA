@@ -221,8 +221,6 @@ def get_summary4flight(flight_ID='C217'):
     return df
 
 
-
-
 def get_filters_data4flight(flight_ID='C217', all_flights=True):
     """
     Retrieve filters data from ARNA flights
@@ -240,9 +238,9 @@ def get_filters_data4flight(flight_ID='C217', all_flights=True):
     # Setup the main Dataframe, then add additional dataframes to this
     df = dfs[0]
     labels2drop = [
-        TimeOnVar, TimeOffVar, 'Filter', 'Campaign','Flight', 'Airflow_stL',
+        TimeOnVar, TimeOffVar, 'Filter', 'Campaign', 'Flight', 'Airflow_stL',
         'Average_altitude_m', 'moles_m-3_in_air',
-        ]
+    ]
     for __df in dfs[1:]:
         __df = __df.drop(labels=labels2drop, axis=1)
         df = pd.concat([df, __df], axis=1)
@@ -263,13 +261,13 @@ def get_filters_data4flight(flight_ID='C217', all_flights=True):
     UncertaintyStr = 'Total_{}_uncertainty_{}'
     SpeciesStr = 'Total_{}_{}'
     for spec in species:
-        ObsVar = SpeciesStr.format( spec, units )
-        UncertVar = UncertaintyStr.format( spec, units )
+        ObsVar = SpeciesStr.format(spec, units)
+        UncertVar = UncertaintyStr.format(spec, units)
         SpecMass = AC.species_mass(spec)
         #  Add in new variables
-        NewVar = SpeciesStr.format( spec, NewUnits )
+        NewVar = SpeciesStr.format(spec, NewUnits)
         df[NewVar] = df[ObsVar].values / 1E9 * SpecMass * 1E6
-        NewUncert = SpeciesStr.format( spec, NewUnits )
+        NewUncert = SpeciesStr.format(spec, NewUnits)
         df[NewUncert] = df[UncertVar].values / 1E9 * SpecMass * 1E6
     return df
 
@@ -436,14 +434,14 @@ def get_CIMS_data4flight(flight_ID='C225', resample_data=True,
         df = pd.read_csv(folder + filename)
         dt_var = 'date_time'
         format = '%Y-%m-%d %H:%M:%S'
-        df.index = pd.to_datetime( df[dt_var].values, format=format)
+        df.index = pd.to_datetime(df[dt_var].values, format=format)
         del df[dt_var]
         # Merge the files
         bool = df['flight_id'].values == flight_ID
         Nvals = df.loc[bool, :].shape[0]
         AssStr = "WARNING: No values found for CIMS HNO3 on flight '({})"
-        assert Nvals>0, AssStr.format( flight_ID )
-        dfM = pd.concat([dfM, df.loc[bool, :] ], axis="index")
+        assert Nvals > 0, AssStr.format(flight_ID)
+        dfM = pd.concat([dfM, df.loc[bool, :]], axis="index")
     except:
         pstr = "WARNING: failed to include CIMS HNO3 data for '{}' in df"
         print(pstr.format(flight_ID))
@@ -666,7 +664,7 @@ def get_FAAM_core4flightnum(flight_ID='C225', version='v2020_06',
     # Include the latest NOx data from Simone and Chris
     dfHONO = get_latest_NOx_HONO_data(flight_ID=flight_ID)
 #    if not isinstance(dfHONO, type(None)):
-    df = pd.concat( [df, dfHONO] )
+    df = pd.concat([df, dfHONO])
 
     # Add NOx as combined NO and NO2
     try:
@@ -726,7 +724,7 @@ def get_latest_NOx_HONO_data(flight_ID=None, version='v1'):
     folder = '{}/{}/'.format(get_local_folder('ARNA_data'), 'FAAM')
     folder += 'ARNA_NOx_HONO_data/'
     FileStr = 'NOx_and_HONO'
-    files2use = glob.glob('{}*{}*{}*'.format(folder, FileStr, version) )
+    files2use = glob.glob('{}*{}*{}*'.format(folder, FileStr, version))
     files2use = list(sorted(files2use))
     # Process entire dataset or just one flight
     if isinstance(flight_ID, type(None)):
@@ -1002,8 +1000,8 @@ def mk_planeflight_files4sites(testing_mode=False):
     for n, type_ in enumerate(TYPE):
         # Get locations
         LON, LAT, ALT = AC.get_loc(type_)
-        PRESS = 1013.25 #AC.hPa_to_Km([ALT/1E3], reverse=True, )
-        print(n, type_, LON, LAT, ALT )
+        PRESS = 1013.25  # AC.hPa_to_Km([ALT/1E3], reverse=True, )
+        print(n, type_, LON, LAT, ALT)
         # dictionary of data
         nvar = len(dates)
         d = {
@@ -1029,7 +1027,7 @@ def get_planeflight_slist2output(num_tracers=None, folder=None,
             TRAs = AC.get_specieslist_from_input_geos(folder=folder)
             num_tracers = len(TRAs)
         else:
-            num_tracers = 203 # Use value for GEOS-Chem v12.9.0
+            num_tracers = 203  # Use value for GEOS-Chem v12.9.0
     # Mannually setup slist
     met_vars = [
         'GMAO_ABSH', 'GMAO_PSFC', 'GMAO_SURF', 'GMAO_TEMP', 'GMAO_UWND',
@@ -1134,5 +1132,3 @@ def mk_planeflight_files4FAAM_campaigns(folder=None, testing_mode=False,
         gc.collect()
         del ds, ds_l
     gc.collect()
-
-

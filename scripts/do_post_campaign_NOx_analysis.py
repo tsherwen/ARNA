@@ -38,15 +38,15 @@ def explore_NOy_with_acid_uptake():
     # - Local variables
     # use a v12.9.1 compatible definition of NOx
 #    NOySpecs = AC.GC_var('NOy')
-    NOySpecs = ['NO', 'NO2', 'PAN', 'HNO3','HNO2', 'NOy', 'NOy-gas'
-        #    'PMN', 'PPN', 'R4N2',
-#        'N2O5', 'HNO4',\
-#        'BrNO2', 'BrNO3',
-        #    'MPN',
-        #    'ISOPN', 'PROPNN',
-        # 'MMN',\
-#        'NO3', 'HNO2', 'IONO', 'IONO2', 'INO', 'ClNO2', 'ClNO3'
-    ]
+    NOySpecs = ['NO', 'NO2', 'PAN', 'HNO3', 'HNO2', 'NOy', 'NOy-gas'
+                #    'PMN', 'PPN', 'R4N2',
+                #        'N2O5', 'HNO4',\
+                #        'BrNO2', 'BrNO3',
+                #    'MPN',
+                #    'ISOPN', 'PROPNN',
+                # 'MMN',\
+                #        'NO3', 'HNO2', 'IONO', 'IONO2', 'INO', 'ClNO2', 'ClNO3'
+                ]
     # include NITs
     NOySpecs += ['NIT', 'NITs']
     # Also consider dust uptake on NOx
@@ -298,7 +298,7 @@ def explore_ARNA_period_with_acid_uptake():
     REF1 = 'Acid-4x5-J00'
     # Just use the runs from the core code
     RunSet = 'ACID'
-    res='4x5'
+    res = '4x5'
 #    RunSet = 'FP-Nest'
     RunDict = ar.get_dict_of_GEOSChem_model_output(res=res, RunSet=RunSet)
     # Use the spun up or un spun up output?
@@ -321,9 +321,9 @@ def explore_ARNA_period_with_acid_uptake():
     dates2use = pd.date_range(sdate, edate, freq='1H')
 
     # Get Key statistics for run
-    ExSpecs =  [
-    'HNO2', 'HNO3', 'NIT', 'NITs',
-    'NIT-all', 'NOy-gas','NOy', 'SO2', 'SOx', 'SO4-all', 'SO4', 'SO4s',
+    ExSpecs = [
+        'HNO2', 'HNO3', 'NIT', 'NITs',
+        'NIT-all', 'NOy-gas', 'NOy', 'SO2', 'SOx', 'SO4-all', 'SO4', 'SO4s',
     ]
     df = AC.get_general_stats4run_dict_as_df(run_dict=RunDict,
                                              REF_wd=RunDict[REF1],
@@ -343,9 +343,9 @@ def explore_ARNA_period_with_acid_uptake():
     df2 = pd.DataFrame()
     for key in RunDict.keys():
         ds = dsD[key]
-        val = (ds[var2use].mean(dim='time').sum(dim='lev') * ds['AREA'] )
-        val2 = val.values.sum() * 60 * 60 * 24 * 365 # => /yr
-        df2.loc[key,varName] = val2*1E3/1E12
+        val = (ds[var2use].mean(dim='time').sum(dim='lev') * ds['AREA'])
+        val2 = val.values.sum() * 60 * 60 * 24 * 365  # => /yr
+        df2.loc[key, varName] = val2*1E3/1E12
     # add into main DataFrame
     df = df.T
     df = pd.concat([df, df2], axis=1)
@@ -402,9 +402,9 @@ def explore_ARNA_period_with_acid_uptake():
         # Override default scaling for HONO (HNO2)
         force_units_as_pptv = [
             'NO', 'NO2', 'NOx', 'HNO2'
-            'NOy', 'HNO3', 'NIT-all','NOy-gas',
-             'NOy-HNO3', 'NOy-HNO3-PAN', 'NOy-Limited',
-            ]
+            'NOy', 'HNO3', 'NIT-all', 'NOy-gas',
+            'NOy-HNO3', 'NOy-HNO3-PAN', 'NOy-Limited',
+        ]
         if (spec in force_units_as_pptv):
             units = 'pptv'
             scalby = 1E12
@@ -460,9 +460,9 @@ def explore_ARNA_period_with_acid_uptake():
 
     # -- Plot and save to single PDF file
     specs2plot = [
-    'O3', 'CO', 'NOx', 'NO2', 'NO', 'HNO2', 'NOy', 'HNO3', 'NIT-all',
-    'NOy-gas',
-#    'NOy-HNO3', 'NOy-HNO3-PAN', 'NOy-Limited',
+        'O3', 'CO', 'NOx', 'NO2', 'NO', 'HNO2', 'NOy', 'HNO3', 'NIT-all',
+        'NOy-gas',
+        #    'NOy-HNO3', 'NOy-HNO3-PAN', 'NOy-Limited',
     ]
     # Setup PDF to save PDF plots to
     savetitle = 'ARNA_vertical_above_CVAO_GEOSChem_campaign_global'
@@ -482,7 +482,6 @@ def explore_ARNA_period_with_acid_uptake():
         plt.close()
         # Do some memory management...
         gc.collect()
-
 
     # - Also add specific ratio plots
 
@@ -535,7 +534,7 @@ def explore_ARNA_period_with_acid_uptake():
     plt.close()
 
     # Add a log NO, NO2 and NOx plot
-    specs2plot_AsLog = ['NO', 'NO2', 'NOx',]# 'HNO2']
+    specs2plot_AsLog = ['NO', 'NO2', 'NOx', ]  # 'HNO2']
     # Species list, then loop dictionary of datasets
     for spec in specs2plot_AsLog:
         for key in dsD.keys():
@@ -564,8 +563,8 @@ def explore_ARNA_period_with_acid_uptake():
     DIFF = 'Acid-4x5-Isotherm.v2'
     prefix = 'SpeciesConc_'
     vars2plot = ['O3', 'CO', 'NOx', 'NO2', 'NO', 'HNO2',
-                'NOy', 'HNO3', 'NIT-all','NOy-gas',
-                ]
+                 'NOy', 'HNO3', 'NIT-all', 'NOy-gas',
+                 ]
     vars2plot = [prefix+i for i in vars2plot]
     pcent = True
     for DIFF in ['Acid-4x5-J50', 'Acid-4x5-Isotherm.v2']:
@@ -576,15 +575,14 @@ def explore_ARNA_period_with_acid_uptake():
                                                 vars2plot=vars2plot,
                                                 prefix=prefix)
 
-
     # - Plot up the zonal difference in concentration between the runs
     REF = 'Acid-4x5-J00'
 #    DIFF = 'Acid-4x5-J50'
     DIFF = 'Acid-4x5-Isotherm.v2'
     prefix = 'SpeciesConc_'
     vars2plot = ['O3', 'CO', 'NOx', 'NO2', 'NO', 'HNO2',
-                'NOy', 'HNO3', 'NIT-all','NOy-gas',
-                ]
+                 'NOy', 'HNO3', 'NIT-all', 'NOy-gas',
+                 ]
     vars2plot = [prefix+i for i in vars2plot]
     pcent = True
 #    for key in dsD.keys():
@@ -607,15 +605,16 @@ def plt_key_NOx_budget_terms():
     dates2use = [datetime.datetime(2019, i+1, 1) for i in range(12)]
     trop_limit = False
     NOxD = ar.get_NOx_budget_ds_dict_for_runs(trop_limit=trop_limit,
-                                           dates2use=dates2use)
+                                              dates2use=dates2use)
     # Get the tags for the Prod/Loss tagging as a dictionary
     tags = ar.get_tags_for_NOx_HONO()
-    ProdVars =['ProdHNO2fromHvNIT-all','ProdHNO2fromOHandNO','ProdHNO2fromHET']
+    ProdVars = ['ProdHNO2fromHvNIT-all',
+                'ProdHNO2fromOHandNO', 'ProdHNO2fromHET']
 #    for run in ['Acid-4x5-J50']
 #    run2use = 'Acid-4x5-J50'
 #    run2use = 'Acid-4x5-Isotherm.v2'
     PltAsLog = True
-    verbose =  True
+    verbose = True
     # - Plot up the annual mean surface values
     for run2use in ['Acid-4x5-Isotherm.v2', 'Acid-4x5-J50', 'Acid-4x5-J00', ]:
         ds = NOxD[run2use].copy()
@@ -635,7 +634,7 @@ def plt_key_NOx_budget_terms():
         pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
         # Plot key route totals
         for var2plot in ['Prod_OH', 'Prod_HNO2', 'Jscale']:
-    #    for var2plot in [ 'Prod_HNO2']:
+            #    for var2plot in [ 'Prod_HNO2']:
             AC.quick_map_plot(ds, var2plot=var2plot, verbose=verbose, **kwargs)
             # Save to PDF
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
@@ -666,7 +665,6 @@ def plt_key_NOx_budget_terms():
         AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
         plt.close('all')
 
-
         # - Zonally plot up the NOx budget values
         savetitle = 'ARNA_zonal_NOx_budget_{}'.format(run2use)
         if PltAsLog:
@@ -682,7 +680,7 @@ def plt_key_NOx_budget_terms():
         for var2plot in vars2plot:
             fig, ax = plt.subplots()
             im = AC.ds2zonal_plot(ds2plot, var2plot=var2plot, StateMet=ds,
-                             fig=fig, ax=ax, **kwargs)
+                                  fig=fig, ax=ax, **kwargs)
             TitleStr = "{}"
             plt.title(TitleStr.format(var2plot))
 
@@ -703,7 +701,7 @@ def plt_key_NOx_budget_terms():
         for var2plot in ProdVars:
             fig, ax = plt.subplots()
             im = AC.ds2zonal_plot(ds2plot, var2plot=var2plot, StateMet=ds,
-                             fig=fig, ax=ax, **kwargs)
+                                  fig=fig, ax=ax, **kwargs)
             TitleStr = "'{}' / total HONO production"
             plt.title(TitleStr.format(var2plot))
 
@@ -744,7 +742,7 @@ def plt_key_NOx_budget_terms():
             AC.quick_map_plot(ds2plot.sel(lev=ds.lev[0]), var2plot=var2plot,
                               verbose=verbose, **kwargs)
             TitleStr = "{} ({} vs. {})"
-            plt.title( TitleStr.format(var2plot, REFrun, run2use) )
+            plt.title(TitleStr.format(var2plot, REFrun, run2use))
 
             # Save to PDF
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
@@ -752,9 +750,9 @@ def plt_key_NOx_budget_terms():
 
             # - Zonal plot
             im = AC.ds2zonal_plot(ds2plot, var2plot=var2plot, StateMet=ds,
-                             fig=fig, ax=ax, **kwargs)
+                                  fig=fig, ax=ax, **kwargs)
             TitleStr = "{} ({} vs. {})"
-            plt.title( TitleStr.format(var2plot, REFrun, run2use) )
+            plt.title(TitleStr.format(var2plot, REFrun, run2use))
             # Add a colourbar
     #        kwargs = {'extend':'both'}
             fig.colorbar(im, orientation="horizontal", pad=0.2, extend='both',
@@ -777,7 +775,7 @@ def analyse_NOx_budget():
     dates2use = [datetime.datetime(2019, i+1, 1) for i in range(12)]
     trop_limit = False
     NOxD = ar.get_NOx_budget_ds_dict_for_runs(trop_limit=trop_limit,
-                                           dates2use=dates2use)
+                                              dates2use=dates2use)
     # Avogadros constant
     AVG = AC.constants('AVG')
 
@@ -803,8 +801,8 @@ def analyse_NOx_budget():
 
         # Get the total (or average?) production via route
         # kg N s-1
-        vars2use = [i for i in ds.data_vars if 'Prod' in i ]
-        vars2use += [i for i in ds.data_vars if 'Loss' in i ]
+        vars2use = [i for i in ds.data_vars if 'Prod' in i]
+        vars2use += [i for i in ds.data_vars if 'Loss' in i]
         for var in vars2use:
             print(var)
             units = ds[var].units
@@ -818,11 +816,11 @@ def analyse_NOx_budget():
 #                if sum_data:
                 data = data.sum()
             elif (units == 'kg N s-1'):
-#                if sum_data:
+                #                if sum_data:
                 data = data.sum()
             elif (units == 'kg s-1'):
                 # This is HNO3 loss oan sea-salt (are the units correct)
-#                if sum_data:
+                #                if sum_data:
                 data = data.sum()
             else:
                 print('WARNING: Units ({})'.format(units))
@@ -839,14 +837,14 @@ def analyse_NOx_budget():
     df2 = df.copy()
     REF = 'Acid-4x5-J00'
     for col in [i for i in df2.columns if i != REF]:
-        df2.loc[:,col] = df2.loc[:,col] / df2[REF]
+        df2.loc[:, col] = df2.loc[:, col] / df2[REF]
     print(df2)
 
     # Consider the values relative to the J50 run
     df3 = df.copy()
     REF = 'Acid-4x5-J50'
     for col in [i for i in df3.columns if i != REF]:
-        df3.loc[:,col] = df3.loc[:,col] / df3[REF]
+        df3.loc[:, col] = df3.loc[:, col] / df3[REF]
     print(df3)
 
     # Consider ...
@@ -864,7 +862,7 @@ def plt_lightning_by_month(context='paper'):
     folder1 = folder + 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags'
     folder1 = folder1 + '.ToGetNetCDFOutput/OutputAndSpinUpSymLink/'
     folder2 = folder + 'DustUptake.JNITx50.BCs.Light30/OutputDir/'
-    d = {'Acid.J50':folder1, 'Acid.J50.LightScale':folder2}
+    d = {'Acid.J50': folder1, 'Acid.J50.LightScale': folder2}
     var2use = 'EmisNO_Lightning'
     varName = 'Lightning (Tg N/yr)'
     MetFields = 'GEOSFP'
@@ -872,14 +870,14 @@ def plt_lightning_by_month(context='paper'):
     dfs = {}
     for key in d.keys():
         ds = AC.get_HEMCO_diags_as_ds(wd=d[key])
-        val = (ds[var2use].sum(dim='lev') * ds['AREA'] )
-        val = val.sum('lat').sum('lon') * 60 * 60 * 24 * 365 # => /month
+        val = (ds[var2use].sum(dim='lev') * ds['AREA'])
+        val = val.sum('lat').sum('lon') * 60 * 60 * 24 * 365  # => /month
         val = val*1E3/1E12
         dfs[key] = val.to_pandas()
     # plot up
     units = 'Lightning (Tg N/year (equiv.))'
     linestyles = AC.get_ls(len(dfs))
-    for nKey, key in enumerate( d.keys() ):
+    for nKey, key in enumerate(d.keys()):
         dfs[key].plot(label=key, ls=linestyles[nKey])
     plt.title('Global Lightning NOx source in {}'.format(units))
     plt.ylabel(units)
@@ -924,7 +922,7 @@ def explore_JVALS_in_JNITs_runs():
     dsS = AC.GetSpeciesConcDataset(wd=folder, dates2use=dates2use)
     # Work out which idx to use
     NIU, NIU, alt = AC.get_latlonalt4res(res='4x5')
-    lvl_dict = {1: 0.071, 13:1.999, 21:4.886,}
+    lvl_dict = {1: 0.071, 13: 1.999, 21: 4.886, }
 
     # Setup a PDF
     savetitle = 'ARNA_spatial_photolysis_analysis'
@@ -938,7 +936,7 @@ def explore_JVALS_in_JNITs_runs():
             # Plot up the photolysis rates
             AC.quick_map_plot(ds2plot, var2plot=var, title=title,
                               save_plot=False)
-            title = "Average '{}' @ {:.1f}km".format( var, lvl_dict[lvl_idx] )
+            title = "Average '{}' @ {:.1f}km".format(var, lvl_dict[lvl_idx])
             plt.title(title)
             # Save to PDF
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
@@ -949,36 +947,33 @@ def explore_JVALS_in_JNITs_runs():
             AC.quick_map_plot(ds2plot/REF, var2plot=var, title=title,
                               save_plot=False)
             TitleStr = "Ratio of '{}':JHNO3 @ {:.1f}km"
-            plt.title( TitleStr.format( var, lvl_dict[lvl_idx] ) )
+            plt.title(TitleStr.format(var, lvl_dict[lvl_idx]))
             # Save to PDF
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
             plt.close()
             del ds2plot
 
-
     # Also plot up the average surface concentrations of related species
     prefix = 'SpeciesConc_'
-    vars2use = [ prefix+i for i in TRAs]
+    vars2use = [prefix+i for i in TRAs]
     for var in vars2use:
-#        for lvl_idx in [1, 13, 21]:
+        #        for lvl_idx in [1, 13, 21]:
         for lvl_idx in [13]:
             ds2plot = dsS[[var]].mean(dim='time').isel(lev=lvl_idx)
 
             # Plot up the photolysis rates
             AC.quick_map_plot(ds2plot, var2plot=var, title=title,
                               save_plot=False)
-            title = "Average '{}' @ {:.1f}km".format( var, lvl_dict[lvl_idx] )
+            title = "Average '{}' @ {:.1f}km".format(var, lvl_dict[lvl_idx])
             plt.title(title)
             # Save to PDF
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
             plt.close()
 
-
     # Save entire pdf
 #    if close_pdf:
     AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
     plt.close('all')
-
 
 
 def explore_print_statement_debug_of_aciduptake_photolysis():
@@ -1058,29 +1053,29 @@ def explore_print_statement_debug_of_aciduptake_photolysis():
     df_BACKUP = df.copy()
 
     # Only show where nitrate >10 pptv
-    pptv_in_molec_cm3 = 255440.55029432118 # '2.6E+05'
-    __df = df.loc[ df[NIT_all_molec_cm3]>pptv_in_molec_cm3, : ]
+    pptv_in_molec_cm3 = 255440.55029432118  # '2.6E+05'
+    __df = df.loc[df[NIT_all_molec_cm3] > pptv_in_molec_cm3, :]
     for col in __df.columns:
         print(col)
         print(__df[col].describe())
 
     # Only show where nitrate >100 pptv
     pptv_in_molec_cm3 = 2554405.502943212  # '2.6E+06'
-    __df = df.loc[ df[NIT_all_molec_cm3]>pptv_in_molec_cm3, : ]
+    __df = df.loc[df[NIT_all_molec_cm3] > pptv_in_molec_cm3, :]
     for col in __df.columns:
         print(col)
         print(__df[col].describe())
 
     # Only show where nitrate >500 pptv
-    pptv_in_molec_cm3 = 12772027.514716059 # '1.3E+07'
-    __df = df.loc[ df[NIT_all_molec_cm3]>pptv_in_molec_cm3, : ]
+    pptv_in_molec_cm3 = 12772027.514716059  # '1.3E+07'
+    __df = df.loc[df[NIT_all_molec_cm3] > pptv_in_molec_cm3, :]
     for col in __df.columns:
         print(col)
         print(__df[col].describe())
 
     # Only show where nitrate >1000 pptv
-    pptv_in_molec_cm3 = 25543799.588881828 # '2.6E+07'
-    __df = df.loc[ df[NIT_all_molec_cm3]>pptv_in_molec_cm3, : ]
+    pptv_in_molec_cm3 = 25543799.588881828  # '2.6E+07'
+    __df = df.loc[df[NIT_all_molec_cm3] > pptv_in_molec_cm3, :]
     for col in __df.columns:
         print(col)
         print(__df[col].describe())

@@ -43,19 +43,19 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625',
     RunRoot = get_local_folder('RunRoot')
     if res == '4x5':
         CoreRunStrMERRA2 = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.'
-        CoreRunStrGEOSFP ='geosfp_4x5_standard.v12.9.0.BASE.2019.2020.'
+        CoreRunStrGEOSFP = 'geosfp_4x5_standard.v12.9.0.BASE.2019.2020.'
         AcidRunStr = 'geosfp_4x5_aciduptake.v12.9.0.BASE.2019.2020.ARNA.'
         d = {}
         # JNIT and extra acid runs
         if RunSet == 'ACID':
             # re-run boundary conditions?
-#             RunStr = 'DustUptake.BCs'
-#             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-#             d['Acid-4x5'] = folder
-#            d['Acid-4x5-III'] = folder
-#             RunStr = 'DustUptake.JNIT.BCs'
-#             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-#             d['Acid-4x5-JNIT'] = folder
+            #             RunStr = 'DustUptake.BCs'
+            #             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
+            #             d['Acid-4x5'] = folder
+            #            d['Acid-4x5-III'] = folder
+            #             RunStr = 'DustUptake.JNIT.BCs'
+            #             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
+            #             d['Acid-4x5-JNIT'] = folder
             # ACID + J50
             RunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags.v2.J00'
             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
@@ -101,42 +101,42 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625',
             # Only return the core runs
             if CoreRunsOnly:
                 runs2use = [
-#                    'Acid-4x5',
-#                    'Acid-4x5-J25',
+                    #                    'Acid-4x5',
+                    #                    'Acid-4x5-J25',
                     'Acid-4x5-J00',
                     'Acid-4x5-J50',
                     'Acid-4x5-Isotherm.v2',
                     'Acid-4x5-J50-AfBBx3-NH3x3',
-                    ]
+                ]
                 dNew = {}
                 for run in runs2use:
                     dNew[run] = d[run]
                 d = dNew
 
-        else: # consider the variants on base runs (e.g. Biomass burning)
-        # Boundary condition resolution runs
-#        Run = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.PF'
-#        folder = '{}/{}/'.format(RunRoot, Run)
-#        d = {'BC-BASE': folder}
-        # Boundary condition (BC) resolution runs
-#        Run = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.PF'
-#        folder = '{}/{}/'.format(RunRoot, Run)
-#        d = {'BC-BASE-I': folder}
+        else:  # consider the variants on base runs (e.g. Biomass burning)
+            # Boundary condition resolution runs
+            #        Run = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.PF'
+            #        folder = '{}/{}/'.format(RunRoot, Run)
+            #        d = {'BC-BASE': folder}
+            # Boundary condition (BC) resolution runs
+            #        Run = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.PF'
+            #        folder = '{}/{}/'.format(RunRoot, Run)
+            #        d = {'BC-BASE-I': folder}
 
-        # BASE runs, but with increases in JNITs/BB
-#         RunStr = 'BCs.repeat.JNITx100.GFASx3/'
-#         folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
-#         d['BC-BASE-BBx3-J100'] = folder
-#         RunStr = 'BCs.repeat.JNITx50.GFASx3/'
-#         folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
-#         d['BC-BASE-BBx3-J50'] = folder
-#         RunStr = 'BCs.repeat.JNITx25.GFASx3/'
-#         folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
-#         d['BC-BASE-BBx3-J25'] = folder
-        # Using the dust uptake setup
-#         RunStr = 'DustUptake.II'
-#         folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
-#         d['Acid-4x5-II'] = folder
+            # BASE runs, but with increases in JNITs/BB
+            #         RunStr = 'BCs.repeat.JNITx100.GFASx3/'
+            #         folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
+            #         d['BC-BASE-BBx3-J100'] = folder
+            #         RunStr = 'BCs.repeat.JNITx50.GFASx3/'
+            #         folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
+            #         d['BC-BASE-BBx3-J50'] = folder
+            #         RunStr = 'BCs.repeat.JNITx25.GFASx3/'
+            #         folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
+            #         d['BC-BASE-BBx3-J25'] = folder
+            # Using the dust uptake setup
+            #         RunStr = 'DustUptake.II'
+            #         folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
+            #         d['Acid-4x5-II'] = folder
             # Current Boundary condition (BC) resolution runs
             RunStr = 'ARNA.BCs.repeat'
             folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
@@ -179,7 +179,7 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625',
 #             d['BC-BASE-BBx4'] = folder
             # Only return the core runs
             if CoreRunsOnly:
-                runs2use = ['BC-BASE', 'BC-BASE-BBx3', 'BC-BASE-J50' ]
+                runs2use = ['BC-BASE', 'BC-BASE-BBx3', 'BC-BASE-J50']
                 dNew = {}
                 for run in runs2use:
                     dNew[run] = d[run]
@@ -314,7 +314,7 @@ def get_GEOSChem4flightnum(flight_ID='C225', res='0.5x0.625', sdate=None,
         sdate_str = sdate.strftime('%Y%m%d')
         file2use = [i for i in files2use if sdate_str in i]
         AssStr = 'WARNING: More than one ({}) planeflight file found! - {}'
-        assert len(file2use) <= 1, AssStr.format(len(file2use),file2use)
+        assert len(file2use) <= 1, AssStr.format(len(file2use), file2use)
         AssStr = 'WARNING: No planeflight files found in folder: {}'
         assert len(file2use) != 0, AssStr.format(folder)
         file2use = file2use[0]
@@ -380,14 +380,14 @@ def add_derived_GEOSChem_specs2ds(ds, prefix=''):
     ds[prefix+'NOy-HNO3'] = ds[prefix+'NOy'] - ds[prefix+'HNO3']
     # Include a variable of NOy where HNO3 is removed
     ds[prefix+'NOy-HNO3-PAN'] = ds[prefix+'NOy'] -  \
-                                ds[prefix+'HNO3'] -  \
-                                ds[prefix+'PAN']
+        ds[prefix+'HNO3'] -  \
+        ds[prefix+'PAN']
     # gas-phase (exc. PAN, HNO3, HNO4, Org-NIT, N2O5)
     ds[prefix+'NOy-Limited'] = ds[prefix+'NO'] + \
-                               ds[prefix+'NO2'] + \
-                               ds[prefix+'HNO2'] + \
-                               ds[prefix+'NIT'] + \
-                               ds[prefix+'NITs']
+        ds[prefix+'NO2'] + \
+        ds[prefix+'HNO2'] + \
+        ds[prefix+'NIT'] + \
+        ds[prefix+'NITs']
     ds = AC.AddChemicalFamily2Dataset(ds, fam='NIT-all', prefix=prefix)
     return ds
 
@@ -465,9 +465,9 @@ def get_whole_related_campaign_data(save2csv=True, campaign='ARNA-1',
     ARNA1SurVar = BASE_str+'.2019.2020.ARNA1.Nest.repeat.JVALS.CVAO.PF/'
     CVAO2015 = BASE_str+'.2015.Aug.Nest.repeat.JVALS.CVAO.PF/'
     run_dict = {
-    'ARNA-1' : RunDir+ARNA1Var,
-    'ARNA-1-surface' : RunDir+ARNA1SurVar,
-    'CVAO-2015-surface' : RunDir+CVAO2015,
+        'ARNA-1': RunDir+ARNA1Var,
+        'ARNA-1-surface': RunDir+ARNA1SurVar,
+        'CVAO-2015-surface': RunDir+CVAO2015,
     }
     # Name of file to save?
     SaveName = 'GC_model_output_{}'.format(campaign)
@@ -502,10 +502,10 @@ def get_whole_related_campaign_data(save2csv=True, campaign='ARNA-1',
         df = AC.DF_YYYYMMDD_HHMM_2_dt(df, rmvars=None, epoch=False)
         df.index.name = None
         # Set the out of (nested) box values to NaNs
-        OutOfBoxValue =  -1000.0
+        OutOfBoxValue = -1000.0
         for col in df.columns:
             try:
-                df.loc[ df[col].values == OutOfBoxValue, col] = np.NaN
+                df.loc[df[col].values == OutOfBoxValue, col] = np.NaN
             except TypeError:
                 print('{} - TypeError found for {} '.format(campaign, col))
         # Update the variable names
@@ -528,7 +528,7 @@ def get_whole_related_campaign_data(save2csv=True, campaign='ARNA-1',
             TYPES = list(set(df2['TYPE'].values))
             print(TYPES)
             for TYPE in TYPES:
-                df2save = df2.loc[ df2['TYPE'] == TYPE, : ]
+                df2save = df2.loc[df2['TYPE'] == TYPE, :]
                 df2save.to_csv('{}_{}.csv'.format(SaveName, TYPE))
     return df2
 
@@ -571,7 +571,6 @@ def regrid_restart4ARNA_highres_grid(folder=None, filename=None, res='1x1'):
     ds.to_netcdf(os.path.join(folder, OutFile))
 
 
-
 def mkNetCDF_mask4CVAO_African_nest(res='2x2.5', invert_mask=False,
                                     regrid21x1=True):
     """
@@ -581,7 +580,7 @@ def mkNetCDF_mask4CVAO_African_nest(res='2x2.5', invert_mask=False,
     import matplotlib.pyplot as plt
     import xesmf as xe
     ds = AC.get_LWI_map(res=res, rtn_ds=True)
-    ds = ds.transpose('lon','lat')
+    ds = ds.transpose('lon', 'lat')
     var2use = 'LWI'
     # Get mask
     m = AC.get_CVAO_Africa_nest_Masked(res=res)
@@ -607,7 +606,7 @@ def mkNetCDF_mask4CVAO_African_nest(res='2x2.5', invert_mask=False,
 
     # Plot up without mask present
     AC.quick_map_plot(ds, var2plot=var2use, savename=savename)
-    plt.title( savename )
+    plt.title(savename)
 
     # --- Add time to ds
     # Include a time dimension to meet COARDS
@@ -729,10 +728,10 @@ def tag_GC_simulations():
     # Diagnostics to use?
     d = get_tags_for_NOx_HONO()
     for key in d.keys():
-        print('{} : {};'.format(key, d[key]) )
+        print('{} : {};'.format(key, d[key]))
     # Also print out just using "P" as the prefix.
     for key in d.keys():
-        print('P{} : {};'.format(d[key], d[key]) )
+        print('P{} : {};'.format(d[key], d[key]))
     # prepare other output for GEOS-Chem input files
     extr_str = 'ARNA_Standard'
     AC.print_out_lines_for_gckpp_file(tags=tags, extr_str=extr_str)
@@ -741,7 +740,7 @@ def tag_GC_simulations():
     ptr_str = '{:<11}= IGNORE; {}'
     d = dict(zip(diags, tags))
     for key in d.keys():
-        print(ptr_str.format(d[key], '{'+key+'}' ) )
+        print(ptr_str.format(d[key], '{'+key+'}'))
 
 
 def get_tags_for_NOx_HONO():
@@ -749,11 +748,11 @@ def get_tags_for_NOx_HONO():
     Function to store tags for NOx/HONO
     """
     diags = [
-    'ProdHNO2fromHvNIT', 'ProdHNO2fromHvNITs', 'ProdHNO2fromHvNITD1',
-    'ProdHNO2fromHvNITD2', 'ProdHNO2fromHvNITD3', 'ProdHNO2fromHvNITD4',
-    'ProdNO2fromHvNIT', 'ProdNO2fromHvNITs', 'ProdNO2fromHvNITD1',
-    'ProdNO2fromHvNITD2', 'ProdNO2fromHvNITD3', 'ProdNO2fromHvNITD4',
-    'ProdNO2fromHONO', 'ProdHNO2fromOHandNO', 'ProdHNO2fromHET'
+        'ProdHNO2fromHvNIT', 'ProdHNO2fromHvNITs', 'ProdHNO2fromHvNITD1',
+        'ProdHNO2fromHvNITD2', 'ProdHNO2fromHvNITD3', 'ProdHNO2fromHvNITD4',
+        'ProdNO2fromHvNIT', 'ProdNO2fromHvNITs', 'ProdNO2fromHvNITD1',
+        'ProdNO2fromHvNITD2', 'ProdNO2fromHvNITD3', 'ProdNO2fromHvNITD4',
+        'ProdNO2fromHONO', 'ProdHNO2fromOHandNO', 'ProdHNO2fromHET'
     ]
     prefix = 'TN{:0>3}'
     tags = [prefix.format(i+1) for i in range(len(diags))]
@@ -813,16 +812,16 @@ def get_NOx_budget_ds_dict_for_runs(limit_data_spatially=False,
 
     # - Calculate the various quantities per run.
     Specs = ['NO2', 'NO', 'HNO2', 'HNO3',  'OH', 'TN', 'NIT']
-    JNITvars = [ 'ProdHNO2fromHvNIT', 'ProdHNO2fromHvNITs']
+    JNITvars = ['ProdHNO2fromHvNIT', 'ProdHNO2fromHvNITs']
     JNITvars += ['ProdHNO2fromHvNITD{}'.format(i) for i in np.arange(1, 5)]
     RMM_air = AC.constants('RMM_air')
-    AVG = AC.constants('AVG') # Avogadro constant (Mol^-1)
+    AVG = AC.constants('AVG')  # Avogadro constant (Mol^-1)
     NOxD = {}
     for key in RunDict.keys():
         # Use StateMet collection for physical variables (use a reference sim?)
         StateMet = StateD[key]
         prefix = 'Jval_'
-        dsVars =  StateMet.data_vars
+        dsVars = StateMet.data_vars
         # Add moles as variable here to aid future calculations
         StateMet['Met_MOLES'] = StateMet['Met_AD'] / 1E3 / RMM_air
         vars2use = ['Met_AD', 'Met_AIRVOL', 'Met_AIRDEN', 'Met_PMID',
@@ -858,13 +857,13 @@ def get_NOx_budget_ds_dict_for_runs(limit_data_spatially=False,
             ds = xr.merge([NOxD[key], ds[vars2use]])
             # Rename the tags to be more descriptive.
             prefix = 'Prod_'
-            vars2use = [i for i in vars2use if prefix+'TN' in i ]
+            vars2use = [i for i in vars2use if prefix+'TN' in i]
             NewVarnames = [TagDr[i.split(prefix)[-1]] for i in vars2use]
             ds = ds.rename(dict(zip(vars2use, NewVarnames)))
             # Add JNIT-all as a variable
             NewVar = 'ProdHNO2fromHvNIT-all'
-            ds[NewVar] = ds[ JNITvars[0] ].copy()
-            attrs = ds[ JNITvars[0] ].attrs.copy()
+            ds[NewVar] = ds[JNITvars[0]].copy()
+            attrs = ds[JNITvars[0]].attrs.copy()
             for var in JNITvars[1:]:
                 ds[NewVar] = ds[NewVar] + ds[var]
             attrs['long_name'] = "Chemical production of all NIT"
@@ -881,10 +880,10 @@ def get_NOx_budget_ds_dict_for_runs(limit_data_spatially=False,
         lowerlat = 0.0
         higherlat = 34.0
         lowerlon = -32.0
-        higherlon = 15.0 #
+        higherlon = 15.0
         # Loop and reduce dataset scale
         for key in NOxD.keys():
-#            for key in d.keys():
+            #            for key in d.keys():
             #
             ds = NOxD[key]
             # reduce area to CVAO...
@@ -902,6 +901,3 @@ def get_NOx_budget_ds_dict_for_runs(limit_data_spatially=False,
         print('WARNING: tropospheric masking not currently working - why?')
 
     return NOxD
-
-
-

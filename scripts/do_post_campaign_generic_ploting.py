@@ -45,7 +45,7 @@ def main():
     RunSet = 'ACID'
     res = '4x5'
     savetitle = 'ARNA_altitude_binned_combined_file_{}_{}'
-    savetitle =  savetitle.format(res, RunSet)
+    savetitle = savetitle.format(res, RunSet)
     ar.plt_comp_by_alt_4ARNA_together(context=context,
                                       res=res, RunSet=RunSet,
                                       flight_nums=flight_nums,
@@ -57,7 +57,7 @@ def main():
     # The same plots as above, but split by their own PDF file..
     # NOTE: below function fails with a ValueError
     ar.plt_comp_by_alt_4ARNA_all(just_SLR=True, context=context,
-                                 RunSet='FP-Nest',inc_GEOSChem=True,
+                                 RunSet='FP-Nest', inc_GEOSChem=True,
                                  just_plot_GEOS_Chem=True,
                                  res='0.25x0.3125', close_pdf=True)
 
@@ -65,7 +65,7 @@ def main():
 #    ar.plt_comp_by_alt_4ARNA_all(just_SLR=False, context=context)
 #    ar.plt_comp_by_alt_4ARNA_all(just_SLR=True, context=context)
     ar.plt_comp_by_alt_4ARNA_all(just_SLR=False, context=context,
-                                 RunSet='FP-Nest',inc_GEOSChem=True,
+                                 RunSet='FP-Nest', inc_GEOSChem=True,
                                  just_plot_GEOS_Chem=True,
                                  res='0.25x0.3125', close_pdf=True)
 
@@ -109,7 +109,6 @@ def main():
                                           inc_GEOSChem=True,
                                           )
 
-
     # - Plot up nitrate aerosol data by flight as
     # As timeseries ...
     ar.plt_ts_comp4ARNA_flights_filters(context=context)
@@ -126,22 +125,17 @@ def main():
                                         LonVar='LON',
                                         )
 
-
     # Plot up nitrate, JNIT, and their project
 #    AC.mk_tri_NO3_JNIT_combination_plt()
-
-
 
     # - Plot up SWAS data by flight
     # Plot up SWAS data
     ar.plt_ts_comp4ARNA_flights_SWAS(context=context)
 
-
     # - Plot up PCASP/CDP data by flight as
     # NOTE: CAS data being ignored currently due to issue with mirror window
     # As timeseries ...
 #    ar.plt_ts_comp4ARNA_flights_PCASP()
-
 
     # - Plot up velocity and Roll, amongst other core physical vars by flight
     # As timeseries ...
@@ -153,7 +147,6 @@ def main():
                                               RunSet='FP-Nest')
     # Plot up the temperature data from Hannah Price
     # N/A? this is only for 2019. Data to be worked up for 2020.
-
 
     # - Plot up SWAS data by flight
     # Plot a comparison of NOy
@@ -177,10 +170,6 @@ def main():
     ar.plt_ts_comp4MOYA_flights_PHYSICAL_VARS()
 
 
-
-
-
-
 def explore_high_ozone_near_CVAO():
     """
     High ozone seen in some locations just in nested GEOS output
@@ -192,7 +181,7 @@ def explore_high_ozone_near_CVAO():
     RunSet = 'FP-Nest'
     res = '0.25x0.3125'
     # Which flights to plot? - Just use non-transit ARNA flights
-    flights_nums = [218, 219, 220, 221, 222, 223, 224, 225,]
+    flights_nums = [218, 219, 220, 221, 222, 223, 224, 225, ]
     flight_IDs = ['C{}'.format(i) for i in flights_nums]
     # Get model data
     dfs_mod_GC = {}
@@ -271,8 +260,8 @@ def explore_high_ozone_near_CVAO():
 
     from funcs4obs import gaw_2_loc
     for spec in specs2plot[:100]:
-#    for spec in specs2plot[-100:]:
-#    for spec in specs2plot[-100:-90]:
+        #    for spec in specs2plot[-100:]:
+        #    for spec in specs2plot[-100:-90]:
         site = 'CVO'
         lat, lon, alt, TZ = gaw_2_loc(site)
         ds_tmp = ds[prefix+spec].sel(lat=lat, lon=lon, method='nearest')
@@ -456,7 +445,7 @@ def test_new_planeflight_Jrate_output():
             elif spec == 'HNO2':
                 pf_spec = 'JVL_015'
             elif spec == 'O1D':
-                pf_spec = 'JVL_002' # Also ???
+                pf_spec = 'JVL_002'  # Also ???
             else:
                 print('case not setup for species: {}'.format(spec))
             if isinstance(pf_spec, str):

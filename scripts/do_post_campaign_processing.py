@@ -31,7 +31,7 @@ def main():
         df = dfs[campaign].copy()
         try:
             TYPE = 'CVO1'
-            df = df.loc[ df['TYPE'] == TYPE, : ]
+            df = df.loc[df['TYPE'] == TYPE, :]
         except:
             pass
 
@@ -39,9 +39,6 @@ def main():
         plt_quick_ts4df(df, savetitle=savetitle)
 
     # Generic checking on boundary runs for ARNA
-
-
-
 
 
 if __name__ == "__main__":
