@@ -34,11 +34,18 @@ def PF_TRAXXX_2TracerName(TRA_XX, folder=None, RTN_dict=False):
         return dict(zip(nums, TRAs))[TRA_XX]
 
 
-def get_dict_of_GEOSChem_model_output(res='0.5x0.625',
+def get_dict_of_GEOSChem_model_output(res='0.5x0.625', folder4netCDF=False,
                                       RunSet='MERRA2-0.5-initial',
                                       CoreRunsOnly=False):
     """
     Retrieve dictionary of model run names and their full location paths
+
+    Parameters
+    -------
+    folder4netCDF (bool): append subfolder for NetCDFs (OutputDir) to folder
+
+    Notes
+    -----
     """
     RunRoot = get_local_folder('RunRoot')
     if res == '4x5':
@@ -73,9 +80,40 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625',
             # Isotherm
     #        RunStr = 'DustUptake.JNIT.Isotherm.BCs'
 #            RunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II'
-            RunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags.v2'
+            IsoRunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags.'
+            folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, IsoRunStr+'v2')
+            d['Acid-4x5-Isotherm.v2.0'] = folder
+            # ... Other Isotherm versions
+            RunStr = IsoRunStr + 'v2.very_low'
             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-            d['Acid-4x5-Isotherm.v2'] = folder
+            d['Acid-4x5-Isotherm.v2.3'] = folder
+            RunStr = IsoRunStr + 'v2.low'
+            folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
+            d['Acid-4x5-Isotherm.v2.2'] = folder
+            RunStr = IsoRunStr + 'v2.medium'
+            folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
+            d['Acid-4x5-Isotherm.v2.1'] = folder
+            RunStr = IsoRunStr + 'v2.deli'
+            folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
+            d['Acid-4x5-Isotherm.v2.0.deli'] = folder
+            RunStr = IsoRunStr + 'v2.4'
+            folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
+            d['Acid-4x5-Isotherm.v2.4'] = folder
+            RunStr = IsoRunStr + 'v2.4.deli'
+            folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
+            d['Acid-4x5-Isotherm.v2.4.deli'] = folder
+            RunStr = IsoRunStr + 'v2.4.deli.H2O'
+            folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
+            d['Acid-4x5-Isotherm.v2.4.deli.H2O'] = folder
+            # Version 3
+            RunStr = IsoRunStr + 'v3.0.H2O'
+            folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
+            d['Acid-4x5-Isotherm.v3.0.H2O'] = folder
+            # Version 3 plus v3.0
+            RunStr = IsoRunStr + 'v3.0.H2O.Acid'
+            folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
+            d['Acid-4x5-Isotherm.v3.0.H2O.Acid'] = folder
+
             # Isotherm + HONO 100%
 #             RunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags.HONO100'
 #             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
@@ -88,16 +126,28 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625',
             RunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags.J50'
             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
             d['Acid-4x5-J50'] = folder
-            # Isotherm + BBx3 + NH3x3
-            RunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags'
-            RunStr += '.J50.BBx3.NH3x3'
+            # ACID + J50 (no BB)
+            RunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags.J50.BBx0'
             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-            d['Acid-4x5-J50-BBx3-NH3x3'] = folder
+            d['Acid-4x5-J50-BBx0'] = folder
+            # Acid plus v3.0
+
+
+            # Isotherm + BBx3 + NH3x3
+#             RunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags'
+#             RunStr += '.J50.BBx3.NH3x3'
+#             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
+#             d['Acid-4x5-J50-BBx3-NH3x3'] = folder
             # Isotherm + African BBx3 + African NH3x3
             RunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags'
             RunStr += '.J50.BBx3AFRICA.NH3x3/'
             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
             d['Acid-4x5-J50-AfBBx3-NH3x3'] = folder
+            # Temporary runs - MERRA-2 met
+#             RunStr = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.PF'
+#             folder = '{}/{}{}/'.format(RunRoot, RunStr, '')
+#             d['BASE-4x5-MERRA-2'] = folder
+
             # Only return the core runs
             if CoreRunsOnly:
                 runs2use = [
@@ -105,8 +155,15 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625',
                     #                    'Acid-4x5-J25',
                     'Acid-4x5-J00',
                     'Acid-4x5-J50',
-                    'Acid-4x5-Isotherm.v2',
-                    'Acid-4x5-J50-AfBBx3-NH3x3',
+                    'Acid-4x5-Isotherm.v2.4',
+#                    'Acid-4x5-J50-AfBBx3-NH3x3',
+#                    'Acid-4x5-Isotherm.v2.4',
+#                    'Acid-4x5-Isotherm.v2',
+                    'Acid-4x5-Isotherm.v3.0.H2O',
+                    'Acid-4x5-Isotherm.v3.0.H2O.Acid',
+                    # Temp
+#                    'BASE-4x5-MERRA-2',
+#                    'Acid-4x5-J50-BBx0',
                 ]
                 dNew = {}
                 for run in runs2use:
@@ -228,6 +285,10 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625',
         d['BC-BASE'] = folder
     else:
         pass
+    # Include NetCDF subfolder in run directory strings
+    if folder4netCDF:
+        for key in d.keys():
+            d[key] = d[key] + '/OutputDir/'
     return d
 
 

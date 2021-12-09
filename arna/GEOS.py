@@ -2037,6 +2037,16 @@ def add_extra_derived_species(ds, debug=False):
 #     attrs['units'] = 'unitless'
 #     ds[NewVar].attrs = attrs
 
+    # Try adding NOx if not present
+    NewVar = 'NOx'
+    try:
+        ds['NOx']
+    except KeyError:
+        try:
+            ds[NewVar] = ds['NO'] + ds['NO2']
+        except KeyError:
+            pass
+
     # Add NOy divided by PM2.5 concentration
     NewVar = 'NOy*PM2.5(dust)'
     ds[NewVar] = ds['NOy'] * ds['PM2.5(dust)']

@@ -16,23 +16,39 @@ def main():
     context = 'paper'
 
     # - Plot up all comparisons by altitude together
-    ar.plt_comp_by_alt_4ARNA_together(context=context,
-                                      res='0.25x0.3125',
-                                      just_SLR=True,)
-    ar.plt_comp_by_alt_4ARNA_together(context=context,
-                                      res='0.25x0.3125',
-                                      just_SLR=False)
-    ar.plt_comp_by_alt_4ARNA_together(context=context,
-                                      res='4x5', RunSet=None,
-                                      just_SLR=False,)
+#     ar.plt_comp_by_alt_4ARNA_together(context=context,
+#                                       res='0.25x0.3125',
+#                                       just_SLR=True,)
+#     ar.plt_comp_by_alt_4ARNA_together(context=context,
+#                                       res='0.25x0.3125',
+#                                       just_SLR=False)
+#     ar.plt_comp_by_alt_4ARNA_together(context=context,
+#                                       res='4x5', RunSet=None,
+#                                       just_SLR=False,)
     # temp for testing
+#    flight_nums = []
+#    RunSet = None
+#    res = '4x5'
+#    NOxAsLog = True
+#    CoreRunsOnly = False
+#    CoreRunsOnly = True
+#    savetitle = 'ARNA_altitude_binned_combined_file_{}'.format(res)
+#     ar.plt_comp_by_alt_4ARNA_together(context=context,
+#                                       res=res, RunSet=RunSet,
+#                                       flight_nums=flight_nums,
+#                                       savetitle=savetitle,
+#                                       just_SLR=False,
+#                                       NOxAsLog=NOxAsLog,
+#                                       CoreRunsOnly=CoreRunsOnly,
+#                                       debug=True)
+    # Output the same bulk plots for the ACID runs
     flight_nums = []
-    RunSet = None
+    RunSet = 'ACID'
     res = '4x5'
     NOxAsLog = True
-#    CoreRunsOnly = False
     CoreRunsOnly = True
-    savetitle = 'ARNA_altitude_binned_combined_file_{}'.format(res)
+    savetitle = 'ARNA_altitude_binned_combined_file_{}_{}'
+    savetitle = savetitle.format(res, RunSet)
     ar.plt_comp_by_alt_4ARNA_together(context=context,
                                       res=res, RunSet=RunSet,
                                       flight_nums=flight_nums,
@@ -41,96 +57,85 @@ def main():
                                       NOxAsLog=NOxAsLog,
                                       CoreRunsOnly=CoreRunsOnly,
                                       debug=True)
-    # Output the same bulk plots for the ACID runs
-    RunSet = 'ACID'
-    res = '4x5'
-    savetitle = 'ARNA_altitude_binned_combined_file_{}_{}'
-    savetitle = savetitle.format(res, RunSet)
-    ar.plt_comp_by_alt_4ARNA_together(context=context,
-                                      res=res, RunSet=RunSet,
-                                      flight_nums=flight_nums,
-                                      savetitle=savetitle,
-                                      NOxAsLog=NOxAsLog,
-                                      CoreRunsOnly=CoreRunsOnly,
-                                      just_SLR=False, debug=True)
+
 
     # The same plots as above, but split by their own PDF file..
     # NOTE: below function fails with a ValueError
-    ar.plt_comp_by_alt_4ARNA_all(just_SLR=True, context=context,
-                                 RunSet='FP-Nest', inc_GEOSChem=True,
-                                 just_plot_GEOS_Chem=True,
-                                 res='0.25x0.3125', close_pdf=True)
+#     ar.plt_comp_by_alt_4ARNA_all(just_SLR=True, context=context,
+#                                  RunSet='FP-Nest', inc_GEOSChem=True,
+#                                  just_plot_GEOS_Chem=True,
+#                                  res='0.25x0.3125', close_pdf=True)
 
     # Plot up data for SLRs with and without dust
 #    ar.plt_comp_by_alt_4ARNA_all(just_SLR=False, context=context)
 #    ar.plt_comp_by_alt_4ARNA_all(just_SLR=True, context=context)
-    ar.plt_comp_by_alt_4ARNA_all(just_SLR=False, context=context,
-                                 RunSet='FP-Nest', inc_GEOSChem=True,
-                                 just_plot_GEOS_Chem=True,
-                                 res='0.25x0.3125', close_pdf=True)
-
-    ar.plt_comp_by_alt_4ARNA_flights_CIMS(context=context,
-                                          RunSet='FP-Nest',
-                                          res='0.25x0.3125',
-                                          inc_GEOSChem=True,
-                                          just_SLR=True)
-
-    ar.plt_comp_by_alt_4ARNA_all_DUST(plt_model=False, context=context)
-    ar.plt_comp_by_alt_4ARNA_all_DUST(plt_model=True, context=context)
-    ar.plt_comp_by_alt_4ARNA_CIMS_all_DUST(context=context)
+#     ar.plt_comp_by_alt_4ARNA_all(just_SLR=False, context=context,
+#                                  RunSet='FP-Nest', inc_GEOSChem=True,
+#                                  just_plot_GEOS_Chem=True,
+#                                  res='0.25x0.3125', close_pdf=True)
+#
+#     ar.plt_comp_by_alt_4ARNA_flights_CIMS(context=context,
+#                                           RunSet='FP-Nest',
+#                                           res='0.25x0.3125',
+#                                           inc_GEOSChem=True,
+#                                           just_SLR=True)
+#
+#     ar.plt_comp_by_alt_4ARNA_all_DUST(plt_model=False, context=context)
+#     ar.plt_comp_by_alt_4ARNA_all_DUST(plt_model=True, context=context)
+#     ar.plt_comp_by_alt_4ARNA_CIMS_all_DUST(context=context)
 
     # - Plot up core comparisons by flight as
     # As timeseries ...
-    ar.plt_ts_comp4ARNA_flights(inc_GEOSChem=False, context=context)
-    ar.plt_ts_comp4ARNA_flights(inc_GEOSChem=True, context=context,
-                                just_plot_GEOS_Chem=True,
-                                RunSet='FP-Nest', res='0.25x0.3125')
+#     ar.plt_ts_comp4ARNA_flights(inc_GEOSChem=False, context=context)
+#     ar.plt_ts_comp4ARNA_flights(inc_GEOSChem=True, context=context,
+#                                 just_plot_GEOS_Chem=True,
+#                                 RunSet='FP-Nest', res='0.25x0.3125')
     # By altitude (and by flight)
-    ar.plt_comp_by_alt_4ARNA_flights(context=context)
-    ar.plt_comp_by_alt_4ARNA_flights(inc_GEOSChem=True, context=context,
-                                     just_plot_GEOS_Chem=True,
-                                     RunSet='FP-Nest', res='0.25x0.3125')
+#     ar.plt_comp_by_alt_4ARNA_flights(context=context)
+#     ar.plt_comp_by_alt_4ARNA_flights(inc_GEOSChem=True, context=context,
+#                                      just_plot_GEOS_Chem=True,
+#                                      RunSet='FP-Nest', res='0.25x0.3125')
 
     # - Plot up ToF-CIMS data by flight as
     # As timeseries ...
-    ar.plt_ts_comp4ARNA_flights_CIMS(context=context)
-    ar.plt_ts_comp4ARNA_flights_CIMS(context=context,
-                                     RunSet='FP-Nest',
-                                     res='0.25x0.3125',
-                                     inc_GEOSChem=True,
-                                     flight_nums=flight_nums,
-                                     LatVar='LAT',
-                                     LonVar='LON',)
+#     ar.plt_ts_comp4ARNA_flights_CIMS(context=context)
+#     ar.plt_ts_comp4ARNA_flights_CIMS(context=context,
+#                                      RunSet='FP-Nest',
+#                                      res='0.25x0.3125',
+#                                      inc_GEOSChem=True,
+#                                      flight_nums=flight_nums,
+#                                      LatVar='LAT',
+#                                      LonVar='LON',)
     # By altitude (and by flight)
-    ar.plt_comp_by_alt_4ARNA_flights_CIMS(context=context)
-    ar.plt_comp_by_alt_4ARNA_flights_CIMS(context=context,
-                                          RunSet='FP-Nest',
-                                          res='0.25x0.3125',
-                                          inc_GEOSChem=True,
-                                          )
+#     ar.plt_comp_by_alt_4ARNA_flights_CIMS(context=context)
+#     ar.plt_comp_by_alt_4ARNA_flights_CIMS(context=context,
+#                                           RunSet='FP-Nest',
+#                                           res='0.25x0.3125',
+#                                           inc_GEOSChem=True,
+#                                           )
 
     # - Plot up nitrate aerosol data by flight as
     # As timeseries ...
-    ar.plt_ts_comp4ARNA_flights_filters(context=context)
-    ar.plt_ts_comp4ARNA_flights_filters(context=context,
-                                        RunSet='FP-Nest',
-                                        res='0.25x0.3125',
-                                        inc_GEOSChem=True,
-                                        LatVar='LAT',
-                                        LonVar='LON',)
-    ar.plt_ts_comp4ARNA_flights_filters(context=context,
-                                        res='4x5',
-                                        inc_GEOSChem=True,
-                                        LatVar='LAT',
-                                        LonVar='LON',
-                                        )
+#     ar.plt_ts_comp4ARNA_flights_filters(context=context)
+#     ar.plt_ts_comp4ARNA_flights_filters(context=context,
+#                                         RunSet='FP-Nest',
+#                                         res='0.25x0.3125',
+#                                         inc_GEOSChem=True,
+#                                         LatVar='LAT',
+#                                         LonVar='LON',)
+#     ar.plt_ts_comp4ARNA_flights_filters(context=context,
+#                                         res='4x5',
+#                                         inc_GEOSChem=True,
+#                                         LatVar='LAT',
+#                                         LonVar='LON',
+#                                         )
 
     # Plot up nitrate, JNIT, and their project
 #    AC.mk_tri_NO3_JNIT_combination_plt()
 
     # - Plot up SWAS data by flight
     # Plot up SWAS data
-    ar.plt_ts_comp4ARNA_flights_SWAS(context=context)
+#     ar.plt_ts_comp4ARNA_flights_SWAS(context=context)
 
     # - Plot up PCASP/CDP data by flight as
     # NOTE: CAS data being ignored currently due to issue with mirror window
@@ -139,35 +144,35 @@ def main():
 
     # - Plot up velocity and Roll, amongst other core physical vars by flight
     # As timeseries ...
-    ar.plt_ts_comp4ARNA_flights_PHYSICAL_VARS(context=context)
-    ar.plt_ts_comp4ARNA_flights_PHYSICAL_VARS(context=context,
-                                              just_plot_GEOS_Chem=True,
-                                              inc_GEOSChem=True,
-                                              res='0..25x0.3125',
-                                              RunSet='FP-Nest')
+#     ar.plt_ts_comp4ARNA_flights_PHYSICAL_VARS(context=context)
+#     ar.plt_ts_comp4ARNA_flights_PHYSICAL_VARS(context=context,
+#                                               just_plot_GEOS_Chem=True,
+#                                               inc_GEOSChem=True,
+#                                               res='0..25x0.3125',
+#                                               RunSet='FP-Nest')
     # Plot up the temperature data from Hannah Price
     # N/A? this is only for 2019. Data to be worked up for 2020.
 
     # - Plot up SWAS data by flight
     # Plot a comparison of NOy
-    ar.plt_ts_comp4ARNA_flights_NOy_ALL(context=context)
-    ar.plt_ts_comp4ARNA_flights_NOy_ALL(context=context,
-                                        RunSet='FP-Nest',
-                                        res='0.25x0.3125',
-                                        inc_GEOSChem=True,
-                                        LatVar='LAT',
-                                        LonVar='LON',)
+#     ar.plt_ts_comp4ARNA_flights_NOy_ALL(context=context)
+#     ar.plt_ts_comp4ARNA_flights_NOy_ALL(context=context,
+#                                         RunSet='FP-Nest',
+#                                         res='0.25x0.3125',
+#                                         inc_GEOSChem=True,
+#                                         LatVar='LAT',
+#                                         LonVar='LON',)
 
     # - Other misc. plotting tasks
 #    explore_high_ozone_near_CVAO()
 #    extract_GEOS54all_ARNA_flights()
 
     # Evaluate the high resolution modelling region
-    ar.evaluate_regional_grid4GEOSChem()
+#     ar.evaluate_regional_grid4GEOSChem()
 
     # Also plot up for related biomass-burning flights in MOYA campaign
-    ar.plt_ts_comp4MOYA_flights()
-    ar.plt_ts_comp4MOYA_flights_PHYSICAL_VARS()
+#     ar.plt_ts_comp4MOYA_flights()
+#     ar.plt_ts_comp4MOYA_flights_PHYSICAL_VARS()
 
 
 def explore_high_ozone_near_CVAO():
@@ -299,12 +304,145 @@ def explore_high_ozone_near_CVAO():
     plt.close('all')
 
 
+    # - Explore high ozone in vertical column in coarse output
+    site = 'CVO'
+    from funcs4obs import gaw_2_loc
+    lat, lon, alt, TZ = gaw_2_loc(site)
+    NIU, NIU, ModelAlt = AC.get_latlonalt4res('4x5', full_vert_grid=True)
+    ModelhPa = AC.hPa_to_Km(ModelAlt, reverse=True)
+    def hPa_to_Km_reverse(value, reverse=True):
+        return AC.hPa_to_Km(value, reverse=reverse)
+    def hPa_to_Km_local(value, reverse=False):
+        return AC.hPa_to_Km(value, reverse=reverse)
+
+    # dates2use
+    dates2use = [datetime.datetime(2020, 1, 1+i) for i in range(31)]
+    dates2use += [datetime.datetime(2020, 2, 1+i) for i in range(29)]
+
+    # Model runs to use?
+    res = '4x5'
+    RunSet = 'ACID'
+    CoreRunsOnly = True
+    folder4netCDF = True
+    RunDict = ar.get_dict_of_GEOSChem_model_output(res=res, RunSet=RunSet,
+                                                   CoreRunsOnly=CoreRunsOnly,
+                                                   folder4netCDF=folder4netCDF)
+    # Add other runs?
+    # merra
+    RunRoot = ar.get_local_folder('RunRoot')
+    RunStr = '/merra2_4x5_standard.v12.9.0.BASE.2019.2020.diags/OutputDir/'
+    RunDict['MERRA.4x5'] =  RunRoot + RunStr
+
+    # no biomass burning
+    RunStr = '/geosfp_4x5_aciduptake.v12.9.0.BASE.2019.2020.ARNA.DustUptake'
+    RunStr += '.JNIT.Isotherm.BCs.repeat.ON.II.diags.J50.BBx0/OutputDir/'
+    RunDict['Acid-4x5-J50-NoBB'] = RunRoot + RunStr
+
+    # limit plotted values to within the month before the campaign end
+    sdate = datetime.datetime(2020, 1, 15)
+    edate = datetime.datetime(2020, 2, 15)
+    limit_time2campaign = True
+
+    # Get data
+    prefix = 'SpeciesConc_'
+    dsD = {}
+    for key in RunDict.keys():
+        ds = AC.GetSpeciesConcDataset(wd=RunDict[key],
+                                            dates2use=dates2use)
+        ds = AC.AddChemicalFamily2Dataset(ds, fam='NOx', prefix=prefix)
+        if limit_time2campaign:
+            bool1 = AC.dt64_2_dt(ds.time) >= sdate
+            bool2 = AC.dt64_2_dt(ds.time) <= edate
+            ds = ds.isel(time=bool1)
+            ds = ds.isel(time=bool2)
+        dsD[key] = ds
+
+    # Get GEOS-CF data and...
+#    dates2use = [datetime.datetime(2020, 2, 1+i) for i in range(29)]
+    dsCF = ar.get_GEOS_assim_expanded_dataset4ARNA(dts=dates2use)
+#    dsCF['NOx'] = dsCF['NO'] + dsCF['NO2']
+#    dsCF = ar.add_extra_derived_species(dsCF)
+    dsCF = AC.AddChemicalFamily2Dataset(dsCF, fam='NOx', prefix='')
+    # Update altitude
+#    HPa_l = AC.get_GEOSCF_vertical_levels(native_levels=True)
+#    hPa_as_km = [i for i in AC.hPa_to_Km(HPa_l)]
+
+    # ... save via disk
+    VarNames = ['O3', 'CO', 'NOx']
+    ds2plotCF = dsCF[VarNames].sel(lat=lat, lon=lon, method='nearest')
+    if limit_time2campaign:
+        bool1 = AC.dt64_2_dt(ds2plotCF.time) >= sdate
+        bool2 = AC.dt64_2_dt(ds2plotCF.time) <= edate
+        ds2plotCF = ds2plotCF.isel(time=bool1)
+        ds2plotCF = ds2plotCF.isel(time=bool2)
+    ds2plotCF = ds2plotCF.mean(dim='time')
+    savename = 'TEMP_NetCDF_GEOSCF_VI.nc'
+    ds2plotCF = AC.save_ds2disk_then_reload(ds2plotCF, savename=savename)
+
+    # plot up
+    savetitle = 'ARNA_vertical_above_CVAO_GEOSChem_campaign_period2020'
+    pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
+
+    # plot up GEOS-Chem runs
+    prefix = 'SpeciesConc_'
+    for VarName  in VarNames:
+        for key in RunDict.keys():
+            ds = dsD[key][[prefix+VarName]]
+            ds = ds.sel(lat=lat, lon=lon, method='nearest')
+            X = ds[prefix+VarName].values[0] *1E9
+            Y = np.array( ModelhPa[:len(X)] )
+#            Y = ds.lev.values
+            plt.plot(X, Y, label=key)
+
+        # Plot up GEOS-CG
+        X = ds2plotCF[VarName].values *1E9
+        Y = ds2plotCF.lev.values
+        plt.plot(X, Y, label='GEOS-CF')
+
+        # Beautify and save
+        ax = plt.gca()
+        if VarName == 'O3':
+            plt.xlim(0,100)
+        elif VarName == 'NOx':
+            plt.xlim(0,1)
+            ax.set_xscale('log')
+
+#        ax.invert_yaxis()
+        # Add a twin y axis
+#         secax = ax.secondary_yaxis('right',
+#                                    functions=(hPa_to_Km_local,
+#                                    hPa_to_Km_reverse)
+#                                    )
+        plt.ylim()
+        ax.invert_yaxis()
+#        ax.set_yscale('log')
+
+        ax.set_ylabel('Pressure altitude (hPa)')
+        print( ax.get_ylim() )
+        ax.set_ylim(1000, 100)
+
+        secax = ax.secondary_yaxis('right', functions=(AC.hPa2Km, AC.km2hPa))
+        secax.set_ylabel('Altitude (km)')
+#        secax.set_yscale('linear')
+        print( secax.get_ylim() )
+        secax.set_ylim(0, 20)
+
+        plt.title(VarName)
+        plt.legend()
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)#, tight=True)
+        plt.close()
+
+    # - Save entire pdf
+    AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
+    plt.close('all')
+
+
 def extract_GC_data4CVAO():
     """
     Extract model data for CVAO
     """
     # - Get photolysis surface data for Simone
-    RunRoot = '/mnt/lustre/users/ts551/GC/rundirs/'
+    RunRoot = ar.get_local_folder('RunRoot')
     folder = 'geosfp_4x5_standard.v12.9.0.BASE.2019.2020.ARNA.BCs.'
     folder += 'TEST.PF_Jrates.JVALS.GLOBAL/OutputDir/'
     folder = RunRoot + folder
@@ -342,7 +480,7 @@ def test_new_planeflight_Jrate_output():
     ]
 
     # - Get plane flight output
-    RunRoot = '/mnt/lustre/users/ts551/GC/rundirs/'
+    RunRoot = ar.get_local_folder('RunRoot')
     folder = RunRoot+'/geosfp_4x5_standard.v12.9.0.BASE.2019.2020.ARNA.BCs.TEST.PF_Jrates.REA.VI/'
     files2use = list(sorted(glob.glob(folder + '/TEST_1day/*plane*')))
     file2use = files2use[0]
@@ -468,7 +606,7 @@ def test_new_planeflight_Jrate_output():
     # - Plot up differences between J rates in nested and global run
     savetitle = 'ARNA_Jvals_Global_vs_nest_model'
     pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
-    RunRoot = '/users/ts551/scratch/GC/rundirs/'
+    RunRoot = ar.get_local_folder('RunRoot')
     RunStr = 'geosfp_4x5_standard.v12.9.0.BASE.2019.2020.'
     folderNest = RunRoot + RunStr + 'ARNA.Nest.repeat.JVALS/'
     folderGlobal = RunRoot + RunStr + 'ARNA.BCs.TEST.PF_Jrates.JVALS.GLOBAL/'

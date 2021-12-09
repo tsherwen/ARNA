@@ -966,7 +966,7 @@ def get_local_folder(key, host=None, rtn_dict=False):
         HEMCO_data = earth0_data_shelf + 'earth0_data/GEOS/ExtData/HEMCO/'
         ARNA_data = '/users/ts551/scratch/data/ARNA/'
         DataRoot = '/users/ts551/scratch/data/'
-        RunRoot = '/users/ts551/scratch/GC/rundirs/'
+        RunRoot = '/users/ts551/scratch/GC/rundirs/P_ARNA/'
     elif ('earth0' in host):
         NASA_data = '/work/data/NASA/'
         ARNA_data = ''
