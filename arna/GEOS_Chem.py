@@ -80,31 +80,31 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625', folder4netCDF=False,
             # Isotherm
     #        RunStr = 'DustUptake.JNIT.Isotherm.BCs'
 #            RunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II'
-            IsoRunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags.'
-            folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, IsoRunStr+'v2')
-            d['Acid-4x5-Isotherm.v2.0'] = folder
+#             IsoRunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags.'
+#             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, IsoRunStr+'v2')
+#             d['Acid-4x5-Isotherm.v2.0'] = folder
             # ... Other Isotherm versions
-            RunStr = IsoRunStr + 'v2.very_low'
-            folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-            d['Acid-4x5-Isotherm.v2.3'] = folder
-            RunStr = IsoRunStr + 'v2.low'
-            folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-            d['Acid-4x5-Isotherm.v2.2'] = folder
-            RunStr = IsoRunStr + 'v2.medium'
-            folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-            d['Acid-4x5-Isotherm.v2.1'] = folder
-            RunStr = IsoRunStr + 'v2.deli'
-            folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-            d['Acid-4x5-Isotherm.v2.0.deli'] = folder
-            RunStr = IsoRunStr + 'v2.4'
-            folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-            d['Acid-4x5-Isotherm.v2.4'] = folder
-            RunStr = IsoRunStr + 'v2.4.deli'
-            folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-            d['Acid-4x5-Isotherm.v2.4.deli'] = folder
-            RunStr = IsoRunStr + 'v2.4.deli.H2O'
-            folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-            d['Acid-4x5-Isotherm.v2.4.deli.H2O'] = folder
+#             RunStr = IsoRunStr + 'v2.very_low'
+#             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
+#             d['Acid-4x5-Isotherm.v2.3'] = folder
+#             RunStr = IsoRunStr + 'v2.low'
+#             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
+#             d['Acid-4x5-Isotherm.v2.2'] = folder
+#             RunStr = IsoRunStr + 'v2.medium'
+#             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
+#             d['Acid-4x5-Isotherm.v2.1'] = folder
+#             RunStr = IsoRunStr + 'v2.deli'
+#             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
+#             d['Acid-4x5-Isotherm.v2.0.deli'] = folder
+#             RunStr = IsoRunStr + 'v2.4'
+#             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
+#             d['Acid-4x5-Isotherm.v2.4'] = folder
+#             RunStr = IsoRunStr + 'v2.4.deli'
+#             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
+#             d['Acid-4x5-Isotherm.v2.4.deli'] = folder
+#             RunStr = IsoRunStr + 'v2.4.deli.H2O'
+#             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
+#             d['Acid-4x5-Isotherm.v2.4.deli.H2O'] = folder
             # Version 3
             RunStr = IsoRunStr + 'v3.0.H2O'
             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
@@ -113,6 +113,7 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625', folder4netCDF=False,
             RunStr = IsoRunStr + 'v3.0.H2O.Acid'
             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
             d['Acid-4x5-Isotherm.v3.0.H2O.Acid'] = folder
+            # Re-run acid exploration?
 
             # Isotherm + HONO 100%
 #             RunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags.HONO100'
@@ -127,9 +128,9 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625', folder4netCDF=False,
             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
             d['Acid-4x5-J50'] = folder
             # ACID + J50 (no BB)
-            RunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags.J50.BBx0'
-            folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-            d['Acid-4x5-J50-BBx0'] = folder
+#             RunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags.J50.BBx0'
+#             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
+#             d['Acid-4x5-J50-BBx0'] = folder
             # Acid plus v3.0
 
 
@@ -155,12 +156,12 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625', folder4netCDF=False,
                     #                    'Acid-4x5-J25',
                     'Acid-4x5-J00',
                     'Acid-4x5-J50',
-                    'Acid-4x5-Isotherm.v2.4',
+#                    'Acid-4x5-Isotherm.v2.4',
 #                    'Acid-4x5-J50-AfBBx3-NH3x3',
 #                    'Acid-4x5-Isotherm.v2.4',
 #                    'Acid-4x5-Isotherm.v2',
                     'Acid-4x5-Isotherm.v3.0.H2O',
-                    'Acid-4x5-Isotherm.v3.0.H2O.Acid',
+#                    'Acid-4x5-Isotherm.v3.0.H2O.Acid',
                     # Temp
 #                    'BASE-4x5-MERRA-2',
 #                    'Acid-4x5-J50-BBx0',

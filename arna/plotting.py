@@ -92,7 +92,6 @@ def get_vmin_value4var(input):
     """
     Set a vmin value for a variable (below which values are set to NaN)
     """
-    #
     if 'Dust' in input:
         vmin = 15
     elif 'NOy' in input:
@@ -357,8 +356,8 @@ def plot_up_longitudinally_sampled_locs(ds, var2use='noy', extents=None,
     if isinstance(ds, type(None)):
         folder = '/Users/tomassherwen/Google_Drive/Data/ARNA/GEOS_CF/'
         folder += '/data_GEOSCF_2019_12_14/'
-        filename = 'ARNA_GEOSCF_chm_inst_1hr_g1440x721_p23_Cape_Verde_2019_353_noy_'
-        filename += 'lvls_1000_900_800_700_600_500.nc'
+        filename = 'ARNA_GEOSCF_chm_inst_1hr_g1440x721_p23_Cape_Verde'
+        filename += '_2019_353_noy_lvls_1000_900_800_700_600_500.nc'
         ds = xr.open_dataset(folder + filename)
     # Local area analysed as Cape Verde
     d = get_analysis_region('local_CVAO_area')
@@ -518,8 +517,8 @@ def plt_ts4ds(ds, region='Cape_Verde', extr_str='',
             max_vals = da.max(dim=['lat', 'lon'], skipna=True).values
             time = AC.dt64_2_dt(da.time.values)
             # Now plot up as a time series
+            prtstr = 'WARNING: Not plotting {} @ {:.0f}hPa because all NaNs!'
             if mean_vals[np.isfinite(mean_vals)].shape[0] == 0:
-                prtstr = 'WARNING: Not plotting {} @ {:.0f}hPa because all NaNs!'
                 print(prtstr.format(var, lev))
                 pass
             else:
@@ -6876,3 +6875,112 @@ def mk_Andersen2021_figure_02(dpi=720, figsize=(7, 3), aspect=None, ms=None,
              frameon=False)
     # Save figure
     AC.save_plot('ARNA_Andersen_figure_02', dpi=dpi, tight=tight)
+
+
+def plt_seasonal_comparoisons_of_nitrate():
+    """
+    Make a plot of seasonal nitrate at CVAO
+    """
+    #
+    RunSet = 'ACID'
+    res = '4x5'
+    CoreRunsOnly = False
+    RunDict = get_dict_of_GEOSChem_model_output(res=res, RunSet=RunSet,
+                                                CoreRunsOnly=CoreRunsOnly,
+                                                folder4netCDF=True)
+    # Choose runs to use
+    d = {}
+    d['BC-BASE'] =  '/users/ts551/scratch/GC/rundirs/P_ARNA//geosfp_4x5_standard.v12.9.0.BASE.2019.2020.ARNA.BCs.repeat//OutputDir/'
+    d['Acid-4x5-J00'] = '/users/ts551/scratch/GC/rundirs/P_ARNA//geosfp_4x5_aciduptake.v12.9.0.BASE.2019.2020.ARNA.DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags.v2.J00//OutputDir/'
+    dates2use = [datetime.datetime(2019, 1+i, 1) for i in range(12)]
+    dsD = {}
+    for key in d.keys():
+        dsD[key] = AC.GetSpeciesConcDataset(wd=d[key],
+                                              dates2use=dates2use)
+
+    # Get model
+    from Prj_NITs_analysis import get_CVAO_NITs_data
+#    df_obs = get_CVAO_NITs_data()
+    # Update dates
+    dates = AC.dt64_2_dt( df_obs.index.values )
+    df_obs.index = [ update_year(i, year=2019) for i in df_obs.index ]
+
+    # Create a 'NIT-all'
+    prefix = 'SpeciesConc_'
+    for key in d.keys():
+        ds = dsD[key]
+        ds = AC.AddChemicalFamily2Dataset(ds, fam='NIT-all', prefix=prefix)
+        dsD[key] = ds
+
+    # Select for CVAO
+    from funcs4obs import gaw_2_loc
+    site = 'CVO'
+    lat, lon, alt, TZ = gaw_2_loc(site)
+    for key in d.keys():
+        ds = dsD[key]
+        ds = ds.sel(lat=lat, lon=lon, method='nearest')
+        ds = ds.sel(lev=ds.lev.values[0] )
+        dsD[key] = ds
+    # remove the redundent coordinates
+    for key in d.keys():
+        ds = dsD[key]
+        del ds['lat']
+        del ds['lon']
+        del ds['lev']
+        dsD[key] = ds
+
+    # plot up
+    import seaborn as sns
+    sns.set(color_codes=True)
+    var2plot = 'SpeciesConc_NIT-all'
+    fig, ax = plt.subplots()
+    colors = AC.get_CB_color_cycle()
+    for nKey, key in enumerate( d.keys() ):
+        ds = dsD[key]
+        AC.BASIC_seasonal_plot(dates=ds.time.values,
+                               color=colors[nKey],
+                               data=ds[var2plot].values*1E12,
+                               ax=ax,
+                               label=key)
+
+    # Add observations
+    AC.BASIC_seasonal_plot(dates=df_obs.index, color='k',
+                           data=df_obs['Nitrate, pptv'].values, ax=ax,
+                           label='Obs.')
+
+    plt.ylabel('All nitrate (inc. on dust)')
+    plt.legend()
+    plt.title('Seasonal cycle of ntirate at CVAO (pptv)')
+    AC.save_plot(title='NITs_comparison_CVAO_model_obs', dpi=720)
+    plt.close('all')
+
+    # rename obs
+    species = [i.split(prefix)[-1] for i in ds.data_vars]
+    for key in d.keys():
+        ds = dsD[key]
+        ds = ds.rename(name_dict=dict(zip(ds.data_vars, species)))
+        dsD[key] = ds
+
+    # plot up a stacked plot of nitrate by season.
+    key = 'Acid-4x5-J00'
+    ds = dsD[key]
+    del ds['ilev']
+#    vars2plot = [i for i in ds.data_vars if 'NIT' in i ]
+    vars2plot = ['NITD4', 'NITD3', 'NITD2', 'NITD1', 'NITs', 'NIT',]
+    df = ds[vars2plot+ ['NIT-all']].to_dataframe()
+    df = df * 1E12 # Conevrt to pptv
+#    for var in
+
+    plt.close('all')
+    fig, ax = plt.subplots()
+    df[vars2plot].plot.area()
+
+    # Add monthly mean for obs.
+    df_obs = df_obs.resample('1M').mean()
+    df_obs['Nitrate, pptv'].plot(label='obs', color='k', ls='--', zorder=99)
+    plt.autoscale(enable=True, axis='y')
+    plt.legend()
+
+    AC.save_plot(title='NITs_comparison_CVAO_by_species', dpi=720)
+    plt.close('all')
+

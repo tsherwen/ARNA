@@ -145,11 +145,11 @@ def main():
     # - Plot up velocity and Roll, amongst other core physical vars by flight
     # As timeseries ...
 #     ar.plt_ts_comp4ARNA_flights_PHYSICAL_VARS(context=context)
-#     ar.plt_ts_comp4ARNA_flights_PHYSICAL_VARS(context=context,
-#                                               just_plot_GEOS_Chem=True,
-#                                               inc_GEOSChem=True,
-#                                               res='0..25x0.3125',
-#                                               RunSet='FP-Nest')
+    ar.plt_ts_comp4ARNA_flights_PHYSICAL_VARS(context=context,
+                                              just_plot_GEOS_Chem=True,
+                                              inc_GEOSChem=True,
+                                              res='0..25x0.3125',
+                                              RunSet='FP-Nest')
     # Plot up the temperature data from Hannah Price
     # N/A? this is only for 2019. Data to be worked up for 2020.
 
@@ -173,6 +173,11 @@ def main():
     # Also plot up for related biomass-burning flights in MOYA campaign
 #     ar.plt_ts_comp4MOYA_flights()
 #     ar.plt_ts_comp4MOYA_flights_PHYSICAL_VARS()
+
+
+    # Plot seasonal and vertical comparisons of nitrate (CVAO)
+    plt_seasonal_comparoisons_of_nitrate()
+    mk_vertical_comparisons_with_nirate()
 
 
 def explore_high_ozone_near_CVAO():
@@ -786,6 +791,81 @@ def evaluate_regional_grid4GEOSChem(show_plot=False, dpi=320):
     # Save entire pdf
     AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
     plt.close('all')
+
+
+def mk_comparisons_of_humidty():
+    """
+    Make comparisons between observed and modelled humidity
+    """
+    # --- GEOS-Chem
+    # Get model data
+    dfs_mod_GC
+    run2use = 'Acid-4x5-J00'
+    dfs = [ dfs_mod_GC[i][run2use] for i in flight_IDs ]
+    df = pd.concat(dfs)
+
+    # Add satuation pressure to df
+    # 𝑒𝑠0 saturation vapor pressure at 𝑇0 (Pa)
+    T0 = 273.16
+    T = df['GMAO_TEMP'].values # model temp (already in kelvin)
+    CC_partial_solution = np.exp( (17.67 * ( T - T0 )) / (T - 29.65) )
+    df['Es'] = 611.0 * CC_partial_solution
+
+    # NOTE: the model expoerts absolute humidty, not specific humidity
+    # 𝑞  specific humidity or the mass mixing ratio of water vapor to total air (dimensionless)
+    q = df['GMAO_ABSH'] # unitless (which is ≈ 𝑤 )
+    p = df['GMAO_PRES'] # HPa
+
+    # And then calculate Ws ...
+    # where "𝑝 pressure (Pa)"
+    df['Ws'] = 0.622 * df['Es'] / p
+
+    # Complete calculation
+    df['RH'] = 0.263 * p * q * ( CC_partial_solution**-1 )
+
+    # --- GEOS-CF
+    df = pd.concat([ dfs_mod_CF[i] for i in flight_IDs ] )
+    df['Alt'] = AC.hPa_to_Km( df['model-lev'].values )
+
+    # plot
+    import seaborn as sns
+    sns.set(color_codes=True)
+    fig, ax = plt.subplots()
+
+    plt.title('Modelled Relative Humidity for ARNA-2 flights')
+    # Plot up model data
+    plt.scatter(df['RH'].values, df['Alt'].values,
+                label='Relative Humidity')
+#    plt.hlines( 0.753 )
+#    plt.vlines(x=0.753, ymin=1000, ymax=150 )
+#    ax.invert_yaxis()
+
+    # Add a second axis
+    plt.legend()
+    AC.save_plot(dpi=720)
+    plt.close('all')
+
+def mk_vertical_comparisons_with_nirate():
+    """
+    """
+
+    # folder
+    pass
+
+
+    #
+
+
+
+
+    # Now plot by location
+
+
+
+
+
+
+
 
 
 if __name__ == "__main__":
