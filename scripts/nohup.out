@@ -1,0 +1,1664 @@
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2761: DtypeWarning: Columns (4,5,6,7,8,9,10,11) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_all(just_SLR=just_SLR, context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2761: DtypeWarning: Columns (4,5,6,7,8,9,10,11) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_all(just_SLR=just_SLR, context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2761: DtypeWarning: Columns (4,5,6,7,8,9,10,11) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_all(just_SLR=just_SLR, context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2761: DtypeWarning: Columns (4,5,6,7,8,9,10,11) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_all(just_SLR=just_SLR, context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2761: DtypeWarning: Columns (4,5,6,7,8,9,10,11) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_all(just_SLR=just_SLR, context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2761: DtypeWarning: Columns (4,5,6,7,8,9,10,11) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_all(just_SLR=just_SLR, context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2761: DtypeWarning: Columns (4,5,6,7,8,9,10,11) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_all(just_SLR=just_SLR, context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2761: DtypeWarning: Columns (4,5,6,7,8,9,10,11) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_all(just_SLR=just_SLR, context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2779: DtypeWarning: Columns (4,5,6,7,8,9,10,11) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_all(just_SLR=just_SLR, context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2779: DtypeWarning: Columns (4,5,6,7,8,9,10,11) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_all(just_SLR=just_SLR, context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2779: DtypeWarning: Columns (4,5,6,7,8,9,10,11) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_all(just_SLR=just_SLR, context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2779: DtypeWarning: Columns (4,5,6,7,8,9,10,11) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_all(just_SLR=just_SLR, context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2779: DtypeWarning: Columns (4,5,6,7,8,9,10,11) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_all(just_SLR=just_SLR, context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2779: DtypeWarning: Columns (4,5,6,7,8,9,10,11) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_all(just_SLR=just_SLR, context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2779: DtypeWarning: Columns (4,5,6,7,8,9,10,11) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_all(just_SLR=just_SLR, context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2779: DtypeWarning: Columns (4,5,6,7,8,9,10,11) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_all(just_SLR=just_SLR, context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2011: MatplotlibDeprecationWarning: Support for uppercase single-letter colors is deprecated since Matplotlib 3.1 and will be removed in 3.3; please use lowercase instead.
+  plt.scatter(dfP[PointVar].values, dfP[AltVar].values/1E3,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2797: DtypeWarning: Columns (4,5,6,7,8,9,10,11) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_CIMS_all_DUST(context=context,
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2797: DtypeWarning: Columns (4,5,6,7,8,9,10,11) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_CIMS_all_DUST(context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2797: DtypeWarning: Columns (4,5,6,7,8,9,10,11) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_CIMS_all_DUST(context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2797: DtypeWarning: Columns (4,5,6,7,8,9,10,11) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_CIMS_all_DUST(context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2797: DtypeWarning: Columns (4,5,6,7,8,9,10,11) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_CIMS_all_DUST(context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2797: DtypeWarning: Columns (4,5,6,7,8,9,10,11) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_CIMS_all_DUST(context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2797: DtypeWarning: Columns (4,5,6,7,8,9,10,11) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_CIMS_all_DUST(context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2797: DtypeWarning: Columns (4,5,6,7,8,9,10,11) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_CIMS_all_DUST(context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2797: DtypeWarning: Columns (4,5,6,7,8,9,10,11) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_CIMS_all_DUST(context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:4556: DtypeWarning: Columns (4,5,6,7,8,9,10,11) have mixed types.Specify dtype option on import or set low_memory=False.
+  DataList = get_derived_total_NOy4flights(flight_nums=flight_nums,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:4556: DtypeWarning: Columns (4,5,6,7,8,9,10,11) have mixed types.Specify dtype option on import or set low_memory=False.
+  DataList = get_derived_total_NOy4flights(flight_nums=flight_nums,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:4556: DtypeWarning: Columns (4,5,6,7,8,9,10,11) have mixed types.Specify dtype option on import or set low_memory=False.
+  DataList = get_derived_total_NOy4flights(flight_nums=flight_nums,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:4556: DtypeWarning: Columns (4,5,6,7,8,9,10,11) have mixed types.Specify dtype option on import or set low_memory=False.
+  DataList = get_derived_total_NOy4flights(flight_nums=flight_nums,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:4556: DtypeWarning: Columns (4,5,6,7,8,9,10,11) have mixed types.Specify dtype option on import or set low_memory=False.
+  DataList = get_derived_total_NOy4flights(flight_nums=flight_nums,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:4556: DtypeWarning: Columns (4,5,6,7,8,9,10,11) have mixed types.Specify dtype option on import or set low_memory=False.
+  DataList = get_derived_total_NOy4flights(flight_nums=flight_nums,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:4556: DtypeWarning: Columns (4,5,6,7,8,9,10,11) have mixed types.Specify dtype option on import or set low_memory=False.
+  DataList = get_derived_total_NOy4flights(flight_nums=flight_nums,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3977: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  Filtersdf[NOyVar] = Filtersdf[SpeciesVar].copy()
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/pandas/core/indexing.py:966: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  self.obj[item] = s
+NOTE: Plotting RunSet: 'ACID' @ res. of: '4x5' (CoreRunsOnly?: True)
+pdf opened @: ./ARNA_altitude_binned_combined_file_4x5_ACID.pdf
+WARNING: failed to add H2O to flight C218
+WARNING: failed to add H2O to flight C219
+WARNING: failed to add H2O to flight C220
+WARNING: failed to add H2O to flight C221
+WARNING: failed to add H2O to flight C222
+WARNING: failed to add H2O to flight C223
+WARNING: failed to add H2O to flight C224
+WARNING: failed to add H2O to flight C225
+WARNING: failed to add H2O to flight C218
+WARNING: failed to add H2O to flight C219
+WARNING: failed to add H2O to flight C220
+WARNING: failed to add H2O to flight C221
+WARNING: failed to add H2O to flight C222
+WARNING: failed to add H2O to flight C223
+WARNING: failed to add H2O to flight C224
+WARNING: failed to add H2O to flight C225
+WARNING: failed to add H2O to flight C218
+WARNING: failed to add H2O to flight C218
+WARNING: failed to add H2O to flight C218
+WARNING: failed to add H2O to flight C218
+WARNING: failed to add H2O to flight C218
+WARNING: failed to add H2O to flight C219
+WARNING: failed to add H2O to flight C219
+WARNING: failed to add H2O to flight C219
+WARNING: failed to add H2O to flight C219
+WARNING: failed to add H2O to flight C219
+WARNING: failed to add H2O to flight C220
+WARNING: failed to add H2O to flight C220
+WARNING: failed to add H2O to flight C220
+WARNING: failed to add H2O to flight C220
+WARNING: failed to add H2O to flight C220
+WARNING: failed to add H2O to flight C221
+WARNING: failed to add H2O to flight C221
+WARNING: failed to add H2O to flight C221
+WARNING: failed to add H2O to flight C221
+WARNING: failed to add H2O to flight C221
+WARNING: failed to add H2O to flight C222
+WARNING: failed to add H2O to flight C222
+WARNING: failed to add H2O to flight C222
+WARNING: failed to add H2O to flight C222
+WARNING: failed to add H2O to flight C222
+WARNING: failed to add H2O to flight C223
+WARNING: failed to add H2O to flight C223
+WARNING: failed to add H2O to flight C223
+WARNING: failed to add H2O to flight C223
+WARNING: failed to add H2O to flight C223
+WARNING: failed to add H2O to flight C224
+WARNING: failed to add H2O to flight C224
+WARNING: failed to add H2O to flight C224
+WARNING: failed to add H2O to flight C224
+WARNING: failed to add H2O to flight C224
+WARNING: failed to add H2O to flight C225
+WARNING: failed to add H2O to flight C225
+WARNING: failed to add H2O to flight C225
+WARNING: failed to add H2O to flight C225
+WARNING: failed to add H2O to flight C225
+TEMP DEBUG: dict_keys(['C218', 'C219', 'C220', 'C221', 'C222', 'C223', 'C224', 'C225']) dict_keys(['C218', 'C219', 'C220', 'C221', 'C222', 'C223', 'C224', 'C225']) dict_keys(['Acid-4x5-J00', 'Acid-4x5-J50', 'Acid-4x5-Isotherm.v2.4', 'Acid-4x5-Isotherm.v3.0.H2O', 'Acid-4x5-Isotherm.v3.0.H2O.Acid'])
+dict_keys(['C218', 'C219', 'C220', 'C221', 'C222', 'C223', 'C224', 'C225'])
+C218
+{'Acid-4x5-J00':                        LAT    LON        PRESS  ...  IS_DUST  IS_SLR  flight_ID
+2020-02-05 10:18:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:19:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:20:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:21:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:22:00    NaN    NaN          NaN  ...    False   False       C218
+...                    ...    ...          ...  ...      ...     ...        ...
+2020-02-05 18:38:00  16.83 -25.06  1011.476000  ...    False    True       C218
+2020-02-05 18:39:00  16.83 -25.06  1011.460000  ...    False    True       C218
+2020-02-05 18:40:00  16.83 -25.06  1011.465500  ...    False    True       C218
+2020-02-05 18:41:00  16.83 -25.06  1011.479167  ...    False    True       C218
+2020-02-05 18:42:00  16.83 -25.06  1011.488780  ...    False    True       C218
+
+[505 rows x 235 columns], 'Acid-4x5-J50':                        LAT    LON        PRESS  ...  IS_DUST  IS_SLR  flight_ID
+2020-02-05 10:18:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:19:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:20:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:21:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:22:00    NaN    NaN          NaN  ...    False   False       C218
+...                    ...    ...          ...  ...      ...     ...        ...
+2020-02-05 18:38:00  16.83 -25.06  1011.476000  ...    False    True       C218
+2020-02-05 18:39:00  16.83 -25.06  1011.460000  ...    False    True       C218
+2020-02-05 18:40:00  16.83 -25.06  1011.465500  ...    False    True       C218
+2020-02-05 18:41:00  16.83 -25.06  1011.479167  ...    False    True       C218
+2020-02-05 18:42:00  16.83 -25.06  1011.488780  ...    False    True       C218
+
+[505 rows x 235 columns], 'Acid-4x5-Isotherm.v2.4':                        LAT    LON        PRESS  ...  IS_DUST  IS_SLR  flight_ID
+2020-02-05 10:18:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:19:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:20:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:21:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:22:00    NaN    NaN          NaN  ...    False   False       C218
+...                    ...    ...          ...  ...      ...     ...        ...
+2020-02-05 18:38:00  16.83 -25.06  1011.476000  ...    False    True       C218
+2020-02-05 18:39:00  16.83 -25.06  1011.460000  ...    False    True       C218
+2020-02-05 18:40:00  16.83 -25.06  1011.465500  ...    False    True       C218
+2020-02-05 18:41:00  16.83 -25.06  1011.479167  ...    False    True       C218
+2020-02-05 18:42:00  16.83 -25.06  1011.488780  ...    False    True       C218
+
+[505 rows x 235 columns], 'Acid-4x5-Isotherm.v3.0.H2O':                        LAT    LON        PRESS  ...  IS_DUST  IS_SLR  flight_ID
+2020-02-05 10:18:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:19:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:20:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:21:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:22:00    NaN    NaN          NaN  ...    False   False       C218
+...                    ...    ...          ...  ...      ...     ...        ...
+2020-02-05 18:38:00  16.83 -25.06  1011.476000  ...    False    True       C218
+2020-02-05 18:39:00  16.83 -25.06  1011.460000  ...    False    True       C218
+2020-02-05 18:40:00  16.83 -25.06  1011.465500  ...    False    True       C218
+2020-02-05 18:41:00  16.83 -25.06  1011.479167  ...    False    True       C218
+2020-02-05 18:42:00  16.83 -25.06  1011.488780  ...    False    True       C218
+
+[505 rows x 235 columns], 'Acid-4x5-Isotherm.v3.0.H2O.Acid':                        LAT    LON        PRESS  ...  IS_DUST  IS_SLR  flight_ID
+2020-02-05 10:18:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:19:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:20:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:21:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:22:00    NaN    NaN          NaN  ...    False   False       C218
+...                    ...    ...          ...  ...      ...     ...        ...
+2020-02-05 18:38:00  16.83 -25.06  1011.476000  ...    False    True       C218
+2020-02-05 18:39:00  16.83 -25.06  1011.460000  ...    False    True       C218
+2020-02-05 18:40:00  16.83 -25.06  1011.465500  ...    False    True       C218
+2020-02-05 18:41:00  16.83 -25.06  1011.479167  ...    False    True       C218
+2020-02-05 18:42:00  16.83 -25.06  1011.488780  ...    False    True       C218
+
+[505 rows x 235 columns]}
+                       LAT    LON        PRESS  ...  IS_DUST  IS_SLR  flight_ID
+2020-02-05 10:18:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:19:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:20:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:21:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:22:00    NaN    NaN          NaN  ...    False   False       C218
+...                    ...    ...          ...  ...      ...     ...        ...
+2020-02-05 18:38:00  16.83 -25.06  1011.476000  ...    False    True       C218
+2020-02-05 18:39:00  16.83 -25.06  1011.460000  ...    False    True       C218
+2020-02-05 18:40:00  16.83 -25.06  1011.465500  ...    False    True       C218
+2020-02-05 18:41:00  16.83 -25.06  1011.479167  ...    False    True       C218
+2020-02-05 18:42:00  16.83 -25.06  1011.488780  ...    False    True       C218
+
+[505 rows x 235 columns]
+                     LAT  LON  PRESS  ...  IS_DUST  IS_SLR  flight_ID
+2020-02-05 10:18:00  NaN  NaN    NaN  ...    False   False       C218
+2020-02-05 10:19:00  NaN  NaN    NaN  ...    False   False       C218
+2020-02-05 10:20:00  NaN  NaN    NaN  ...    False   False       C218
+2020-02-05 10:21:00  NaN  NaN    NaN  ...    False   False       C218
+2020-02-05 10:22:00  NaN  NaN    NaN  ...    False   False       C218
+
+[5 rows x 235 columns]
+TEMP DEBUG:                        LAT    LON        PRESS  ...  IS_DUST  IS_SLR  flight_ID
+2020-02-05 10:18:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:19:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:20:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:21:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:22:00    NaN    NaN          NaN  ...    False   False       C218
+...                    ...    ...          ...  ...      ...     ...        ...
+2020-02-12 18:23:00  16.84 -25.06  1011.050833  ...    False    True       C225
+2020-02-12 18:24:00  16.84 -25.06  1011.048000  ...    False    True       C225
+2020-02-12 18:25:00  16.84 -25.06  1011.049833  ...    False    True       C225
+2020-02-12 18:26:00  16.84 -25.06  1011.049833  ...    False    True       C225
+2020-02-12 18:27:00  16.84 -25.06  1011.050000  ...    False    True       C225
+
+[4526 rows x 235 columns]
+pdf is still open @: ./ARNA_altitude_binned_combined_file_4x5_ACID.pdf
+WARNING: Kludged below to only plot GEOS-Chem alt var
+['Acid-4x5-Isotherm.v2.4', 'Acid-4x5-Isotherm.v3.0.H2O', 'Acid-4x5-Isotherm.v3.0.H2O.Acid', 'Acid-4x5-J00', 'Acid-4x5-J50', 'Obs.']
+['CO', 'O3', 'NOx', 'NO2', 'NO', 'HNO2']
+Index(['SOL_AZIM', 'SOL_AZIM_FLAG', 'SOL_ZEN', 'SOL_ZEN_FLAG', 'IAS_RVSM',
+       'IAS_RVSM_FLAG', 'TAS_RVSM', 'TAS_RVSM_FLAG', 'PA_TURB', 'PA_TURB_FLAG',
+       ...
+       'flight_ID', 'O3_2BTECH', 'O3_2BTECH_FLAG', 'PSAP_LOG', 'PSAP_LOG_FLAG',
+       'PSAP_TRA', 'PSAP_TRA_FLAG', 'PSAP_LIN', 'PSAP_LIN_FLAG',
+       'Altitude (km)'],
+      dtype='object', length=163)
+0 Acid-4x5-Isotherm.v2.4 CO
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                        CO  Altitude (km)
+2020-02-05 13:38:00  72.78       0.001341
+2020-02-05 13:39:00  72.78       0.001507
+2020-02-05 13:40:00  72.78       0.000732
+2020-02-05 13:41:00  72.78       0.001038
+2020-02-05 13:42:00  72.78       0.001608
+1 Acid-4x5-Isotherm.v3.0.H2O CO
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                        CO  Altitude (km)
+2020-02-05 13:38:00  63.89       0.001341
+2020-02-05 13:39:00  63.89       0.001507
+2020-02-05 13:40:00  63.89       0.000732
+2020-02-05 13:41:00  63.89       0.001038
+2020-02-05 13:42:00  63.89       0.001608
+2 Acid-4x5-Isotherm.v3.0.H2O.Acid CO
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                        CO  Altitude (km)
+2020-02-05 13:38:00  85.76       0.001341
+2020-02-05 13:39:00  85.76       0.001507
+2020-02-05 13:40:00  85.76       0.000732
+2020-02-05 13:41:00  85.76       0.001038
+2020-02-05 13:42:00  85.76       0.001608
+3 Acid-4x5-J00 CO
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                        CO  Altitude (km)
+2020-02-05 13:38:00  88.78       0.001341
+2020-02-05 13:39:00  88.78       0.001507
+2020-02-05 13:40:00  88.78       0.000732
+2020-02-05 13:41:00  88.78       0.001038
+2020-02-05 13:42:00  88.78       0.001608
+4 Acid-4x5-J50 CO
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                        CO  Altitude (km)
+2020-02-05 13:38:00  73.72       0.001341
+2020-02-05 13:39:00  73.72       0.001507
+2020-02-05 13:40:00  73.72       0.000732
+2020-02-05 13:41:00  73.72       0.001038
+2020-02-05 13:42:00  73.72       0.001608
+5 Obs. CO
+WANRING dropped values - shape (3381, 2)=>(2117, 2) (-37.39)
+                             CO  Altitude (km)
+2020-02-05 13:38:00  103.855507       0.054956
+2020-02-05 13:39:00  104.210968       0.054909
+2020-02-05 13:40:00  103.983795       0.054891
+2020-02-05 13:41:00  105.498817       0.054868
+2020-02-05 13:42:00  105.241241       0.054863
+pdf is still open @: ./ARNA_altitude_binned_combined_file_4x5_ACID.pdf
+0 Acid-4x5-Isotherm.v2.4 O3
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                        O3  Altitude (km)
+2020-02-05 13:38:00  40.65       0.001341
+2020-02-05 13:39:00  40.65       0.001507
+2020-02-05 13:40:00  40.65       0.000732
+2020-02-05 13:41:00  40.65       0.001038
+2020-02-05 13:42:00  40.65       0.001608
+1 Acid-4x5-Isotherm.v3.0.H2O O3
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                        O3  Altitude (km)
+2020-02-05 13:38:00  52.41       0.001341
+2020-02-05 13:39:00  52.41       0.001507
+2020-02-05 13:40:00  52.41       0.000732
+2020-02-05 13:41:00  52.41       0.001038
+2020-02-05 13:42:00  52.41       0.001608
+2 Acid-4x5-Isotherm.v3.0.H2O.Acid O3
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                        O3  Altitude (km)
+2020-02-05 13:38:00  31.75       0.001341
+2020-02-05 13:39:00  31.75       0.001507
+2020-02-05 13:40:00  31.75       0.000732
+2020-02-05 13:41:00  31.75       0.001038
+2020-02-05 13:42:00  31.75       0.001608
+3 Acid-4x5-J00 O3
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                        O3  Altitude (km)
+2020-02-05 13:38:00  30.68       0.001341
+2020-02-05 13:39:00  30.68       0.001507
+2020-02-05 13:40:00  30.68       0.000732
+2020-02-05 13:41:00  30.68       0.001038
+2020-02-05 13:42:00  30.68       0.001608
+4 Acid-4x5-J50 O3
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                       O3  Altitude (km)
+2020-02-05 13:38:00  39.8       0.001341
+2020-02-05 13:39:00  39.8       0.001507
+2020-02-05 13:40:00  39.8       0.000732
+2020-02-05 13:41:00  39.8       0.001038
+2020-02-05 13:42:00  39.8       0.001608
+5 Obs. O3
+WANRING dropped values - shape (3381, 2)=>(1908, 2) (-43.57)
+                            O3  Altitude (km)
+2020-02-05 14:04:00  37.863998       0.116525
+2020-02-05 14:05:00  36.937168       0.555122
+2020-02-05 14:06:00  44.587833       0.929980
+2020-02-05 14:07:00  62.946999       1.411080
+2020-02-05 14:08:00  70.835503       1.628298
+pdf is still open @: ./ARNA_altitude_binned_combined_file_4x5_ACID.pdf
+0 Acid-4x5-Isotherm.v2.4 NOx
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                       NOx  Altitude (km)
+2020-02-05 13:38:00  44.88       0.001341
+2020-02-05 13:39:00  44.88       0.001507
+2020-02-05 13:40:00  44.88       0.000732
+2020-02-05 13:41:00  44.88       0.001038
+2020-02-05 13:42:00  44.88       0.001608
+1 Acid-4x5-Isotherm.v3.0.H2O NOx
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                        NOx  Altitude (km)
+2020-02-05 13:38:00  116.62       0.001341
+2020-02-05 13:39:00  116.62       0.001507
+2020-02-05 13:40:00  116.62       0.000732
+2020-02-05 13:41:00  116.62       0.001038
+2020-02-05 13:42:00  116.62       0.001608
+2 Acid-4x5-Isotherm.v3.0.H2O.Acid NOx
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                        NOx  Altitude (km)
+2020-02-05 13:38:00  22.106       0.001341
+2020-02-05 13:39:00  22.106       0.001507
+2020-02-05 13:40:00  22.106       0.000732
+2020-02-05 13:41:00  22.106       0.001038
+2020-02-05 13:42:00  22.106       0.001608
+3 Acid-4x5-J00 NOx
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                        NOx  Altitude (km)
+2020-02-05 13:38:00  23.461       0.001341
+2020-02-05 13:39:00  23.461       0.001507
+2020-02-05 13:40:00  23.461       0.000732
+2020-02-05 13:41:00  23.461       0.001038
+2020-02-05 13:42:00  23.461       0.001608
+4 Acid-4x5-J50 NOx
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                       NOx  Altitude (km)
+2020-02-05 13:38:00  53.96       0.001341
+2020-02-05 13:39:00  53.96       0.001507
+2020-02-05 13:40:00  53.96       0.000732
+2020-02-05 13:41:00  53.96       0.001038
+2020-02-05 13:42:00  53.96       0.001608
+5 Obs. NOx
+WANRING dropped values - shape (3381, 2)=>(1555, 2) (-54.01)
+                            NOx  Altitude (km)
+2020-02-05 14:05:00  697.301019       0.555122
+2020-02-05 14:06:00   61.523557       0.929980
+2020-02-05 14:07:00   99.579418       1.411080
+2020-02-05 14:08:00  149.083837       1.628298
+2020-02-05 14:09:00  161.856584       1.631753
+pdf is still open @: ./ARNA_altitude_binned_combined_file_4x5_ACID.pdf
+0 Acid-4x5-Isotherm.v2.4 NO2
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                       NO2  Altitude (km)
+2020-02-05 13:38:00  33.95       0.001341
+2020-02-05 13:39:00  33.95       0.001507
+2020-02-05 13:40:00  33.95       0.000732
+2020-02-05 13:41:00  33.95       0.001038
+2020-02-05 13:42:00  33.95       0.001608
+1 Acid-4x5-Isotherm.v3.0.H2O NO2
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                       NO2  Altitude (km)
+2020-02-05 13:38:00  91.36       0.001341
+2020-02-05 13:39:00  91.36       0.001507
+2020-02-05 13:40:00  91.36       0.000732
+2020-02-05 13:41:00  91.36       0.001038
+2020-02-05 13:42:00  91.36       0.001608
+2 Acid-4x5-Isotherm.v3.0.H2O.Acid NO2
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                       NO2  Altitude (km)
+2020-02-05 13:38:00  16.04       0.001341
+2020-02-05 13:39:00  16.04       0.001507
+2020-02-05 13:40:00  16.04       0.000732
+2020-02-05 13:41:00  16.04       0.001038
+2020-02-05 13:42:00  16.04       0.001608
+3 Acid-4x5-J00 NO2
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                       NO2  Altitude (km)
+2020-02-05 13:38:00  16.87       0.001341
+2020-02-05 13:39:00  16.87       0.001507
+2020-02-05 13:40:00  16.87       0.000732
+2020-02-05 13:41:00  16.87       0.001038
+2020-02-05 13:42:00  16.87       0.001608
+4 Acid-4x5-J50 NO2
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                       NO2  Altitude (km)
+2020-02-05 13:38:00  40.51       0.001341
+2020-02-05 13:39:00  40.51       0.001507
+2020-02-05 13:40:00  40.51       0.000732
+2020-02-05 13:41:00  40.51       0.001038
+2020-02-05 13:42:00  40.51       0.001608
+5 Obs. NO2
+WANRING dropped values - shape (3381, 2)=>(1555, 2) (-54.01)
+                            NO2  Altitude (km)
+2020-02-05 14:05:00  464.845371       0.555122
+2020-02-05 14:06:00   24.636601       0.929980
+2020-02-05 14:07:00   69.416525       1.411080
+2020-02-05 14:08:00  111.831809       1.628298
+2020-02-05 14:09:00  121.345375       1.631753
+pdf is still open @: ./ARNA_altitude_binned_combined_file_4x5_ACID.pdf
+0 Acid-4x5-Isotherm.v2.4 NO
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                        NO  Altitude (km)
+2020-02-05 13:38:00  10.93       0.001341
+2020-02-05 13:39:00  10.93       0.001507
+2020-02-05 13:40:00  10.93       0.000732
+2020-02-05 13:41:00  10.93       0.001038
+2020-02-05 13:42:00  10.93       0.001608
+1 Acid-4x5-Isotherm.v3.0.H2O NO
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                        NO  Altitude (km)
+2020-02-05 13:38:00  25.26       0.001341
+2020-02-05 13:39:00  25.26       0.001507
+2020-02-05 13:40:00  25.26       0.000732
+2020-02-05 13:41:00  25.26       0.001038
+2020-02-05 13:42:00  25.26       0.001608
+2 Acid-4x5-Isotherm.v3.0.H2O.Acid NO
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                        NO  Altitude (km)
+2020-02-05 13:38:00  6.066       0.001341
+2020-02-05 13:39:00  6.066       0.001507
+2020-02-05 13:40:00  6.066       0.000732
+2020-02-05 13:41:00  6.066       0.001038
+2020-02-05 13:42:00  6.066       0.001608
+3 Acid-4x5-J00 NO
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                        NO  Altitude (km)
+2020-02-05 13:38:00  6.591       0.001341
+2020-02-05 13:39:00  6.591       0.001507
+2020-02-05 13:40:00  6.591       0.000732
+2020-02-05 13:41:00  6.591       0.001038
+2020-02-05 13:42:00  6.591       0.001608
+4 Acid-4x5-J50 NO
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                        NO  Altitude (km)
+2020-02-05 13:38:00  13.45       0.001341
+2020-02-05 13:39:00  13.45       0.001507
+2020-02-05 13:40:00  13.45       0.000732
+2020-02-05 13:41:00  13.45       0.001038
+2020-02-05 13:42:00  13.45       0.001608
+5 Obs. NO
+WANRING dropped values - shape (3381, 2)=>(1556, 2) (-53.98)
+                             NO  Altitude (km)
+2020-02-05 14:05:00  232.455648       0.555122
+2020-02-05 14:06:00   36.886956       0.929980
+2020-02-05 14:07:00   30.162893       1.411080
+2020-02-05 14:08:00   37.252028       1.628298
+2020-02-05 14:09:00   40.511209       1.631753
+pdf is still open @: ./ARNA_altitude_binned_combined_file_4x5_ACID.pdf
+0 Acid-4x5-Isotherm.v2.4 HNO2
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                      HNO2  Altitude (km)
+2020-02-05 13:38:00  2.365       0.001341
+2020-02-05 13:39:00  2.365       0.001507
+2020-02-05 13:40:00  2.365       0.000732
+2020-02-05 13:41:00  2.365       0.001038
+2020-02-05 13:42:00  2.365       0.001608
+1 Acid-4x5-Isotherm.v3.0.H2O HNO2
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                      HNO2  Altitude (km)
+2020-02-05 13:38:00  9.173       0.001341
+2020-02-05 13:39:00  9.173       0.001507
+2020-02-05 13:40:00  9.173       0.000732
+2020-02-05 13:41:00  9.173       0.001038
+2020-02-05 13:42:00  9.173       0.001608
+2 Acid-4x5-Isotherm.v3.0.H2O.Acid HNO2
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                       HNO2  Altitude (km)
+2020-02-05 13:38:00  0.1894       0.001341
+2020-02-05 13:39:00  0.1894       0.001507
+2020-02-05 13:40:00  0.1894       0.000732
+2020-02-05 13:41:00  0.1894       0.001038
+2020-02-05 13:42:00  0.1894       0.001608
+3 Acid-4x5-J00 HNO2
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                       HNO2  Altitude (km)
+2020-02-05 13:38:00  0.2011       0.001341
+2020-02-05 13:39:00  0.2011       0.001507
+2020-02-05 13:40:00  0.2011       0.000732
+2020-02-05 13:41:00  0.2011       0.001038
+2020-02-05 13:42:00  0.2011       0.001608
+4 Acid-4x5-J50 HNO2
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                      HNO2  Altitude (km)
+2020-02-05 13:38:00  3.082       0.001341
+2020-02-05 13:39:00  3.082       0.001507
+2020-02-05 13:40:00  3.082       0.000732
+2020-02-05 13:41:00  3.082       0.001038
+2020-02-05 13:42:00  3.082       0.001608
+5 Obs. HNO2
+WANRING dropped values - shape (3381, 2)=>(1563, 2) (-53.77)
+                           HNO2  Altitude (km)
+2020-02-05 14:04:00  579.361238       0.116525
+2020-02-05 14:05:00  -78.270929       0.555122
+2020-02-05 14:06:00   41.493985       0.929980
+2020-02-05 14:07:00   53.279356       1.411080
+2020-02-05 14:08:00   43.288980       1.628298
+pdf is still open @: ./ARNA_altitude_binned_combined_file_4x5_ACID.pdf
+WARNING: failed to add H2O to flight C218
+WARNING: failed to add H2O to flight C219
+WARNING: failed to add H2O to flight C220
+WARNING: failed to add H2O to flight C221
+WARNING: failed to add H2O to flight C222
+WARNING: failed to add H2O to flight C223
+WARNING: failed to add H2O to flight C224
+WARNING: failed to add H2O to flight C225
+WARNING: failed to add H2O to flight C218
+WARNING: failed to add H2O to flight C219
+WARNING: failed to add H2O to flight C220
+WARNING: failed to add H2O to flight C221
+WARNING: failed to add H2O to flight C222
+WARNING: failed to add H2O to flight C223
+WARNING: failed to add H2O to flight C224
+WARNING: failed to add H2O to flight C225
+WARNING: failed to add H2O to flight C218
+WARNING: failed to add H2O to flight C218
+WARNING: failed to add H2O to flight C218
+WARNING: failed to add H2O to flight C218
+WARNING: failed to add H2O to flight C218
+WARNING: failed to add H2O to flight C219
+WARNING: failed to add H2O to flight C219
+WARNING: failed to add H2O to flight C219
+WARNING: failed to add H2O to flight C219
+WARNING: failed to add H2O to flight C219
+WARNING: failed to add H2O to flight C220
+WARNING: failed to add H2O to flight C220
+WARNING: failed to add H2O to flight C220
+WARNING: failed to add H2O to flight C220
+WARNING: failed to add H2O to flight C220
+WARNING: failed to add H2O to flight C221
+WARNING: failed to add H2O to flight C221
+WARNING: failed to add H2O to flight C221
+WARNING: failed to add H2O to flight C221
+WARNING: failed to add H2O to flight C221
+WARNING: failed to add H2O to flight C222
+WARNING: failed to add H2O to flight C222
+WARNING: failed to add H2O to flight C222
+WARNING: failed to add H2O to flight C222
+WARNING: failed to add H2O to flight C222
+WARNING: failed to add H2O to flight C223
+WARNING: failed to add H2O to flight C223
+WARNING: failed to add H2O to flight C223
+WARNING: failed to add H2O to flight C223
+WARNING: failed to add H2O to flight C223
+WARNING: failed to add H2O to flight C224
+WARNING: failed to add H2O to flight C224
+WARNING: failed to add H2O to flight C224
+WARNING: failed to add H2O to flight C224
+WARNING: failed to add H2O to flight C224
+WARNING: failed to add H2O to flight C225
+WARNING: failed to add H2O to flight C225
+WARNING: failed to add H2O to flight C225
+WARNING: failed to add H2O to flight C225
+WARNING: failed to add H2O to flight C225
+TEMP DEBUG: dict_keys(['C218', 'C219', 'C220', 'C221', 'C222', 'C223', 'C224', 'C225']) dict_keys(['C218', 'C219', 'C220', 'C221', 'C222', 'C223', 'C224', 'C225']) dict_keys(['Acid-4x5-J00', 'Acid-4x5-J50', 'Acid-4x5-Isotherm.v2.4', 'Acid-4x5-Isotherm.v3.0.H2O', 'Acid-4x5-Isotherm.v3.0.H2O.Acid'])
+dict_keys(['C218', 'C219', 'C220', 'C221', 'C222', 'C223', 'C224', 'C225'])
+C218
+{'Acid-4x5-J00':                        LAT    LON        PRESS  ...  IS_DUST  IS_SLR  flight_ID
+2020-02-05 10:18:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:19:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:20:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:21:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:22:00    NaN    NaN          NaN  ...    False   False       C218
+...                    ...    ...          ...  ...      ...     ...        ...
+2020-02-05 18:38:00  16.83 -25.06  1011.476000  ...    False    True       C218
+2020-02-05 18:39:00  16.83 -25.06  1011.460000  ...    False    True       C218
+2020-02-05 18:40:00  16.83 -25.06  1011.465500  ...    False    True       C218
+2020-02-05 18:41:00  16.83 -25.06  1011.479167  ...    False    True       C218
+2020-02-05 18:42:00  16.83 -25.06  1011.488780  ...    False    True       C218
+
+[505 rows x 235 columns], 'Acid-4x5-J50':                        LAT    LON        PRESS  ...  IS_DUST  IS_SLR  flight_ID
+2020-02-05 10:18:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:19:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:20:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:21:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:22:00    NaN    NaN          NaN  ...    False   False       C218
+...                    ...    ...          ...  ...      ...     ...        ...
+2020-02-05 18:38:00  16.83 -25.06  1011.476000  ...    False    True       C218
+2020-02-05 18:39:00  16.83 -25.06  1011.460000  ...    False    True       C218
+2020-02-05 18:40:00  16.83 -25.06  1011.465500  ...    False    True       C218
+2020-02-05 18:41:00  16.83 -25.06  1011.479167  ...    False    True       C218
+2020-02-05 18:42:00  16.83 -25.06  1011.488780  ...    False    True       C218
+
+[505 rows x 235 columns], 'Acid-4x5-Isotherm.v2.4':                        LAT    LON        PRESS  ...  IS_DUST  IS_SLR  flight_ID
+2020-02-05 10:18:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:19:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:20:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:21:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:22:00    NaN    NaN          NaN  ...    False   False       C218
+...                    ...    ...          ...  ...      ...     ...        ...
+2020-02-05 18:38:00  16.83 -25.06  1011.476000  ...    False    True       C218
+2020-02-05 18:39:00  16.83 -25.06  1011.460000  ...    False    True       C218
+2020-02-05 18:40:00  16.83 -25.06  1011.465500  ...    False    True       C218
+2020-02-05 18:41:00  16.83 -25.06  1011.479167  ...    False    True       C218
+2020-02-05 18:42:00  16.83 -25.06  1011.488780  ...    False    True       C218
+
+[505 rows x 235 columns], 'Acid-4x5-Isotherm.v3.0.H2O':                        LAT    LON        PRESS  ...  IS_DUST  IS_SLR  flight_ID
+2020-02-05 10:18:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:19:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:20:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:21:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:22:00    NaN    NaN          NaN  ...    False   False       C218
+...                    ...    ...          ...  ...      ...     ...        ...
+2020-02-05 18:38:00  16.83 -25.06  1011.476000  ...    False    True       C218
+2020-02-05 18:39:00  16.83 -25.06  1011.460000  ...    False    True       C218
+2020-02-05 18:40:00  16.83 -25.06  1011.465500  ...    False    True       C218
+2020-02-05 18:41:00  16.83 -25.06  1011.479167  ...    False    True       C218
+2020-02-05 18:42:00  16.83 -25.06  1011.488780  ...    False    True       C218
+
+[505 rows x 235 columns], 'Acid-4x5-Isotherm.v3.0.H2O.Acid':                        LAT    LON        PRESS  ...  IS_DUST  IS_SLR  flight_ID
+2020-02-05 10:18:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:19:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:20:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:21:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:22:00    NaN    NaN          NaN  ...    False   False       C218
+...                    ...    ...          ...  ...      ...     ...        ...
+2020-02-05 18:38:00  16.83 -25.06  1011.476000  ...    False    True       C218
+2020-02-05 18:39:00  16.83 -25.06  1011.460000  ...    False    True       C218
+2020-02-05 18:40:00  16.83 -25.06  1011.465500  ...    False    True       C218
+2020-02-05 18:41:00  16.83 -25.06  1011.479167  ...    False    True       C218
+2020-02-05 18:42:00  16.83 -25.06  1011.488780  ...    False    True       C218
+
+[505 rows x 235 columns]}
+                       LAT    LON        PRESS  ...  IS_DUST  IS_SLR  flight_ID
+2020-02-05 10:18:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:19:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:20:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:21:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:22:00    NaN    NaN          NaN  ...    False   False       C218
+...                    ...    ...          ...  ...      ...     ...        ...
+2020-02-05 18:38:00  16.83 -25.06  1011.476000  ...    False    True       C218
+2020-02-05 18:39:00  16.83 -25.06  1011.460000  ...    False    True       C218
+2020-02-05 18:40:00  16.83 -25.06  1011.465500  ...    False    True       C218
+2020-02-05 18:41:00  16.83 -25.06  1011.479167  ...    False    True       C218
+2020-02-05 18:42:00  16.83 -25.06  1011.488780  ...    False    True       C218
+
+[505 rows x 235 columns]
+                     LAT  LON  PRESS  ...  IS_DUST  IS_SLR  flight_ID
+2020-02-05 10:18:00  NaN  NaN    NaN  ...    False   False       C218
+2020-02-05 10:19:00  NaN  NaN    NaN  ...    False   False       C218
+2020-02-05 10:20:00  NaN  NaN    NaN  ...    False   False       C218
+2020-02-05 10:21:00  NaN  NaN    NaN  ...    False   False       C218
+2020-02-05 10:22:00  NaN  NaN    NaN  ...    False   False       C218
+
+[5 rows x 235 columns]
+TEMP DEBUG:                        LAT    LON        PRESS  ...  IS_DUST  IS_SLR  flight_ID
+2020-02-05 10:18:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:19:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:20:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:21:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:22:00    NaN    NaN          NaN  ...    False   False       C218
+...                    ...    ...          ...  ...      ...     ...        ...
+2020-02-12 18:23:00  16.84 -25.06  1011.050833  ...    False    True       C225
+2020-02-12 18:24:00  16.84 -25.06  1011.048000  ...    False    True       C225
+2020-02-12 18:25:00  16.84 -25.06  1011.049833  ...    False    True       C225
+2020-02-12 18:26:00  16.84 -25.06  1011.049833  ...    False    True       C225
+2020-02-12 18:27:00  16.84 -25.06  1011.050000  ...    False    True       C225
+
+[4526 rows x 235 columns]
+WARNING: Kludged below to only plot GEOS-Chem alt var
+['Acid-4x5-Isotherm.v2.4', 'Acid-4x5-Isotherm.v3.0.H2O', 'Acid-4x5-Isotherm.v3.0.H2O.Acid', 'Acid-4x5-J00', 'Acid-4x5-J50', 'Obs.']
+['NIT-all', 'NH4']
+Index(['SOL_AZIM', 'SOL_AZIM_FLAG', 'SOL_ZEN', 'SOL_ZEN_FLAG', 'IAS_RVSM',
+       'IAS_RVSM_FLAG', 'TAS_RVSM', 'TAS_RVSM_FLAG', 'PA_TURB', 'PA_TURB_FLAG',
+       ...
+       'flight_ID', 'O3_2BTECH', 'O3_2BTECH_FLAG', 'PSAP_LOG', 'PSAP_LOG_FLAG',
+       'PSAP_TRA', 'PSAP_TRA_FLAG', 'PSAP_LIN', 'PSAP_LIN_FLAG',
+       'Altitude (km)'],
+      dtype='object', length=163)
+0 Acid-4x5-Isotherm.v2.4 NIT-all
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                       NIT-all  Altitude (km)
+2020-02-05 13:38:00  376.33528       0.001341
+2020-02-05 13:39:00  376.33528       0.001507
+2020-02-05 13:40:00  376.33528       0.000732
+2020-02-05 13:41:00  376.33528       0.001038
+2020-02-05 13:42:00  376.33528       0.001608
+1 Acid-4x5-Isotherm.v3.0.H2O NIT-all
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                        NIT-all  Altitude (km)
+2020-02-05 13:38:00  334.800262       0.001341
+2020-02-05 13:39:00  334.800262       0.001507
+2020-02-05 13:40:00  334.800262       0.000732
+2020-02-05 13:41:00  334.800262       0.001038
+2020-02-05 13:42:00  334.800262       0.001608
+2 Acid-4x5-Isotherm.v3.0.H2O.Acid NIT-all
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                      NIT-all  Altitude (km)
+2020-02-05 13:38:00  389.8515       0.001341
+2020-02-05 13:39:00  389.8515       0.001507
+2020-02-05 13:40:00  389.8515       0.000732
+2020-02-05 13:41:00  389.8515       0.001038
+2020-02-05 13:42:00  389.8515       0.001608
+3 Acid-4x5-J00 NIT-all
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                      NIT-all  Altitude (km)
+2020-02-05 13:38:00  389.4686       0.001341
+2020-02-05 13:39:00  389.4686       0.001507
+2020-02-05 13:40:00  389.4686       0.000732
+2020-02-05 13:41:00  389.4686       0.001038
+2020-02-05 13:42:00  389.4686       0.001608
+4 Acid-4x5-J50 NIT-all
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                      NIT-all  Altitude (km)
+2020-02-05 13:38:00  369.4442       0.001341
+2020-02-05 13:39:00  369.4442       0.001507
+2020-02-05 13:40:00  369.4442       0.000732
+2020-02-05 13:41:00  369.4442       0.001038
+2020-02-05 13:42:00  369.4442       0.001608
+pdf is still open @: ./ARNA_altitude_binned_combined_file_4x5_ACID.pdf
+0 Acid-4x5-Isotherm.v2.4 NH4
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                       NH4  Altitude (km)
+2020-02-05 13:38:00  4.217       0.001341
+2020-02-05 13:39:00  4.217       0.001507
+2020-02-05 13:40:00  4.217       0.000732
+2020-02-05 13:41:00  4.217       0.001038
+2020-02-05 13:42:00  4.217       0.001608
+1 Acid-4x5-Isotherm.v3.0.H2O NH4
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                       NH4  Altitude (km)
+2020-02-05 13:38:00  4.193       0.001341
+2020-02-05 13:39:00  4.193       0.001507
+2020-02-05 13:40:00  4.193       0.000732
+2020-02-05 13:41:00  4.193       0.001038
+2020-02-05 13:42:00  4.193       0.001608
+2 Acid-4x5-Isotherm.v3.0.H2O.Acid NH4
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                       NH4  Altitude (km)
+2020-02-05 13:38:00  3.923       0.001341
+2020-02-05 13:39:00  3.923       0.001507
+2020-02-05 13:40:00  3.923       0.000732
+2020-02-05 13:41:00  3.923       0.001038
+2020-02-05 13:42:00  3.923       0.001608
+3 Acid-4x5-J00 NH4
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                       NH4  Altitude (km)
+2020-02-05 13:38:00  3.919       0.001341
+2020-02-05 13:39:00  3.919       0.001507
+2020-02-05 13:40:00  3.919       0.000732
+2020-02-05 13:41:00  3.919       0.001038
+2020-02-05 13:42:00  3.919       0.001608
+4 Acid-4x5-J50 NH4
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                       NH4  Altitude (km)
+2020-02-05 13:38:00  4.197       0.001341
+2020-02-05 13:39:00  4.197       0.001507
+2020-02-05 13:40:00  4.197       0.000732
+2020-02-05 13:41:00  4.197       0.001038
+2020-02-05 13:42:00  4.197       0.001608
+pdf is still open @: ./ARNA_altitude_binned_combined_file_4x5_ACID.pdf
+WARNING: failed to include CIMS HNO3 data for 'C217' in df
+WARNING: No NOx/HONO data for C217
+WARNING: failed to add NOx to flight C217
+WARNING: failed to add NOx to flight C217
+WARNING: failed to add H2O to flight C217
+Derived variable not added to dataframe (IS_DUST)
+WARNING: failed to add H2O to flight C218
+WARNING: failed to add H2O to flight C219
+WARNING: failed to add H2O to flight C220
+WARNING: failed to add H2O to flight C221
+WARNING: failed to add H2O to flight C222
+WARNING: failed to include CIMS HNO3 data for 'C223' in df
+WARNING: failed to add H2O to flight C223
+WARNING: failed to add H2O to flight C224
+WARNING: failed to include CIMS HNO3 data for 'C225' in df
+WARNING: failed to add H2O to flight C225
+WARNING: No NOx/HONO data for C217
+WARNING: failed to add NOx to flight C217
+WARNING: failed to add NOx to flight C217
+WARNING: failed to add H2O to flight C217
+Derived variable not added to dataframe (IS_DUST)
+WARNING: failed to add H2O to flight C218
+WARNING: failed to add H2O to flight C219
+WARNING: failed to add H2O to flight C220
+WARNING: failed to add H2O to flight C221
+WARNING: failed to add H2O to flight C222
+WARNING: failed to add H2O to flight C223
+WARNING: failed to add H2O to flight C224
+WARNING: failed to add H2O to flight C225
+WARNING: No NOx/HONO data for C217
+WARNING: failed to add NOx to flight C217
+WARNING: failed to add NOx to flight C217
+WARNING: failed to add H2O to flight C217
+Derived variable not added to dataframe (IS_DUST)
+WARNING: No NOx/HONO data for C217
+WARNING: failed to add NOx to flight C217
+WARNING: failed to add NOx to flight C217
+WARNING: failed to add H2O to flight C217
+Derived variable not added to dataframe (IS_DUST)
+WARNING: No NOx/HONO data for C217
+WARNING: failed to add NOx to flight C217
+WARNING: failed to add NOx to flight C217
+WARNING: failed to add H2O to flight C217
+Derived variable not added to dataframe (IS_DUST)
+WARNING: No NOx/HONO data for C217
+WARNING: failed to add NOx to flight C217
+WARNING: failed to add NOx to flight C217
+WARNING: failed to add H2O to flight C217
+Derived variable not added to dataframe (IS_DUST)
+WARNING: No NOx/HONO data for C217
+WARNING: failed to add NOx to flight C217
+WARNING: failed to add NOx to flight C217
+WARNING: failed to add H2O to flight C217
+Derived variable not added to dataframe (IS_DUST)
+WARNING: failed to add H2O to flight C218
+WARNING: failed to add H2O to flight C218
+WARNING: failed to add H2O to flight C218
+WARNING: failed to add H2O to flight C218
+WARNING: failed to add H2O to flight C218
+WARNING: failed to add H2O to flight C219
+WARNING: failed to add H2O to flight C219
+WARNING: failed to add H2O to flight C219
+WARNING: failed to add H2O to flight C219
+WARNING: failed to add H2O to flight C219
+WARNING: failed to add H2O to flight C220
+WARNING: failed to add H2O to flight C220
+WARNING: failed to add H2O to flight C220
+WARNING: failed to add H2O to flight C220
+WARNING: failed to add H2O to flight C220
+WARNING: failed to add H2O to flight C221
+WARNING: failed to add H2O to flight C221
+WARNING: failed to add H2O to flight C221
+WARNING: failed to add H2O to flight C221
+WARNING: failed to add H2O to flight C221
+WARNING: failed to add H2O to flight C222
+WARNING: failed to add H2O to flight C222
+WARNING: failed to add H2O to flight C222
+WARNING: failed to add H2O to flight C222
+WARNING: failed to add H2O to flight C222
+WARNING: failed to add H2O to flight C223
+WARNING: failed to add H2O to flight C223
+WARNING: failed to add H2O to flight C223
+WARNING: failed to add H2O to flight C223
+WARNING: failed to add H2O to flight C223
+WARNING: failed to add H2O to flight C224
+WARNING: failed to add H2O to flight C224
+WARNING: failed to add H2O to flight C224
+WARNING: failed to add H2O to flight C224
+WARNING: failed to add H2O to flight C224
+WARNING: failed to add H2O to flight C225
+WARNING: failed to add H2O to flight C225
+WARNING: failed to add H2O to flight C225
+WARNING: failed to add H2O to flight C225
+WARNING: failed to add H2O to flight C225
+TEMP DEBUG:                        LAT    LON        PRESS  ...  IS_DUST  IS_SLR  flight_ID
+2020-02-04 09:15:00    NaN    NaN          NaN  ...    False   False       C217
+2020-02-04 09:16:00    NaN    NaN          NaN  ...    False   False       C217
+2020-02-04 09:17:00    NaN    NaN          NaN  ...    False   False       C217
+2020-02-04 09:18:00    NaN    NaN          NaN  ...    False   False       C217
+2020-02-04 09:19:00    NaN    NaN          NaN  ...    False   False       C217
+...                    ...    ...          ...  ...      ...     ...        ...
+2020-02-12 18:23:00  16.84 -25.06  1011.050833  ...    False    True       C225
+2020-02-12 18:24:00  16.84 -25.06  1011.048000  ...    False    True       C225
+2020-02-12 18:25:00  16.84 -25.06  1011.049833  ...    False    True       C225
+2020-02-12 18:26:00  16.84 -25.06  1011.049833  ...    False    True       C225
+2020-02-12 18:27:00  16.84 -25.06  1011.050000  ...    False    True       C225
+
+[5019 rows x 235 columns]
+TEMP DEBUG:                        LAT    LON        PRESS  ...  IS_DUST  IS_SLR  flight_ID
+2020-02-04 09:15:00    NaN    NaN          NaN  ...    False   False       C217
+2020-02-04 09:16:00    NaN    NaN          NaN  ...    False   False       C217
+2020-02-04 09:17:00    NaN    NaN          NaN  ...    False   False       C217
+2020-02-04 09:18:00    NaN    NaN          NaN  ...    False   False       C217
+2020-02-04 09:19:00    NaN    NaN          NaN  ...    False   False       C217
+...                    ...    ...          ...  ...      ...     ...        ...
+2020-02-12 18:23:00  16.84 -25.06  1011.050833  ...    False    True       C225
+2020-02-12 18:24:00  16.84 -25.06  1011.048000  ...    False    True       C225
+2020-02-12 18:25:00  16.84 -25.06  1011.049833  ...    False    True       C225
+2020-02-12 18:26:00  16.84 -25.06  1011.049833  ...    False    True       C225
+2020-02-12 18:27:00  16.84 -25.06  1011.050000  ...    False    True       C225
+
+[5019 rows x 235 columns]
+WARNING: Kludged below to only plot GEOS-Chem alt var
+dict_keys(['Obs.', 'Acid-4x5-J00', 'Acid-4x5-J50', 'Acid-4x5-Isotherm.v2.4', 'Acid-4x5-Isotherm.v3.0.H2O', 'Acid-4x5-Isotherm.v3.0.H2O.Acid'])
+['HNO3', 'HNO2', 'BrO']
+Index(['HCN', 'IS_DUST', 'IS_SLR', 'flight_ID', 'ALT_GIN', 'LAT_GIN',
+       'LON_GIN', 'O3_TECO (ppb)', 'CO_AERO (ppb)', 'BrO', 'Br2+HOBr', 'HONO',
+       'HNO3', 'PS_RVSM', 'Altitude (km)'],
+      dtype='object')
+0 Obs. HNO3
+       HNO3  Altitude (km)
+count   0.0    1055.000000
+mean    NaN       1.857827
+std     NaN       1.899474
+min     NaN      -6.144990
+25%     NaN       0.126094
+50%     NaN       1.475704
+75%     NaN       2.298903
+max     NaN       7.503112
+WANRING dropped values - shape (1782, 2)=>(0, 2) (-100.00 %)
+1 Acid-4x5-J00 HNO3
+               HNO3  Altitude (km)
+count  3.651000e+03    3651.000000
+mean   2.008745e-10       1.798512
+std    3.259848e-10       1.813880
+min    2.080000e-22      -0.069130
+25%    2.604000e-11       0.152722
+50%    8.528000e-11       1.397639
+75%    1.522000e-10       2.331996
+max    1.716000e-09       7.536347
+WANRING dropped values - shape (5019, 2)=>(3651, 2) (-27.26 %)
+2 Acid-4x5-J50 HNO3
+               HNO3  Altitude (km)
+count  3.651000e+03    3651.000000
+mean   1.539150e-10       1.798512
+std    3.231072e-10       1.813880
+min    2.101000e-22      -0.069130
+25%    1.433000e-12       0.152722
+50%    1.764000e-11       1.397639
+75%    1.102309e-10       2.331996
+max    1.741000e-09       7.536347
+WANRING dropped values - shape (5019, 2)=>(3651, 2) (-27.26 %)
+3 Acid-4x5-Isotherm.v2.4 HNO3
+               HNO3  Altitude (km)
+count  3.651000e+03    3651.000000
+mean   1.689692e-10       1.798512
+std    3.305925e-10       1.813880
+min    2.102000e-22      -0.069130
+25%    6.724000e-12       0.152722
+50%    3.297000e-11       1.397639
+75%    1.176475e-10       2.331996
+max    1.752000e-09       7.536347
+WANRING dropped values - shape (5019, 2)=>(3651, 2) (-27.26 %)
+4 Acid-4x5-Isotherm.v3.0.H2O HNO3
+               HNO3  Altitude (km)
+count  3.651000e+03    3651.000000
+mean   1.422891e-10       1.798512
+std    3.142432e-10       1.813880
+min    2.145000e-22      -0.069130
+25%    2.094000e-13       0.152722
+50%    6.172000e-12       1.397639
+75%    1.047276e-10       2.331996
+max    1.726000e-09       7.536347
+WANRING dropped values - shape (5019, 2)=>(3651, 2) (-27.26 %)
+5 Acid-4x5-Isotherm.v3.0.H2O.Acid HNO3
+               HNO3  Altitude (km)
+count  3.651000e+03    3651.000000
+mean   1.960940e-10       1.798512
+std    3.255729e-10       1.813880
+min    2.081000e-22      -0.069130
+25%    2.268125e-11       0.152722
+50%    8.479000e-11       1.397639
+75%    1.390000e-10       2.331996
+max    1.718000e-09       7.536347
+WANRING dropped values - shape (5019, 2)=>(3651, 2) (-27.26 %)
+pdf is still open @: ./ARNA_altitude_binned_combined_file_4x5_ACID.pdf
+0 Obs. HNO2
+             HNO2  Altitude (km)
+count  900.000000    1055.000000
+mean     4.774665       1.857827
+std      6.670795       1.899474
+min      0.000000      -6.144990
+25%      2.040878       0.126094
+50%      3.650976       1.475704
+75%      5.634710       2.298903
+max     97.994217       7.503112
+WANRING dropped values - shape (1782, 2)=>(713, 2) (-59.99 %)
+1 Acid-4x5-J00 HNO2
+               HNO2  Altitude (km)
+count  3.651000e+03    3651.000000
+mean   2.759430e-13       1.798512
+std    3.182478e-13       1.813880
+min    1.298817e-14      -0.069130
+25%    8.469000e-14       0.152722
+50%    1.662000e-13       1.397639
+75%    3.580000e-13       2.331996
+max    1.892000e-12       7.536347
+WANRING dropped values - shape (5019, 2)=>(3651, 2) (-27.26 %)
+2 Acid-4x5-J50 HNO2
+               HNO2  Altitude (km)
+count  3.651000e+03    3651.000000
+mean   4.187544e-12       1.798512
+std    4.209190e-12       1.813880
+min    9.990000e-14      -0.069130
+25%    6.628433e-13       0.152722
+50%    2.784000e-12       1.397639
+75%    5.874000e-12       2.331996
+max    2.250000e-11       7.536347
+WANRING dropped values - shape (5019, 2)=>(3651, 2) (-27.26 %)
+3 Acid-4x5-Isotherm.v2.4 HNO2
+               HNO2  Altitude (km)
+count  3.651000e+03    3651.000000
+mean   2.142489e-12       1.798512
+std    1.300216e-12       1.813880
+min    1.350000e-13      -0.069130
+25%    9.866833e-13       0.152722
+50%    2.057000e-12       1.397639
+75%    3.110117e-12       2.331996
+max    5.322333e-12       7.536347
+WANRING dropped values - shape (5019, 2)=>(3651, 2) (-27.26 %)
+4 Acid-4x5-Isotherm.v3.0.H2O HNO2
+               HNO2  Altitude (km)
+count  3.651000e+03    3651.000000
+mean   7.196874e-12       1.798512
+std    4.988257e-12       1.813880
+min    2.748000e-13      -0.069130
+25%    2.185000e-12       0.152722
+50%    7.169000e-12       1.397639
+75%    1.078000e-11       2.331996
+max    1.937000e-11       7.536347
+WANRING dropped values - shape (5019, 2)=>(3651, 2) (-27.26 %)
+5 Acid-4x5-Isotherm.v3.0.H2O.Acid HNO2
+               HNO2  Altitude (km)
+count  3.651000e+03    3651.000000
+mean   3.657788e-13       1.798512
+std    5.424853e-13       1.813880
+min    1.262600e-14      -0.069130
+25%    1.016000e-13       0.152722
+50%    1.850000e-13       1.397639
+75%    3.714000e-13       2.331996
+max    5.031000e-12       7.536347
+WANRING dropped values - shape (5019, 2)=>(3651, 2) (-27.26 %)
+pdf is still open @: ./ARNA_altitude_binned_combined_file_4x5_ACID.pdf
+0 Obs. BrO
+              BrO  Altitude (km)
+count  916.000000    1055.000000
+mean     0.065153       1.857827
+std      0.056825       1.899474
+min     -0.260070      -6.144990
+25%      0.030015       0.126094
+50%      0.068210       1.475704
+75%      0.096550       2.298903
+max      0.272521       7.503112
+WANRING dropped values - shape (1782, 2)=>(916, 2) (-48.60 %)
+1 Acid-4x5-J00 BrO
+                BrO  Altitude (km)
+count  3.651000e+03    3651.000000
+mean   6.360824e-13       1.798512
+std    1.102744e-12       1.813880
+min    1.286167e-14      -0.069130
+25%    9.444000e-14       0.152722
+50%    1.821000e-13       1.397639
+75%    4.093000e-13       2.331996
+max    6.909000e-12       7.536347
+WANRING dropped values - shape (5019, 2)=>(3651, 2) (-27.26 %)
+2 Acid-4x5-J50 BrO
+                BrO  Altitude (km)
+count  3.651000e+03    3651.000000
+mean   5.906402e-13       1.798512
+std    1.057835e-12       1.813880
+min    1.146867e-14      -0.069130
+25%    8.518000e-14       0.152722
+50%    1.735000e-13       1.397639
+75%    4.159000e-13       2.331996
+max    6.086000e-12       7.536347
+WANRING dropped values - shape (5019, 2)=>(3651, 2) (-27.26 %)
+3 Acid-4x5-Isotherm.v2.4 BrO
+                BrO  Altitude (km)
+count  3.651000e+03    3651.000000
+mean   6.681063e-13       1.798512
+std    1.196186e-12       1.813880
+min    1.099633e-14      -0.069130
+25%    9.483000e-14       0.152722
+50%    1.819500e-13       1.397639
+75%    4.490000e-13       2.331996
+max    6.499000e-12       7.536347
+WANRING dropped values - shape (5019, 2)=>(3651, 2) (-27.26 %)
+4 Acid-4x5-Isotherm.v3.0.H2O BrO
+                BrO  Altitude (km)
+count  3.651000e+03    3651.000000
+mean   5.564610e-13       1.798512
+std    1.017075e-12       1.813880
+min    8.224650e-15      -0.069130
+25%    8.126000e-14       0.152722
+50%    1.686250e-13       1.397639
+75%    4.310000e-13       2.331996
+max    6.242000e-12       7.536347
+WANRING dropped values - shape (5019, 2)=>(3651, 2) (-27.26 %)
+5 Acid-4x5-Isotherm.v3.0.H2O.Acid BrO
+                BrO  Altitude (km)
+count  3.651000e+03    3651.000000
+mean   6.619956e-13       1.798512
+std    1.151557e-12       1.813880
+min    1.321933e-14      -0.069130
+25%    9.665000e-14       0.152722
+50%    1.889000e-13       1.397639
+75%    4.230000e-13       2.331996
+max    7.135000e-12       7.536347
+WANRING dropped values - shape (5019, 2)=>(3651, 2) (-27.26 %)
+pdf is still open @: ./ARNA_altitude_binned_combined_file_4x5_ACID.pdf
+WARNING: failed to add H2O to flight C219
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C219
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C219
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C219
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C219
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C220
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C220
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C220
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C220
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C220
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C221
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C221
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C221
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C221
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C221
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C222
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C222
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C222
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C222
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C222
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C223
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C223
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C223
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C223
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C223
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C224
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C224
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C224
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C224
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C224
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C225
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C225
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C225
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C225
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C225
+Derived variable not added to dataframe ('SO4.total')
+WARNING: TODO setup to plot multiple model runs
+WARNING: failed to add H2O to flight C219
+WARNING: failed to add H2O to flight C220
+WARNING: failed to add H2O to flight C221
+WARNING: failed to add H2O to flight C222
+WARNING: failed to include CIMS HNO3 data for 'C223' in df
+WARNING: failed to add H2O to flight C223
+WARNING: failed to add H2O to flight C224
+WARNING: failed to include CIMS HNO3 data for 'C225' in df
+WARNING: failed to add H2O to flight C225
+WARNING: failed to add H2O to flight C219
+WARNING: failed to add H2O to flight C220
+WARNING: failed to add H2O to flight C221
+WARNING: failed to add H2O to flight C222
+WARNING: failed to add H2O to flight C223
+WARNING: failed to add H2O to flight C224
+WARNING: failed to add H2O to flight C225
+WARNING: 'HONO' not added to 'NOy' variable for flight 'C221'
+WARNING: 'HNO3' not added to 'NOy' variable for flight 'C223'
+WARNING: 'HNO3' not added to 'NOy' variable for flight 'C225'
+WARNING: TODO setup to plot multiple model runs
+WARNING: TODO setup to plot multiple model runs
+WARNING: TODO setup to plot multiple model runs
+WARNING: TODO setup to plot multiple model runs
+WARNING: TODO setup to plot multiple model runs
+WARNING: TODO setup to plot multiple model runs
+WARNING: TODO setup to plot multiple model runs
+WARNING: TODO setup to plot multiple model runs
+pdf is still open @: ./ARNA_altitude_binned_combined_file_4x5_ACID.pdf
+pdf is still open @: ./ARNA_altitude_binned_combined_file_4x5_ACID.pdf
+('PDF saved & Closed as/at: ', './ARNA_altitude_binned_combined_file_4x5_ACID.pdf')

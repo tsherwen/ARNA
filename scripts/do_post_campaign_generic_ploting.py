@@ -16,23 +16,39 @@ def main():
     context = 'paper'
 
     # - Plot up all comparisons by altitude together
-    ar.plt_comp_by_alt_4ARNA_together(context=context,
-                                      res='0.25x0.3125',
-                                      just_SLR=True,)
-    ar.plt_comp_by_alt_4ARNA_together(context=context,
-                                      res='0.25x0.3125',
-                                      just_SLR=False)
-    ar.plt_comp_by_alt_4ARNA_together(context=context,
-                                      res='4x5', RunSet=None,
-                                      just_SLR=False,)
+#     ar.plt_comp_by_alt_4ARNA_together(context=context,
+#                                       res='0.25x0.3125',
+#                                       just_SLR=True,)
+#     ar.plt_comp_by_alt_4ARNA_together(context=context,
+#                                       res='0.25x0.3125',
+#                                       just_SLR=False)
+#     ar.plt_comp_by_alt_4ARNA_together(context=context,
+#                                       res='4x5', RunSet=None,
+#                                       just_SLR=False,)
     # temp for testing
+#    flight_nums = []
+#    RunSet = None
+#    res = '4x5'
+#    NOxAsLog = True
+#    CoreRunsOnly = False
+#    CoreRunsOnly = True
+#    savetitle = 'ARNA_altitude_binned_combined_file_{}'.format(res)
+#     ar.plt_comp_by_alt_4ARNA_together(context=context,
+#                                       res=res, RunSet=RunSet,
+#                                       flight_nums=flight_nums,
+#                                       savetitle=savetitle,
+#                                       just_SLR=False,
+#                                       NOxAsLog=NOxAsLog,
+#                                       CoreRunsOnly=CoreRunsOnly,
+#                                       debug=True)
+    # Output the same bulk plots for the ACID runs
     flight_nums = []
-    RunSet = None
+    RunSet = 'ACID'
     res = '4x5'
     NOxAsLog = True
-#    CoreRunsOnly = False
     CoreRunsOnly = True
-    savetitle = 'ARNA_altitude_binned_combined_file_{}'.format(res)
+    savetitle = 'ARNA_altitude_binned_combined_file_{}_{}'
+    savetitle = savetitle.format(res, RunSet)
     ar.plt_comp_by_alt_4ARNA_together(context=context,
                                       res=res, RunSet=RunSet,
                                       flight_nums=flight_nums,
@@ -41,96 +57,85 @@ def main():
                                       NOxAsLog=NOxAsLog,
                                       CoreRunsOnly=CoreRunsOnly,
                                       debug=True)
-    # Output the same bulk plots for the ACID runs
-    RunSet = 'ACID'
-    res = '4x5'
-    savetitle = 'ARNA_altitude_binned_combined_file_{}_{}'
-    savetitle = savetitle.format(res, RunSet)
-    ar.plt_comp_by_alt_4ARNA_together(context=context,
-                                      res=res, RunSet=RunSet,
-                                      flight_nums=flight_nums,
-                                      savetitle=savetitle,
-                                      NOxAsLog=NOxAsLog,
-                                      CoreRunsOnly=CoreRunsOnly,
-                                      just_SLR=False, debug=True)
+
 
     # The same plots as above, but split by their own PDF file..
     # NOTE: below function fails with a ValueError
-    ar.plt_comp_by_alt_4ARNA_all(just_SLR=True, context=context,
-                                 RunSet='FP-Nest', inc_GEOSChem=True,
-                                 just_plot_GEOS_Chem=True,
-                                 res='0.25x0.3125', close_pdf=True)
+#     ar.plt_comp_by_alt_4ARNA_all(just_SLR=True, context=context,
+#                                  RunSet='FP-Nest', inc_GEOSChem=True,
+#                                  just_plot_GEOS_Chem=True,
+#                                  res='0.25x0.3125', close_pdf=True)
 
     # Plot up data for SLRs with and without dust
 #    ar.plt_comp_by_alt_4ARNA_all(just_SLR=False, context=context)
 #    ar.plt_comp_by_alt_4ARNA_all(just_SLR=True, context=context)
-    ar.plt_comp_by_alt_4ARNA_all(just_SLR=False, context=context,
-                                 RunSet='FP-Nest', inc_GEOSChem=True,
-                                 just_plot_GEOS_Chem=True,
-                                 res='0.25x0.3125', close_pdf=True)
-
-    ar.plt_comp_by_alt_4ARNA_flights_CIMS(context=context,
-                                          RunSet='FP-Nest',
-                                          res='0.25x0.3125',
-                                          inc_GEOSChem=True,
-                                          just_SLR=True)
-
-    ar.plt_comp_by_alt_4ARNA_all_DUST(plt_model=False, context=context)
-    ar.plt_comp_by_alt_4ARNA_all_DUST(plt_model=True, context=context)
-    ar.plt_comp_by_alt_4ARNA_CIMS_all_DUST(context=context)
+#     ar.plt_comp_by_alt_4ARNA_all(just_SLR=False, context=context,
+#                                  RunSet='FP-Nest', inc_GEOSChem=True,
+#                                  just_plot_GEOS_Chem=True,
+#                                  res='0.25x0.3125', close_pdf=True)
+#
+#     ar.plt_comp_by_alt_4ARNA_flights_CIMS(context=context,
+#                                           RunSet='FP-Nest',
+#                                           res='0.25x0.3125',
+#                                           inc_GEOSChem=True,
+#                                           just_SLR=True)
+#
+#     ar.plt_comp_by_alt_4ARNA_all_DUST(plt_model=False, context=context)
+#     ar.plt_comp_by_alt_4ARNA_all_DUST(plt_model=True, context=context)
+#     ar.plt_comp_by_alt_4ARNA_CIMS_all_DUST(context=context)
 
     # - Plot up core comparisons by flight as
     # As timeseries ...
-    ar.plt_ts_comp4ARNA_flights(inc_GEOSChem=False, context=context)
-    ar.plt_ts_comp4ARNA_flights(inc_GEOSChem=True, context=context,
-                                just_plot_GEOS_Chem=True,
-                                RunSet='FP-Nest', res='0.25x0.3125')
+#     ar.plt_ts_comp4ARNA_flights(inc_GEOSChem=False, context=context)
+#     ar.plt_ts_comp4ARNA_flights(inc_GEOSChem=True, context=context,
+#                                 just_plot_GEOS_Chem=True,
+#                                 RunSet='FP-Nest', res='0.25x0.3125')
     # By altitude (and by flight)
-    ar.plt_comp_by_alt_4ARNA_flights(context=context)
-    ar.plt_comp_by_alt_4ARNA_flights(inc_GEOSChem=True, context=context,
-                                     just_plot_GEOS_Chem=True,
-                                     RunSet='FP-Nest', res='0.25x0.3125')
+#     ar.plt_comp_by_alt_4ARNA_flights(context=context)
+#     ar.plt_comp_by_alt_4ARNA_flights(inc_GEOSChem=True, context=context,
+#                                      just_plot_GEOS_Chem=True,
+#                                      RunSet='FP-Nest', res='0.25x0.3125')
 
     # - Plot up ToF-CIMS data by flight as
     # As timeseries ...
-    ar.plt_ts_comp4ARNA_flights_CIMS(context=context)
-    ar.plt_ts_comp4ARNA_flights_CIMS(context=context,
-                                     RunSet='FP-Nest',
-                                     res='0.25x0.3125',
-                                     inc_GEOSChem=True,
-                                     flight_nums=flight_nums,
-                                     LatVar='LAT',
-                                     LonVar='LON',)
+#     ar.plt_ts_comp4ARNA_flights_CIMS(context=context)
+#     ar.plt_ts_comp4ARNA_flights_CIMS(context=context,
+#                                      RunSet='FP-Nest',
+#                                      res='0.25x0.3125',
+#                                      inc_GEOSChem=True,
+#                                      flight_nums=flight_nums,
+#                                      LatVar='LAT',
+#                                      LonVar='LON',)
     # By altitude (and by flight)
-    ar.plt_comp_by_alt_4ARNA_flights_CIMS(context=context)
-    ar.plt_comp_by_alt_4ARNA_flights_CIMS(context=context,
-                                          RunSet='FP-Nest',
-                                          res='0.25x0.3125',
-                                          inc_GEOSChem=True,
-                                          )
+#     ar.plt_comp_by_alt_4ARNA_flights_CIMS(context=context)
+#     ar.plt_comp_by_alt_4ARNA_flights_CIMS(context=context,
+#                                           RunSet='FP-Nest',
+#                                           res='0.25x0.3125',
+#                                           inc_GEOSChem=True,
+#                                           )
 
     # - Plot up nitrate aerosol data by flight as
     # As timeseries ...
-    ar.plt_ts_comp4ARNA_flights_filters(context=context)
-    ar.plt_ts_comp4ARNA_flights_filters(context=context,
-                                        RunSet='FP-Nest',
-                                        res='0.25x0.3125',
-                                        inc_GEOSChem=True,
-                                        LatVar='LAT',
-                                        LonVar='LON',)
-    ar.plt_ts_comp4ARNA_flights_filters(context=context,
-                                        res='4x5',
-                                        inc_GEOSChem=True,
-                                        LatVar='LAT',
-                                        LonVar='LON',
-                                        )
+#     ar.plt_ts_comp4ARNA_flights_filters(context=context)
+#     ar.plt_ts_comp4ARNA_flights_filters(context=context,
+#                                         RunSet='FP-Nest',
+#                                         res='0.25x0.3125',
+#                                         inc_GEOSChem=True,
+#                                         LatVar='LAT',
+#                                         LonVar='LON',)
+#     ar.plt_ts_comp4ARNA_flights_filters(context=context,
+#                                         res='4x5',
+#                                         inc_GEOSChem=True,
+#                                         LatVar='LAT',
+#                                         LonVar='LON',
+#                                         )
 
     # Plot up nitrate, JNIT, and their project
 #    AC.mk_tri_NO3_JNIT_combination_plt()
 
     # - Plot up SWAS data by flight
     # Plot up SWAS data
-    ar.plt_ts_comp4ARNA_flights_SWAS(context=context)
+#     ar.plt_ts_comp4ARNA_flights_SWAS(context=context)
 
     # - Plot up PCASP/CDP data by flight as
     # NOTE: CAS data being ignored currently due to issue with mirror window
@@ -139,7 +144,7 @@ def main():
 
     # - Plot up velocity and Roll, amongst other core physical vars by flight
     # As timeseries ...
-    ar.plt_ts_comp4ARNA_flights_PHYSICAL_VARS(context=context)
+#     ar.plt_ts_comp4ARNA_flights_PHYSICAL_VARS(context=context)
     ar.plt_ts_comp4ARNA_flights_PHYSICAL_VARS(context=context,
                                               just_plot_GEOS_Chem=True,
                                               inc_GEOSChem=True,
@@ -150,24 +155,29 @@ def main():
 
     # - Plot up SWAS data by flight
     # Plot a comparison of NOy
-    ar.plt_ts_comp4ARNA_flights_NOy_ALL(context=context)
-    ar.plt_ts_comp4ARNA_flights_NOy_ALL(context=context,
-                                        RunSet='FP-Nest',
-                                        res='0.25x0.3125',
-                                        inc_GEOSChem=True,
-                                        LatVar='LAT',
-                                        LonVar='LON',)
+#     ar.plt_ts_comp4ARNA_flights_NOy_ALL(context=context)
+#     ar.plt_ts_comp4ARNA_flights_NOy_ALL(context=context,
+#                                         RunSet='FP-Nest',
+#                                         res='0.25x0.3125',
+#                                         inc_GEOSChem=True,
+#                                         LatVar='LAT',
+#                                         LonVar='LON',)
 
     # - Other misc. plotting tasks
 #    explore_high_ozone_near_CVAO()
 #    extract_GEOS54all_ARNA_flights()
 
     # Evaluate the high resolution modelling region
-    ar.evaluate_regional_grid4GEOSChem()
+#     ar.evaluate_regional_grid4GEOSChem()
 
     # Also plot up for related biomass-burning flights in MOYA campaign
-    ar.plt_ts_comp4MOYA_flights()
-    ar.plt_ts_comp4MOYA_flights_PHYSICAL_VARS()
+#     ar.plt_ts_comp4MOYA_flights()
+#     ar.plt_ts_comp4MOYA_flights_PHYSICAL_VARS()
+
+
+    # Plot seasonal and vertical comparisons of nitrate (CVAO)
+    plt_seasonal_comparoisons_of_nitrate()
+    mk_vertical_comparisons_with_nirate()
 
 
 def explore_high_ozone_near_CVAO():
@@ -299,12 +309,145 @@ def explore_high_ozone_near_CVAO():
     plt.close('all')
 
 
+    # - Explore high ozone in vertical column in coarse output
+    site = 'CVO'
+    from funcs4obs import gaw_2_loc
+    lat, lon, alt, TZ = gaw_2_loc(site)
+    NIU, NIU, ModelAlt = AC.get_latlonalt4res('4x5', full_vert_grid=True)
+    ModelhPa = AC.hPa_to_Km(ModelAlt, reverse=True)
+    def hPa_to_Km_reverse(value, reverse=True):
+        return AC.hPa_to_Km(value, reverse=reverse)
+    def hPa_to_Km_local(value, reverse=False):
+        return AC.hPa_to_Km(value, reverse=reverse)
+
+    # dates2use
+    dates2use = [datetime.datetime(2020, 1, 1+i) for i in range(31)]
+    dates2use += [datetime.datetime(2020, 2, 1+i) for i in range(29)]
+
+    # Model runs to use?
+    res = '4x5'
+    RunSet = 'ACID'
+    CoreRunsOnly = True
+    folder4netCDF = True
+    RunDict = ar.get_dict_of_GEOSChem_model_output(res=res, RunSet=RunSet,
+                                                   CoreRunsOnly=CoreRunsOnly,
+                                                   folder4netCDF=folder4netCDF)
+    # Add other runs?
+    # merra
+    RunRoot = ar.get_local_folder('RunRoot')
+    RunStr = '/merra2_4x5_standard.v12.9.0.BASE.2019.2020.diags/OutputDir/'
+    RunDict['MERRA.4x5'] =  RunRoot + RunStr
+
+    # no biomass burning
+    RunStr = '/geosfp_4x5_aciduptake.v12.9.0.BASE.2019.2020.ARNA.DustUptake'
+    RunStr += '.JNIT.Isotherm.BCs.repeat.ON.II.diags.J50.BBx0/OutputDir/'
+    RunDict['Acid-4x5-J50-NoBB'] = RunRoot + RunStr
+
+    # limit plotted values to within the month before the campaign end
+    sdate = datetime.datetime(2020, 1, 15)
+    edate = datetime.datetime(2020, 2, 15)
+    limit_time2campaign = True
+
+    # Get data
+    prefix = 'SpeciesConc_'
+    dsD = {}
+    for key in RunDict.keys():
+        ds = AC.GetSpeciesConcDataset(wd=RunDict[key],
+                                            dates2use=dates2use)
+        ds = AC.AddChemicalFamily2Dataset(ds, fam='NOx', prefix=prefix)
+        if limit_time2campaign:
+            bool1 = AC.dt64_2_dt(ds.time) >= sdate
+            bool2 = AC.dt64_2_dt(ds.time) <= edate
+            ds = ds.isel(time=bool1)
+            ds = ds.isel(time=bool2)
+        dsD[key] = ds
+
+    # Get GEOS-CF data and...
+#    dates2use = [datetime.datetime(2020, 2, 1+i) for i in range(29)]
+    dsCF = ar.get_GEOS_assim_expanded_dataset4ARNA(dts=dates2use)
+#    dsCF['NOx'] = dsCF['NO'] + dsCF['NO2']
+#    dsCF = ar.add_extra_derived_species(dsCF)
+    dsCF = AC.AddChemicalFamily2Dataset(dsCF, fam='NOx', prefix='')
+    # Update altitude
+#    HPa_l = AC.get_GEOSCF_vertical_levels(native_levels=True)
+#    hPa_as_km = [i for i in AC.hPa_to_Km(HPa_l)]
+
+    # ... save via disk
+    VarNames = ['O3', 'CO', 'NOx']
+    ds2plotCF = dsCF[VarNames].sel(lat=lat, lon=lon, method='nearest')
+    if limit_time2campaign:
+        bool1 = AC.dt64_2_dt(ds2plotCF.time) >= sdate
+        bool2 = AC.dt64_2_dt(ds2plotCF.time) <= edate
+        ds2plotCF = ds2plotCF.isel(time=bool1)
+        ds2plotCF = ds2plotCF.isel(time=bool2)
+    ds2plotCF = ds2plotCF.mean(dim='time')
+    savename = 'TEMP_NetCDF_GEOSCF_VI.nc'
+    ds2plotCF = AC.save_ds2disk_then_reload(ds2plotCF, savename=savename)
+
+    # plot up
+    savetitle = 'ARNA_vertical_above_CVAO_GEOSChem_campaign_period2020'
+    pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
+
+    # plot up GEOS-Chem runs
+    prefix = 'SpeciesConc_'
+    for VarName  in VarNames:
+        for key in RunDict.keys():
+            ds = dsD[key][[prefix+VarName]]
+            ds = ds.sel(lat=lat, lon=lon, method='nearest')
+            X = ds[prefix+VarName].values[0] *1E9
+            Y = np.array( ModelhPa[:len(X)] )
+#            Y = ds.lev.values
+            plt.plot(X, Y, label=key)
+
+        # Plot up GEOS-CG
+        X = ds2plotCF[VarName].values *1E9
+        Y = ds2plotCF.lev.values
+        plt.plot(X, Y, label='GEOS-CF')
+
+        # Beautify and save
+        ax = plt.gca()
+        if VarName == 'O3':
+            plt.xlim(0,100)
+        elif VarName == 'NOx':
+            plt.xlim(0,1)
+            ax.set_xscale('log')
+
+#        ax.invert_yaxis()
+        # Add a twin y axis
+#         secax = ax.secondary_yaxis('right',
+#                                    functions=(hPa_to_Km_local,
+#                                    hPa_to_Km_reverse)
+#                                    )
+        plt.ylim()
+        ax.invert_yaxis()
+#        ax.set_yscale('log')
+
+        ax.set_ylabel('Pressure altitude (hPa)')
+        print( ax.get_ylim() )
+        ax.set_ylim(1000, 100)
+
+        secax = ax.secondary_yaxis('right', functions=(AC.hPa2Km, AC.km2hPa))
+        secax.set_ylabel('Altitude (km)')
+#        secax.set_yscale('linear')
+        print( secax.get_ylim() )
+        secax.set_ylim(0, 20)
+
+        plt.title(VarName)
+        plt.legend()
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)#, tight=True)
+        plt.close()
+
+    # - Save entire pdf
+    AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
+    plt.close('all')
+
+
 def extract_GC_data4CVAO():
     """
     Extract model data for CVAO
     """
     # - Get photolysis surface data for Simone
-    RunRoot = '/mnt/lustre/users/ts551/GC/rundirs/'
+    RunRoot = ar.get_local_folder('RunRoot')
     folder = 'geosfp_4x5_standard.v12.9.0.BASE.2019.2020.ARNA.BCs.'
     folder += 'TEST.PF_Jrates.JVALS.GLOBAL/OutputDir/'
     folder = RunRoot + folder
@@ -342,7 +485,7 @@ def test_new_planeflight_Jrate_output():
     ]
 
     # - Get plane flight output
-    RunRoot = '/mnt/lustre/users/ts551/GC/rundirs/'
+    RunRoot = ar.get_local_folder('RunRoot')
     folder = RunRoot+'/geosfp_4x5_standard.v12.9.0.BASE.2019.2020.ARNA.BCs.TEST.PF_Jrates.REA.VI/'
     files2use = list(sorted(glob.glob(folder + '/TEST_1day/*plane*')))
     file2use = files2use[0]
@@ -468,7 +611,7 @@ def test_new_planeflight_Jrate_output():
     # - Plot up differences between J rates in nested and global run
     savetitle = 'ARNA_Jvals_Global_vs_nest_model'
     pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
-    RunRoot = '/users/ts551/scratch/GC/rundirs/'
+    RunRoot = ar.get_local_folder('RunRoot')
     RunStr = 'geosfp_4x5_standard.v12.9.0.BASE.2019.2020.'
     folderNest = RunRoot + RunStr + 'ARNA.Nest.repeat.JVALS/'
     folderGlobal = RunRoot + RunStr + 'ARNA.BCs.TEST.PF_Jrates.JVALS.GLOBAL/'
@@ -648,6 +791,452 @@ def evaluate_regional_grid4GEOSChem(show_plot=False, dpi=320):
     # Save entire pdf
     AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
     plt.close('all')
+
+
+def mk_comparisons_of_humidty():
+    """
+    Make comparisons between observed and modelled humidity
+    """
+    # --- GEOS-Chem
+    # Get model data
+    dfs_mod_GC
+    run2use = 'Acid-4x5-J00'
+    dfs = [ dfs_mod_GC[i][run2use] for i in flight_IDs ]
+    df = pd.concat(dfs)
+
+    # Add satuation pressure to df
+    # 𝑒𝑠0 saturation vapor pressure at 𝑇0 (Pa)
+    T0 = 273.16
+    T = df['GMAO_TEMP'].values # model temp (already in kelvin)
+    CC_partial_solution = np.exp( (17.67 * ( T - T0 )) / (T - 29.65) )
+    df['Es'] = 611.0 * CC_partial_solution
+
+    # NOTE: the model expoerts absolute humidty, not specific humidity
+    # 𝑞  specific humidity or the mass mixing ratio of water vapor to total air (dimensionless)
+    q = df['GMAO_ABSH'] # unitless (which is ≈ 𝑤 )
+    p = df['GMAO_PRES'] # HPa
+
+    # And then calculate Ws ...
+    # where "𝑝 pressure (Pa)"
+    df['Ws'] = 0.622 * df['Es'] / p
+
+    # Complete calculation
+    df['RH'] = 0.263 * p * q * ( CC_partial_solution**-1 )
+
+    # --- GEOS-CF
+    df = pd.concat([ dfs_mod_CF[i] for i in flight_IDs ] )
+    df['Alt'] = AC.hPa_to_Km( df['model-lev'].values )
+
+    # plot
+    import seaborn as sns
+    sns.set(color_codes=True)
+    fig, ax = plt.subplots()
+
+    plt.title('Modelled Relative Humidity for ARNA-2 flights')
+    # Plot up model data
+    plt.scatter(df['RH'].values, df['Alt'].values,
+                label='Relative Humidity')
+#    plt.hlines( 0.753 )
+#    plt.vlines(x=0.753, ymin=1000, ymax=150 )
+#    ax.invert_yaxis()
+
+    # Add a second axis
+    plt.legend()
+    AC.save_plot(dpi=720)
+    plt.close('all')
+
+
+def mk_vertical_comparisons_with_nirate():
+    """
+    """
+
+    # folder
+    pass
+
+
+    #
+
+
+
+
+    # Now plot by location
+
+
+
+
+def plt_seasonal_species_at_sites():
+    """
+    Plot up seasonal comparisons at campaign sites (Bermuda and CVAO)
+    """
+    # Get data
+    RunRoot = ar.get_local_folder('RunRoot')
+    FolderStr = 'geosfp_4x5_aciduptake.v12.9.0.BASE.2019.2020.ARNA.DustUptake.'
+    FolderStr += 'JNIT.Isotherm.BCs.repeat.ON.II.diags.v2.J00.HourlyOutput/'
+    FolderStr = RunRoot + FolderStr + 'OutputDir/'
+    RunDict = {'J00':FolderStr}
+    # Dates to use?
+    sdate = datetime.datetime(2019, 1, 1)
+    edate = datetime.datetime(2019, 12, 31)
+    dates2use = pd.date_range(sdate, edate, freq='1H')
+
+    # Put data into a dictionary
+    dsD = {}
+    file_str = 'GEOSChem.SpeciesConcSubset.*.nc4'
+    for key in RunDict.keys():
+        ds = AC.get_GEOSChem_files_as_ds(wd=RunDict[key],
+                                                    file_str=file_str,
+                                                    dates2use=dates2use)
+        # Select year and surface data
+        bool1 = AC.dt64_2_dt(ds.time) >= sdate
+        bool2 = AC.dt64_2_dt(ds.time) <= edate
+        ds = ds.isel(time=bool1)
+        ds = ds.isel(time=bool2)
+        ds = ds.sel( lev=ds.lev.values[0] )
+        # Drop excess variables and rename speices
+        drop_vars = ['hyam', 'hybm', 'hyai', 'hybi', 'P0', 'AREA']
+        for var in drop_vars:
+            try:
+                del ds[var]
+            except KeyError:
+                print('Not deleting: {}'.format(var))
+        prefix = 'SpeciesConc_'
+        VarNames = [i.split(prefix)[-1] for i in ds.data_vars]
+        name_dict = dict(zip(ds.data_vars, VarNames))
+        ds = ds.rename(name_dict=name_dict)
+        # Save to dict
+        dsD[key] = ds
+
+    # Other runs to plot
+
+    # Sites to plot
+    # Bermuda, CVAO
+    sites = ['CVO', 'BMW']
+    for site in sites:
+
+        # Sub-select data for site
+        lon, lat, alt = AC.get_loc(site)
+
+        # Plot up
+        dfs = {}
+        for key in RunDict.keys():
+
+            # Subselect data
+            ds2plot = ds.sel(lat=lat, lon=lon, method='nearest')
+            del ds2plot['lev']
+            del ds2plot['ilev']
+            del ds2plot['lat']
+            del ds2plot['lon']
+
+            # Save output to csv file
+            savename = 'TEMP_NetCDF_{}.nc'.format(site)
+            AC.save_ds2disk_then_reload(ds2plot, savename=savename)
+#            df = ds2plot.to_dataframe()
+#            df.to_csv('ARNA_GEOSChem_v12_9_0_{}_{}'.format(site, key))
+#            dfs[key] = df
+        # Now loop to plot the species
+
+    # Now plot
+    specs2plot = ['O3', 'CO', 'HCl', 'ClNO2', 'IO', 'BrO', ]
+
+    # plot up as diurnal
+    savetitle = 'GEOSChem_v12_9_0_seasonal_diel_at_{}'.format(site)
+    pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
+
+
+    for spec in specs2plot:
+
+        units, scaleby = AC.tra_unit(spec, scale=True)
+
+        AC.plot_up_diel_by_season(dfs={'model': df.copy()*scaleby}, spec=spec,
+                                  sub_str=site,
+                                  units=units)
+
+        # Save to PDF
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+        plt.close()
+
+    # - Save entire pdf
+    AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
+    plt.close('all')
+
+
+def plt_bermuda_obs():
+    """
+    Plot up Bermuda observations
+    """
+    # Switches
+    ReadFromCSV = True
+
+    # Get observational data
+    ExcelFileName = 'Bermuda_data_hourly.xlsx'
+    Folder = '/users/ts551/scratch/data/ARNA/Bermunda/'
+    format = '%Y-%m-%d %H:%M:%S'
+    # Spring Data
+    if ReadFromCSV:
+        CSVFileName = 'Bermuda_data_hourly_spring.csv'
+        dfSpring =  pd.read_csv( Folder+CSVFileName )
+        UnitsSpring = dfSpring.loc[0,:].to_dict()
+        dfSpring = dfSpring.drop(0)
+        TimeVar = 'Time (utc-3)'
+        dfSpring.index = pd.to_datetime( dfSpring[TimeVar].values )
+    else:
+        SheetName = 'Bermuda_Spring_data_hourly'
+        dfSpring = pd.read_excel( Folder+FileName, SheetName=SheetName,
+                                date_parser=format )
+        # Save the units as attributes
+        UnitsSpring = dfSpring.loc[0,:].to_dict()
+        dfSpring = dfSpring.drop([0]) # Drop the unit row
+        dfSpring.index = dfSpring['Time (utc-3)']
+
+    # Summer Data
+    if ReadFromCSV:
+        CSVFileName = 'Bermuda_data_hourly_summer.csv'
+        dfSummer =  pd.read_csv( Folder+CSVFileName )
+        UnitsSummer = dfSummer.loc[0,:].to_dict()
+        dfSummer = dfSummer.drop(0)
+        TimeVar = 'Time'
+        dfSummer.index = pd.to_datetime( dfSummer[TimeVar].values )
+    else:
+        SheetName = 'Bermuda_Summer_data_hourly'
+        dfSummer = pd.read_excel( Folder + FileName, SheetName=SheetName,
+                                 date_parser=format )
+        # Save the units as attributes
+        UnitsSummer = dfSummer.loc[0,:].to_dict()
+        dfSummer = dfSummer.drop([0]) # Drop the unit row
+        dfSummer.index = dfSummer['Time (utc-3)']
+
+    # Store the start and end dates of the observational period
+    # With a one dat buffer to improve mundging with model
+    seasons = ('Spring', 'Summer', )
+    dPeriods = {
+    'Summer': (datetime.datetime(2019, 8, 10),
+              datetime.datetime(2019, 9, 12)
+              ),
+    'Spring': (datetime.datetime(2019, 4, 16),
+               datetime.datetime(2019, 5, 14)
+               ),
+    }
+    # Ensure the units are the same in obs. between spring and summer
+    for key in UnitsSummer.keys():
+#        print(key)
+        NewUnits = UnitsSummer[ key ]
+        if (key in list(UnitsSpring.keys())):
+            CurrentUnits = UnitsSpring[key]
+            SameUnits = CurrentUnits == NewUnits
+            if not (SameUnits):
+                PrtStr = "'Units in list for: '{}', as: '{}', ({}, same?:{})"
+                print( PrtStr.format(key, NewUnits, CurrentUnits, SameUnits) )
+                print( 'Why the units different?')
+
+    # Combine data into a single dataframe
+    dfObs = pd.concat( [dfSpring, dfSummer], axis=0 )
+    # convert times to UTC
+    index = AC.dt64_2_dt( dfObs.index.values )
+    dfObs.index = AC.add_hrs(index, 3)
+
+    # Combine columns for HONO (due to inconsistent naming)
+    Var1 = '[HONO]'
+    Var2 = '[HONO] '
+    VarHONO_Obs = 'HONO_processed'
+    dfHONO = pd.concat([dfObs[Var1].dropna(), dfObs[Var2].dropna()])
+    dfObs[VarHONO_Obs] = dfHONO
+
+    # Clean up other columns and
+    vars2del = Var1, Var2, 'Time (utc-3)', 'Time','Time.1',
+    for var in vars2del:
+        try:
+            del dfObs[var]
+        except:
+            print("Error: failed to delete var: '{}'".format(var) )
+    # force columns to be numeric
+    for col in dfObs.columns:
+        dfObs[col] = pd.to_numeric(dfObs[col], errors='coerce')
+
+
+    # Also add model to the comparisons
+    # Use the generic year of Bermuda obs run for Pete/
+    FileName = 'NSFB_ARNA_GEOSChem_v12_9_0_BMW_J00.csv'
+    dfMod = pd.read_csv(Folder + FileName)
+    dfMod.index = pd.to_datetime( dfMod['time'].values )
+
+    # Add NOx to obs and model
+    var1 = '[NO] (NOx system)'
+    var2 = '[NO2] (NOx system)'
+    dfObs['NOx'] = dfObs[var1] + dfObs[var1]
+    dfMod['NOx'] = dfMod['NO'] + dfMod['NO2']
+    NIT_all = ['NITD4', 'NITD3', 'NITD2', 'NITD1', 'NITs', 'NIT',]
+    dfMod['NITs-all'] = dfMod[ NIT_all ].sum(axis=1)
+
+    # Map obs. species names to model ones
+    dObs2Mod = {
+    'Time (utc-3)': np.NaN,
+    'Time': np.NaN,
+    '[HNO3]': 'HNO3',
+    '[pNO3] corrected': 'NITs-all',
+    '[NO] (NOx system)': 'NO',
+    '[NO2] (NOx system)': 'NO2',
+    '[O3]': 'O3',
+    'WS': 'NOT IN CURRENT DATASET',
+    'WD': 'NOT IN CURRENT DATASET',
+    'AirTempC_Avg': 'GMAO_TEMP',
+    'RH_Avg': 'NOT IN CURRENT DATASET',
+    'BP_mmHg_Avg': 'NOT IN CURRENT DATASET',
+    'TSP': 'NOT IN CURRENT DATASET',
+    'J(HONO)': 'NOT IN CURRENT DATASET',
+#    '[HONO] ': 'HNO2',
+    # add derived variables
+    'NOx':'NOx',
+    VarHONO_Obs: 'HNO2',
+    }
+    dObs2Mod_r = {v: k for k, v in list(dObs2Mod.items())}
+
+    # Which vars to plot
+    # TODO
+    vars2plot = [
+    'O3', 'NO', 'NO2', 'NOx', 'HNO3', 'NITs-all', 'HNO2',
+    # Add J-rates and GMAO values
+#    'GMAO_TEMP',
+    ]
+
+    # - Plot up whole data as a generic time series
+    context = 'paper'
+    import seaborn as sns
+    sns.set(color_codes=True)
+    sns.set_context(context)
+    savetitle = 'ARNA_Bermunda_comp'
+    pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
+    for season in seasons:
+        # Sub-select dates for season
+        sdate, edate = dPeriods[season]
+
+        for var in vars2plot:
+            print( season, var )
+            units, scaleby = AC.tra_unit(var, scale=True)
+            # Force units to be the same as observations in pptv
+            pptv_units = 'HNO3', 'HNO2', 'NO', 'NO2', 'NOx'
+            if (var in pptv_units):
+                units, scaleby = 'pptv', 1E12
+
+            # Plot obs
+            bool1 = dfObs.index >= sdate
+            bool2 = dfObs.index <= edate
+            df2plot = dfObs.loc[ (bool1 & bool2), :]
+            plt.plot( df2plot[dObs2Mod_r[var]].index,
+                      df2plot[dObs2Mod_r[var]].values,
+                      label='Obs.',
+                      color='Black',
+                      )
+
+            # Try to plot model
+            bool1 = dfMod.index >= sdate
+            bool2 = dfMod.index <= edate
+            df2plot = dfMod.loc[ (bool1 & bool2), :]
+            plt.plot( df2plot[var].index,
+                      df2plot[var].values * scaleby,
+                      label='Model',
+                      color='Red',
+                      )
+
+            plt.legend()
+
+            # Add a title
+            PrtStr = "Timeseries {} @ Bermuda during *{}* campaign ({})"
+            plt.title(PrtStr.format(var, season.lower(),units ))
+
+            # Update x axis label rotation
+#             xtickrotation = 45
+#             ax = plt.gca()
+#             labels = ax.get_xticklabels()
+#             ax.set_xticklabels(labels, rotation=xtickrotation)
+#            plt.xticks(meridians[::everyother], fontsize=f_size*.75)
+            plt.xticks(rotation=45)
+
+
+            # Save to PDF
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+            plt.close()
+
+        # Plot up daily cycles
+
+        for var in vars2plot:
+            fig, ax = plt.subplots()
+            print( season, var )
+            units, scaleby = AC.tra_unit(var, scale=True)
+            # Force units to be the same as
+            pptv_units = 'HNO3', 'HNO2', 'NO', 'NO2', 'NOx'
+            if (var in pptv_units):
+                units, scaleby = 'pptv', 1E12
+
+            # Plot obs
+            bool1 = dfObs.index >= sdate
+            bool2 = dfObs.index <= edate
+            df2plot = dfObs.loc[ (bool1 & bool2), :]
+
+
+            AC.BASIC_diel_plot( dates=df2plot[dObs2Mod_r[var]].index,
+                                data=df2plot[dObs2Mod_r[var]].values,
+                                label='Obs.',
+                                color='Black',
+                                spec=var, units=units,
+                                fig=fig, ax=ax)
+
+#            plt.plot( df2plot[dObs2Mod_r[var]].index,
+#                      df2plot[dObs2Mod_r[var]].values,
+#                      label='Obs.',
+#                      color='Black',
+#                      )
+
+            # Try to plot model
+            bool1 = dfMod.index >= sdate
+            bool2 = dfMod.index <= edate
+            df2plot = dfMod.loc[ (bool1 & bool2), :]
+#             plt.plot( df2plot[var].index,
+#                       df2plot[var].values * scaleby,
+#                       label='Model',
+#                       color='Red',
+#                       )
+
+
+            AC.BASIC_diel_plot( dates=df2plot[var].index,
+                                data=df2plot[var].values * scaleby,
+                                label='Obs.',
+                                color='Red',
+                                spec=var, units=units,
+                                fig=fig, ax=ax)
+
+
+            # Add a title
+            PrtStr = "Diel cycle {} @ Bermuda during {} campaign ({})"
+            plt.title(PrtStr.format(var, season.lower(),units ))
+
+            # Update x axis label rotation
+#             xtickrotation = 45
+#             ax = plt.gca()
+#             labels = ax.get_xticklabels()
+#             ax.set_xticklabels(labels, rotation=xtickrotation)
+
+            # Save to PDF
+            AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+            plt.close()
+
+
+    # Save PDF
+    AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
+    plt.close('all')
+
+
+def plt_comp_with_NASA_Atom():
+    """
+
+    """
+    # Get lastest NASA ATom data and plot up
+
+    #
+
+
+    pass
+
+
 
 
 if __name__ == "__main__":

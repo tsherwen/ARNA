@@ -92,6 +92,7 @@ def get_vmin_value4var(input):
     """
     Set a vmin value for a variable (below which values are set to NaN)
     """
+    #
     if 'Dust' in input:
         vmin = 15
     elif 'NOy' in input:
@@ -356,8 +357,8 @@ def plot_up_longitudinally_sampled_locs(ds, var2use='noy', extents=None,
     if isinstance(ds, type(None)):
         folder = '/Users/tomassherwen/Google_Drive/Data/ARNA/GEOS_CF/'
         folder += '/data_GEOSCF_2019_12_14/'
-        filename = 'ARNA_GEOSCF_chm_inst_1hr_g1440x721_p23_Cape_Verde'
-        filename += '_2019_353_noy_lvls_1000_900_800_700_600_500.nc'
+        filename = 'ARNA_GEOSCF_chm_inst_1hr_g1440x721_p23_Cape_Verde_2019_353_noy_'
+        filename += 'lvls_1000_900_800_700_600_500.nc'
         ds = xr.open_dataset(folder + filename)
     # Local area analysed as Cape Verde
     d = get_analysis_region('local_CVAO_area')
@@ -517,8 +518,8 @@ def plt_ts4ds(ds, region='Cape_Verde', extr_str='',
             max_vals = da.max(dim=['lat', 'lon'], skipna=True).values
             time = AC.dt64_2_dt(da.time.values)
             # Now plot up as a time series
-            prtstr = 'WARNING: Not plotting {} @ {:.0f}hPa because all NaNs!'
             if mean_vals[np.isfinite(mean_vals)].shape[0] == 0:
+                prtstr = 'WARNING: Not plotting {} @ {:.0f}hPa because all NaNs!'
                 print(prtstr.format(var, lev))
                 pass
             else:
@@ -2741,18 +2742,17 @@ def plt_comp_by_alt_4ARNA_together(dpi=320, just_SLR=True, show_plot=False,
                                    context="paper", font_scale=0.75,
                                    NOxAsLog=False,
                                    CoreRunsOnly=False,
-                                   verbose=True, debug=False):
+                                   debug=False):
     """
     Plot up altitude binned comparisons between core obs. and model data
     """
-    PrtStr = "NOTE: Plotting RunSet: '{}' @ res. of: '{}' (CoreRunsOnly?: {})"
-    print( PrtStr.format(RunSet, res, CoreRunsOnly) )
     # Setup the pdf file to use
     if isinstance(savetitle, type(None)):
         savetitle = 'ARNA_altitude_binned_combined_file_{}'.format(res)
         if just_SLR:
             savetitle += '_JUST_SLR'
     pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
+
 
 #    if isinstance(RunSet, type(None)):
 #        RunSet='FP-Nest'
@@ -6702,10 +6702,9 @@ def mk_trifigure_NO3_JNIT_combination_plt(context='paper'):
     plt.close('all')
 
 
-def mk_Andersen2021_figure_02(dpi=720, figsize=(7, 3), aspect=None, ms=None,
-                              fontsize=None, labelsize=None, tight=True):
+def mk_Andersen2021_figure_02(dpi=720, aspect=4):
     """
-    Make figure 2 for Andersen et al. (2021)
+    Make figure 2 for Andersen et al 2021
 
     Parameters
     ----------
@@ -6714,9 +6713,7 @@ def mk_Andersen2021_figure_02(dpi=720, figsize=(7, 3), aspect=None, ms=None,
     -------
     (None)
 
-    Notes
-    -------
-     - Original version author: Simone T. Andersen (Fri Nov  5th)
+    Original version author: Simone T. Andersen (Fri Nov  5th)
     """
     import pandas as pd
     import numpy as np
@@ -6737,63 +6734,68 @@ def mk_Andersen2021_figure_02(dpi=720, figsize=(7, 3), aspect=None, ms=None,
     filename = 'FAAM_data_for_missing_HONO_source_plot.csv'
     df1 = pd.read_csv(folder+filename, index_col=0)
 
-    # Dataset of ground HONO and pNO3 data combined with modelled J-rates
+    # Dataset of ground HONO and pNO3 data combined with modelled photolysis rates
     filename = 'CV_data_for_missing_HONO_source_plot.csv'
     df2 = pd.read_csv(folder+filename, index_col=0,
                              parse_dates=True, dayfirst=True)
-    df2 = df2.loc[(df2.index.hour > 10) & (df2.index.hour < 16)]
+    df2 = df2.loc[(df2.index.hour > 10)
+                                & (df2.index.hour < 16)]
 
-    # Ye et al. (2017) individual measurements
-    filename = 'Ye2017_data.csv'
-    df3 = pd.read_csv(folder+filename)
+    # Ye et al. (????) individual measurements
+    df3 = pd.DataFrame()
+    df3["nmoles_m-3"] = [36.8, 14.8, 31.9, 39.5,
+                                 8.9, 7.1, 6.1, 1.5,
+                                 1.3, 12.3, 8.7, 9.3,
+                                 1.3, 7.5, 3.8, 5.5,
+                                 7.8, 7.5, 8.1, 6.7,
+                                 0.33, 0.81, 0.66, 8.3,
+                                 1.2, 2.2, 2.8, 4.0,
+                                 6.8]
+    df3["JpNO3"] = [2.2*10**-5, 2.3*10**-5, 1.0*10**-5, 6.2*10**-6,
+                            7.8*10**-5, 5.2*10**-5, 4.2*10**-5, 1.3*10**-4,
+                            1.1*10**-4, 1.1*10**-4, 8.2*10**-5, 6.8*10**-5,
+                            4.3*10**-4, 1.7*10**-4, 1.8*10**-4, 1.5*10**-4,
+                            7.4*10**-5, 8.2*10**-5, 6.1*10**-5, 7.9*10**-5,
+                            1.0*10**-4, 5.0*10**-4, 8.3*10**-5, 1.3*10**-5,
+                            1.3*10**-4, 2.8*10**-4, 3.1*10**-4, 2.6*10**-4,
+                            1.2*10**-4]
     df3["Enhancement"] = df3["JpNO3"]/(7*10**-7)
-
-    # Plotting settings
-    if isinstance(fontsize, type(None)):
-#        fontsize = 20
-        fontsize = 8
-    if isinstance(labelsize, type(None)):
-#        labelsize = 16
-        labelsize = fontsize/5*4
-    if isinstance(ms, type(None)):
-#        ms = 10
-        ms = 6
 
     # Creating legend elements
     from matplotlib.patches import Patch
     legend_elements = [Line2D([0], [0], marker='o', color='white',
                               label='Sea-salt',
-                              markerfacecolor="blue", ms=ms),
+                              markerfacecolor="blue", markersize=10),
                        Line2D([0], [0], marker='o', color='white',
                               label='Dust',
-                              markerfacecolor='red', ms=ms),
+                              markerfacecolor='red', markersize=10),
                        Line2D([0], [0], marker='o', color='white',
                               label=r'Biomass burning',
-                              markerfacecolor='black', ms=ms),
+                              markerfacecolor='black', markersize=10),
                        Line2D([0], [0], marker='o', color='white',
                               label=r'Free troposphere',
-                              markerfacecolor='lime', ms=ms),
+                              markerfacecolor='lime', markersize=10),
                        Line2D([0], [0], marker='o', color='white',
                               label='Mixed dust/biomass burning',
-                              markerfacecolor='orange', ms=ms),
+                              markerfacecolor='orange', markersize=10),
                        Line2D([0], [0], marker='o', color='white',
                               label='CVAO 2019',
-                              markerfacecolor='purple', ms=ms),
+                              markerfacecolor='purple', markersize=10),
                        Line2D([0], [0], marker='o', color='white',
-                              label='Ye et al (2017)',
-                              markerfacecolor='lightgrey', ms=ms),
+                              label='Ye et al. 2017',
+                              markerfacecolor='lightgrey', markersize=10),
                        Patch(facecolor='cyan', edgecolor='cyan',
-                             label="Ye et al (2016)"),
+                             label="Ye et al. 2016"),
                        Patch(facecolor='green', edgecolor='green',
-                             label="Romer et al (2018)"),
+                             label="Romer et al. 2018"),
                        Patch(facecolor='coral', edgecolor='coral',
-                             label="Shi et al (2021)"),
+                             label="Shi et al. 2021"),
                        Line2D([0], [0], color='black', linestyle="dashed",
-                              lw=4, label='Ye et al (2017) fit'),
+                              lw=4, label='Ye et al. 2017 fit'),
                        Line2D([0], [0], color='black', lw=4,
                               label='Langmuir fit (this study)')]
 
-    # Creating colour scheme for scatterplots - should probably consider changing the colours...
+    # Creating colourscheme for scatterplots - should probably consider changing the colours...
     c1_new = np.where(df1["Categories"] == 1, "blue", "orange")
     c2_new = np.where(df1["Categories"] == 2, "lime", c1_new)
     c3_new = np.where(df1["Categories"] == 4, "black", c2_new)
@@ -6806,9 +6808,8 @@ def mk_Andersen2021_figure_02(dpi=720, figsize=(7, 3), aspect=None, ms=None,
     y3 = y2/(7*10**-7)
 
     # Plotting all the data
-    f = plt.figure(figsize=figsize, dpi=dpi)
-    if not isinstance(aspect, type(None)):
-        AC.adjustFigAspect(f, aspect=aspect)
+    f = plt.figure(dpi=dpi)
+    adjustFigAspect(f, aspect=aspect)
     ax1 = plt.subplot2grid((1, 2), (0, 0), colspan=1)
     ax2 = plt.subplot2grid((1, 2), (0, 1), colspan=1)
 
@@ -6824,14 +6825,14 @@ def mk_Andersen2021_figure_02(dpi=720, figsize=(7, 3), aspect=None, ms=None,
 
     __x = df2["JVL_016"]*3600*((df2["Nitrate.ug_m3"])/(62*4.09*10**-5))
     ax1.scatter(x=__x, y=df2["Missing_HONO_source_per_hour"], color="purple")
-    ax1.tick_params(axis="both", labelsize=labelsize)
+    ax1.tick_params(axis="both", labelsize=16)
     ax1.set_xlim(0, 5.5)
     ax1.set_ylim(0, 180)
-    ax1.text(0.05, 0.95, "(A)", fontsize=fontsize, transform=ax1.transAxes)
-    ax1.set_ylabel("Missing HONO source (ppt h$^{-1}$)", fontsize=fontsize)
+    ax1.text(0.02, 170, "(A)", fontsize=20)
+    ax1.set_ylabel("Missing HONO source (ppt h$^{-1}$)", fontsize=20)
     label = r"$\it{j}_\mathrm{HNO_3}$ $\times$ "
-    label += r"[pNO$_3^-$]$_\mathrm{bulk}$ (ppt h$^{-1}$)"
-    ax1.set_xlabel(label, fontsize=fontsize)
+    label += "[pNO$_3^-$]$_\mathrm{bulk}$ (ppt h$^{-1}$)"
+    ax1.set_xlabel(label, fontsize=20)
 
     ax2.add_artist(e1)
     ax2.add_artist(e2)
@@ -6856,131 +6857,20 @@ def mk_Andersen2021_figure_02(dpi=720, figsize=(7, 3), aspect=None, ms=None,
     ax2.plot(x, y, color="black")
     ax2.plot(x, y3, color="black", linestyle="dashed")
     ax2.set_xlim(0.1, 10000)
-#    ax2.set_ylim(0, 20000) # Manually set the y-axis extents?
-    ax2.set_xscale("log")
+    ax2.set_ylim(0, 20000)
+ax2.set_xscale("log")
     ax2.set_yscale("log")
-    ax2.tick_params(axis="both", labelsize=labelsize)
+    ax2.tick_params(axis="both", labelsize=16)
     label = "[pNO$_3^-$]$_\mathrm{bulk}$ (10$^{-9}$ moles m$^{-3}$)"
-    ax2.set_xlabel(label, fontsize=fontsize)
-    ax2.set_ylabel("Enhancement Factor ($\it{f}$)", fontsize=fontsize)
-    ax2.text(0.05, 0.95, "(B)", fontsize=fontsize, transform=ax2.transAxes)
-
+    ax2.set_xlabel(label, fontsize=20)
+    ax2.set_ylabel("Enhancement Factor ($\it{f}$)", fontsize=20)
+    ax2.text(0.105, 9900, "(B)", fontsize=20)
     label = r"$\it{f}$ = $\frac{\it{a Q^0 K_{ads}}}"
-    label += r"{1 + \it{K_{ads}} [\mathrm{pNO_3^-}]_\mathrm{bulk}}$"
-    ax2.text(20, 2000, label, fontsize=fontsize)
+    label += "{1 + \it{K_{ads}} [\mathrm{pNO_3^-}]_\mathrm{bulk}}$"
+    ax2.text(label, 20, 2000, , fontsize=20)
 
-    ax2.legend(handles=legend_elements,
-             fontsize=fontsize/5*4,
-             loc=(1.05, 0.05),
-             frameon=False)
-    # Save figure
-    AC.save_plot('ARNA_Andersen_figure_02', dpi=dpi, tight=tight)
-
-
-def plt_seasonal_comparoisons_of_nitrate():
-    """
-    Make a plot of seasonal nitrate at CVAO
-    """
-    #
-    RunSet = 'ACID'
-    res = '4x5'
-    CoreRunsOnly = False
-    RunDict = get_dict_of_GEOSChem_model_output(res=res, RunSet=RunSet,
-                                                CoreRunsOnly=CoreRunsOnly,
-                                                folder4netCDF=True)
-    # Choose runs to use
-    d = {}
-    d['BC-BASE'] =  '/users/ts551/scratch/GC/rundirs/P_ARNA//geosfp_4x5_standard.v12.9.0.BASE.2019.2020.ARNA.BCs.repeat//OutputDir/'
-    d['Acid-4x5-J00'] = '/users/ts551/scratch/GC/rundirs/P_ARNA//geosfp_4x5_aciduptake.v12.9.0.BASE.2019.2020.ARNA.DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags.v2.J00//OutputDir/'
-    dates2use = [datetime.datetime(2019, 1+i, 1) for i in range(12)]
-    dsD = {}
-    for key in d.keys():
-        dsD[key] = AC.GetSpeciesConcDataset(wd=d[key],
-                                              dates2use=dates2use)
-
-    # Get model
-    from Prj_NITs_analysis import get_CVAO_NITs_data
-#    df_obs = get_CVAO_NITs_data()
-    # Update dates
-    dates = AC.dt64_2_dt( df_obs.index.values )
-    df_obs.index = [ update_year(i, year=2019) for i in df_obs.index ]
-
-    # Create a 'NIT-all'
-    prefix = 'SpeciesConc_'
-    for key in d.keys():
-        ds = dsD[key]
-        ds = AC.AddChemicalFamily2Dataset(ds, fam='NIT-all', prefix=prefix)
-        dsD[key] = ds
-
-    # Select for CVAO
-    from funcs4obs import gaw_2_loc
-    site = 'CVO'
-    lat, lon, alt, TZ = gaw_2_loc(site)
-    for key in d.keys():
-        ds = dsD[key]
-        ds = ds.sel(lat=lat, lon=lon, method='nearest')
-        ds = ds.sel(lev=ds.lev.values[0] )
-        dsD[key] = ds
-    # remove the redundent coordinates
-    for key in d.keys():
-        ds = dsD[key]
-        del ds['lat']
-        del ds['lon']
-        del ds['lev']
-        dsD[key] = ds
-
-    # plot up
-    import seaborn as sns
-    sns.set(color_codes=True)
-    var2plot = 'SpeciesConc_NIT-all'
-    fig, ax = plt.subplots()
-    colors = AC.get_CB_color_cycle()
-    for nKey, key in enumerate( d.keys() ):
-        ds = dsD[key]
-        AC.BASIC_seasonal_plot(dates=ds.time.values,
-                               color=colors[nKey],
-                               data=ds[var2plot].values*1E12,
-                               ax=ax,
-                               label=key)
-
-    # Add observations
-    AC.BASIC_seasonal_plot(dates=df_obs.index, color='k',
-                           data=df_obs['Nitrate, pptv'].values, ax=ax,
-                           label='Obs.')
-
-    plt.ylabel('All nitrate (inc. on dust)')
-    plt.legend()
-    plt.title('Seasonal cycle of ntirate at CVAO (pptv)')
-    AC.save_plot(title='NITs_comparison_CVAO_model_obs', dpi=720)
-    plt.close('all')
-
-    # rename obs
-    species = [i.split(prefix)[-1] for i in ds.data_vars]
-    for key in d.keys():
-        ds = dsD[key]
-        ds = ds.rename(name_dict=dict(zip(ds.data_vars, species)))
-        dsD[key] = ds
-
-    # plot up a stacked plot of nitrate by season.
-    key = 'Acid-4x5-J00'
-    ds = dsD[key]
-    del ds['ilev']
-#    vars2plot = [i for i in ds.data_vars if 'NIT' in i ]
-    vars2plot = ['NITD4', 'NITD3', 'NITD2', 'NITD1', 'NITs', 'NIT',]
-    df = ds[vars2plot+ ['NIT-all']].to_dataframe()
-    df = df * 1E12 # Conevrt to pptv
-#    for var in
-
-    plt.close('all')
-    fig, ax = plt.subplots()
-    df[vars2plot].plot.area()
-
-    # Add monthly mean for obs.
-    df_obs = df_obs.resample('1M').mean()
-    df_obs['Nitrate, pptv'].plot(label='obs', color='k', ls='--', zorder=99)
-    plt.autoscale(enable=True, axis='y')
-    plt.legend()
-
-    AC.save_plot(title='NITs_comparison_CVAO_by_species', dpi=720)
-    plt.close('all')
-
+    f.legend(handles=legend_elements,
+             fontsize=16, ncol=1, loc="right", frameon=False)
+#    plt.show()
+    AC.save_plot('ARNA_Andersen_figure_02', dpi=dpi)
+OA

@@ -54,7 +54,9 @@ def explore_NOy_with_acid_uptake():
     # Set runs to use
     RunSet = 'ACID'
     res = '4x5'
-    RunDict = ar.get_dict_of_GEOSChem_model_output(res=res, RunSet=RunSet)
+    folder4netCDF = True
+    RunDict = ar.get_dict_of_GEOSChem_model_output(res=res, RunSet=RunSet,
+                                                   folder4netCDF=folder4netCDF)
 #     RunRoot = '/users/ts551/scratch/GC/rundirs/'
 #     RunStr = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020{}/'
 #     run_dict = {
@@ -67,9 +69,11 @@ def explore_NOy_with_acid_uptake():
 #    run_dict = d
     # - Analysis
     # Get generic stats on runs
-    dates2use = None
+#    dates2use = None
+    dates2use = [datetime.datetime(2019, 1+i, 1) for i in range(12)]
+
     extra_specs = NOySpecs + ['SO2', 'SO4']
-    df = AC.get_general_stats4run_dict_as_df(run_dict=d,
+    df = AC.get_general_stats4run_dict_as_df(run_dict=RunDict,
                                              dates2use=dates2use,
                                              extra_burden_specs=extra_specs)
 
@@ -312,6 +316,9 @@ def explore_ARNA_period_with_acid_uptake():
     # Use spun up year before the campaign (2019)
     sdate = datetime.datetime(2019, 1, 1, )
     edate = datetime.datetime(2019, 12, 31, )
+    # Just use the January 2020, to compare against sonde data
+    sdate = datetime.datetime(2019, 1, 1, )
+    edate = datetime.datetime(2020, 1, 29, )
     # Just use the dates of the ARNA campaign
     sdate = datetime.datetime(2019, 2, 1, )
     edate = datetime.datetime(2020, 2, 29, )
@@ -350,6 +357,10 @@ def explore_ARNA_period_with_acid_uptake():
     df = df.T
     df = pd.concat([df, df2], axis=1)
     df = df.T
+
+    # Update the units (from NO/kg/yr to N/kg/yr)
+#    df = df / AC.species_mass('NO') * AC.species_mass('N')
+
 
     # Rename the keys to more readable names
 #     rename_dict = {
@@ -852,7 +863,7 @@ def analyse_NOx_budget():
 
 def plt_lightning_by_month(context='paper'):
     """
-    Plot lightning seasonally and explore high values (~10 Tg/year equiv.)
+    Plot lightning seasonally and explore high values
     """
     import seaborn as sns
     sns.set(color_codes=True)
@@ -873,6 +884,8 @@ def plt_lightning_by_month(context='paper'):
         val = (ds[var2use].sum(dim='lev') * ds['AREA'])
         val = val.sum('lat').sum('lon') * 60 * 60 * 24 * 365  # => /month
         val = val*1E3/1E12
+        # Convert NO => N
+        val = val / AC.species_mass('NO') * AC.species_mass('N')
         dfs[key] = val.to_pandas()
     # plot up
     units = 'Lightning (Tg N/year (equiv.))'
