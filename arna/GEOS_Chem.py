@@ -80,7 +80,7 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625', folder4netCDF=False,
             # Isotherm
     #        RunStr = 'DustUptake.JNIT.Isotherm.BCs'
 #            RunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II'
-#             IsoRunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags.'
+            IsoRunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags.'
 #             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, IsoRunStr+'v2')
 #             d['Acid-4x5-Isotherm.v2.0'] = folder
             # ... Other Isotherm versions
@@ -149,6 +149,18 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625', folder4netCDF=False,
 #             folder = '{}/{}{}/'.format(RunRoot, RunStr, '')
 #             d['BASE-4x5-MERRA-2'] = folder
 
+            # Isotherm, deliquescent limit, Cap Jscale 50, HONO channel 100%
+            RunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags'
+            RunStr += '.v3.0.H2O.cap2J50.HONO100'
+            folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
+            d['Acid-4x5-Isotherm.v3aqCap50H100'] = folder
+
+            # 4 pptv HONO everywhere
+            RunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags'
+            RunStr += '.v2.J00.HourlyOutput.HONO4pptv'
+            folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
+            d['Acid-4x5-4pptHONO'] = folder
+
             # Only return the core runs
             if CoreRunsOnly:
                 runs2use = [
@@ -160,8 +172,11 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625', folder4netCDF=False,
 #                    'Acid-4x5-J50-AfBBx3-NH3x3',
 #                    'Acid-4x5-Isotherm.v2.4',
 #                    'Acid-4x5-Isotherm.v2',
-                    'Acid-4x5-Isotherm.v3.0.H2O',
+#                    'Acid-4x5-Isotherm.v3.0.H2O',
 #                    'Acid-4x5-Isotherm.v3.0.H2O.Acid',
+                    # core runs as of March 2022
+                    'Acid-4x5-Isotherm.v3aqCap50H100',
+#                    'Acid-4x5-4pptHONO',
                     # Temp
 #                    'BASE-4x5-MERRA-2',
 #                    'Acid-4x5-J50-BBx0',
@@ -826,6 +841,7 @@ def get_tags_for_NOx_HONO():
 def get_NOx_budget_ds_dict_for_runs(limit_data_spatially=False,
                                     RunDict=None,
                                     RunSet='ACID', res='4x5',
+                                    CoreRunsOnly=False,
                                     dates2use=None,
                                     trop_limit=False,
                                     ):
@@ -834,7 +850,8 @@ def get_NOx_budget_ds_dict_for_runs(limit_data_spatially=False,
     """
     # Set runs to use and dates to of NetCDF files to use
     if isinstance(RunDict, type(None)):
-        RunDict = get_dict_of_GEOSChem_model_output(res=res, RunSet=RunSet)
+        RunDict = get_dict_of_GEOSChem_model_output(res=res, RunSet=RunSet,
+                                                    CoreRunsOnly=CoreRunsOnly)
     TagD = get_tags_for_NOx_HONO()
     TagDr = {v: k for k, v in list(TagD.items())}
     # Only consider runs with diagnostics output

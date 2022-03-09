@@ -486,7 +486,8 @@ def test_new_planeflight_Jrate_output():
 
     # - Get plane flight output
     RunRoot = ar.get_local_folder('RunRoot')
-    folder = RunRoot+'/geosfp_4x5_standard.v12.9.0.BASE.2019.2020.ARNA.BCs.TEST.PF_Jrates.REA.VI/'
+    folder = RunRoot+'/geosfp_4x5_standard.v12.9.0.BASE.2019.2020.ARNA.BCs
+    folder += '.TEST.PF_Jrates.REA.VI/'
     files2use = list(sorted(glob.glob(folder + '/TEST_1day/*plane*')))
     file2use = files2use[0]
     # Get Header infomation from first file
@@ -851,17 +852,13 @@ def mk_vertical_comparisons_with_nirate():
     """
 
     # folder
-    pass
 
+    # Now plot by location
 
     #
 
 
-
-
-    # Now plot by location
-
-
+    pass
 
 
 def plt_seasonal_species_at_sites():
@@ -960,12 +957,13 @@ def plt_seasonal_species_at_sites():
     plt.close('all')
 
 
-def plt_bermuda_obs():
+def plt_bermuda_obs(debug=False):
     """
     Plot up Bermuda observations
     """
     # Switches
     ReadFromCSV = True
+    UseV13output = True
 
     # Get observational data
     ExcelFileName = 'Bermuda_data_hourly.xlsx'
@@ -1018,7 +1016,8 @@ def plt_bermuda_obs():
     }
     # Ensure the units are the same in obs. between spring and summer
     for key in UnitsSummer.keys():
-#        print(key)
+        if debug:
+            print(key)
         NewUnits = UnitsSummer[ key ]
         if (key in list(UnitsSpring.keys())):
             CurrentUnits = UnitsSpring[key]
@@ -1055,9 +1054,20 @@ def plt_bermuda_obs():
 
     # Also add model to the comparisons
     # Use the generic year of Bermuda obs run for Pete/
-    FileName = 'NSFB_ARNA_GEOSChem_v12_9_0_BMW_J00.csv'
-    dfMod = pd.read_csv(Folder + FileName)
-    dfMod.index = pd.to_datetime( dfMod['time'].values )
+    if UseV13output:
+        FileName = 'v13-4-0_bermua.csv'
+        dfMod = pd.read_csv(Folder + FileName)
+        dfMod.index = pd.to_datetime( dfMod['datetime'].values )
+        # Just use 2018 data for now.
+        dfMod = dfMod.loc[ dfMod.index.year == 2018, :]
+        # But kludge the year to be 2019
+        index = AC.dt64_2_dt( dfMod.index.values )
+        dfMod.index = [AC.update_year(i, year=2019) for i in index]
+
+    else:
+        FileName = 'NSFB_ARNA_GEOSChem_v12_9_0_BMW_J00.csv'
+        dfMod = pd.read_csv(Folder + FileName)
+        dfMod.index = pd.to_datetime( dfMod['time'].values )
 
     # Add NOx to obs and model
     var1 = '[NO] (NOx system)'
@@ -1103,7 +1113,7 @@ def plt_bermuda_obs():
     import seaborn as sns
     sns.set(color_codes=True)
     sns.set_context(context)
-    savetitle = 'ARNA_Bermunda_comp'
+    savetitle = 'ARNA_Bermunda_comp_v13'
     pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
     for season in seasons:
         # Sub-select dates for season
@@ -1116,7 +1126,9 @@ def plt_bermuda_obs():
             pptv_units = 'HNO3', 'HNO2', 'NO', 'NO2', 'NOx'
             if (var in pptv_units):
                 units, scaleby = 'pptv', 1E12
-
+            # V13 alreaedy scaled
+            if UseV13output:
+                scaleby = 1
             # Plot obs
             bool1 = dfObs.index >= sdate
             bool2 = dfObs.index <= edate
@@ -1144,11 +1156,6 @@ def plt_bermuda_obs():
             plt.title(PrtStr.format(var, season.lower(),units ))
 
             # Update x axis label rotation
-#             xtickrotation = 45
-#             ax = plt.gca()
-#             labels = ax.get_xticklabels()
-#             ax.set_xticklabels(labels, rotation=xtickrotation)
-#            plt.xticks(meridians[::everyother], fontsize=f_size*.75)
             plt.xticks(rotation=45)
 
 
@@ -1157,7 +1164,6 @@ def plt_bermuda_obs():
             plt.close()
 
         # Plot up daily cycles
-
         for var in vars2plot:
             fig, ax = plt.subplots()
             print( season, var )
@@ -1180,22 +1186,10 @@ def plt_bermuda_obs():
                                 spec=var, units=units,
                                 fig=fig, ax=ax)
 
-#            plt.plot( df2plot[dObs2Mod_r[var]].index,
-#                      df2plot[dObs2Mod_r[var]].values,
-#                      label='Obs.',
-#                      color='Black',
-#                      )
-
             # Try to plot model
             bool1 = dfMod.index >= sdate
             bool2 = dfMod.index <= edate
             df2plot = dfMod.loc[ (bool1 & bool2), :]
-#             plt.plot( df2plot[var].index,
-#                       df2plot[var].values * scaleby,
-#                       label='Model',
-#                       color='Red',
-#                       )
-
 
             AC.BASIC_diel_plot( dates=df2plot[var].index,
                                 data=df2plot[var].values * scaleby,
@@ -1209,12 +1203,6 @@ def plt_bermuda_obs():
             PrtStr = "Diel cycle {} @ Bermuda during {} campaign ({})"
             plt.title(PrtStr.format(var, season.lower(),units ))
 
-            # Update x axis label rotation
-#             xtickrotation = 45
-#             ax = plt.gca()
-#             labels = ax.get_xticklabels()
-#             ax.set_xticklabels(labels, rotation=xtickrotation)
-
             # Save to PDF
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
             plt.close()
@@ -1227,9 +1215,12 @@ def plt_bermuda_obs():
 
 def plt_comp_with_NASA_Atom():
     """
-
+    Plot up comparisons with NASA ATom data
     """
     # Get lastest NASA ATom data and plot up
+
+    #
+
 
     #
 

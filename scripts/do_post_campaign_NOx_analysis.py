@@ -785,8 +785,10 @@ def analyse_NOx_budget():
     # Get NOx budget dictionary
     dates2use = [datetime.datetime(2019, i+1, 1) for i in range(12)]
     trop_limit = False
+    CoreRunsOnly = True
     NOxD = ar.get_NOx_budget_ds_dict_for_runs(trop_limit=trop_limit,
-                                              dates2use=dates2use)
+                                              dates2use=dates2use,
+                                              CoreRunsOnly=CoreRunsOnly)
     # Avogadros constant
     AVG = AC.constants('AVG')
 
@@ -850,6 +852,8 @@ def analyse_NOx_budget():
     for col in [i for i in df2.columns if i != REF]:
         df2.loc[:, col] = df2.loc[:, col] / df2[REF]
     print(df2)
+    df2.to_csv('ARNA_NOx_HNO2_REF_{}.csv'.format(REF))
+
 
     # Consider the values relative to the J50 run
     df3 = df.copy()
@@ -857,6 +861,7 @@ def analyse_NOx_budget():
     for col in [i for i in df3.columns if i != REF]:
         df3.loc[:, col] = df3.loc[:, col] / df3[REF]
     print(df3)
+    df3.to_csv('ARNA_NOx_HNO2_REF_{}.csv'.format(REF))
 
     # Consider ...
 
