@@ -842,6 +842,12 @@ def analyse_NOx_budget():
         # print to...
         df[key] = S
 
+    # Get deposition sinks too
+
+
+    #
+
+
     # Print DataFrame and save to csv
     print(df)
     df.to_csv('ARNA_NOx_HNO2.csv')
