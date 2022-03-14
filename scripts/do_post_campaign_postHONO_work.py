@@ -23,7 +23,8 @@ def do_analysis_of_4pptv_HONO_world():
     """
     # Model runs to use?
     RunSet = 'PostHONO'
-    GC_version = 'v13.4'
+#    GC_version = 'v13.4'
+    GC_version = 'v12.9'
     RunDict = get_RunDict_of_HONO_runs(RunSet=RunSet, GC_version=GC_version)
     # Temporally use one run for the references values (e.g. statemet)
     use_REF_wd4Met = True
@@ -31,8 +32,14 @@ def do_analysis_of_4pptv_HONO_world():
 
     # Set dates to use (as model run progresses)
     dates2use = [
+    # First month of spin up
     datetime.datetime(2018, 1, 1 ),
     datetime.datetime(2018, 2, 1 ), # Initial month of spin up
+    # first month of spun up ouput
+    datetime.datetime(2018, 1, 1 ),
+    datetime.datetime(2018, 2, 1 ), # Initial month of spin up
+
+
     ]
     # Use spin up year?
 #    dates2use = [datetime.datetime(2018, 1+i, 1) for i in range(12)]
@@ -43,30 +50,30 @@ def do_analysis_of_4pptv_HONO_world():
     extra_surface_specs = extra_burden_specs
 #    df = AC.get_general_stats4run_dict_as_df(run_dict=RunDict,
     df = get_stats4RunDict_as_df(RunDict=RunDict,
-                                             dates2use=dates2use,
-                                             use_REF_wd4Met=use_REF_wd4Met,
-                                             REF_wd=REF_wd,
-                                         extra_burden_specs=extra_burden_specs,
-                                     extra_surface_specs=extra_surface_specs,
-                                             verbose=verbose,
-                                             debug=debug,
-                                             )
+                                 dates2use=dates2use,
+                                 use_REF_wd4Met=use_REF_wd4Met,
+                                 REF_wd=REF_wd,
+                                 extra_burden_specs=extra_burden_specs,
+                                 extra_surface_specs=extra_surface_specs,
+                                 verbose=verbose,
+                                 debug=debug,
+                                 )
     # Get extra stats relate to HONO
     DiagVars = [
     'CO-lifetime', 'OH-lifetime', 'NOx-lifetime', 'NO2-lifetime',
-    'Ox-lifetime', 'HNO2-lifetime',
+    'CH4-lifetime', 'Ox-lifetime', 'HNO2-lifetime',
     'HNO2:NOx', 'HNO2:HNO3',
     'HNO3:NOx', 'HNO3:NO2', 'HNO3:NIT',
     'NIT:NOx', 'NO2:NO',
     ]
     df2 = get_stats4RunDict_as_df(RunDict=RunDict,
-                                             dates2use=dates2use,
-                                             use_REF_wd4Met=use_REF_wd4Met,
-                                             REF_wd=REF_wd,
-                                             DiagVars=DiagVars,
-                                             verbose=verbose,
-                                             debug=debug,
-                                             )
+                                  dates2use=dates2use,
+                                  use_REF_wd4Met=use_REF_wd4Met,
+                                  REF_wd=REF_wd,
+                                  DiagVars=DiagVars,
+                                  verbose=verbose,
+                                  debug=debug,
+                                  )
     # CO-lifetime
 
     # OH-lifetime
@@ -212,9 +219,22 @@ def get_RunDict_of_HONO_runs(RunSet='PostHONO', GC_version='v13.4'):
 #         'N2O5': '{}{}{}/'.format(RunRoot, RunStr, ''),
         }
     elif (RunSet == 'PostHONO') and (GC_version == 'v12.9'):
-        BASEStr = ''
-        RunStr = ''
-
+        RunStr = 'geosfp_4x5_aciduptake.v12.9.0.BASE.2019.2020.ARNA.DustUptake'
+        RunStr += '.JNIT.Isotherm.BCs.repeat.ON.II.diags'
+        RunStr2 = RunStr + '.v2.J00.HourlyOutput'
+        RunDict = {
+#        'Base': '{}{}{}/'.format(RunRoot, RunStr,'.v2.J00.HourlyOutput'),
+        'min4pptvHONO': '{}{}{}/'.format(RunRoot, RunStr2,
+                                         '.HONO4pptv' ),
+        '4pptHONO': '{}{}{}/'.format(RunRoot, RunStr2,
+                                     '.HONO4pptv.all' ),
+#        'NOxSink': '{}{}{}/'.format(RunRoot, RunStr, ''),
+    #    'HalNitratesx10': '{}{}{}/'.format(RunRoot, RunStr, ''),
+#        'NIThv': '{}{}{}/'.format(RunRoot, RunStr, ''),
+#        'OH+NO2': '{}{}{}/'.format(RunRoot, RunStr, ''),
+#         'HO2+NO':  '{}{}{}/'.format(RunRoot, RunStr, ''),
+#         'N2O5': '{}{}{}/'.format(RunRoot, RunStr, ''),
+        }
     else:
         PrtStr = "Unkonwn RunSet ('{}') and GC verions ('{}')"
         print(PrtStr.format(RunSet, GC_version))
@@ -336,6 +356,7 @@ def get_stats4RunDict_as_df(
     avg_over_time = True  # Note: burdens area averaged overtime
     specs2use = list(set(core_specs+['CO']+extra_burden_specs))
     vars2use = [prefix+i for i in specs2use]
+    BurdenStr = '{} burden ({})'
     for key in RunDict.keys():
         # Get StateMet object
         if use_REF_wd4Met:
@@ -355,7 +376,7 @@ def get_stats4RunDict_as_df(
             val = S[prefix+spec]
             S[prefix+spec] = val/species_mass(spec)*species_mass(ref_spec)
         # Upate varnames
-        varnames = ['{} burden ({})'.format(i, mass_unit) for i in specs2use]
+        varnames = [BurdenStr.format(i, mass_unit) for i in specs2use]
         S = S.rename(index=dict(zip(list(S.index.values), varnames)))
         # Save the values for run to central DataFrame
         df[key] = S
@@ -386,30 +407,66 @@ def get_stats4RunDict_as_df(
     prefix = 'SpeciesConc_'
     if (len(lifetimes2calc) >= 1):
         for key in RunDict.keys():
-            for var2calc in lifetimes2calc:
-                species2calc = var2calc.split('-lifetime')[0]
-                print(var2calc, species2calc)
+            # Get StateMet object
+            if use_REF_wd4Met:
+                StateMet = dsS[RunDict_r[REF_wd]]
+            else:
+                StateMet = dsS[key]
+            # Loop and calculate lifetime one species at a time
+            for var in lifetimes2calc:
+                species2calc = var.split('-lifetime')[0]
+                print(var, species2calc)
                 if verbose:
-                    print(PtrStr1.format(var2calc, species2calc))
+                    print(PtrStr1.format(var, species2calc))
 
                 # Find loss value from prod/loss diagnostic
                 PLvar = '{}_{}'.format(PLprefix, species2calc)
                 try:
                     ds = get_ProdLoss_ds(wd=RunDict[key], dates2use=dates2use)
                     ds = ds[[PLvar]]
+                    # Only consider troposphere?
+                    if rm_strat:
+                        # Loop by spec
+                        if use_time_in_trop:
+                            ds = rm_fractional_troposphere(ds,
+                                                            vars2use=[PLvar],
+                                                            StateMet=StateMet)
+                        else:
+                            ds = ds[PLvar].where(trop_mask)
+                    loss = ds[[PLvar]]
+                    # Use burden calculated already
+                    if debug:
+                        print('WARNING: Check units for tropospheric burden')
+                    burden = df.loc[ BurdenStr.format(species2calc, 'Tg'), key]
+
+                    # Convert units to be species appropriate
+                    # molecules/cm3/s-1 =>  mol/s-1
+                    loss *= StateMet['Met_AIRVOL'] * 1E6 / AC.constants('AVG')
+                    # mol/s-1 => g/s => Tg/s
+                    loss *= species_mass(species2calc) / 1E12
+
+                    # (e.g. years for CH4, NO2 in minutes ....)
+                    lifetime = burden / np.nansum( loss[PLvar].values )
+                    LifeimeInDays = ['CO', 'Ox', 'NOx', 'NO', 'NO2']
+                    if (species2calc in LifeimeInDays):
+                        lifetime = lifetime /60/60/24
+                        units = 'days'
+                    elif species2calc == 'CH4':
+                        lifetime = lifetime /60/60/24/365
+                        units = 'years'
+                    else:
+                        units = 's'
+                    # Save to stats dataframe
+                    LifetimeVar = '{} ({})'.format(var, units)
+                    df.loc[LifetimeVar, key] = lifetime
 
                 except KeyError:
                     # If variable not found, skip lifetime calculation
-                    print(ErrStr1.format(PLvar, var2calc))
+                    print(ErrStr1.format(PLvar, var))
 
                 except AssertionError:
                     # If files not found, skip lifetime calculation
-                    print(ErrStr2.format(key, var2calc))
-
-            # find species/family concentration
-
-            # calculate the tropospheric lifetime using burden and loss rate
-            pass
+                    print(ErrStr2.format(key, var))
 
     # - Add Ratio calculations
     PtrStr = "Calculating ratio for diag ('{}') for '{}' vs '{}'"
@@ -499,6 +556,56 @@ def get_stats4RunDict_as_df(
             # Save calculated values to dataframe
             df.loc[varname, key] = val
 
+    # - OH concentrations if in NetCDF output
+    if IncConcAfterChemDiags:
+        # Hardcore stast on HOx
+        vars2use = ['OH', 'HO2', 'HOx']
+        suffix = 'concAfterChem'
+        AttStr = '{} concentration immediately after chemistry'
+        ErrStr = "Failed to include '{}' diagnostics in df output ('{}')"
+        dsCC = {}
+        for key in RunDict.keys():
+            try:
+                ds = GetConcAfterChemDataset(wd=RunDict[key],
+                                             dates2use=dates2use)
+                # Add family value of HOx into  dataset
+                NewVar = '{}{}'.format('HOx', suffix)
+                OHvar = '{}{}'.format('OH', suffix)
+                HO2var = '{}{}'.format('HO2', suffix)
+                ds[NewVar] = ds[OHvar].copy()
+                ds[NewVar] = ds[OHvar] +  ds[HO2var]
+                attrs = ds[OHvar].attrs
+                attrs['long_name'] = AttStr.format('HOx')
+                units = attrs['units']
+                ds[NewVar].attrs = attrs
+                # rename to drop suffix
+                OldVars = [i for i in  ds.data_vars if suffix in i]
+                NewVars = [i.split(suffix)[0] for i in OldVars]
+                ds = ds.rename(name_dict=dict(zip(OldVars, NewVars)))
+                dsCC[key] = ds
+
+#            except KeyError:
+            except:
+                print(ErrStr.format(suffix, key))
+
+        # Include surface weighted values in core df
+        for key in RunDict.keys():
+            ds = dsCC[key].copy()
+            #
+            ds = ds.isel(lev=(ds.lev==ds.lev[0])).mean(dim='time')
+            for var in vars2use:
+                varname = '{} surface ({})'.format(var, units)
+                # Save values on a per species basis to series
+                val = get_avg_2D_conc_of_X_weighted_by_Y(ds, Xvar=var,
+                                                         Yvar='AREA')
+                # Save calculated values to dataframe
+                df.loc[varname, key] = val
+
+
+    # - Tropospherically weighted averages for species (e.g. oxidants)
+    # TODO
+
+
     # Transpose dataframe
     df = df.T
     # Scale units
@@ -507,14 +614,6 @@ def get_stats4RunDict_as_df(
             df.loc[:, col_] = df.loc[:, col_].values*ppbv_scale
         if 'ppt' in col_:
             df.loc[:, col_] = df.loc[:, col_].values*pptv_scale
-
-    # - OH concentrations if in NetCDF output
-    if IncConcAfterChemDiags:
-        try:
-            pass
-        except KeyError:
-            pass
-
 
     # - Processing and save?
     # Calculate % change from base case for each variable
