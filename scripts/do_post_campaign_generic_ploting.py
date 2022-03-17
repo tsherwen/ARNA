@@ -58,7 +58,6 @@ def main():
                                       CoreRunsOnly=CoreRunsOnly,
                                       debug=True)
 
-
     # The same plots as above, but split by their own PDF file..
     # NOTE: below function fails with a ValueError
 #     ar.plt_comp_by_alt_4ARNA_all(just_SLR=True, context=context,
@@ -173,7 +172,6 @@ def main():
     # Also plot up for related biomass-burning flights in MOYA campaign
 #     ar.plt_ts_comp4MOYA_flights()
 #     ar.plt_ts_comp4MOYA_flights_PHYSICAL_VARS()
-
 
     # Plot seasonal and vertical comparisons of nitrate (CVAO)
     plt_seasonal_comparoisons_of_nitrate()
@@ -308,15 +306,16 @@ def explore_high_ozone_near_CVAO():
     AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
     plt.close('all')
 
-
     # - Explore high ozone in vertical column in coarse output
     site = 'CVO'
     from funcs4obs import gaw_2_loc
     lat, lon, alt, TZ = gaw_2_loc(site)
     NIU, NIU, ModelAlt = AC.get_latlonalt4res('4x5', full_vert_grid=True)
     ModelhPa = AC.hPa_to_Km(ModelAlt, reverse=True)
+
     def hPa_to_Km_reverse(value, reverse=True):
         return AC.hPa_to_Km(value, reverse=reverse)
+
     def hPa_to_Km_local(value, reverse=False):
         return AC.hPa_to_Km(value, reverse=reverse)
 
@@ -336,7 +335,7 @@ def explore_high_ozone_near_CVAO():
     # merra
     RunRoot = ar.get_local_folder('RunRoot')
     RunStr = '/merra2_4x5_standard.v12.9.0.BASE.2019.2020.diags/OutputDir/'
-    RunDict['MERRA.4x5'] =  RunRoot + RunStr
+    RunDict['MERRA.4x5'] = RunRoot + RunStr
 
     # no biomass burning
     RunStr = '/geosfp_4x5_aciduptake.v12.9.0.BASE.2019.2020.ARNA.DustUptake'
@@ -353,7 +352,7 @@ def explore_high_ozone_near_CVAO():
     dsD = {}
     for key in RunDict.keys():
         ds = AC.GetSpeciesConcDataset(wd=RunDict[key],
-                                            dates2use=dates2use)
+                                      dates2use=dates2use)
         ds = AC.AddChemicalFamily2Dataset(ds, fam='NOx', prefix=prefix)
         if limit_time2campaign:
             bool1 = AC.dt64_2_dt(ds.time) >= sdate
@@ -390,26 +389,26 @@ def explore_high_ozone_near_CVAO():
 
     # plot up GEOS-Chem runs
     prefix = 'SpeciesConc_'
-    for VarName  in VarNames:
+    for VarName in VarNames:
         for key in RunDict.keys():
             ds = dsD[key][[prefix+VarName]]
             ds = ds.sel(lat=lat, lon=lon, method='nearest')
-            X = ds[prefix+VarName].values[0] *1E9
-            Y = np.array( ModelhPa[:len(X)] )
+            X = ds[prefix+VarName].values[0] * 1E9
+            Y = np.array(ModelhPa[:len(X)])
 #            Y = ds.lev.values
             plt.plot(X, Y, label=key)
 
         # Plot up GEOS-CG
-        X = ds2plotCF[VarName].values *1E9
+        X = ds2plotCF[VarName].values * 1E9
         Y = ds2plotCF.lev.values
         plt.plot(X, Y, label='GEOS-CF')
 
         # Beautify and save
         ax = plt.gca()
         if VarName == 'O3':
-            plt.xlim(0,100)
+            plt.xlim(0, 100)
         elif VarName == 'NOx':
-            plt.xlim(0,1)
+            plt.xlim(0, 1)
             ax.set_xscale('log')
 
 #        ax.invert_yaxis()
@@ -423,18 +422,18 @@ def explore_high_ozone_near_CVAO():
 #        ax.set_yscale('log')
 
         ax.set_ylabel('Pressure altitude (hPa)')
-        print( ax.get_ylim() )
+        print(ax.get_ylim())
         ax.set_ylim(1000, 100)
 
         secax = ax.secondary_yaxis('right', functions=(AC.hPa2Km, AC.km2hPa))
         secax.set_ylabel('Altitude (km)')
 #        secax.set_yscale('linear')
-        print( secax.get_ylim() )
+        print(secax.get_ylim())
         secax.set_ylim(0, 20)
 
         plt.title(VarName)
         plt.legend()
-        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)#, tight=True)
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi)  # , tight=True)
         plt.close()
 
     # - Save entire pdf
@@ -486,7 +485,7 @@ def test_new_planeflight_Jrate_output():
 
     # - Get plane flight output
     RunRoot = ar.get_local_folder('RunRoot')
-    folder = RunRoot+'/geosfp_4x5_standard.v12.9.0.BASE.2019.2020.ARNA.BCs
+    folder = RunRoot +'/geosfp_4x5_standard.v12.9.0.BASE.2019.2020.ARNA.BCs
     folder += '.TEST.PF_Jrates.REA.VI/'
     files2use = list(sorted(glob.glob(folder + '/TEST_1day/*plane*')))
     file2use = files2use[0]
@@ -802,31 +801,31 @@ def mk_comparisons_of_humidty():
     # Get model data
     dfs_mod_GC
     run2use = 'Acid-4x5-J00'
-    dfs = [ dfs_mod_GC[i][run2use] for i in flight_IDs ]
+    dfs = [dfs_mod_GC[i][run2use] for i in flight_IDs]
     df = pd.concat(dfs)
 
     # Add satuation pressure to df
     # 𝑒𝑠0 saturation vapor pressure at 𝑇0 (Pa)
     T0 = 273.16
-    T = df['GMAO_TEMP'].values # model temp (already in kelvin)
-    CC_partial_solution = np.exp( (17.67 * ( T - T0 )) / (T - 29.65) )
+    T = df['GMAO_TEMP'].values  # model temp (already in kelvin)
+    CC_partial_solution = np.exp((17.67 * (T - T0)) / (T - 29.65))
     df['Es'] = 611.0 * CC_partial_solution
 
     # NOTE: the model expoerts absolute humidty, not specific humidity
     # 𝑞  specific humidity or the mass mixing ratio of water vapor to total air (dimensionless)
-    q = df['GMAO_ABSH'] # unitless (which is ≈ 𝑤 )
-    p = df['GMAO_PRES'] # HPa
+    q = df['GMAO_ABSH']  # unitless (which is ≈ 𝑤 )
+    p = df['GMAO_PRES']  # HPa
 
     # And then calculate Ws ...
     # where "𝑝 pressure (Pa)"
     df['Ws'] = 0.622 * df['Es'] / p
 
     # Complete calculation
-    df['RH'] = 0.263 * p * q * ( CC_partial_solution**-1 )
+    df['RH'] = 0.263 * p * q * (CC_partial_solution**-1)
 
     # --- GEOS-CF
-    df = pd.concat([ dfs_mod_CF[i] for i in flight_IDs ] )
-    df['Alt'] = AC.hPa_to_Km( df['model-lev'].values )
+    df = pd.concat([dfs_mod_CF[i] for i in flight_IDs])
+    df['Alt'] = AC.hPa_to_Km(df['model-lev'].values)
 
     # plot
     import seaborn as sns
@@ -857,7 +856,6 @@ def mk_vertical_comparisons_with_nirate():
 
     #
 
-
     pass
 
 
@@ -870,7 +868,7 @@ def plt_seasonal_species_at_sites():
     FolderStr = 'geosfp_4x5_aciduptake.v12.9.0.BASE.2019.2020.ARNA.DustUptake.'
     FolderStr += 'JNIT.Isotherm.BCs.repeat.ON.II.diags.v2.J00.HourlyOutput/'
     FolderStr = RunRoot + FolderStr + 'OutputDir/'
-    RunDict = {'J00':FolderStr}
+    RunDict = {'J00': FolderStr}
     # Dates to use?
     sdate = datetime.datetime(2019, 1, 1)
     edate = datetime.datetime(2019, 12, 31)
@@ -881,14 +879,14 @@ def plt_seasonal_species_at_sites():
     file_str = 'GEOSChem.SpeciesConcSubset.*.nc4'
     for key in RunDict.keys():
         ds = AC.get_GEOSChem_files_as_ds(wd=RunDict[key],
-                                                    file_str=file_str,
-                                                    dates2use=dates2use)
+                                         file_str=file_str,
+                                         dates2use=dates2use)
         # Select year and surface data
         bool1 = AC.dt64_2_dt(ds.time) >= sdate
         bool2 = AC.dt64_2_dt(ds.time) <= edate
         ds = ds.isel(time=bool1)
         ds = ds.isel(time=bool2)
-        ds = ds.sel( lev=ds.lev.values[0] )
+        ds = ds.sel(lev=ds.lev.values[0])
         # Drop excess variables and rename speices
         drop_vars = ['hyam', 'hybm', 'hyai', 'hybi', 'P0', 'AREA']
         for var in drop_vars:
@@ -939,7 +937,6 @@ def plt_seasonal_species_at_sites():
     savetitle = 'GEOSChem_v12_9_0_seasonal_diel_at_{}'.format(site)
     pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
 
-
     for spec in specs2plot:
 
         units, scaleby = AC.tra_unit(spec, scale=True)
@@ -972,65 +969,65 @@ def plt_bermuda_obs(debug=False):
     # Spring Data
     if ReadFromCSV:
         CSVFileName = 'Bermuda_data_hourly_spring.csv'
-        dfSpring =  pd.read_csv( Folder+CSVFileName )
-        UnitsSpring = dfSpring.loc[0,:].to_dict()
+        dfSpring = pd.read_csv(Folder+CSVFileName)
+        UnitsSpring = dfSpring.loc[0, :].to_dict()
         dfSpring = dfSpring.drop(0)
         TimeVar = 'Time (utc-3)'
-        dfSpring.index = pd.to_datetime( dfSpring[TimeVar].values )
+        dfSpring.index = pd.to_datetime(dfSpring[TimeVar].values)
     else:
         SheetName = 'Bermuda_Spring_data_hourly'
-        dfSpring = pd.read_excel( Folder+FileName, SheetName=SheetName,
-                                date_parser=format )
+        dfSpring = pd.read_excel(Folder+FileName, SheetName=SheetName,
+                                 date_parser=format)
         # Save the units as attributes
-        UnitsSpring = dfSpring.loc[0,:].to_dict()
-        dfSpring = dfSpring.drop([0]) # Drop the unit row
+        UnitsSpring = dfSpring.loc[0, :].to_dict()
+        dfSpring = dfSpring.drop([0])  # Drop the unit row
         dfSpring.index = dfSpring['Time (utc-3)']
 
     # Summer Data
     if ReadFromCSV:
         CSVFileName = 'Bermuda_data_hourly_summer.csv'
-        dfSummer =  pd.read_csv( Folder+CSVFileName )
-        UnitsSummer = dfSummer.loc[0,:].to_dict()
+        dfSummer = pd.read_csv(Folder+CSVFileName)
+        UnitsSummer = dfSummer.loc[0, :].to_dict()
         dfSummer = dfSummer.drop(0)
         TimeVar = 'Time'
-        dfSummer.index = pd.to_datetime( dfSummer[TimeVar].values )
+        dfSummer.index = pd.to_datetime(dfSummer[TimeVar].values)
     else:
         SheetName = 'Bermuda_Summer_data_hourly'
-        dfSummer = pd.read_excel( Folder + FileName, SheetName=SheetName,
-                                 date_parser=format )
+        dfSummer = pd.read_excel(Folder + FileName, SheetName=SheetName,
+                                 date_parser=format)
         # Save the units as attributes
-        UnitsSummer = dfSummer.loc[0,:].to_dict()
-        dfSummer = dfSummer.drop([0]) # Drop the unit row
+        UnitsSummer = dfSummer.loc[0, :].to_dict()
+        dfSummer = dfSummer.drop([0])  # Drop the unit row
         dfSummer.index = dfSummer['Time (utc-3)']
 
     # Store the start and end dates of the observational period
     # With a one dat buffer to improve mundging with model
     seasons = ('Spring', 'Summer', )
     dPeriods = {
-    'Summer': (datetime.datetime(2019, 8, 10),
-              datetime.datetime(2019, 9, 12)
-              ),
-    'Spring': (datetime.datetime(2019, 4, 16),
-               datetime.datetime(2019, 5, 14)
-               ),
+        'Summer': (datetime.datetime(2019, 8, 10),
+                   datetime.datetime(2019, 9, 12)
+                   ),
+        'Spring': (datetime.datetime(2019, 4, 16),
+                   datetime.datetime(2019, 5, 14)
+                   ),
     }
     # Ensure the units are the same in obs. between spring and summer
     for key in UnitsSummer.keys():
         if debug:
             print(key)
-        NewUnits = UnitsSummer[ key ]
+        NewUnits = UnitsSummer[key]
         if (key in list(UnitsSpring.keys())):
             CurrentUnits = UnitsSpring[key]
             SameUnits = CurrentUnits == NewUnits
             if not (SameUnits):
                 PrtStr = "'Units in list for: '{}', as: '{}', ({}, same?:{})"
-                print( PrtStr.format(key, NewUnits, CurrentUnits, SameUnits) )
-                print( 'Why the units different?')
+                print(PrtStr.format(key, NewUnits, CurrentUnits, SameUnits))
+                print('Why the units different?')
 
     # Combine data into a single dataframe
-    dfObs = pd.concat( [dfSpring, dfSummer], axis=0 )
+    dfObs = pd.concat([dfSpring, dfSummer], axis=0)
     # convert times to UTC
-    index = AC.dt64_2_dt( dfObs.index.values )
+    index = AC.dt64_2_dt(dfObs.index.values)
     dfObs.index = AC.add_hrs(index, 3)
 
     # Combine columns for HONO (due to inconsistent naming)
@@ -1041,71 +1038,70 @@ def plt_bermuda_obs(debug=False):
     dfObs[VarHONO_Obs] = dfHONO
 
     # Clean up other columns and
-    vars2del = Var1, Var2, 'Time (utc-3)', 'Time','Time.1',
+    vars2del = Var1, Var2, 'Time (utc-3)', 'Time', 'Time.1',
     for var in vars2del:
         try:
             del dfObs[var]
         except:
-            print("Error: failed to delete var: '{}'".format(var) )
+            print("Error: failed to delete var: '{}'".format(var))
     # force columns to be numeric
     for col in dfObs.columns:
         dfObs[col] = pd.to_numeric(dfObs[col], errors='coerce')
-
 
     # Also add model to the comparisons
     # Use the generic year of Bermuda obs run for Pete/
     if UseV13output:
         FileName = 'v13-4-0_bermua.csv'
         dfMod = pd.read_csv(Folder + FileName)
-        dfMod.index = pd.to_datetime( dfMod['datetime'].values )
+        dfMod.index = pd.to_datetime(dfMod['datetime'].values)
         # Just use 2018 data for now.
-        dfMod = dfMod.loc[ dfMod.index.year == 2018, :]
+        dfMod = dfMod.loc[dfMod.index.year == 2018, :]
         # But kludge the year to be 2019
-        index = AC.dt64_2_dt( dfMod.index.values )
+        index = AC.dt64_2_dt(dfMod.index.values)
         dfMod.index = [AC.update_year(i, year=2019) for i in index]
 
     else:
         FileName = 'NSFB_ARNA_GEOSChem_v12_9_0_BMW_J00.csv'
         dfMod = pd.read_csv(Folder + FileName)
-        dfMod.index = pd.to_datetime( dfMod['time'].values )
+        dfMod.index = pd.to_datetime(dfMod['time'].values)
 
     # Add NOx to obs and model
     var1 = '[NO] (NOx system)'
     var2 = '[NO2] (NOx system)'
     dfObs['NOx'] = dfObs[var1] + dfObs[var1]
     dfMod['NOx'] = dfMod['NO'] + dfMod['NO2']
-    NIT_all = ['NITD4', 'NITD3', 'NITD2', 'NITD1', 'NITs', 'NIT',]
-    dfMod['NITs-all'] = dfMod[ NIT_all ].sum(axis=1)
+    NIT_all = ['NITD4', 'NITD3', 'NITD2', 'NITD1', 'NITs', 'NIT', ]
+    dfMod['NITs-all'] = dfMod[NIT_all].sum(axis=1)
 
     # Map obs. species names to model ones
     dObs2Mod = {
-    'Time (utc-3)': np.NaN,
-    'Time': np.NaN,
-    '[HNO3]': 'HNO3',
-    '[pNO3] corrected': 'NITs-all',
-    '[NO] (NOx system)': 'NO',
-    '[NO2] (NOx system)': 'NO2',
-    '[O3]': 'O3',
-    'WS': 'NOT IN CURRENT DATASET',
-    'WD': 'NOT IN CURRENT DATASET',
-    'AirTempC_Avg': 'GMAO_TEMP',
-    'RH_Avg': 'NOT IN CURRENT DATASET',
-    'BP_mmHg_Avg': 'NOT IN CURRENT DATASET',
-    'TSP': 'NOT IN CURRENT DATASET',
-    'J(HONO)': 'NOT IN CURRENT DATASET',
-#    '[HONO] ': 'HNO2',
-    # add derived variables
-    'NOx':'NOx',
-    VarHONO_Obs: 'HNO2',
+        'Time (utc-3)': np.NaN,
+        'Time': np.NaN,
+        '[HNO3]': 'HNO3',
+        '[pNO3] corrected': 'NITs-all',
+        '[NO] (NOx system)': 'NO',
+        '[NO2] (NOx system)': 'NO2',
+        '[O3]': 'O3',
+        'WS': 'NOT IN CURRENT DATASET',
+        'WD': 'NOT IN CURRENT DATASET',
+        'AirTempC_Avg': 'GMAO_TEMP',
+        'RH_Avg': 'NOT IN CURRENT DATASET',
+        'BP_mmHg_Avg': 'NOT IN CURRENT DATASET',
+        'TSP': 'NOT IN CURRENT DATASET',
+        'J(HONO)': 'NOT IN CURRENT DATASET',
+        #    '[HONO] ': 'HNO2',
+        # add derived variables
+        'NOx': 'NOx',
+        VarHONO_Obs: 'HNO2',
     }
     dObs2Mod_r = {v: k for k, v in list(dObs2Mod.items())}
 
     # Which vars to plot
     # TODO
     vars2plot = [
-    'O3', 'NO', 'NO2', 'NOx', 'HNO3', 'NITs-all', 'HNO2',
-    # Add J-rates and GMAO values
-#    'GMAO_TEMP',
+        'O3', 'NO', 'NO2', 'NOx', 'HNO3', 'NITs-all', 'HNO2',
+        # Add J-rates and GMAO values
+        #    'GMAO_TEMP',
     ]
 
     # - Plot up whole data as a generic time series
@@ -1120,7 +1116,7 @@ def plt_bermuda_obs(debug=False):
         sdate, edate = dPeriods[season]
 
         for var in vars2plot:
-            print( season, var )
+            print(season, var)
             units, scaleby = AC.tra_unit(var, scale=True)
             # Force units to be the same as observations in pptv
             pptv_units = 'HNO3', 'HNO2', 'NO', 'NO2', 'NOx'
@@ -1132,32 +1128,31 @@ def plt_bermuda_obs(debug=False):
             # Plot obs
             bool1 = dfObs.index >= sdate
             bool2 = dfObs.index <= edate
-            df2plot = dfObs.loc[ (bool1 & bool2), :]
-            plt.plot( df2plot[dObs2Mod_r[var]].index,
-                      df2plot[dObs2Mod_r[var]].values,
-                      label='Obs.',
-                      color='Black',
-                      )
+            df2plot = dfObs.loc[(bool1 & bool2), :]
+            plt.plot(df2plot[dObs2Mod_r[var]].index,
+                     df2plot[dObs2Mod_r[var]].values,
+                     label='Obs.',
+                     color='Black',
+                     )
 
             # Try to plot model
             bool1 = dfMod.index >= sdate
             bool2 = dfMod.index <= edate
-            df2plot = dfMod.loc[ (bool1 & bool2), :]
-            plt.plot( df2plot[var].index,
-                      df2plot[var].values * scaleby,
-                      label='Model',
-                      color='Red',
-                      )
+            df2plot = dfMod.loc[(bool1 & bool2), :]
+            plt.plot(df2plot[var].index,
+                     df2plot[var].values * scaleby,
+                     label='Model',
+                     color='Red',
+                     )
 
             plt.legend()
 
             # Add a title
             PrtStr = "Timeseries {} @ Bermuda during *{}* campaign ({})"
-            plt.title(PrtStr.format(var, season.lower(),units ))
+            plt.title(PrtStr.format(var, season.lower(), units))
 
             # Update x axis label rotation
             plt.xticks(rotation=45)
-
 
             # Save to PDF
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
@@ -1166,7 +1161,7 @@ def plt_bermuda_obs(debug=False):
         # Plot up daily cycles
         for var in vars2plot:
             fig, ax = plt.subplots()
-            print( season, var )
+            print(season, var)
             units, scaleby = AC.tra_unit(var, scale=True)
             # Force units to be the same as
             pptv_units = 'HNO3', 'HNO2', 'NO', 'NO2', 'NOx'
@@ -1176,37 +1171,34 @@ def plt_bermuda_obs(debug=False):
             # Plot obs
             bool1 = dfObs.index >= sdate
             bool2 = dfObs.index <= edate
-            df2plot = dfObs.loc[ (bool1 & bool2), :]
+            df2plot = dfObs.loc[(bool1 & bool2), :]
 
-
-            AC.BASIC_diel_plot( dates=df2plot[dObs2Mod_r[var]].index,
-                                data=df2plot[dObs2Mod_r[var]].values,
-                                label='Obs.',
-                                color='Black',
-                                spec=var, units=units,
-                                fig=fig, ax=ax)
+            AC.BASIC_diel_plot(dates=df2plot[dObs2Mod_r[var]].index,
+                               data=df2plot[dObs2Mod_r[var]].values,
+                               label='Obs.',
+                               color='Black',
+                               spec=var, units=units,
+                               fig=fig, ax=ax)
 
             # Try to plot model
             bool1 = dfMod.index >= sdate
             bool2 = dfMod.index <= edate
-            df2plot = dfMod.loc[ (bool1 & bool2), :]
+            df2plot = dfMod.loc[(bool1 & bool2), :]
 
-            AC.BASIC_diel_plot( dates=df2plot[var].index,
-                                data=df2plot[var].values * scaleby,
-                                label='Obs.',
-                                color='Red',
-                                spec=var, units=units,
-                                fig=fig, ax=ax)
-
+            AC.BASIC_diel_plot(dates=df2plot[var].index,
+                               data=df2plot[var].values * scaleby,
+                               label='Obs.',
+                               color='Red',
+                               spec=var, units=units,
+                               fig=fig, ax=ax)
 
             # Add a title
             PrtStr = "Diel cycle {} @ Bermuda during {} campaign ({})"
-            plt.title(PrtStr.format(var, season.lower(),units ))
+            plt.title(PrtStr.format(var, season.lower(), units))
 
             # Save to PDF
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
             plt.close()
-
 
     # Save PDF
     AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
@@ -1221,13 +1213,9 @@ def plt_comp_with_NASA_Atom():
 
     #
 
-
     #
 
-
     pass
-
-
 
 
 if __name__ == "__main__":

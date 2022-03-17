@@ -133,7 +133,6 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625', folder4netCDF=False,
 #             d['Acid-4x5-J50-BBx0'] = folder
             # Acid plus v3.0
 
-
             # Isotherm + BBx3 + NH3x3
 #             RunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags'
 #             RunStr += '.J50.BBx3.NH3x3'
@@ -168,18 +167,18 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625', folder4netCDF=False,
                     #                    'Acid-4x5-J25',
                     'Acid-4x5-J00',
                     'Acid-4x5-J50',
-#                    'Acid-4x5-Isotherm.v2.4',
-#                    'Acid-4x5-J50-AfBBx3-NH3x3',
-#                    'Acid-4x5-Isotherm.v2.4',
-#                    'Acid-4x5-Isotherm.v2',
-#                    'Acid-4x5-Isotherm.v3.0.H2O',
-#                    'Acid-4x5-Isotherm.v3.0.H2O.Acid',
+                    #                    'Acid-4x5-Isotherm.v2.4',
+                    #                    'Acid-4x5-J50-AfBBx3-NH3x3',
+                    #                    'Acid-4x5-Isotherm.v2.4',
+                    #                    'Acid-4x5-Isotherm.v2',
+                    #                    'Acid-4x5-Isotherm.v3.0.H2O',
+                    #                    'Acid-4x5-Isotherm.v3.0.H2O.Acid',
                     # core runs as of March 2022
                     'Acid-4x5-Isotherm.v3aqCap50H100',
-#                    'Acid-4x5-4pptHONO',
+                    #                    'Acid-4x5-4pptHONO',
                     # Temp
-#                    'BASE-4x5-MERRA-2',
-#                    'Acid-4x5-J50-BBx0',
+                    #                    'BASE-4x5-MERRA-2',
+                    #                    'Acid-4x5-J50-BBx0',
                 ]
                 dNew = {}
                 for run in runs2use:

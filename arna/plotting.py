@@ -2746,7 +2746,7 @@ def plt_comp_by_alt_4ARNA_together(dpi=320, just_SLR=True, show_plot=False,
     Plot up altitude binned comparisons between core obs. and model data
     """
     PrtStr = "NOTE: Plotting RunSet: '{}' @ res. of: '{}' (CoreRunsOnly?: {})"
-    print( PrtStr.format(RunSet, res, CoreRunsOnly) )
+    print(PrtStr.format(RunSet, res, CoreRunsOnly))
     # Setup the pdf file to use
     if isinstance(savetitle, type(None)):
         savetitle = 'ARNA_altitude_binned_combined_file_{}'.format(res)
@@ -6740,7 +6740,7 @@ def mk_Andersen2021_figure_02(dpi=720, figsize=(7, 3), aspect=None, ms=None,
     # Dataset of ground HONO and pNO3 data combined with modelled J-rates
     filename = 'CV_data_for_missing_HONO_source_plot.csv'
     df2 = pd.read_csv(folder+filename, index_col=0,
-                             parse_dates=True, dayfirst=True)
+                      parse_dates=True, dayfirst=True)
     df2 = df2.loc[(df2.index.hour > 10) & (df2.index.hour < 16)]
 
     # Ye et al. (2017) individual measurements
@@ -6750,13 +6750,13 @@ def mk_Andersen2021_figure_02(dpi=720, figsize=(7, 3), aspect=None, ms=None,
 
     # Plotting settings
     if isinstance(fontsize, type(None)):
-#        fontsize = 20
+        #        fontsize = 20
         fontsize = 8
     if isinstance(labelsize, type(None)):
-#        labelsize = 16
+        #        labelsize = 16
         labelsize = fontsize/5*4
     if isinstance(ms, type(None)):
-#        ms = 10
+        #        ms = 10
         ms = 6
 
     # Creating legend elements
@@ -6870,9 +6870,9 @@ def mk_Andersen2021_figure_02(dpi=720, figsize=(7, 3), aspect=None, ms=None,
     ax2.text(20, 2000, label, fontsize=fontsize)
 
     ax2.legend(handles=legend_elements,
-             fontsize=fontsize/5*4,
-             loc=(1.05, 0.05),
-             frameon=False)
+               fontsize=fontsize/5*4,
+               loc=(1.05, 0.05),
+               frameon=False)
     # Save figure
     AC.save_plot('ARNA_Andersen_figure_02', dpi=dpi, tight=tight)
 
@@ -6890,20 +6890,20 @@ def plt_seasonal_comparoisons_of_nitrate():
                                                 folder4netCDF=True)
     # Choose runs to use
     d = {}
-    d['BC-BASE'] =  '/users/ts551/scratch/GC/rundirs/P_ARNA//geosfp_4x5_standard.v12.9.0.BASE.2019.2020.ARNA.BCs.repeat//OutputDir/'
+    d['BC-BASE'] = '/users/ts551/scratch/GC/rundirs/P_ARNA//geosfp_4x5_standard.v12.9.0.BASE.2019.2020.ARNA.BCs.repeat//OutputDir/'
     d['Acid-4x5-J00'] = '/users/ts551/scratch/GC/rundirs/P_ARNA//geosfp_4x5_aciduptake.v12.9.0.BASE.2019.2020.ARNA.DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags.v2.J00//OutputDir/'
     dates2use = [datetime.datetime(2019, 1+i, 1) for i in range(12)]
     dsD = {}
     for key in d.keys():
         dsD[key] = AC.GetSpeciesConcDataset(wd=d[key],
-                                              dates2use=dates2use)
+                                            dates2use=dates2use)
 
     # Get model
     from Prj_NITs_analysis import get_CVAO_NITs_data
 #    df_obs = get_CVAO_NITs_data()
     # Update dates
-    dates = AC.dt64_2_dt( df_obs.index.values )
-    df_obs.index = [ update_year(i, year=2019) for i in df_obs.index ]
+    dates = AC.dt64_2_dt(df_obs.index.values)
+    df_obs.index = [update_year(i, year=2019) for i in df_obs.index]
 
     # Create a 'NIT-all'
     prefix = 'SpeciesConc_'
@@ -6919,7 +6919,7 @@ def plt_seasonal_comparoisons_of_nitrate():
     for key in d.keys():
         ds = dsD[key]
         ds = ds.sel(lat=lat, lon=lon, method='nearest')
-        ds = ds.sel(lev=ds.lev.values[0] )
+        ds = ds.sel(lev=ds.lev.values[0])
         dsD[key] = ds
     # remove the redundent coordinates
     for key in d.keys():
@@ -6935,7 +6935,7 @@ def plt_seasonal_comparoisons_of_nitrate():
     var2plot = 'SpeciesConc_NIT-all'
     fig, ax = plt.subplots()
     colors = AC.get_CB_color_cycle()
-    for nKey, key in enumerate( d.keys() ):
+    for nKey, key in enumerate(d.keys()):
         ds = dsD[key]
         AC.BASIC_seasonal_plot(dates=ds.time.values,
                                color=colors[nKey],
@@ -6966,9 +6966,9 @@ def plt_seasonal_comparoisons_of_nitrate():
     ds = dsD[key]
     del ds['ilev']
 #    vars2plot = [i for i in ds.data_vars if 'NIT' in i ]
-    vars2plot = ['NITD4', 'NITD3', 'NITD2', 'NITD1', 'NITs', 'NIT',]
-    df = ds[vars2plot+ ['NIT-all']].to_dataframe()
-    df = df * 1E12 # Conevrt to pptv
+    vars2plot = ['NITD4', 'NITD3', 'NITD2', 'NITD1', 'NITs', 'NIT', ]
+    df = ds[vars2plot + ['NIT-all']].to_dataframe()
+    df = df * 1E12  # Conevrt to pptv
 #    for var in
 
     plt.close('all')
@@ -6983,4 +6983,3 @@ def plt_seasonal_comparoisons_of_nitrate():
 
     AC.save_plot(title='NITs_comparison_CVAO_by_species', dpi=720)
     plt.close('all')
-

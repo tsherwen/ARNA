@@ -1138,5 +1138,5 @@ def get_biomass_burning_flag_for_ARNA2(flight_ID='C225'):
     """
     """
     folder = get_local_folder('DataRoot') + '/Misc/BB_flag/'
-    files = glob.glob( folder + '*_bb_flag.csv' )
+    files = glob.glob(folder + '*_bb_flag.csv')
     dfs = [pd.read_csv(i)]

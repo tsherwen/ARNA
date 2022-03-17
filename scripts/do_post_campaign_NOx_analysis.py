@@ -361,7 +361,6 @@ def explore_ARNA_period_with_acid_uptake():
     # Update the units (from NO/kg/yr to N/kg/yr)
 #    df = df / AC.species_mass('NO') * AC.species_mass('N')
 
-
     # Rename the keys to more readable names
 #     rename_dict = {
 #     'BASE.BC': 'BASE',
@@ -844,9 +843,7 @@ def analyse_NOx_budget():
 
     # Get deposition sinks too
 
-
     #
-
 
     # Print DataFrame and save to csv
     print(df)
@@ -859,7 +856,6 @@ def analyse_NOx_budget():
         df2.loc[:, col] = df2.loc[:, col] / df2[REF]
     print(df2)
     df2.to_csv('ARNA_NOx_HNO2_REF_{}.csv'.format(REF))
-
 
     # Consider the values relative to the J50 run
     df3 = df.copy()
