@@ -5,7 +5,7 @@ Driver for analysis of "4 pptv HONO world" following the ARNA campaign
 import arna as ar
 import sys
 
-from AC_tools import GetSpeciesConcDataset, AddChemicalFamily2Dataset, species_mass, get_ref_spec, get_Gg_trop_burden, get_StateMet_ds, tra_unit, get_avg_2D_conc_of_X_weighted_by_Y, GC_var, get_ProdLoss_ds, add_molec_den2ds, rm_fractional_troposphere, constants, GetConcAfterChemDataset
+#from AC_tools import GetSpeciesConcDataset, AddChemicalFamily2Dataset, species_mass, get_ref_spec, get_Gg_trop_burden, get_StateMet_ds, tra_unit, get_avg_2D_conc_of_X_weighted_by_Y, GC_var, get_ProdLoss_ds, add_molec_den2ds, rm_fractional_troposphere, constants, GetConcAfterChemDataset
 
 
 def main():
@@ -18,16 +18,64 @@ def main():
     # plot up key changes
     plt_spatial_changes_in_4pptv_HONO_world()
 
+    # Plot up HONO production routes
+    # (in do_post_campaign_NOx_analysis via func 'plt_key_NOx_budget_terms'
 
-def do_analysis_of_4pptv_HONO_world():
+
+def plt_key_NOx_routes_spatially():
     """
-    Do analysis of a model world where HONO is a minimum of 4 pptv
+    Plot up key NOx routes spatially
     """
     # Model runs to use?
     RunSet = 'PostHONO'
 #    GC_version = 'v13.4'
     GC_version = 'v12.9'
     RunDict = get_RunDict_of_HONO_runs(RunSet=RunSet, GC_version=GC_version)
+    # Temporally use one run for the references values (e.g. statemet)
+    use_REF_wd4Met = True
+    REF_wd = RunDict['min4pptvHONO']
+
+    # Set dates to use (as model run progresses)
+#    dates2use = [datetime.datetime(2018, 1+i, 1) for i in range(12)]
+    dates2use = [datetime.datetime(2018, 1+i, 1) for i in range(4)]
+
+    # Get Prod-Loss dataset objets for all model runs
+#     dsD = {}
+#     for key in RunDict.keys():
+#         dsD[key] = AC.get_ProdLoss_ds(wd=RunDict[key],
+#                                       dates2use=dates2use)
+
+    # Get NOx budget dictionary
+    trop_limit = False
+    CoreRunsOnly = True
+    NOxD = ar.get_NOx_budget_ds_dict_for_runs(trop_limit=trop_limit,
+                                              dates2use=dates2use,
+                                              CoreRunsOnly=CoreRunsOnly)
+
+    #
+    RefVar = 'Prod_HNO2'
+
+    'ProdHNO2fromHET'
+
+
+    # For each run output the comparisons
+    # ... and save separate to BASE comparison
+
+
+
+
+def do_analysis_of_4pptv_HONO_world():
+    """
+    Do general analysis of a model world where HONO is a minimum of 4 pptv
+    """
+    # Model runs to use?
+    RunSet = 'PostHONO'
+#    GC_version = 'v13.4'
+    GC_version = 'v12.9'
+    res = '4x5'
+    RunDict = get_dict_of_GEOSChem_model_output(RunSet=RunSet,
+                                                GC_version=GC_version
+                                                res=res)
     # Temporally use one run for the references values (e.g. statemet)
     use_REF_wd4Met = True
     REF_wd = RunDict['min4pptvHONO']
@@ -45,6 +93,7 @@ def do_analysis_of_4pptv_HONO_world():
     ]
     # Use spin up year?
 #    dates2use = [datetime.datetime(2018, 1+i, 1) for i in range(12)]
+    dates2use = [datetime.datetime(2018, 1+i, 1) for i in range(4)]
 
     # -- Stats on model runs
     # Get generic stats
@@ -57,8 +106,8 @@ def do_analysis_of_4pptv_HONO_world():
         #    'Ox-lifetime',
         'HNO2-lifetime',
         'HNO2:NOx', 'HNO2:HNO3',
-        'HNO3:NOx', 'HNO3:NO2', 'HNO3:NIT',
-        'NIT:NOx', 'NO2:NO',
+        'HNO3:NOx', 'HNO3:NO2',
+        'NIT:HNO3', 'NIT:NOx', 'NO:NO2',
         #    'OH-trop-avg',
         'Cl-trop-avg', 'HNO2-trop-avg', 'NOx-trop-avg'
     ]
@@ -127,20 +176,29 @@ def do_analysis_of_4pptv_HONO_world():
     df[corestats].to_csv(SaveName)
 
 
+
+
 def plt_spatial_changes_in_4pptv_HONO_world(pcent=True,
                                             REF1='Base',
-                                            DIFF='4pptHONO'):
+                                            DIFF='4pptHONO',
+                                            RunSet='PostHONO',
+                                            res='4x5',
+                                            GC_version='v12.9'):
     """
     Plot up changes in key metrics spatially and zonally
     """
+
     # Settings
-    pcent = True
-    REF1 = 'Base'
-    DIFF = '4pptHONO'
+#    pcent = True
+#    REF1 = 'Base'
+#    DIFF = '4pptHONO'
     # Model runs to use?
-    RunSet = 'PostHONO'
-    GC_version = 'v12.9'
-    RunDict = get_RunDict_of_HONO_runs(RunSet=RunSet, GC_version=GC_version)
+#    RunSet = 'PostHONO'
+#    GC_version = 'v12.9'
+    # Retrieve dictionary of model runs and the location of the output data
+    RunDict = get_dict_of_GEOSChem_model_output(RunSet=RunSet,
+                                                GC_version=GC_version
+                                                res=res)
     RunDict = {REF1: RunDict[REF1], DIFF: RunDict[DIFF], }
     # Set dates to use (as model run progresses)
 #    dates2use = [
@@ -175,7 +233,8 @@ def plt_spatial_changes_in_4pptv_HONO_world(pcent=True,
     # Get MetState object
 
     # -- Graphics on model runs
-    savetitle = 'ARNA_spatial_HONO4pptv'
+    SaveStr = 'ARNA_spatial_HONO4pptv_{}_vs_{}'
+    savetitle = SaveStr.format(REF1, DIFF)
     specs2plot = ['O3', 'HNO2',  'HNO3', 'CO'] + families2use
     # Updates setings for percentage plotting
     if pcent:
@@ -219,67 +278,13 @@ def plt_spatial_changes_in_4pptv_HONO_world(pcent=True,
 
         # zonal
 
+
+
+
     # Save entire pdf
     AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
     plt.close('all')
 
-
-def get_RunDict_of_HONO_runs(RunSet='PostHONO', GC_version='v13.4'):
-    """
-    Retrieve the model runs
-    """
-    # Which runs to use
-    RunRoot = ar.get_local_folder('RunRoot')
-    if (RunSet == 'PostHONO') and (GC_version == 'v13.4'):
-        RunStr = 'gc_4x5_47L_geosfp_fullchem.v13.4.0-rc.2'
-        RunDict = {
-            'Base': '{}{}{}/'.format(RunRoot, RunStr, '.orig.1monthTest'),
-            'min4pptvHONO': '{}{}{}/'.format(RunRoot, RunStr,
-                                             '.orig.ARNA.HONO.4pptv'),
-            #        '4pptHONO': '{}{}{}/'.format(RunRoot, RunStr,
-            #                                     '.orig.ARNA.HONO.4pptv.all'),
-            #        'NOxSink': '{}{}{}/'.format(RunRoot, RunStr, ''),
-            #    'HalNitratesx10': '{}{}{}/'.format(RunRoot, RunStr, ''),
-            #        'NIThv': '{}{}{}/'.format(RunRoot, RunStr, ''),
-            #        'OH+NO2': '{}{}{}/'.format(RunRoot, RunStr, ''),
-            #         'HO2+NO':  '{}{}{}/'.format(RunRoot, RunStr, ''),
-            #         'N2O5': '{}{}{}/'.format(RunRoot, RunStr, ''),
-        }
-    elif (RunSet == 'PostHONO') and (GC_version == 'v12.9'):
-        RunStr = 'geosfp_4x5_aciduptake.v12.9.0.BASE.2019.2020.ARNA.DustUptake'
-        RunStr += '.JNIT.Isotherm.BCs.repeat.ON.II.diags'
-        RunStr2 = RunStr + '.v2.J00.HourlyOutput'
-        RunDict = {
-            'Base': '{}{}{}/'.format(RunRoot, RunStr, '.v2.J00.HourlyOutput.2018'),
-            'min4pptvHONO': '{}{}{}/'.format(RunRoot, RunStr2,
-                                             '.HONO4pptv'),
-            '4pptHONO': '{}{}{}/'.format(RunRoot, RunStr2,
-                                         '.HONO4pptv.all'),
-            'HalNitratesx10': '{}{}{}/'.format(RunRoot, RunStr2,
-                                               '.2018.HalNitrate'),
-            'NIThvCap': '{}{}{}/'.format(RunRoot, RunStr,
-                                         '.v3.0.H2O.cap2J50.HONO100.2018'),
-            # The below runs do not yet have enough output to analysis
-            # But should do before 9am 17th March
-            'NIThv': '{}{}{}/'.format(RunRoot, RunStr,
-                                      '.v3.0.H2O.AcidII.100HONO.2018/'),
-            'OH+NO2': '{}{}{}/'.format(RunRoot, RunStr2, '.2018.NO2andOH'),
-            # The below probably will not have enough useful data by then
-            #        'Amedro2020': '{}{}{}/'.format(RunRoot, RunStr2,
-            #                                      '.2018.NO2andOH.Amedro'),
-            #        'NOxSink': '{}{}{}/'.format(RunRoot, RunStr, ''),
-            #         'HO2+NO':  '{}{}{}/'.format(RunRoot, RunStr2,
-            #                                      '.v2.J00.HourlyOutput.2018.HO2NO'),
-            'N2O5': '{}{}{}/'.format(RunRoot, RunStr2, '.2018.N2O5'),
-        }
-    else:
-        PrtStr = "Unkonwn RunSet ('{}') and GC verions ('{}')"
-        print(PrtStr.format(RunSet, GC_version))
-        sys.exit(0)
-    # Include the output directory folder in directory strings
-    for key in RunDict.keys():
-        RunDict[key] = '{}{}/'.format(RunDict[key], 'OutputDir')
-    return RunDict
 
 
 def mk_figure2_HONO_surface_conc():

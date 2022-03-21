@@ -1136,7 +1136,10 @@ def mk_planeflight_files4FAAM_campaigns(folder=None, testing_mode=False,
 
 def get_biomass_burning_flag_for_ARNA2(flight_ID='C225'):
     """
+    Retrieve Biomass burning flag used for Lee et al 2021
     """
     folder = get_local_folder('DataRoot') + '/Misc/BB_flag/'
     files = glob.glob(folder + '*_bb_flag.csv')
     dfs = [pd.read_csv(i)]
+    df = pd.concate(dfs)
+    return df

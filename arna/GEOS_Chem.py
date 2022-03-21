@@ -36,6 +36,7 @@ def PF_TRAXXX_2TracerName(TRA_XX, folder=None, RTN_dict=False):
 
 def get_dict_of_GEOSChem_model_output(res='0.5x0.625', folder4netCDF=False,
                                       RunSet='MERRA2-0.5-initial',
+                                      GC_version='v12.9',
                                       CoreRunsOnly=False):
     """
     Retrieve dictionary of model run names and their full location paths
@@ -47,14 +48,24 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625', folder4netCDF=False,
     Notes
     -----
     """
+    # Get the root directory for model run directories
     RunRoot = get_local_folder('RunRoot')
-    if res == '4x5':
+    # Which GEOS-Chem version is being used?
+#     if 'v12.9' in GC_version:
+#         Is_v12_9 = True
+#     elif 'v13.4' in GC_version:
+#         Is_v12_9 = False
+#     else:
+#         print("No runs in funciton for GC_version ('{}')".format(GC_version))
+    if (res == '4x5') and (RunSet == 'PostHONO'):
+        d = get_RunDict_of_HONO_runs(RunSet=RunSet, GC_version=GC_version)
+    elif (res == '4x5') and (RunSet == 'MERRA2-0.5-initial'):
         CoreRunStrMERRA2 = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.'
         CoreRunStrGEOSFP = 'geosfp_4x5_standard.v12.9.0.BASE.2019.2020.'
         AcidRunStr = 'geosfp_4x5_aciduptake.v12.9.0.BASE.2019.2020.ARNA.'
         d = {}
         # JNIT and extra acid runs
-        if RunSet == 'ACID':
+        if (RunSet == 'ACID'):
             # re-run boundary conditions?
             #             RunStr = 'DustUptake.BCs'
             #             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
@@ -261,12 +272,12 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625', folder4netCDF=False,
 #         RunStr = 'geosfp_4x5_standard.v12.9.0.BASE.2015.Aug.ARNA.BCs.repeat'
 #         folder = '{}/{}/'.format(RunRoot, RunStr)
 #         d['BC-BASE-2015'] = folder
-    elif res == '0.25x0.3125' and (RunSet == 'FP-MOYA-Nest'):
+    elif (res == '0.25x0.3125') and (RunSet == 'FP-MOYA-Nest'):
         # GEOS-FP 0.25 nested run
         Run = 'geosfp_4x5_standard.v12.9.0.BASE.2019.2020.MOYA1.Nest'
         folder = '{}/{}/'.format(RunRoot, Run)
         d = {'FP-Nest': folder}
-    elif res == '0.25x0.3125':  # and (RunSet=='GEOS-FP-Nest'):
+    elif (res == '0.25x0.3125'):  # and (RunSet=='GEOS-FP-Nest'):
         CoreRunStr = 'geosfp_4x5_standard.v12.9.0.BASE.2019.2020.ARNA.Nest.'
         # GEOS-FP 0.25 nested run
         RunStr = 'repeat'
@@ -287,7 +298,7 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625', folder4netCDF=False,
 #        folder = '{}/{}{}/'.format(RunRoot, CoreRunStr, RunStr)
 #        d['FP-Nest-Dust'] folder}
 
-    elif res == '0.5x0.625':  # and (RunSet=='MERRA2-0.5-initial'):
+    elif (res == '0.5x0.625'):  # and (RunSet=='MERRA2-0.5-initial'):
         Run = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.1x1.PF'
         folder = '{}/{}/'.format(RunRoot, Run)
         d = {'BASE-0.5': folder}
@@ -306,6 +317,64 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625', folder4netCDF=False,
             d[key] = d[key] + '/OutputDir/'
     return d
 
+def get_RunDict_of_HONO_runs(RunSet='PostHONO', GC_version='v13.4'):
+    """
+    Retrieve the model runs investigating HONO
+    """
+    # Which runs to use
+    RunRoot = get_local_folder('RunRoot')
+    if (RunSet == 'PostHONO') and (GC_version == 'v13.4'):
+        RunStr = 'gc_4x5_47L_geosfp_fullchem.v13.4.0-rc.2'
+        RunDict = {
+            'Base': '{}{}{}/'.format(RunRoot, RunStr, '.orig.1monthTest'),
+            'min4pptvHONO': '{}{}{}/'.format(RunRoot, RunStr,
+                                             '.orig.ARNA.HONO.4pptv'),
+            #        '4pptHONO': '{}{}{}/'.format(RunRoot, RunStr,
+            #                                     '.orig.ARNA.HONO.4pptv.all'),
+            #        'NOxSink': '{}{}{}/'.format(RunRoot, RunStr, ''),
+            #    'HalNitratesx10': '{}{}{}/'.format(RunRoot, RunStr, ''),
+            #        'NIThv': '{}{}{}/'.format(RunRoot, RunStr, ''),
+            #        'OH+NO2': '{}{}{}/'.format(RunRoot, RunStr, ''),
+            #         'HO2+NO':  '{}{}{}/'.format(RunRoot, RunStr, ''),
+            #         'N2O5': '{}{}{}/'.format(RunRoot, RunStr, ''),
+        }
+    elif (RunSet == 'PostHONO') and (GC_version == 'v12.9'):
+        RunStr = 'geosfp_4x5_aciduptake.v12.9.0.BASE.2019.2020.ARNA.DustUptake'
+        RunStr += '.JNIT.Isotherm.BCs.repeat.ON.II.diags'
+        RunStr2 = RunStr + '.v2.J00.HourlyOutput'
+        RunDict = {
+            'Base': '{}{}{}/'.format(RunRoot, RunStr, '.v2.J00.HourlyOutput.2018'),
+            'min4pptvHONO': '{}{}{}/'.format(RunRoot, RunStr2,
+                                             '.HONO4pptv'),
+            'min4pptHONOday': '{}{}{}/'.format(RunRoot, RunStr2,
+                                             '.HONO4pptv.night'),
+            '4pptHONO': '{}{}{}/'.format(RunRoot, RunStr2,
+                                         '.HONO4pptv.all'),
+            'HalNitratesx10': '{}{}{}/'.format(RunRoot, RunStr2,
+                                               '.2018.HalNitrate'),
+            'NIThvCap': '{}{}{}/'.format(RunRoot, RunStr,
+                                         '.v3.0.H2O.cap2J50.HONO100.2018'),
+            # The below runs do not yet have enough output to analysis
+            # But should do before 9am 17th March
+            'NIThv': '{}{}{}/'.format(RunRoot, RunStr,
+                                      '.v3.0.H2O.AcidII.100HONO.2018/'),
+            'OH+NO2': '{}{}{}/'.format(RunRoot, RunStr2, '.2018.NO2andOH'),
+            # The below probably will not have enough useful data by then
+            #        'Amedro2020': '{}{}{}/'.format(RunRoot, RunStr2,
+            #                                      '.2018.NO2andOH.Amedro'),
+            #        'NOxSink': '{}{}{}/'.format(RunRoot, RunStr, ''),
+            #         'HO2+NO':  '{}{}{}/'.format(RunRoot, RunStr2,
+            #                                      '.v2.J00.HourlyOutput.2018.HO2NO'),
+            'N2O5': '{}{}{}/'.format(RunRoot, RunStr2, '.2018.N2O5'),
+        }
+    else:
+        PrtStr = "Unkonwn RunSet ('{}') and GC verions ('{}')"
+        print(PrtStr.format(RunSet, GC_version))
+        sys.exit(0)
+    # Include the output directory folder in directory strings
+#    for key in RunDict.keys():
+#        RunDict[key] = '{}{}/'.format(RunDict[key], 'OutputDir')
+    return RunDict
 
 def save_model_output2csv(RunSet='FP-MOYA-Nest', res='0.25x0.3125',
                           folder='./'):
@@ -535,15 +604,15 @@ def get_whole_related_campaign_data(save2csv=True, campaign='ARNA-1',
     Get model data from additional CVAO campaigns (surface+airborne)
     """
     # Which data to use?
-    RunDir = '/users/ts551/scratch/GC/rundirs/'
+    RunRoot = ar.get_local_folder('RunRoot')
     BASE_str = 'geosfp_4x5_standard.v12.9.0.BASE'
     ARNA1Var = BASE_str+'.2019.2020.ARNA1.Nest.repeat.JVALS/'
     ARNA1SurVar = BASE_str+'.2019.2020.ARNA1.Nest.repeat.JVALS.CVAO.PF/'
     CVAO2015 = BASE_str+'.2015.Aug.Nest.repeat.JVALS.CVAO.PF/'
     run_dict = {
-        'ARNA-1': RunDir+ARNA1Var,
-        'ARNA-1-surface': RunDir+ARNA1SurVar,
-        'CVAO-2015-surface': RunDir+CVAO2015,
+        'ARNA-1': '{}{}'.format(RunRoot, ARNA1Var),
+        'ARNA-1-surface': '{}{}'.format(RunRoot, ARNA1SurVar),
+        'CVAO-2015-surface': '{}{}'.format(RunRoot, CVAO2015),
     }
     # Name of file to save?
     SaveName = 'GC_model_output_{}'.format(campaign)
@@ -556,7 +625,7 @@ def get_whole_related_campaign_data(save2csv=True, campaign='ARNA-1',
         # check generic stats
         RunStr = '/geosfp_4x5_standard.v12.9.0.BASE.2019.2020.ARNA.BCs.repeat/'
         RunStr += 'OutputDir/'
-        REF_wd = RunDir + RunStr
+        REF_wd = '{}{}'.format(RunRoot, RunStr)
         use_REF_wd4Met = True
         df = AC.get_general_stats4run_dict_as_df(run_dict=run_dict,
                                                  use_REF_wd4Met=use_REF_wd4Met,
@@ -887,6 +956,10 @@ def get_NOx_budget_ds_dict_for_runs(limit_data_spatially=False,
                                               dates2use=dates2use)
         except AssertionError:
             print('WARNING: No JVal diagnostics found for {}'.format(key))
+
+    # Get Emissions
+
+    # Get Deposition
 
     # - Calculate the various quantities per run.
     Specs = ['NO2', 'NO', 'HNO2', 'HNO3',  'OH', 'TN', 'NIT']

@@ -449,7 +449,7 @@ def extract_GC_data4CVAO():
     RunRoot = ar.get_local_folder('RunRoot')
     folder = 'geosfp_4x5_standard.v12.9.0.BASE.2019.2020.ARNA.BCs.'
     folder += 'TEST.PF_Jrates.JVALS.GLOBAL/OutputDir/'
-    folder = RunRoot + folder
+    folder = '{}{}'.format(RunRoot, folder)
     # Open the dataset
     ds = AC.GetJValuesDataset(wd=folder)
     # Extract for CVAO

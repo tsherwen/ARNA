@@ -29,6 +29,10 @@ def main():
     #
     explore_ARNA_period_with_acid_uptake()
 
+    #
+
+
+
 
 def explore_NOy_with_acid_uptake():
     """
@@ -611,22 +615,34 @@ def plt_key_NOx_budget_terms():
     """
     Make spatial plots of key tagged routes
     """
-    # Get NOx budget dictionary
-    dates2use = [datetime.datetime(2019, i+1, 1) for i in range(12)]
+    # Which runs to use?
+#    dates2use = [datetime.datetime(2019, i+1, 1) for i in range(12)]
+    dates2use = [datetime.datetime(2018, i+1, 1) for i in range(12)]
     trop_limit = False
-    NOxD = ar.get_NOx_budget_ds_dict_for_runs(trop_limit=trop_limit,
+    RunSet = 'PostHONO'
+#    GC_version = 'v13.4'
+    GC_version = 'v12.9'
+    res = '4x5'
+    RunDict = ar.get_dict_of_GEOSChem_model_output(RunSet=RunSet,
+                                                   GC_version=GC_version,
+                                                   res=res)
+    # Get NOx budget dictionary
+    NOxD = ar.get_NOx_budget_ds_dict_for_runs(RunDict=RunDict,
+                                              trop_limit=trop_limit,
                                               dates2use=dates2use)
     # Get the tags for the Prod/Loss tagging as a dictionary
     tags = ar.get_tags_for_NOx_HONO()
     ProdVars = ['ProdHNO2fromHvNIT-all',
-                'ProdHNO2fromOHandNO', 'ProdHNO2fromHET']
+                'ProdHNO2fromOHandNO',
+                'ProdHNO2fromHET']
 #    for run in ['Acid-4x5-J50']
 #    run2use = 'Acid-4x5-J50'
 #    run2use = 'Acid-4x5-Isotherm.v2'
+    runs2use = ['Acid-4x5-Isotherm.v2', 'Acid-4x5-J50', 'Acid-4x5-J00', ]
     PltAsLog = True
     verbose = True
     # - Plot up the annual mean surface values
-    for run2use in ['Acid-4x5-Isotherm.v2', 'Acid-4x5-J50', 'Acid-4x5-J00', ]:
+    for run2use in runs2use:
         ds = NOxD[run2use].copy()
         ds = ds.mean(dim='time').sel(lev=ds.lev[0])
         norm = LogNorm(vmin=0.5, vmax=2000)
@@ -775,6 +791,7 @@ def plt_key_NOx_budget_terms():
     # Save entire pdf
     AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
     plt.close('all')
+
 
 
 def analyse_NOx_budget():
