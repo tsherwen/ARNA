@@ -924,7 +924,8 @@ def get_analysis_region(RegionName):
         'local_CVAO_area': {'x0': -30, 'x1': -10, 'y0': 0, 'y1': 25},
 
         # Cape Verde flying area for ARNA
-        'Cape_Verde_Flying': {'x0': -29.1, 'x1': -15.9, 'y0': 11.9, 'y1': 21.1},
+        'Cape_Verde_Flying': {'x0': -29.1, 'x1': -15.9, 'y0': 11.9,
+                              'y1': 21.1},
     }
     return d[RegionName]
 
@@ -960,21 +961,29 @@ def get_local_folder(key, host=None, rtn_dict=False):
     host = platform.node()
     # - Set locations of York HPC
     if ('viking' in host):
-        NASA_data = '/mnt/lustre/groups/chem-acm-2018/earth0_data/NASA/'
+        earth0_data_shelf = '/mnt/lustre/groups/chem-acm-2018/'
+        NASA_data = earth0_data_shelf + 'earth0_data/NASA/'
+        HEMCO_data = earth0_data_shelf + 'earth0_data/GEOS/ExtData/HEMCO/'
         ARNA_data = '/users/ts551/scratch/data/ARNA/'
         DataRoot = '/users/ts551/scratch/data/'
-        RunRoot = '/users/ts551/scratch/GC/rundirs/'
+        RunRoot = '/users/ts551/scratch/GC/rundirs/P_ARNA/'
     elif ('earth0' in host):
         NASA_data = '/work/data/NASA/'
         ARNA_data = ''
         DataRoot = ''
         RunRoot = ''
+    elif ('Tomas' in host):
+        NASA_data = '/work/data/NASA/'
+        ARNA_data = '/Users/tomassherwen/tmp/ARNA/'
+        DataRoot = '/Users/tomassherwen/Google_Drive/Data/'
+        RunRoot = '/Users/tomassherwen/tmp/ARNA_TMP_RUNS/'
     else:
         print('NASA folder loction not known')
     # - Setup a dictionary for the variables
     d = {
         'NASA_data': NASA_data,
         #    'folder4plots': folder4plots,
+        'HEMCO_data': HEMCO_data,
         'ARNA_data': ARNA_data,
         'RunRoot': RunRoot,
         'DataRoot': DataRoot,

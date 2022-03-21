@@ -48,8 +48,11 @@ def convert_aircraft_locs2table():
     """
     Make a csv file with details on the airports linked to ARNA campaign
     """
-    locs2use = ['Dakar', 'DSS', 'Sao Vicente Airport', 'VXE', 'Praia Airport', 'RAI',
-                'Gran Canaria Airport', 'LPA', 'Lisbon Airport', 'LIS', 'Paris (Charles de Gaulle) Airport', 'CDG']
+    locs2use = ['Dakar', 'DSS', 'Sao Vicente Airport', 'VXE',
+                'Praia Airport', 'RAI',
+                'Gran Canaria Airport', 'LPA', 'Lisbon Airport', 'LIS',
+                'Paris (Charles de Gaulle) Airport', 'CDG'
+                ]
     # Loop by location
     d = {}
     for loc in locs2use:

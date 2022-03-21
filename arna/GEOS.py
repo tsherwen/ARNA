@@ -1330,10 +1330,12 @@ def extract_GEOS54all_ARNA_surface_dates(testing_mode=False, debug=True):
     folder = '{}/GEOS-CF/extracted_surface4CVAO/'.format(ARNA_data)
     # Which dates to use?
     d = {
-        'ARNA-1': (datetime.datetime(2019, 8, 6), datetime.datetime(2019, 9, 3)),
+        'ARNA-1': (datetime.datetime(2019, 8, 6),
+                   datetime.datetime(2019, 9, 3)),
         'ARNA-Winter-1': (datetime.datetime(2019, 11, 26),
                           datetime.datetime(2019, 12, 14)),
-        'ARNA-2': (datetime.datetime(2020, 2, 5), datetime.datetime(2020, 2, 27)),
+        'ARNA-2': (datetime.datetime(2020, 2, 5),
+                   datetime.datetime(2020, 2, 27)),
         #    'CVAO-ALL' : (datetime.datetime(2018, 1, 1), datetime.datetime.now()),
     }
     # Variables for CVAO location
@@ -2034,6 +2036,16 @@ def add_extra_derived_species(ds, debug=False):
 #     attrs = ds[NewVar].attrs
 #     attrs['units'] = 'unitless'
 #     ds[NewVar].attrs = attrs
+
+    # Try adding NOx if not present
+    NewVar = 'NOx'
+    try:
+        ds['NOx']
+    except KeyError:
+        try:
+            ds[NewVar] = ds['NO'] + ds['NO2']
+        except KeyError:
+            pass
 
     # Add NOy divided by PM2.5 concentration
     NewVar = 'NOy*PM2.5(dust)'

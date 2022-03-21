@@ -191,7 +191,7 @@ def get_ARNA_flight_log_as_df():
 
 def get_summary4flight(flight_ID='C217'):
     """
-    retrieve a FAAM flight summary as a dataframe
+    Retrieve a FAAM flight summary as a dataframe
     """
     folder = '{}/{}/'.format(get_local_folder('ARNA_data'), 'CEDA/v2020_06')
     filename = 'flight-sum_faam_*_*_{}.csv'.format(flight_ID.lower())
@@ -228,6 +228,57 @@ def get_filters_data4flight(flight_ID='C217', all_flights=True):
     # Where is the data?
     folder = '{}/{}/'.format(get_local_folder('ARNA_data'), 'Filters')
     # What is the name of the sheet in the excel file?
+    filename = 'Aerosol_composition_for_submission.xlsx'
+    xl = pd.ExcelFile(folder + filename)
+    species = xl.sheet_names  # see all sheet names (species)
+    dfs = [pd.read_excel(folder+filename, sheet_name=i) for i in species]
+    # Now Just look at core data of interest
+    TimeOnVar = 'Start_time'
+    TimeOffVar = 'End_time'
+    # Setup the main Dataframe, then add additional dataframes to this
+    df = dfs[0]
+    labels2drop = [
+        TimeOnVar, TimeOffVar, 'Filter', 'Campaign', 'Flight', 'Airflow_stL',
+        'Average_altitude_m', 'moles_m-3_in_air',
+    ]
+    for __df in dfs[1:]:
+        __df = __df.drop(labels=labels2drop, axis=1)
+        df = pd.concat([df, __df], axis=1)
+    # Update sampling times to date times
+    df[TimeOnVar] = pd.to_datetime(df[TimeOnVar].values)
+    # End time
+    edate_var = TimeOffVar
+    df[TimeOffVar] = pd.to_datetime(df[TimeOffVar].values)
+    # calculate mid point of sampling and set this as index
+    interval_var = 'Sample interval'
+    df[interval_var] = df[edate_var] - df[TimeOnVar]
+    # Just use the middle of the timestep
+    df.index = df[TimeOnVar] + (df[interval_var]/2)
+    df = df.rename_axis(None)
+    # Setup total values in ug/m3 (from nM/m3)
+    units = 'nmoles_m-3'
+    NewUnits = 'ug_m-3'
+    UncertaintyStr = 'Total_{}_uncertainty_{}'
+    SpeciesStr = 'Total_{}_{}'
+    for spec in species:
+        ObsVar = SpeciesStr.format(spec, units)
+        UncertVar = UncertaintyStr.format(spec, units)
+        SpecMass = AC.species_mass(spec)
+        #  Add in new variables
+        NewVar = SpeciesStr.format(spec, NewUnits)
+        df[NewVar] = df[ObsVar].values / 1E9 * SpecMass * 1E6
+        NewUncert = SpeciesStr.format(spec, NewUnits)
+        df[NewUncert] = df[UncertVar].values / 1E9 * SpecMass * 1E6
+    return df
+
+
+def get_filters_data4flight_REDUNDANT(flight_ID='C217', all_flights=True):
+    """
+    Retrieve filters data from ARNA flights
+    """
+    # Where is the data?
+    folder = '{}/{}/'.format(get_local_folder('ARNA_data'), 'Filters')
+    # What is the name of the sheet in the excel file?
 #    filename = 'Overview_all_filters_ACSIS_5_and_ARNA-1.xlsx'
 #    filename = 'Overview_filters_ARNA_2.xlsx'
     filename = 'Overview_filters_ARNA_2_TMS_edits.xlsx'
@@ -239,30 +290,22 @@ def get_filters_data4flight(flight_ID='C217', all_flights=True):
         'Airflow (stL)',
     ]
     # - Select nitrate data
-    # Yes, GEOS-CF has sulfate variables output - 'NIT', 'NITs'
-    NO3cols = [i for i in dfFULL.columns if 'NO3' in i]
-    dfN = dfFULL[CoreCols + NO3cols]
-    #
-#    NO3_var = 'NO3.total'
+    # NOTE: GEOS-CF has only sulfate + nitrate variables output
+    # ('NIT', 'NITs', 'SO4', 'SO4s')
+    # Observational variables (columns) to use
     NO3_var2use = ['NO3.2', 'NO3.5']
-    units = 'nanomoles/m3'
-#    NO3_idx = [list(dfFULL.columns).index(i) for i in var2inc]
-
-    # - Also save sulfate?
-    # Yes, GEOS-CF has sulfate variables output - 'SO4', 'SO4s'
-#    SO4cols = [i for i in dfFULL.columns if 'SO4' in i]
-#    dfS = dfFULL[CoreCols + SO4cols]
     SO4_var2use = ['SO4.2', 'SO4.5']
+    Cl_var2use = ['Cl.2', 'Cl.5']
+    NO2_var2use = ['NO2.2', 'NO2.5']
+    C2O4_var2use = ['C2O4.2', 'C2O4.5']
     units = 'nanomoles/m3'
-#    SO4_idx = [list(dfFULL.columns).index(i) for i in SO4_var2use]
 
     # - Now chop off excess headers and make sure formats are correct
     df = dfFULL.loc[dfFULL.index[2:], :]
-    #
-#    idx2use = [list(dfFULL.columns).index(i) for i in CoreCols]
-#    idx2use += NO3_idx + SO4_idx
-#    cols2use = [list(dfFULL.columns)[i] for i in idx2use ]
-    df = df[CoreCols + NO3_var2use + SO4_var2use]
+    # Just consider the available data in comparisons
+    vars2use = NO3_var2use + SO4_var2use + Cl_var2use + NO2_var2use
+    vars2use += C2O4_var2use
+    df = df[CoreCols + vars2use]
     # Replace values less than black/NaNs with np.NaN
     df = df.replace('lower than blank', np.NaN)
     df = df.replace('NaN', np.NaN)
@@ -295,10 +338,19 @@ def get_filters_data4flight(flight_ID='C217', all_flights=True):
     df[NO3_var] = df[NO3_var2use].sum(axis=1)
     SO4_var = 'SO4.total'
     df[SO4_var] = df[SO4_var2use].sum(axis=1)
+    Cl_var = 'Cl.total'
+    df[Cl_var] = df[Cl_var2use].sum(axis=1)
+    NO2_var = 'NO2.total'
+    df[NO2_var] = df[NO2_var2use].sum(axis=1)
+    C2O4_var = 'C2O4.total'
+    df[C2O4_var] = df[C2O4_var2use].sum(axis=1)
     del dfFULL
     # Convert to ug/m3 from 'nanomoles/m3'
     df[NO3_var] = df[NO3_var].values / 1E9 * AC.species_mass('NIT') * 1E6
     df[SO4_var] = df[SO4_var].values / 1E9 * AC.species_mass('SO4') * 1E6
+    df[Cl_var] = df[Cl_var].values / 1E9 * AC.species_mass('Cl') * 1E6
+    df[NO2_var] = df[NO2_var].values / 1E9 * AC.species_mass('NO2') * 1E6
+    df[C2O4_var] = df[C2O4_var].values / 1E9 * AC.species_mass('C2O4') * 1E6
     # Return all flights unless a specific flight requested
     if all_flights:
         return df
@@ -306,7 +358,8 @@ def get_filters_data4flight(flight_ID='C217', all_flights=True):
         return df.loc[df['Flight'] == flight_ID, :]
 
 
-def get_CIMS_data4flight(flight_ID='C225', resample_data=True, debug=False):
+def get_CIMS_data4flight(flight_ID='C225', resample_data=True,
+                         verbose=False, debug=False):
     """
     Retrieve ToF-CIMS data from ARNA flights
     """
@@ -343,25 +396,54 @@ def get_CIMS_data4flight(flight_ID='C225', resample_data=True, debug=False):
         dfM = pd.concat([dfM, df], axis="index")
     except:
         pstr = "WARNING: failed to include CIMS halogen data for '{}' in df"
-        print(pstr.format(flight_ID))
+        if verbose:
+            print(pstr.format(flight_ID))
     # - Also get HNO3 / HONO (use the time coordinate for index)
     try:
         filename = 'ACSIS6_ARNA_1hz_HNO3_HONO_ToSend.xlsx'
-        df2 = pd.read_excel(folder + filename, sheet_name=sheet_name)
+        df = pd.read_excel(folder + filename, sheet_name=sheet_name)
         xl = pd.ExcelFile(folder + filename)
         if debug:
             print(xl.sheet_names)
         dt_var = 'date'
-    #    df2.index = pd.to_datetime( df2[dt_var].values, format='%m/%d/%Y %H:%M:%S')
-        dates = AC.dt64_2_dt(df2[dt_var].values)
+        dates = AC.dt64_2_dt(df[dt_var].values)
         dates = [i.strftime(format) for i in dates]
         dates = [datetime_.strptime(i, '%d/%m/%Y %H:%M:%S') for i in dates]
-        df2.index = dates
-        del df2[dt_var]
+        df.index = dates
+        del df[dt_var]
         # Merge the files
-        dfM = pd.concat([dfM, df2], axis="index")
+        dfM = pd.concat([dfM, df], axis="index")
     except:
         pstr = "WARNING: failed to include CIMS NOy data for '{}' in df"
+        if verbose:
+            print(pstr.format(flight_ID))
+
+    # Remove the existing HNO3 variables and then include the latest data
+    redundant_HNO3_vars = ['HNO3 (ppt*) ', 'HNO3 (ppt*)']
+    pstr = "NOTE: Removed redundant HNO3 data ('{}') for flight '{}'"
+    try:
+        for var in redundant_HNO3_vars:
+            if var in dfM.columns:
+                del dfM[var]
+                if verbose:
+                    print(pstr.format(var, flight_ID))
+    except KeyError:
+        pass
+    try:
+        filename = 'ARNA2_HNO3_YORK_1Hz.csv'
+        df = pd.read_csv(folder + filename)
+        dt_var = 'date_time'
+        format = '%Y-%m-%d %H:%M:%S'
+        df.index = pd.to_datetime(df[dt_var].values, format=format)
+        del df[dt_var]
+        # Merge the files
+        bool = df['flight_id'].values == flight_ID
+        Nvals = df.loc[bool, :].shape[0]
+        AssStr = "WARNING: No values found for CIMS HNO3 on flight '({})"
+        assert Nvals > 0, AssStr.format(flight_ID)
+        dfM = pd.concat([dfM, df.loc[bool, :]], axis="index")
+    except:
+        pstr = "WARNING: failed to include CIMS HNO3 data for '{}' in df"
         print(pstr.format(flight_ID))
 
     # - Also include HCN data
@@ -375,7 +457,8 @@ def get_CIMS_data4flight(flight_ID='C225', resample_data=True, debug=False):
     #    df2.index = pd.to_datetime( df2[dt_var].values, format='%m/%d/%Y %H:%M:%S')
         dates = AC.dt64_2_dt(df[dt_var].values)
         dates = [i.strftime(format) for i in dates]
-        dates = [datetime_.strptime(i, '%d/%m/%Y %H:%M:%S') for i in dates]
+        format = '%Y-%m-%d %H:%M:%S'
+        dates = [datetime_.strptime(i, format) for i in dates]
         df.index = dates
         del df[dt_var]
         # Merge the files
@@ -386,8 +469,10 @@ def get_CIMS_data4flight(flight_ID='C225', resample_data=True, debug=False):
 
     # Update the variable names
     VarNameDict = {
-        'BrO (ppt*)': 'BrO', 'Br2 + HOBr (ppt*)': 'Br2+HOBr', 'HONO (ppt*)': 'HONO',
-        'HNO3 (ppt*) ': 'HNO3',  'HNO3 (ppt*)': 'HNO3',
+        'BrO (ppt*)': 'BrO',
+        'Br2 + HOBr (ppt*)': 'Br2+HOBr',
+        'HONO (ppt*)': 'HONO',
+        'HNO3 (ppt*) ': 'HNO3', 'HNO3 (ppt*)': 'HNO3', 'HNO3_ppt': 'HNO3',
         'HCN (ppt*)': 'HCN',
     }
     dfM = dfM.rename(columns=VarNameDict)
@@ -497,7 +582,7 @@ def get_FAAM_core4flightnum(flight_ID='C225', version='v2020_06',
     VarName = 'ROLL_GIN'
     FlagName = 'ROLL_GIN_FLAG'
     ds = set_flagged_data2NaNs(ds, VarName=VarName, FlagName=FlagName)
-    # 'Aircraft velocity down from POS AV 510 GPS-aided Inertial Navigation     # 'Aircraft velocity down from POS AV 510 GPS-aided Inertial Navigation unit'
+    # 'Aircraft velocity down from POS AV 510 GPS-aided Inertial Navigation
     VarName = 'VELD_GIN'
     FlagName = 'VELD_GIN_FLAG'
     ds = set_flagged_data2NaNs(ds, VarName=VarName, FlagName=FlagName)
@@ -576,12 +661,21 @@ def get_FAAM_core4flightnum(flight_ID='C225', version='v2020_06',
             df = pd.concat([df, df2, df3], axis=1)
         except KeyError:
             print('WARNING: no PCASP data found for {}'.format(flight_ID))
+    # Include the latest NOx data from Simone and Chris
+    dfHONO = get_latest_NOx_HONO_data(flight_ID=flight_ID)
+#    if not isinstance(dfHONO, type(None)):
+    df = pd.concat([df, dfHONO])
 
     # Add NOx as combined NO and NO2
     try:
-        df['NOx'] = df['no_mr'].values + df['no2_mr'].values
+        df['NOx_mr'] = df['no_mr'].values + df['no2_mr'].values
     except:
         print('WARNING: failed to add NOx to flight {}'.format(flight_ID))
+    try:
+        df['NOx'] = df['NO_pptV'].values + df['NO2_pptV'].values
+    except:
+        print('WARNING: failed to add NOx to flight {}'.format(flight_ID))
+
     # Add a values for H2O
     try:
         ds = set_flagged_data2NaNs(ds, VarName='NV_LWC1_C',
@@ -619,6 +713,46 @@ def get_FAAM_core4flightnum(flight_ID='C225', version='v2020_06',
         df = df.resample('1T').mean()
     # Add derived variables
     df = add_derived_variables2FAAM_data(df)
+    return df
+
+
+def get_latest_NOx_HONO_data(flight_ID=None, version='v1'):
+    """
+    Use the latest NOx/HONO data from Simone and Chris
+    """
+    # Locations of data
+    folder = '{}/{}/'.format(get_local_folder('ARNA_data'), 'FAAM')
+    folder += 'ARNA_NOx_HONO_data/'
+    FileStr = 'NOx_and_HONO'
+    files2use = glob.glob('{}*{}*{}*'.format(folder, FileStr, version))
+    files2use = list(sorted(files2use))
+    # Process entire dataset or just one flight
+    if isinstance(flight_ID, type(None)):
+        dfs = []
+        for file2use in files2use:
+            df = pd.read_csv(file2use)
+            flight_ID = file2use.split('/')[-1][:4]
+            df['flight_ID'] = flight_ID
+            dfs += [df]
+        # Combine
+        df = pd.concat(dfs)
+    else:
+        file2use = [i for i in files2use if flight_ID in i]
+        if len(file2use) == 0:
+            print('WARNING: No NOx/HONO data for {}'.format(flight_ID))
+            return None
+        else:
+            assert len(file2use) == 1, 'STOPPING: more than one file!'
+            file2use = file2use[0]
+            df = pd.read_csv(file2use)
+            flight_ID = file2use.split('/')[-1][:4]
+            df['flight_ID'] = flight_ID
+    # ... and make index the datetime
+    df = df.sort_index()
+    df.index.name = None
+    df.index = pd.to_datetime(df[df.columns[0]])
+    df.index = pd.to_datetime(df.index.values)
+    del df[df.columns[0]]
     return df
 
 
@@ -852,36 +986,49 @@ def mk_planeflight_files4sites(testing_mode=False):
     Make plane-flight input files for various ground sites
     """
     # Location of flight data
-    locs = ['CVO{}'.format(i) for i in range(1, 8)]
+    TYPE = ['CVO{}'.format(i) for i in range(1, 8)]
     #
     sdate = datetime.datetime(2015, 1, 1,)
-    edate = datetime.datetime(2015, 1, 15,)
+    edate = datetime.datetime(2021, 1, 1,)
     dates = pd.date_range(sdate, edate, freq='T')
-    #
-    LOCS_df = pd.read_csv(filename)
-    vars_ = ['LAT', 'LON', 'PRESS', 'TYPE']
-    LAT, LON, PRESS, TYPE = [LOCS_df[i].values for i in vars_]
+    # Get list of species
+    num_tracers = 203
+    slist = get_planeflight_slist2output(num_tracers=num_tracers)
+
     # for each location make a DataFrame, then conbime
     dfs = []
     for n, type_ in enumerate(TYPE):
+        # Get locations
+        LON, LAT, ALT = AC.get_loc(type_)
+        PRESS = 1013.25  # AC.hPa_to_Km([ALT/1E3], reverse=True, )
+        print(n, type_, LON, LAT, ALT)
         # dictionary of data
         nvar = len(dates)
         d = {
-            'datetime': dates, 'LAT': [LAT[n]]*nvar, 'LON': [LON[n]]*nvar,
-            'TYPE': [TYPE[n]]*nvar, 'PRESS': [PRESS[n]]*nvar}
+            'datetime': dates, 'LAT': [LAT]*nvar, 'LON': [LON]*nvar,
+            'TYPE': [type_]*nvar, 'PRESS': [PRESS]*nvar}
         dfs += [pd.DataFrame(d, index=np.arange(nvar)+(n*1E6))]
     # combine all TYPE (sites) and sort by date
     df = pd.concat(dfs).sort_values('datetime', ascending=True)
 
+    # Now print as files
+    AC.prt_PlaneFlight_files_v12_plus(df=df, slist=slist,
+                                      Extra_spacings=Extra_spacings)
 
 
-
-def get_planeflight_slist2output(num_tracers=203):
+def get_planeflight_slist2output(num_tracers=None, folder=None,
+                                 OutputJVALs=False):
     """
     Store of planeflight slist to request outputs for
     """
+    # Use the number of tracers in the input.geos file, unless specified
+    if isinstance(num_tracers, type(None)):
+        if isinstance(folder, type(None)):
+            TRAs = AC.get_specieslist_from_input_geos(folder=folder)
+            num_tracers = len(TRAs)
+        else:
+            num_tracers = 203  # Use value for GEOS-Chem v12.9.0
     # Mannually setup slist
-
     met_vars = [
         'GMAO_ABSH', 'GMAO_PSFC', 'GMAO_SURF', 'GMAO_TEMP', 'GMAO_UWND',
         'GMAO_VWND', 'GMAO_PRES'
@@ -889,23 +1036,26 @@ def get_planeflight_slist2output(num_tracers=203):
     species = ['OH', 'HO2']
     assert isinstance(num_tracers, int), 'num_tracers must be an integer'
     slist = ['TRA_{:0>3}'.format(i) for i in np.arange(1, num_tracers+1)]
+    slist = slist + species + met_vars
     # Add Jvals
-    JVN2use = np.arange(1, 139)
-    JVN2drop = [4, 5, 35, 52, 57, 58, 102]
-    JVN2use = [i for i in JVN2use if i not in JVN2drop]
-    JVAL_list = ['JVL_{:0>3}'.format(i) for i in JVN2use]
-    slist = slist + species + met_vars + JVAL_list
+    if OutputJVALs:
+        JVN2use = np.arange(1, 139)
+        JVN2drop = [4, 5, 35, 52, 57, 58, 102]
+        JVN2use = [i for i in JVN2use if i not in JVN2drop]
+        JVAL_list = ['JVL_{:0>3}'.format(i) for i in JVN2use]
+        slist += JVAL_list
     return slist
 
 
-def mk_planeflight_files4FAAM_campaigns(testing_mode=False):
+def mk_planeflight_files4FAAM_campaigns(folder=None, testing_mode=False,
+                                        num_tracers=None):
     """
     Make plane-flight input files for various FAAM campaigns
     """
     # Location of flight data
     DataRoot = get_local_folder('DataRoot')
-    folder = '/{}/FAAM/core_faam_NetCDFs/'.format(DataRoot)
-    folder4csv = '/{}/FAAM/GEOSChem_planeflight_inputs/'.format(DataRoot)
+    folderFAAMnetCDF = '/{}/FAAM/core_faam_NetCDFs/'.format(DataRoot)
+    folder4csv = '/{}/FAAM/GEOSChem_planeflight_inputs.ACID/'.format(DataRoot)
     df = get_FAAM_flights_df()
 #    if testing_mode:
     # Only consider flights in 2020
@@ -936,18 +1086,17 @@ def mk_planeflight_files4FAAM_campaigns(testing_mode=False):
 #    df = df.loc[ df['Flight ID'].isin(flight_IDs2use),:]
     # Extract variables of interest
     flight_IDs = df['Flight ID'].values
-    #
-    num_tracers = 203
-    slist = get_planeflight_slist2output(num_tracers=num_tracers)
-
+    # Get list of species to output from plane flight diagnostic
+    slist = get_planeflight_slist2output(folder=folder,
+                                         num_tracers=num_tracers,
+                                         OutputJVALs=False)
     # Loop and extract FAAM BAe146 flights
     for flight_ID in flight_IDs:
         print(flight_ID)
-        AC.mk_planeflight_input4FAAM_flight(folder=folder,
+        AC.mk_planeflight_input4FAAM_flight(folder=folderFAAMnetCDF,
                                             folder4csv=folder4csv,
                                             testing_mode=testing_mode,
                                             num_tracers=num_tracers,
-                                            #                                            rxn_nums=rxn_nums,
                                             slist=slist,
                                             flight_ID=flight_ID,)
         gc.collect()
@@ -968,18 +1117,29 @@ def mk_planeflight_files4FAAM_campaigns(testing_mode=False):
         ds_l = []
         for flight_ID in flight_IDs2use:
             filename = 'core_faam_*_{}_1hz.nc'.format(flight_ID.lower())
-            file2use = glob.glob(folder+filename)
+            file2use = glob.glob(folderFAAMnetCDF+filename)
             print(flight_ID, file2use)
             ds_l += [xr.open_dataset(file2use[0])]
         # Now re-make file but with values for both flights
         ds = xr.concat(ds_l, dim='Time')
         AC.mk_planeflight_input4FAAM_flight(ds=ds,
-                                            folder=folder,
+                                            folder=folderFAAMnetCDF,
                                             folder4csv=folder4csv,
                                             testing_mode=testing_mode,
                                             num_tracers=num_tracers,
-                                            #                                            rxn_nums=rxn_nums,
                                             slist=slist,
                                             flight_ID=flight_ID,)
         gc.collect()
         del ds, ds_l
+    gc.collect()
+
+
+def get_biomass_burning_flag_for_ARNA2(flight_ID='C225'):
+    """
+    Retrieve Biomass burning flag used for Lee et al 2021
+    """
+    folder = get_local_folder('DataRoot') + '/Misc/BB_flag/'
+    files = glob.glob(folder + '*_bb_flag.csv')
+    dfs = [pd.read_csv(i)]
+    df = pd.concate(dfs)
+    return df
