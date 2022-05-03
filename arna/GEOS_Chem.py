@@ -58,118 +58,127 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625', folder4netCDF=False,
 #     else:
 #         print("No runs in funciton for GC_version ('{}')".format(GC_version))
     if (res == '4x5') and (RunSet == 'PostHONO'):
-        d = get_RunDict_of_HONO_runs(RunSet=RunSet, GC_version=GC_version)
+        RunDict = get_RunDict_of_HONO_runs(RunSet=RunSet,
+                                           GC_version=GC_version)
+        #
+        if CoreRunsOnly:
+            runs2use = ['Base', 'NIThv', 'NIThvCap']
+            dNew = {}
+            for run in runs2use:
+                dNew[run] = RunDict[run]
+            RunDict = dNew
+
     elif (res == '4x5') and (RunSet == 'MERRA2-0.5-initial'):
         CoreRunStrMERRA2 = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.'
         CoreRunStrGEOSFP = 'geosfp_4x5_standard.v12.9.0.BASE.2019.2020.'
         AcidRunStr = 'geosfp_4x5_aciduptake.v12.9.0.BASE.2019.2020.ARNA.'
-        d = {}
+        RunDict = {}
         # JNIT and extra acid runs
         if (RunSet == 'ACID'):
             # re-run boundary conditions?
             #             RunStr = 'DustUptake.BCs'
             #             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-            #             d['Acid-4x5'] = folder
-            #            d['Acid-4x5-III'] = folder
+            #             RunDict['Acid-4x5'] = folder
+            #            RunDict['Acid-4x5-III'] = folder
             #             RunStr = 'DustUptake.JNIT.BCs'
             #             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-            #             d['Acid-4x5-JNIT'] = folder
+            #             RunDict['Acid-4x5-JNIT'] = folder
             # ACID + J50
             RunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags.v2.J00'
             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-            d['Acid-4x5-J00'] = folder
+            RunDict['Acid-4x5-J00'] = folder
             # JNITx25
 #             RunStr = 'DustUptake.JNITx25.BCs'
 #             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-#             d['Acid-4x5-J25'] = folder
+#             RunDict['Acid-4x5-J25'] = folder
             # Isotherm
     #        RunStr = 'DustUptake.JNIT.Isotherm.BCs'
 #            RunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II'
 #             RunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags'
 #             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-#             d['Acid-4x5-Isotherm'] = folder
+#             RunDict['Acid-4x5-Isotherm'] = folder
             # Isotherm
     #        RunStr = 'DustUptake.JNIT.Isotherm.BCs'
 #            RunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II'
             IsoRunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags.'
 #             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, IsoRunStr+'v2')
-#             d['Acid-4x5-Isotherm.v2.0'] = folder
+#             RunDict['Acid-4x5-Isotherm.v2.0'] = folder
             # ... Other Isotherm versions
 #             RunStr = IsoRunStr + 'v2.very_low'
 #             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-#             d['Acid-4x5-Isotherm.v2.3'] = folder
+#             RunDict['Acid-4x5-Isotherm.v2.3'] = folder
 #             RunStr = IsoRunStr + 'v2.low'
 #             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-#             d['Acid-4x5-Isotherm.v2.2'] = folder
+#             RunDict['Acid-4x5-Isotherm.v2.2'] = folder
 #             RunStr = IsoRunStr + 'v2.medium'
 #             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-#             d['Acid-4x5-Isotherm.v2.1'] = folder
+#             RunDict['Acid-4x5-Isotherm.v2.1'] = folder
 #             RunStr = IsoRunStr + 'v2.deli'
 #             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-#             d['Acid-4x5-Isotherm.v2.0.deli'] = folder
+#             RunDict['Acid-4x5-Isotherm.v2.0.deli'] = folder
 #             RunStr = IsoRunStr + 'v2.4'
 #             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-#             d['Acid-4x5-Isotherm.v2.4'] = folder
+#             RunDict['Acid-4x5-Isotherm.v2.4'] = folder
 #             RunStr = IsoRunStr + 'v2.4.deli'
 #             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-#             d['Acid-4x5-Isotherm.v2.4.deli'] = folder
+#             RunDict['Acid-4x5-Isotherm.v2.4.deli'] = folder
 #             RunStr = IsoRunStr + 'v2.4.deli.H2O'
 #             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-#             d['Acid-4x5-Isotherm.v2.4.deli.H2O'] = folder
+#             RunDict['Acid-4x5-Isotherm.v2.4.deli.H2O'] = folder
             # Version 3
             RunStr = IsoRunStr + 'v3.0.H2O'
             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-            d['Acid-4x5-Isotherm.v3.0.H2O'] = folder
+            RunDict['Acid-4x5-Isotherm.v3.0.H2O'] = folder
             # Version 3 plus v3.0
             RunStr = IsoRunStr + 'v3.0.H2O.Acid'
             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-            d['Acid-4x5-Isotherm.v3.0.H2O.Acid'] = folder
+            RunDict['Acid-4x5-Isotherm.v3.0.H2O.Acid'] = folder
             # Re-run acid exploration?
 
             # Isotherm + HONO 100%
 #             RunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags.HONO100'
 #             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-#             d['Acid-4x5-Isotherm-HONO100'] = folder
+#             RunDict['Acid-4x5-Isotherm-HONO100'] = folder
             # Isotherm + BBx3
 #             RunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags.BBx3'
 #             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-#             d['Acid-4x5-Isotherm-BBx3'] = folder
+#             RunDict['Acid-4x5-Isotherm-BBx3'] = folder
             # ACID + J50
             RunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags.J50'
             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-            d['Acid-4x5-J50'] = folder
+            RunDict['Acid-4x5-J50'] = folder
             # ACID + J50 (no BB)
 #             RunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags.J50.BBx0'
 #             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-#             d['Acid-4x5-J50-BBx0'] = folder
+#             RunDict['Acid-4x5-J50-BBx0'] = folder
             # Acid plus v3.0
 
             # Isotherm + BBx3 + NH3x3
 #             RunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags'
 #             RunStr += '.J50.BBx3.NH3x3'
 #             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-#             d['Acid-4x5-J50-BBx3-NH3x3'] = folder
+#             RunDict['Acid-4x5-J50-BBx3-NH3x3'] = folder
             # Isotherm + African BBx3 + African NH3x3
             RunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags'
             RunStr += '.J50.BBx3AFRICA.NH3x3/'
             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-            d['Acid-4x5-J50-AfBBx3-NH3x3'] = folder
+            RunDict['Acid-4x5-J50-AfBBx3-NH3x3'] = folder
             # Temporary runs - MERRA-2 met
 #             RunStr = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.PF'
 #             folder = '{}/{}{}/'.format(RunRoot, RunStr, '')
-#             d['BASE-4x5-MERRA-2'] = folder
+#             RunDict['BASE-4x5-MERRA-2'] = folder
 
             # Isotherm, deliquescent limit, Cap Jscale 50, HONO channel 100%
             RunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags'
             RunStr += '.v3.0.H2O.cap2J50.HONO100'
             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-            d['Acid-4x5-Isotherm.v3aqCap50H100'] = folder
+            RunDict['Acid-4x5-Isotherm.v3aqCap50H100'] = folder
 
             # 4 pptv HONO everywhere
             RunStr = 'DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags'
             RunStr += '.v2.J00.HourlyOutput.HONO4pptv'
             folder = '{}/{}{}/'.format(RunRoot, AcidRunStr, RunStr)
-            d['Acid-4x5-4pptHONO'] = folder
+            RunDict['Acid-4x5-4pptHONO'] = folder
 
             # Only return the core runs
             if CoreRunsOnly:
@@ -193,131 +202,133 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625', folder4netCDF=False,
                 ]
                 dNew = {}
                 for run in runs2use:
-                    dNew[run] = d[run]
-                d = dNew
+                    dNew[run] = RunDict[run]
+                RunDict = dNew
 
         else:  # consider the variants on base runs (e.g. Biomass burning)
             # Boundary condition resolution runs
             #        Run = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.PF'
             #        folder = '{}/{}/'.format(RunRoot, Run)
-            #        d = {'BC-BASE': folder}
+            #        RunDict = {'BC-BASE': folder}
             # Boundary condition (BC) resolution runs
             #        Run = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.PF'
             #        folder = '{}/{}/'.format(RunRoot, Run)
-            #        d = {'BC-BASE-I': folder}
+            #        RunDict = {'BC-BASE-I': folder}
 
             # BASE runs, but with increases in JNITs/BB
             #         RunStr = 'BCs.repeat.JNITx100.GFASx3/'
             #         folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
-            #         d['BC-BASE-BBx3-J100'] = folder
+            #         RunDict['BC-BASE-BBx3-J100'] = folder
             #         RunStr = 'BCs.repeat.JNITx50.GFASx3/'
             #         folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
-            #         d['BC-BASE-BBx3-J50'] = folder
+            #         RunDict['BC-BASE-BBx3-J50'] = folder
             #         RunStr = 'BCs.repeat.JNITx25.GFASx3/'
             #         folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
-            #         d['BC-BASE-BBx3-J25'] = folder
+            #         RunDict['BC-BASE-BBx3-J25'] = folder
             # Using the dust uptake setup
             #         RunStr = 'DustUptake.II'
             #         folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
-            #         d['Acid-4x5-II'] = folder
+            #         RunDict['Acid-4x5-II'] = folder
             # Current Boundary condition (BC) resolution runs
             RunStr = 'ARNA.BCs.repeat'
             folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
-            d['BC-BASE'] = folder
+            RunDict['BC-BASE'] = folder
             # J25
 #             RunStr = 'ARNA.BCs.repeat.JNITx25'
 #             folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
-#             d['BC-BASE-J25'] = folder
+#             RunDict['BC-BASE-J25'] = folder
             # J50
             RunStr = 'ARNA.BCs.repeat.JNITx50'
             folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
-            d['BC-BASE-J50'] = folder
+            RunDict['BC-BASE-J50'] = folder
             # J50 + HONO-100
             RunStr = 'ARNA.BCs.repeat.JNITx50.HONO100'
             folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
-            d['BC-BASE-J50-HONO100'] = folder
+            RunDict['BC-BASE-J50-HONO100'] = folder
             # BBx2
 #             RunStr = 'ARNA.GFASx2.BCs'
 #             folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
-#             d['BC-BASE-BBx2'] = folder
+#             RunDict['BC-BASE-BBx2'] = folder
             # BBx3
             RunStr = 'ARNA.GFASx3.BCs'
             folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
-            d['BC-BASE-BBx3'] = folder
+            RunDict['BC-BASE-BBx3'] = folder
             # BBx3 + J100
             RunStr = 'ARNA.BCs.repeat.JNITx100.GFASx3'
             folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
-            d['BC-BASE-BBx3-J100'] = folder
+            RunDict['BC-BASE-BBx3-J100'] = folder
             # BBx3 + J25
 #             RunStr = 'ARNA.BCs.repeat.JNITx25.GFASx3'
 #             folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
-#             d['BC-BASE-BBx3-J25'] = folder
+#             RunDict['BC-BASE-BBx3-J25'] = folder
             # BBx3 + J50
 #             RunStr = 'ARNA.BCs.repeat.JNITx50.GFASx3'
 #             folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
-#             d['BC-BASE-BBx3-J50'] = folder
+#             RunDict['BC-BASE-BBx3-J50'] = folder
             # BBx4
 #             RunStr = 'ARNA.GFASx4.BCs'
 #             folder = '{}/{}{}/'.format(RunRoot, CoreRunStrGEOSFP, RunStr)
-#             d['BC-BASE-BBx4'] = folder
+#             RunDict['BC-BASE-BBx4'] = folder
             # Only return the core runs
             if CoreRunsOnly:
                 runs2use = ['BC-BASE', 'BC-BASE-BBx3', 'BC-BASE-J50']
                 dNew = {}
                 for run in runs2use:
-                    dNew[run] = d[run]
-                d = dNew
+                    dNew[run] = RunDict[run]
+                RunDict = dNew
         # Extra runs...
         # CVAO campaign during 2015 (Reed et al 2017)
 #         RunStr = 'geosfp_4x5_standard.v12.9.0.BASE.2015.Aug.ARNA.BCs.repeat'
 #         folder = '{}/{}/'.format(RunRoot, RunStr)
-#         d['BC-BASE-2015'] = folder
+#         RunDict['BC-BASE-2015'] = folder
     elif (res == '0.25x0.3125') and (RunSet == 'FP-MOYA-Nest'):
         # GEOS-FP 0.25 nested run
         Run = 'geosfp_4x5_standard.v12.9.0.BASE.2019.2020.MOYA1.Nest'
         folder = '{}/{}/'.format(RunRoot, Run)
-        d = {'FP-Nest': folder}
+        RunDict = {'FP-Nest': folder}
     elif (res == '0.25x0.3125'):  # and (RunSet=='GEOS-FP-Nest'):
         CoreRunStr = 'geosfp_4x5_standard.v12.9.0.BASE.2019.2020.ARNA.Nest.'
         # GEOS-FP 0.25 nested run
         RunStr = 'repeat'
         folder = '{}/{}{}/'.format(RunRoot, CoreRunStr, RunStr)
-        d = {'FP-Nest': folder}
+        RunDict = {'FP-Nest': folder}
         # GFAS x2
         RunStr = 'repeat.GFASx2'
         folder = '{}/{}{}/'.format(RunRoot, CoreRunStr, RunStr)
-        d['FP-Nest-BBx2'] = folder
-#       d = {'FP-Nest-BBx2': folder}
+        RunDict['FP-Nest-BBx2'] = folder
+#       RunDict = {'FP-Nest-BBx2': folder}
         # JNITs x25
         RunStr = 'repeat.JNITs.x25'
         folder = '{}/{}{}/'.format(RunRoot, CoreRunStr, RunStr)
-        d['FP-Nest-JNITx25'] = folder
-#        d = {'FP-Nest-JNITx25': folder}
+        RunDict['FP-Nest-JNITx25'] = folder
+#        RunDict = {'FP-Nest-JNITx25': folder}
         # With Dust active
 #        RunStr = 'repeat.IV.JNIT.x25.Dust'
 #        folder = '{}/{}{}/'.format(RunRoot, CoreRunStr, RunStr)
-#        d['FP-Nest-Dust'] folder}
+#        RunDict['FP-Nest-Dust'] folder}
 
     elif (res == '0.5x0.625'):  # and (RunSet=='MERRA2-0.5-initial'):
         Run = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.1x1.PF'
         folder = '{}/{}/'.format(RunRoot, Run)
-        d = {'BASE-0.5': folder}
+        RunDict = {'BASE-0.5': folder}
         Run = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.DustUptake.0.5x0.625'
         folder = '{}/{}/'.format(RunRoot, Run)
-        d['Acid-0.5'] = folder
+        RunDict['Acid-0.5'] = folder
         # Add BASE 4x5 run for testing
         Run = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.PF'
         folder = '{}/{}/'.format(RunRoot, Run)
-        d['BC-BASE'] = folder
+        RunDict['BC-BASE'] = folder
     else:
         pass
     # Include NetCDF subfolder in run directory strings
     if folder4netCDF:
-        for key in d.keys():
-            d[key] = d[key] + '/OutputDir/'
-    return d
+        for key in RunDict.keys():
+            RunDict[key] = RunDict[key] + '/OutputDir/'
+    return RunDict
 
-def get_RunDict_of_HONO_runs(RunSet='PostHONO', GC_version='v13.4'):
+
+def get_RunDict_of_HONO_runs(RunSet='PostHONO', GC_version='v13.4',
+                             folder4netCDF=False):
     """
     Retrieve the model runs investigating HONO
     """
@@ -327,7 +338,7 @@ def get_RunDict_of_HONO_runs(RunSet='PostHONO', GC_version='v13.4'):
         RunStr = 'gc_4x5_47L_geosfp_fullchem.v13.4.0-rc.2'
         RunDict = {
             'Base': '{}{}{}/'.format(RunRoot, RunStr, '.orig.1monthTest'),
-            'min4pptvHONO': '{}{}{}/'.format(RunRoot, RunStr,
+            'min4pptHONO': '{}{}{}/'.format(RunRoot, RunStr,
                                              '.orig.ARNA.HONO.4pptv'),
             #        '4pptHONO': '{}{}{}/'.format(RunRoot, RunStr,
             #                                     '.orig.ARNA.HONO.4pptv.all'),
@@ -342,39 +353,70 @@ def get_RunDict_of_HONO_runs(RunSet='PostHONO', GC_version='v13.4'):
         RunStr = 'geosfp_4x5_aciduptake.v12.9.0.BASE.2019.2020.ARNA.DustUptake'
         RunStr += '.JNIT.Isotherm.BCs.repeat.ON.II.diags'
         RunStr2 = RunStr + '.v2.J00.HourlyOutput'
+        RunStr3 = RunStr + '.v5.0.H2O.AcidII.100HONO.2018'
+
         RunDict = {
-            'Base': '{}{}{}/'.format(RunRoot, RunStr, '.v2.J00.HourlyOutput.2018'),
-            'min4pptvHONO': '{}{}{}/'.format(RunRoot, RunStr2,
-                                             '.HONO4pptv'),
-            'min4pptHONOday': '{}{}{}/'.format(RunRoot, RunStr2,
-                                             '.HONO4pptv.night'),
-            '4pptHONO': '{}{}{}/'.format(RunRoot, RunStr2,
-                                         '.HONO4pptv.all'),
-            'HalNitratesx10': '{}{}{}/'.format(RunRoot, RunStr2,
-                                               '.2018.HalNitrate'),
-            'NIThvCap': '{}{}{}/'.format(RunRoot, RunStr,
-                                         '.v3.0.H2O.cap2J50.HONO100.2018'),
-            # The below runs do not yet have enough output to analysis
-            # But should do before 9am 17th March
-            'NIThv': '{}{}{}/'.format(RunRoot, RunStr,
-                                      '.v3.0.H2O.AcidII.100HONO.2018/'),
-            'OH+NO2': '{}{}{}/'.format(RunRoot, RunStr2, '.2018.NO2andOH'),
-            # The below probably will not have enough useful data by then
-            #        'Amedro2020': '{}{}{}/'.format(RunRoot, RunStr2,
-            #                                      '.2018.NO2andOH.Amedro'),
-            #        'NOxSink': '{}{}{}/'.format(RunRoot, RunStr, ''),
-            #         'HO2+NO':  '{}{}{}/'.format(RunRoot, RunStr2,
-            #                                      '.v2.J00.HourlyOutput.2018.HO2NO'),
-            'N2O5': '{}{}{}/'.format(RunRoot, RunStr2, '.2018.N2O5'),
+        'Base': '{}{}{}/'.format(RunRoot, RunStr,
+                                 '.v2.J00.HourlyOutput.2018'),
+        'min4pptHONO': '{}{}{}/'.format(RunRoot, RunStr2,
+                                         '.HONO4pptv'),
+        'min4pptHONOday': '{}{}{}/'.format(RunRoot, RunStr2,
+                                         '.HONO4pptv.night'),
+        '4pptHONO': '{}{}{}/'.format(RunRoot, RunStr2,
+                                     '.HONO4pptv.all'),
+        'HalNitratesx10': '{}{}{}/'.format(RunRoot, RunStr2,
+                                           '.2018.HalNitrate'),
+        'NIThv': '{}{}{}/'.format(RunRoot, RunStr,
+                                    '.v4.0.H2O.AcidII.100HONO.2018.pH7'),
+        'NIThvCap': '{}{}{}/'.format(RunRoot, RunStr,
+                                    '.v4.0.H2O.pH7.100HONO.Cap50'),
+        'NIThvpH': '{}{}{}/'.format(RunRoot, RunStr,
+                                   '.v4.0.H2O.pH4.100HONO.Cap50'),
+        'N2O5': '{}{}{}/'.format(RunRoot, RunStr2, '.2018.N2O5.repeat'),
+        # The below runs do not yet have enough output to analysis
+        # But should do before 9am 17th March
+        'NOxSink': '{}{}{}/'.format(RunRoot, RunStr2,
+                                    '.2018.NOxSinkv1.1'),
+        'HO2+NOv1.Cap':  '{}{}{}/'.format(RunRoot, RunStr2,
+                                     '.2018.HO2andNO.repeat'
+                                     ),
+        'HO2+NOv1':  '{}{}{}/'.format(RunRoot, RunStr2,
+                                     '.2018.HO2andNO.repeat.NoCap'
+                                     ),
+        'HO2+NOv2noH2O':  '{}{}{}/'.format(RunRoot, RunStr2,
+                                     '.2018.HO2andNOv2'
+                                     ),
+        'HO2+NOv2.Cap':  '{}{}{}/'.format(RunRoot, RunStr2,
+                                     '.2018.HO2andNOv2.H2O.Capped'
+                                     ),
+        'HO2+NOv2':  '{}{}{}/'.format(RunRoot, RunStr2,
+                                     '.2018.HO2andNOv2.H2O'
+                                     ),
+
+        'NIThv.HO2+NOv2.Cap':  '{}{}{}/'.format(RunRoot, RunStr3,
+                                     '.pH7.HO2andNOv2.H2O.Capped'
+                                     ),
+
+        'OH+NO2': '{}{}{}/'.format(RunRoot, RunStr2, '.2018.NO2andOH'),
+        # The below probably will not have enough useful data by then
+        #        'Amedro2020': '{}{}{}/'.format(RunRoot, RunStr2,
+        #                                      '.2018.NO2andOH.Amedro'),
+        # Redundent
+#         'NIThv': '{}{}{}/'.format(RunRoot, RunStr,
+#                                   '.v3.0.H2O.AcidII.100HONO.2018/'),
+#         'NIThvCap': '{}{}{}/'.format(RunRoot, RunStr,
+#                                      '.v3.0.H2O.cap2J50.HONO100.2018'),
         }
     else:
         PrtStr = "Unkonwn RunSet ('{}') and GC verions ('{}')"
         print(PrtStr.format(RunSet, GC_version))
         sys.exit(0)
     # Include the output directory folder in directory strings
-#    for key in RunDict.keys():
-#        RunDict[key] = '{}{}/'.format(RunDict[key], 'OutputDir')
+    if folder4netCDF:
+        for key in RunDict.keys():
+            RunDict[key] = '{}{}/'.format(RunDict[key], 'OutputDir')
     return RunDict
+
 
 def save_model_output2csv(RunSet='FP-MOYA-Nest', res='0.25x0.3125',
                           folder='./'):
@@ -604,7 +646,7 @@ def get_whole_related_campaign_data(save2csv=True, campaign='ARNA-1',
     Get model data from additional CVAO campaigns (surface+airborne)
     """
     # Which data to use?
-    RunRoot = ar.get_local_folder('RunRoot')
+    RunRoot = get_local_folder('RunRoot')
     BASE_str = 'geosfp_4x5_standard.v12.9.0.BASE'
     ARNA1Var = BASE_str+'.2019.2020.ARNA1.Nest.repeat.JVALS/'
     ARNA1SurVar = BASE_str+'.2019.2020.ARNA1.Nest.repeat.JVALS.CVAO.PF/'
@@ -897,13 +939,143 @@ def get_tags_for_NOx_HONO():
         'ProdHNO2fromHvNITD2', 'ProdHNO2fromHvNITD3', 'ProdHNO2fromHvNITD4',
         'ProdNO2fromHvNIT', 'ProdNO2fromHvNITs', 'ProdNO2fromHvNITD1',
         'ProdNO2fromHvNITD2', 'ProdNO2fromHvNITD3', 'ProdNO2fromHvNITD4',
-        'ProdNO2fromHONO', 'ProdHNO2fromOHandNO', 'ProdHNO2fromHET'
+        'ProdNO2fromHONO', 'ProdHNO2fromOHandNO', 'ProdHNO2fromHET',
+        'ProdNOnHO2ChannelA', 'ProdNOnHO2ChannelB',
     ]
     prefix = 'TN{:0>3}'
     tags = [prefix.format(i+1) for i in range(len(diags))]
     # pair up numbering (so that runs with different diagnostics have same #s)?
     d = dict(zip(diags, tags))
     return d
+
+
+def get_DryDepAndWetDep_ds(wd=None, Specs=None, dates2use=None,
+                             DDprefix='DryDep_',
+                             DDVprefix='DryDepVel_',
+                             WLprefix='WetLossConv_',
+                             LSprefix='WetLossLS_',
+                             NewDepPrefix = 'DryAndWetDep_',
+                             verbose=False, debug=False,
+                             ):
+    """
+    Get a combined wet and dry loss value for species in kg/m2/s
+    """
+    # Avogadro constant (Mol^-1)
+    AVG = AC.constants('AVG')
+    # Species to process to a combined depositional loss
+    if isinstance(Specs, type(None)):
+        Specs = ['NO2', 'HNO3', 'NIT', 'NITs', 'NIT-all' ]
+        Specs += ['NITD{}'.format(i) for i in np.arange(1, 5)]
+
+    # Get dry Deposition
+    try:
+        Dds = AC.get_DryDep_ds(wd=wd, dates2use=dates2use)
+        # Add all all-NIT to dataset
+        if any([('NIT' in i) for i in Specs]):
+            Dds = AC.AddChemicalFamily2Dataset(Dds, fam='NIT-all',
+                                                  prefix=DDprefix)
+    except AssertionError:
+        print('WARNING: No dry dep diagnostics found for {}'.format(wd))
+
+    # Get convective scale wet deposition
+    try:
+        Cds = AC.get_WetLossConv_ds(wd=wd,
+                                   dates2use=dates2use)
+
+        # Add all all-NIT to dataset
+        if any([('NIT' in i) for i in Specs]):
+            Cds = AC.AddChemicalFamily2Dataset(Cds, fam='NIT-all',
+                                                  prefix=WLprefix)
+    except AssertionError:
+        print('WARNING: No ConvWetDep diags. found for {}'.format(wd))
+
+    # Get large scale wet deposition
+    try:
+        LSds = AC.get_WetLossLS_ds(wd=wd, dates2use=dates2use)
+
+        # Add all all-NIT to dataset
+        if any([('NIT' in i) for i in Specs]):
+            LSds = AC.AddChemicalFamily2Dataset(LSds, fam='NIT-all',
+                                              prefix=LSprefix)
+    except AssertionError:
+        print('WARNING: No LSWetDep diagnostics found for {}'.format(wd))
+
+    # Use a copy of Dry Dep xr.Dataset as template to add new data too
+    ds = Dds.copy()
+    LongNameStr = 'Total (Dry and Wet) deposition flux of species {}'
+    # Loop by requested species
+    for Spec in Specs:
+        # RMM
+        SpecRMM = AC.species_mass(Spec)
+        NewVar = '{}{}'.format(NewDepPrefix, Spec)
+        long_name = LongNameStr.format(Spec)
+        try:
+
+            # Get dry dep deposition
+            Var = '{}{}'.format(DDprefix, Spec)
+            if verbose:
+                print(Dds[Var])
+            # Convert units to kg/m2/s (from )
+            ExpectedUnits = 'molec cm-2 s-1'
+            attrs = Dds[Var].attrs
+            if (attrs['units'] == ExpectedUnits):
+                if verbose:
+                    PrtStr = "NOTE: updating '{}' DryDep units for {}"
+                    print(PrtStr.format(Spec, wd))
+                ds[NewVar] = Dds[Var].copy() / AVG * 1E-4 * SpecRMM
+                units = 'kg m-2 s-1'
+            else:
+                PrtStr = "WARNING: Expected units of {}. Got '{}' for '{}'"
+                print( PrtStr.format(ExpectedUnits, attrs['units'], wd) )
+                sys.exit()
+
+            # Get LS Wet dep
+            Var = '{}{}'.format(LSprefix, Spec)
+            try:
+                if verbose:
+                    print(LSds[Var])
+                # Save to total dry/wet dep
+                ds[NewVar] += LSds[Var].sum(dim='lev') / LSds['AREA']
+                units = 'kg m-2 s-1'
+            except KeyError:
+                PrtStr = "WARNING: Skiping '{}' ({}) as not in dataset (wd:{})"
+                print(PrtStr.format(Spec, Var, wd))
+
+            # Get convective scale wet deposition
+            Var = '{}{}'.format(WLprefix, Spec)
+            try:
+                if verbose:
+                    print(Cds[Var])
+                # Save to total dry/wet dep
+                ds[NewVar] += Cds[Var].sum(dim='lev') / Cds['AREA']
+                units = 'kg m-2 s-1'
+            except KeyError:
+                PrtStr = "WARNING: Skiping '{}' ({}) as not in dataset (wd:{})"
+                print(PrtStr.format(Spec, Var, wd))
+
+            # Update units
+            attrs['units'] = units
+            attrs['long_name'] = long_name
+            ds[NewVar].attrs = attrs
+
+        except KeyError:
+            PrtStr = "WARNING: Dry and/or Wet dep '{}' not present for: '{}'"
+            print( PrtStr.format(Spec, wd) )
+
+    # Select a limited set of variables to return
+    vars2rtn = [i for i in ds.data_vars if (DDVprefix not in i )]
+    vars2rtn = [i for i in vars2rtn if (DDprefix not in i )]
+    ds = ds[vars2rtn]
+
+    # Check numbers if in verbose or debug mode
+    if (verbose or debug):
+        for Spec in Specs:
+            NewVar = '{}{}'.format(NewDepPrefix, Spec)
+
+            print(NewVar, (ds[NewVar] * ds['AREA']).values.sum() )
+
+    # Return total deposition to the dictionary
+    return ds[vars2rtn]
 
 
 def get_NOx_budget_ds_dict_for_runs(limit_data_spatially=False,
@@ -919,17 +1091,16 @@ def get_NOx_budget_ds_dict_for_runs(limit_data_spatially=False,
     # Set runs to use and dates to of NetCDF files to use
     if isinstance(RunDict, type(None)):
         RunDict = get_dict_of_GEOSChem_model_output(res=res, RunSet=RunSet,
-                                                    CoreRunsOnly=CoreRunsOnly)
+                                                    CoreRunsOnly=CoreRunsOnly,
+                                                    folder4netCDF=True)
     TagD = get_tags_for_NOx_HONO()
     TagDr = {v: k for k, v in list(TagD.items())}
     # Only consider runs with diagnostics output
-    for key in list(RunDict.keys()):
-        if 'diags' not in RunDict[key].lower():
-            print('Removing: run with directory: {}'.format(RunDict[key]))
-            del RunDict[key]
-    # Use the spun up or un spun up output?
-    for key in RunDict.keys():
-        RunDict[key] = RunDict[key]+'OutputDir/'
+#     for key in list(RunDict.keys()):
+#         if 'diags' not in RunDict[key].lower():
+#             print('Removing: run with directory: {}'.format(RunDict[key]))
+#             del RunDict[key]
+
     # Get core species concentrations
     ConcD = {}
     for key in RunDict.keys():
@@ -958,8 +1129,26 @@ def get_NOx_budget_ds_dict_for_runs(limit_data_spatially=False,
             print('WARNING: No JVal diagnostics found for {}'.format(key))
 
     # Get Emissions
+    Specs = ['NO2', 'NO', 'HNO2', 'HNO3',  'NIT']
+    EmissD = {}
+    for key in RunDict.keys():
+        try:
+            EmissD[key] = AC.get_HEMCO_diags_as_ds(wd=RunDict[key],
+                                                   dates2use=dates2use)
+        except AssertionError:
+            print('WARNING: No HEMCO diagnostics found for {}'.format(key))
 
-    # Get Deposition
+    # Get dry and wet Deposition
+    Specs = ['NO2', 'HNO3', 'NIT', 'NITs', 'NIT-all']
+    DepD = {}
+    for key in RunDict.keys():
+        try:
+#            DepD[key] = AC.get_DryDepAndWetDep_ds(wd=RunDict[key],
+            DepD[key] = get_DryDepAndWetDep_ds(wd=RunDict[key], Specs=Specs,
+                                                    dates2use=dates2use)
+        except AssertionError:
+            PrtStr = 'WARNING: No dry/wet dep diagnostics found for {}'
+            print(PrtStr.format(key))
 
     # - Calculate the various quantities per run.
     Specs = ['NO2', 'NO', 'HNO2', 'HNO3',  'OH', 'TN', 'NIT']
@@ -998,7 +1187,18 @@ def get_NOx_budget_ds_dict_for_runs(limit_data_spatially=False,
             ds[JScaleVar] = ds[JScaleVar] / ds['Jval_HNO3']
             NOxD[key] = ds
         except:
-            print("'Failed to add Jvals for '{}': {}".format(key, d[key]))
+            print("Failed to add Jvals for '{}': {}".format(key, d[key]))
+
+        # Add total wet/dry deposition fluxes
+        try:
+            ds = DepD[key]
+            Vars = ds.data_vars
+            vars2use = [i for i in Vars if any(ii in i for ii in Specs)]
+            ds = xr.merge([NOxD[key], ds[vars2use]])
+            NOxD[key] = ds
+
+        except:
+            print("Failed to add Dep values for '{}': {}".format(key, d[key]))
 
         # HONO/NO2 production and general tagging
         try:
