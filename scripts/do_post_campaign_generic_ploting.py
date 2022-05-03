@@ -41,9 +41,10 @@ def main():
 #                                       NOxAsLog=NOxAsLog,
 #                                       CoreRunsOnly=CoreRunsOnly,
 #                                       debug=True)
+
     # Output the same bulk plots for the ACID runs
     flight_nums = []
-    RunSet = 'ACID'
+    RunSet = 'PostHONO'
     res = '4x5'
     NOxAsLog = True
     CoreRunsOnly = True

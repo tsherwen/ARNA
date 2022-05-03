@@ -19,19 +19,31 @@ def main():
     """
     Main driver function
     """
+    # --- NOx Budget
+    # Perform core NOx budget analysis
+    plt_key_NOx_budget_terms()
+    analyse_NOx_budget()
+
+    # --- Misc NOx work during campaign
     # Get the core FAAM data
 #    ar.get_FAAM_core4flightnum()
+
     # Get the ToF-CIMS data
     ds2 = ar.get_CIMS_data4flight()
+
+    # --- Genreal run testing and acid uptake run exploration
     # Explore NOy/NIT after inclusion of acid uptake
     explore_NOy_with_acid_uptake()
-
-    #
     explore_ARNA_period_with_acid_uptake()
 
-    #
+    # Explore lightning sources within ARNA runs
+#    plt_lightning_by_month()
 
+    # Explore the output of Jvalues and PF code
+    explore_JVALS_in_JNITs_runs()
 
+    # Do debbuging of Isotherm runs
+#    explore_print_statement_debug_of_aciduptake_photolysis()
 
 
 def explore_NOy_with_acid_uptake():
@@ -615,9 +627,12 @@ def plt_key_NOx_budget_terms():
     """
     Make spatial plots of key tagged routes
     """
+    # Local switches
+    PltAsLog = True
+    verbose = True
     # Which runs to use?
-#    dates2use = [datetime.datetime(2019, i+1, 1) for i in range(12)]
-    dates2use = [datetime.datetime(2018, i+1, 1) for i in range(12)]
+    dates2use = [datetime.datetime(2019, i+1, 1) for i in range(12)]
+#    dates2use = [datetime.datetime(2018, i+1, 1) for i in range()]
     trop_limit = False
     RunSet = 'PostHONO'
 #    GC_version = 'v13.4'
@@ -626,6 +641,25 @@ def plt_key_NOx_budget_terms():
     RunDict = ar.get_dict_of_GEOSChem_model_output(RunSet=RunSet,
                                                    GC_version=GC_version,
                                                    res=res)
+    # Which runs to use?
+    if RunSet == 'PostHONO':
+        runs2use = ['Base', 'min4pptHONO', 'NIThv']
+#        DIFFrun = 'min4pptHONO'
+        DIFFrun = 'NIThv'
+        REF_list = ['Base', 'min4pptHONO',]
+        KeyList = list(sorted(RunDict.keys()))
+        for key in KeyList:
+            if key in runs2use:
+                pass
+            else:
+                del RunDict[key]
+    else:
+    #    for run in ['Acid-4x5-J50']
+    #    run2use = 'Acid-4x5-J50'
+    #    run2use = 'Acid-4x5-Isotherm.v2'
+        runs2use = ['Acid-4x5-Isotherm.v2', 'Acid-4x5-J50', 'Acid-4x5-J00', ]
+        REF_list = ['Acid-4x5-J50', 'Acid-4x5-J00']
+        DIFFrun = 'Acid-4x5-Isotherm.v2'
     # Get NOx budget dictionary
     NOxD = ar.get_NOx_budget_ds_dict_for_runs(RunDict=RunDict,
                                               trop_limit=trop_limit,
@@ -635,12 +669,7 @@ def plt_key_NOx_budget_terms():
     ProdVars = ['ProdHNO2fromHvNIT-all',
                 'ProdHNO2fromOHandNO',
                 'ProdHNO2fromHET']
-#    for run in ['Acid-4x5-J50']
-#    run2use = 'Acid-4x5-J50'
-#    run2use = 'Acid-4x5-Isotherm.v2'
-    runs2use = ['Acid-4x5-Isotherm.v2', 'Acid-4x5-J50', 'Acid-4x5-J00', ]
-    PltAsLog = True
-    verbose = True
+
     # - Plot up the annual mean surface values
     for run2use in runs2use:
         ds = NOxD[run2use].copy()
@@ -743,10 +772,9 @@ def plt_key_NOx_budget_terms():
         AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
         plt.close('all')
 
-    # --- Plot up source of HONO in isotherm runs relative to J50 and J00
-    REF_list = ['Acid-4x5-J50', 'Acid-4x5-J00']
-    run2use = 'Acid-4x5-Isotherm.v2'
-
+    # --- Plot up source of HONO in isotherm runs
+    # (relative to J50 and J00 if before "PostHONO" set)
+    run2use = DIFFrun
     for REFrun in REF_list:
         savetitle = 'ARNA_NOx_budget_REF_{}_vs_{}'.format(REFrun, run2use)
         # Plot routes
@@ -793,20 +821,19 @@ def plt_key_NOx_budget_terms():
     plt.close('all')
 
 
-
 def analyse_NOx_budget():
     """
     Analyse NOx budget in tagged model runs
     """
-    # Get NOx budget dictionary
+    # Local variables and switches
+    AVG = AC.constants('AVG') # Avogadros constant
     dates2use = [datetime.datetime(2019, i+1, 1) for i in range(12)]
     trop_limit = False
     CoreRunsOnly = True
+    # Get NOx budget dictionary of objects
     NOxD = ar.get_NOx_budget_ds_dict_for_runs(trop_limit=trop_limit,
                                               dates2use=dates2use,
                                               CoreRunsOnly=CoreRunsOnly)
-    # Avogadros constant
-    AVG = AC.constants('AVG')
 
     # - - Now do analysis of the data - -
     # - Global (values in bottom X km) totals (or averages for s^-1 variables)
@@ -860,7 +887,7 @@ def analyse_NOx_budget():
 
     # Get deposition sinks too
 
-    #
+    # Get Emission sinks
 
     # Print DataFrame and save to csv
     print(df)
