@@ -974,8 +974,11 @@ def get_DryDepAndWetDep_ds(wd=None, Specs=None, dates2use=None,
         if any([('NIT' in i) for i in Specs]):
             Dds = AC.AddChemicalFamily2Dataset(Dds, fam='NIT-all',
                                                   prefix=DDprefix)
+        No_DryDep = False
+
     except AssertionError:
         print('WARNING: No dry dep diagnostics found for {}'.format(wd))
+        No_DryDep = True
 
     # Get convective scale wet deposition
     try:
@@ -986,8 +989,10 @@ def get_DryDepAndWetDep_ds(wd=None, Specs=None, dates2use=None,
         if any([('NIT' in i) for i in Specs]):
             Cds = AC.AddChemicalFamily2Dataset(Cds, fam='NIT-all',
                                                   prefix=WLprefix)
+        No_C_WetDep = False
     except AssertionError:
         print('WARNING: No ConvWetDep diags. found for {}'.format(wd))
+        No_C_WetDep = True
 
     # Get large scale wet deposition
     try:
@@ -997,11 +1002,19 @@ def get_DryDepAndWetDep_ds(wd=None, Specs=None, dates2use=None,
         if any([('NIT' in i) for i in Specs]):
             LSds = AC.AddChemicalFamily2Dataset(LSds, fam='NIT-all',
                                               prefix=LSprefix)
+        No_LS_WetDep = False
     except AssertionError:
         print('WARNING: No LSWetDep diagnostics found for {}'.format(wd))
+        No_LS_WetDep = True
 
     # Use a copy of Dry Dep xr.Dataset as template to add new data too
-    ds = Dds.copy()
+    try:
+        Dds
+        ds = Dds.copy()
+    except NameError:
+        PrtStr = 'WARNING: Dep. output not found (Dry:{}, C Wet:{}, LS Wet:{})'
+        print(PrtStr.format(No_DryDep, No_C_WetDep, No_LS_WetDep))
+        return
     LongNameStr = 'Total (Dry and Wet) deposition flux of species {}'
     # Loop by requested species
     for Spec in Specs:
@@ -1129,7 +1142,7 @@ def get_NOx_budget_ds_dict_for_runs(limit_data_spatially=False,
             print('WARNING: No JVal diagnostics found for {}'.format(key))
 
     # Get Emissions
-    Specs = ['NO2', 'NO', 'HNO2', 'HNO3',  'NIT']
+    Specs = ['NO2', 'NO', ]
     EmissD = {}
     for key in RunDict.keys():
         try:
@@ -1187,7 +1200,7 @@ def get_NOx_budget_ds_dict_for_runs(limit_data_spatially=False,
             ds[JScaleVar] = ds[JScaleVar] / ds['Jval_HNO3']
             NOxD[key] = ds
         except:
-            print("Failed to add Jvals for '{}': {}".format(key, d[key]))
+            print("Failed to add Jvals for '{}': {}".format(key, RunDict[key]))
 
         # Add total wet/dry deposition fluxes
         try:
@@ -1198,7 +1211,8 @@ def get_NOx_budget_ds_dict_for_runs(limit_data_spatially=False,
             NOxD[key] = ds
 
         except:
-            print("Failed to add Dep values for '{}': {}".format(key, d[key]))
+            PrtStr = "Failed to add Dep values for '{}': {}"
+            print(PrtStr.format(key, RunDict[key]))
 
         # HONO/NO2 production and general tagging
         try:
@@ -1221,7 +1235,8 @@ def get_NOx_budget_ds_dict_for_runs(limit_data_spatially=False,
             ds[NewVar].attrs = attrs
             NOxD[key] = ds
         except:
-            print("'Failed to add Prod/Loss for '{}': {}".format(key, d[key]))
+            PrtStr = "Failed to add Prod/Loss for '{}': {}"
+            print(PrtStr.format(key, RunDict[key]))
     del ds
     gc.collect()
 
@@ -1238,6 +1253,7 @@ def get_NOx_budget_ds_dict_for_runs(limit_data_spatially=False,
             #
             ds = NOxD[key]
             # reduce area to CVAO...
+
     # Limit the data to the troposphere
     if trop_limit:
         # Loop and reduce dataset scale
