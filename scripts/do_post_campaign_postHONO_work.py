@@ -42,17 +42,21 @@ def main():
 
     # TEMP: mannual set to use v6 diags and HO2+NOv2 here
     RunRoot = ar.get_local_folder('RunRoot')
-    RunStr1 = 'geosfp_4x5_aciduptake.v12.9.0.ARNA.Isotherm.Diags.v6.HO2nNOv2.1'
+    RunBaseStr1 = 'geosfp_4x5_aciduptake.v12.9.0'
+    RunStr1 = RunBaseStr1 + '.ARNA.Isotherm.Diags.v6.HO2nNOv2.1'
     RunStr2 = '{}{}{}/OutputDir/'.format(RunRoot, RunStr1, '.IsopH4')
     RunStr1 = '{}{}{}/OutputDir/'.format(RunRoot, RunStr1, '')
-    RunStr3 = 'geosfp_4x5_aciduptake.v12.9.0.BASE.2019.2020.ARNA.DustUptake.'
+    RunStr3 = RunBaseStr1 + '.BASE.2019.2020.ARNA.DustUptake.'
     RunStr3 += 'JNIT.Isotherm.BCs.repeat.ON.II.diags.v5.0.H2O.AcidII.100HONO'
     RunStr3 = '{}{}{}/OutputDir/'.format(RunRoot, RunStr3, '.2018.pH7')
-    RunStr4 = 'geosfp_4x5_aciduptake.v12.9.0.ARNA.Isotherm.Diags.v6.HO2nNOv2.5'
-    RunStr5 =  '{}{}{}/OutputDir/'.format(RunRoot, RunStr4, '')
-    RunStr6 =  '{}{}{}/OutputDir/'.format(RunRoot, RunStr4, '.IsopH4')
-    RunStr7 =  '{}{}{}/OutputDir/'.format(RunRoot, RunStr4,
-                                          '.Iso.UnlimitedpH.repeat')
+    RunStr4 = RunBaseStr1 + 'ARNA.Isotherm.Diags.v6'
+    BaseRunStr5 =  RunStr4 +  '.HO2nNOv2.5'
+    RunStr5 =  '{}{}{}/OutputDir/'.format(RunRoot, BaseRunStr5, '')
+    RunStr6 =  '{}{}{}/OutputDir/'.format(RunRoot, BaseRunStr5, '.IsopH4')
+    RunStr7 =  '{}{}{}/OutputDir/'.format(RunRoot, BaseRunStr5,
+                                          '.Iso.UnlimitedpH')
+    RunStr8 =  '{}{}{}/OutputDir/'.format(RunRoot, RunStr4, '.Ye2017')
+    RunStr9 =  '{}{}{}/OutputDir/'.format(RunRoot, RunStr4, '.Ye2017online')
 
     RunDict2 = {
     'Base':RunDict['Base'], 'min4pptHONO': RunDict['min4pptHONO'],
@@ -60,8 +64,10 @@ def main():
     'HO2+NOv2.5': RunStr5,
     'Isov5.pH4.HO2+NOv2.5': RunStr6,
     'Isov5': RunStr3,
-    'Iso.HO2+NO': RunStr2,
-#    'Iso.Unlimited': RunStr7,
+#    'Iso.HO2+NO': RunStr2, # WARNING: This is using HO2+NO code with a bug
+    'Iso.Unlimited': RunStr7,
+    'Ye17': RunStr8,
+    'Ye17.online': RunStr9,
     }
 
 
@@ -127,7 +133,7 @@ def plt_HO2_NO_branching_ratio_spatially(wd=None, RunDict=None,
         StateMet = get_StateMet_ds(wd=wd)
 #        dates2use = [datetime.datetime(2018, 1+i, 1) for i in range(3)]
 
-    # GEt entire NOx budget as a Dataset object
+    # Get entire NOx budget as a Dataset object
     NOxD = ar.get_NOx_budget_ds_dict_for_runs(dates2use=dates2use,
                                               RunDict=RunDict)
 
