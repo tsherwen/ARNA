@@ -926,6 +926,22 @@ def get_analysis_region(RegionName):
         # Cape Verde flying area for ARNA
         'Cape_Verde_Flying': {'x0': -29.1, 'x1': -15.9, 'y0': 11.9,
                               'y1': 21.1},
+        # FIREX-AQ
+        'CONUS' : {'x0': -125, 'x1': -54, 'y0': 23, 'y1': 60},
+        #
+        'Atlantic' :{'x0': -70, 'x1': 20, 'y0': -80, 'y1': 80},
+#     df.loc[bool_, region_var] = 'Pacific'
+#     bool_ = (df['LON'] >= 160) & (df['LON'] <= 180)
+#     df.loc[bool_, region_var] = 'Pacific'
+#     # Now assign 'Atlantic'
+#     bool_ = (df['LON'] > -70) & (df['LON'] < 160)
+#     df.loc[bool_, region_var] = 'Atlantic'
+#     # Now assign 'Artic'
+#     bool_ = (df['LAT'] > 60)
+#     df.loc[bool_, region_var] = 'Arctic'
+#     # Now assign 'CONUS'
+#     bool_ = (df['LAT'] < 60) & (df['LAT'] >= 23) &  \
+#         (df['LON'] >= -125) & (df['LON'] <= -54)
     }
     return d[RegionName]
 
