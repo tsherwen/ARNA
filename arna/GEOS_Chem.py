@@ -1097,22 +1097,22 @@ def get_NOx_budget_ds_dict_for_runs(limit_data_spatially=False,
                                     CoreRunsOnly=False,
                                     dates2use=None,
                                     trop_limit=False,
-                                    ):
+                                    ExtraConcVars=['NOx', 'NOy', 'NIT-all'],
+                                    debug=False):
     """
     Get a single dictionary of xr.Datasets for models runs (NOx budget vars)
     """
+    # Local variables
+    SCprefix = 'SpeciesConc_'
+    debug = True
     # Set runs to use and dates to of NetCDF files to use
     if isinstance(RunDict, type(None)):
         RunDict = get_dict_of_GEOSChem_model_output(res=res, RunSet=RunSet,
                                                     CoreRunsOnly=CoreRunsOnly,
                                                     folder4netCDF=True)
+    # Retrieve tags for NOx budget and make an inverted dictionary
     TagD = get_tags_for_NOx_HONO()
     TagDr = {v: k for k, v in list(TagD.items())}
-    # Only consider runs with diagnostics output
-#     for key in list(RunDict.keys()):
-#         if 'diags' not in RunDict[key].lower():
-#             print('Removing: run with directory: {}'.format(RunDict[key]))
-#             del RunDict[key]
 
     # Get core species concentrations
     ConcD = {}
@@ -1127,7 +1127,8 @@ def get_NOx_budget_ds_dict_for_runs(limit_data_spatially=False,
                                             dates2use=dates2use)
         except AssertionError:
             print('WARNING: No Prod/Loss diagnostics found for {}'.format(key))
-    # Get StateMet collection - for unit conversions...
+
+    # Get StateMet collection - for unit conversions... (And humidity)
     StateD = {}
     for key in RunDict.keys():
         StateD[key] = AC.get_StateMet_ds(wd=RunDict[key],
@@ -1186,6 +1187,34 @@ def get_NOx_budget_ds_dict_for_runs(limit_data_spatially=False,
         ds = ConcD[key]
         Vars = ds.data_vars
         vars2use = [i for i in Vars if any(i.endswith(ii) for ii in Specs)]
+        # Include any extra species / families?
+        if (len(ExtraConcVars) > 0):
+            if debug:
+                print(ExtraConcVars)
+            for ExtraVar in ExtraConcVars:
+                if debug:
+                    print(ExtraVar)
+                # Check if family already present
+                try:
+                    ds[ExtraVar]
+                except KeyError:
+                    try:
+                        ds = AC.AddChemicalFamily2Dataset(ds, fam=ExtraVar,
+                                                          prefix=SCprefix)
+                        if debug:
+                            print(ExtraVar)
+                            print(ds[ExtraVar])
+
+    #                except Exception:
+                    except:
+                        # If extra concentration not setup as a family, then
+                        # assume ExtraVar is a species variable
+                        pass
+                    vars2use += ['{}{}'.format(SCprefix, ExtraVar)]
+                    if debug:
+                        print(vars2use)
+#            print('TODO: setup including additional species/families')
+        vars2use = list(set(vars2use))
         ds = xr.merge([NOxD[key], ds[vars2use]])
         NOxD[key] = ds
 
@@ -1200,7 +1229,8 @@ def get_NOx_budget_ds_dict_for_runs(limit_data_spatially=False,
             ds[JScaleVar] = ds[JScaleVar] / ds['Jval_HNO3']
             NOxD[key] = ds
         except:
-            print("Failed to add Jvals for '{}': {}".format(key, RunDict[key]))
+            PrtStr = "WARNING: Failed to add Jvals for '{}': {}"
+            print(PrtStr.format(key, RunDict[key]))
 
         # Add total wet/dry deposition fluxes
         try:
@@ -1211,7 +1241,7 @@ def get_NOx_budget_ds_dict_for_runs(limit_data_spatially=False,
             NOxD[key] = ds
 
         except:
-            PrtStr = "Failed to add Dep values for '{}': {}"
+            PrtStr = "WARNING: Failed to add Dep values for '{}': {}"
             print(PrtStr.format(key, RunDict[key]))
 
         # HONO/NO2 production and general tagging
@@ -1235,8 +1265,13 @@ def get_NOx_budget_ds_dict_for_runs(limit_data_spatially=False,
             ds[NewVar].attrs = attrs
             NOxD[key] = ds
         except:
-            PrtStr = "Failed to add Prod/Loss for '{}': {}"
+            PrtStr = "WARNING: Failed to add Prod/Loss for '{}': {}"
             print(PrtStr.format(key, RunDict[key]))
+
+        # Get humidity and key variables from StateMet collection
+#        'Met_SPHU'
+
+
     del ds
     gc.collect()
 

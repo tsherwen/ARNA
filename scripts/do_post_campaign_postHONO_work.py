@@ -19,21 +19,22 @@ def main():
     res = '4x5'
     GC_version = 'v12.9'
 #    GC_version = 'v13.4'
+    sdate = datetime.datetime(2018, 1, 1) # Beginning for spin-up year
+#    sdate = datetime.datetime(2019, 1, 1) # Beginning for analysis year
+    edate = datetime.datetime(2018, 3, 1) # 3 months into spin-up
+#    edate = datetime.datetime(2018, 6, 1) # 6 months into spin-up
+#    edate = datetime.datetime(2018, 10, 1) # 10 months into spin-up
+#    edate = datetime.datetime(2019, 12, 31) # End of analysis year
+#    edate = datetime.datetime(2018, 12, 31) # End of spin=up year
+    dates2use = pd.date_range(sdate, edate, freq='1D')
 #    dates2use = None
-#    dates2use = [datetime.datetime(2018, 1+i, 1) for i in range(1)]
-    # first 3 months
-#    dates2use = [datetime.datetime(2018, 1+i, 1) for i in range(3)]
-    dates2use = [datetime.datetime(2018, 1+i, 1) for i in range(10)]
-    # spin up year
-    dates2use = [datetime.datetime(2018, 1+i, 1) for i in range(12)]
-    # 6 months, after 6 months of spin up.
-#    dates2use = [datetime.datetime(2018, 7+i, 1) for i in range(6)]
-    # Spun up year
-    dates2use = [datetime.datetime(2019, 1+i, 1) for i in range(12)]
 
+    # Base for analysis and then perturbation
     REF1 = 'Base'
 #    DIFF = '4pptHONO'
-    DIFF = 'min4pptHONO'
+#    DIFF = 'min4pptHONO'
+    DIFF = 'Iso.Unlimited'
+
     # Get dictionary of model runs and their names (RunDict)
     RunDict = ar.get_dict_of_GEOSChem_model_output(RunSet=RunSet,
                                                    GC_version=GC_version,
@@ -49,29 +50,40 @@ def main():
     RunStr3 = RunBaseStr1 + '.BASE.2019.2020.ARNA.DustUptake.'
     RunStr3 += 'JNIT.Isotherm.BCs.repeat.ON.II.diags.v5.0.H2O.AcidII.100HONO'
     RunStr3 = '{}{}{}/OutputDir/'.format(RunRoot, RunStr3, '.2018.pH7')
-    RunStr4 = RunBaseStr1 + 'ARNA.Isotherm.Diags.v6'
+    RunStr4 = RunBaseStr1 + '.ARNA.Isotherm.Diags.v6'
     BaseRunStr5 =  RunStr4 +  '.HO2nNOv2.5'
-    RunStr5 =  '{}{}{}/OutputDir/'.format(RunRoot, BaseRunStr5, '')
-    RunStr6 =  '{}{}{}/OutputDir/'.format(RunRoot, BaseRunStr5, '.IsopH4')
-    RunStr7 =  '{}{}{}/OutputDir/'.format(RunRoot, BaseRunStr5,
+    RunStr5 = '{}{}{}/OutputDir/'.format(RunRoot, BaseRunStr5, '')
+    RunStr6 = '{}{}{}/OutputDir/'.format(RunRoot, BaseRunStr5, '.IsopH4')
+    RunStr7 = '{}{}{}/OutputDir/'.format(RunRoot, BaseRunStr5,
                                           '.Iso.UnlimitedpH')
-    RunStr8 =  '{}{}{}/OutputDir/'.format(RunRoot, RunStr4, '.Ye2017')
-    RunStr9 =  '{}{}{}/OutputDir/'.format(RunRoot, RunStr4, '.Ye2017online')
+    RunStr8 = '{}{}{}/OutputDir/'.format(RunRoot, RunStr4, '.Ye2017')
+    RunStr9 = '{}{}{}/OutputDir/'.format(RunRoot, RunStr4, '.Ye2017online')
+    RunStr10 = '{}{}{}/OutputDir/'.format(RunRoot, RunStr4, '.Ye2017.LL')
+    RunStr11 = '{}{}{}/OutputDir/'.format(RunRoot, RunStr4,'.Iso.UnlimitedpH')
 
     RunDict2 = {
     'Base':RunDict['Base'], 'min4pptHONO': RunDict['min4pptHONO'],
-    'HO2+NOv2.1': RunStr1,
-    'HO2+NOv2.5': RunStr5,
-    'Isov5.pH4.HO2+NOv2.5': RunStr6,
-    'Isov5': RunStr3,
+#    'HO2+NOv2.1': RunStr1,
+    'HO2+NO': RunStr5, # HO2+NO v5
+    'Iso.pH4.HO2+NO': RunStr6, # HO2+NO v5
+#    'Isov5.pH7': RunStr3, # Note, this is not the latest isotherm code.
 #    'Iso.HO2+NO': RunStr2, # WARNING: This is using HO2+NO code with a bug
-    'Iso.Unlimited': RunStr7,
+    'Iso.Unlimited.HO2+NO': RunStr7,
+    'Iso.Unlimited': RunStr11,
     'Ye17': RunStr8,
     'Ye17.online': RunStr9,
+    'Ye17.LL': RunStr10,
     }
 
-
     RunDict = RunDict2
+
+    # Kludge: temp
+    keys2del = 'Ye17.online', 'Ye17', 'HO2+NOv2.1', 'min4pptHONO', 'HO2+NOv2.5'
+    for key in keys2del:
+        try:
+            del RunDict[key]
+        except KeyError:
+            print("WARNING: key not dropped from RunDict ('{}')".format(key))
 
 #
 # 'geosfp_4x5_aciduptake.v12.9.0.BASE.2019.2020.ARNA.DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags.v2.J00.HourlyOutput.2018.HO2andNOv2.BetaStandard.1day'
@@ -99,6 +111,8 @@ def main():
                                             PltAllVars=True,
                                             RunDict=RunDict)
 
+    # Plot up the JScale changes
+    plt_JScale_analysis(RunDict=RunDict, dates2use=dates2use)
 
     # Plot up HONO production routes - N/A
     # See functions in do_post_campaign_NOx_analysis.py
@@ -109,6 +123,338 @@ def main():
     plt_NO_HO2_channel_verues_H2O()
     # And the OH + NO2 channel...
     plt_OH_NO2_channel_verues_H2O()
+
+
+    # Do a full analysis of variables for JNIT run
+    DIFF = None
+    for REF1 in RunDict.keys():
+        variable_analyis4JNIT(REF1=REF1, DIFF=DIFF, NOxD=NOxD,
+                              RunDict=RunDict, dates2use=dates2use)
+
+
+
+def AddMask2Dataset(ds, MaskName=None, res=None):
+    """
+    Apply a mask to a xr.dataset
+    """
+    # Retrieve Mask for MaskName.
+    # NOTE: This should be applicable to any xr.dataset, but right now only
+    #       GEOS-Chem standard arrays will fit.
+    mask = RetrieveMaskFromName(MaskName=MaskName, res=res)
+
+    # Ensure mask is in format to be able to apply to data
+    # Ensure the mask can be used for masking of Datasets
+    print('TODO: convert mask to xr.dataset? With lat and lon')
+    print('WARNING: Kludge to consider first dimensions applied as a stopgap')
+    mask = mask[...,0]
+
+    # Manually construct NetCDF?
+    # Use existing Dataset as the template
+    var2copy = list(ds.data_vars)[0]
+    ds[MaskName] = ds[var2copy].copy()
+    attrs = ds[var2copy].attrs
+    ds[MaskName] = (('lon', 'lat'), mask)
+    attrs['long_name'] = "Mask of '{}'".format(MaskName)
+    ds[MaskName].attrs = attrs
+
+    return ds
+
+
+def RetrieveMaskFromName(MaskName=None, res='4x5',
+                         mask3D=True, mask2D=False, mask4D=False,
+                         trop_limit=False):
+    """
+    Retrieve mask in format to use with xr.Datasets from provided name
+    """
+
+    mask = AC.mask_all_but(region=MaskName, res=res,
+                           mask2D=mask2D, mask3D=mask3D, mask4D=mask4D,
+                           use_multiply_method=False, trop_limit=False)
+
+    return mask
+
+
+
+def variable_analyis4JNIT(dates2use=None, RunDict=None, NOxD=None,
+                          REF1=None, DIFF=None,
+                          AvgOverTime=True):
+    """
+    Explore the key variables for nitrate photolysis
+    """
+    # Local variables
+    SCprefix = 'SpeciesConc_'
+
+#    masks = [None, 'Atlantic', 'ARNA', 'FIREX-AQ', ]
+#    masks = ['Global', 'Atlantic', 'ARNA', 'FIREX-AQ', ]
+#    masks = ['global', 'Atlantic', 'ARNA', 'FIREX-AQ', ]
+#    masks = ['global', 'Ocean Tropics', 'Tropics', 'Ocean', 'Land' ]
+    masks = ['global',
+            'local_CVAO_area', 'Cape_Verde_Flying', 'CONUS',
+            'Ocean Tropics', 'Tropics', 'Ocean', 'Land',
+            ]
+    res = '4x5' # Hardcode resolution for now. This should not be needed
+
+    # Get entire NOx budget as a Dataset object
+    # (Note: unit processing etc has should be done already - check this!)
+    if isinstance(NOxD, type(None)):
+        ExtraConcVars = [
+            'NOx', 'NOy', 'NIT-all', 'Cly', 'Bry', 'Iy',
+            'DST-all', 'DSTAL-all'
+            ]
+        ExtraConcVars += [SCprefix+i for i in ['O3'] ]
+        NOxD = ar.get_NOx_budget_ds_dict_for_runs(dates2use=dates2use,
+                                                  RunDict=RunDict,
+                                                  ExtraConcVars=ExtraConcVars)
+    # Set xr.Dataset to use
+    if not isinstance(DIFF, type(None)):
+        # Calculate difference
+        ds = NOxD[DIFF] - NOxD[REF1]
+        AnalysisStr = '_{}_vs_{}_'.format(DIFF, REF1)
+        # Ratio?
+
+        # Percentage?
+
+    else:
+        # Use the reference run for analysis
+        ds = NOxD[REF1].copy()
+        AnalysisStr = REF1
+
+    # Just use a time average
+    if AvgOverTime:
+        ds = ds.mean(dim='time')
+
+    # Limit or average data vertically.
+    # hardcode selecting surface for now.
+    # Should have the option to molecule weight over alt
+    lev2use = ds.lev.values[0]
+    ds = ds.sel(lev=lev2use)
+
+    # Apply masks to dataset
+    dsD = {}
+    for MaskName in masks:
+        print(MaskName)
+        #
+        ds = AddMask2Dataset(ds.copy(), MaskName=MaskName, res=res)
+
+        # Also mask for bottom 10 km? - N/A for now
+
+        # Save masked array
+#        dsD[MaskName] = ds.copy() * ds[MaskName]
+        dsD[MaskName] = ds.copy().where(ds[MaskName] != 1.0)
+
+
+    # What variables to get stats on?
+
+
+
+    # Get Stats on the different
+    df = pd.DataFrame()
+    for key in dsD.keys():
+        print(key)
+        ds = dsD[key]
+        SaveName = 'TEST_{}'.format(key)
+        SaveName = AC.rm_spaces_and_chars_from_str(SaveName)
+        ds.to_netcdf('{}.nc'.format(SaveName))
+        #
+#        vars2use = list(ds.data_vars)[:10]
+        vars2use = list(ds.data_vars)
+
+
+        # apply stats (e.g max, min, mean, area weighted?)
+        for var in vars2use:
+            avg = AC.get_avg_2D_conc_of_X_weighted_by_Y(ds, Xvar=var,
+                                                        Yvar='AREA')
+            # Update naming and units for variables
+            if SCprefix in var:
+                SpecName = var.split(SCprefix)[-1]
+                units, scaleby = AC.tra_unit(VarName, scale=True)
+                VarName = '{} ({})'.format(SpecName, units)
+                avg = avg * scaleby
+            else:
+                VarName = var
+
+            df.loc[key, VarName ] = avg
+
+    # Save output the values with all the masking
+    SaveName = 'ARNA_data_masked_by_area_{}.csv'.format(AnalysisStr)
+    df.to_csv(SaveName)
+
+
+    # - Plot up values
+    # Setup PDF to hold surface plots
+
+    #
+
+
+
+def plt_JScale_analysis(RunDict=None, dates2use=None):
+    """
+    Plot up Jscale analysis vertically and at different horizontal levels
+    """
+    # Set data to use?
+    if isinstance(RunDict, type(None)):
+        keys2use = ['Base', 'min4pptHONO', 'HO2+NOv2.5',
+                    'Isov5.pH4.HO2+NOv2.5',
+#                    'Isov5'
+                    ]
+
+    # Include J100 as a reference
+    RunStr = '/users/ts551/scratch/GC/rundirs/P_ARNA/'
+    RunStr += 'geosfp_4x5_aciduptake.v12.9.0.BASE.2019.2020.ARNA.'
+    J100 = 'DustUptake.JNITx100.BCs/OutputDir/'
+#    J50 = 'DustUptake.JNITx50.BCs/OutputDir/'
+    RunDict['J100'] = J100
+#    RunDict['J50'] = J50
+
+    # - Vertical
+    plt_vertical_JScale_analysis()
+
+
+    # -  Surface
+    levels2use
+
+
+    pass
+
+
+def plt_vertical_JScale_analysis(RunDict=None, dates2use=None):
+    """
+    Plot vertical comparisons of Jscale
+    """
+    #
+    regions = [
+    None, 'local_CVAO_area', 'Cape_Verde_Flying', 'CONUS', 'Atlantic'
+    ]
+#    regions = [None, 'local_CVAO_area']
+    # Local variables
+    PressVar = 'Met_PMID'
+    JScaleVar = 'Jscale'
+
+    # Get StateMet collection - for unit conversions...
+    StateD = {}
+    for key in RunDict.keys():
+        StateMet = AC.get_StateMet_ds(wd=RunDict[key],
+                                         dates2use=dates2use)
+        # Calculate number of molecules
+        MolecVar = 'Met_MOLCES'
+        try:
+            StateMet[MolecVar]
+        except KeyError:
+            StateMet = add_molec_den2ds(StateMet, MolecVar=MolecVar)
+
+        StateD[key] = StateMet
+
+    # Get Photolysis rates
+    JValD = {}
+    for key in RunDict.keys():
+        try:
+            ds = AC.GetJValuesDataset(wd=RunDict[key],
+                                              dates2use=dates2use)
+            # Add JScale variable?
+
+            ds[JScaleVar] = ds['Jval_NIT'].copy()
+            ds[JScaleVar] = ds[JScaleVar] / ds['Jval_HNO3']
+            JValD[key] = ds
+
+        except AssertionError:
+            print('WARNING: No JVal diagnostics found for {}'.format(key))
+
+    # Select the average vertical values
+    dfD = {}
+    avg_over_time = True
+    for key in RunDict.keys():
+
+        # Setup dictionary to store masked data
+        PlotD = {}
+        for region in regions:
+
+            # Retrieve relevent data
+            ds = JValD[key][[JScaleVar]].copy()
+            StateMet = StateD[key].copy()
+            ds[PressVar] = StateMet[PressVar].copy()
+
+            # Limit to region if requested
+            if region != None:
+                d = ar.get_analysis_region(region)
+                x0, x1, y0, y1 = (d['x0'], d['x1'], d['y0'], d['y1'])
+                # Reduce plotting arrays by the values
+                bool1 = ((ds.lon >= y0) & (ds.lon <= y1)).values
+                bool2 = ((ds.lat >= x0) & (ds.lat <= x1)).values
+                # Cut by lon, then lat
+                ds = ds.isel(lon=bool1)
+                ds = ds.isel(lat=bool2)
+#                StateMet =
+#                ds =
+            else:
+                pass
+
+            # Take averages over lat
+            ds = ds.mean(dim='lat')
+#            StateMet = StateMet.mean(dim='lat')
+            # weighted by molecules?
+            # Weight by molecules over lon
+#            ds = ds * StateMet[MolecVar]
+#            ds = ds.sum(dim=['lon']) / StateMet[MolecVar].sum(dim=['lon'])
+
+            ds = ds.mean(dim='lon')
+#            StateMet = StateMet.mean(dim='lon')
+
+            # Select a specific month? (e.g. February) or average overtime
+            if avg_over_time:
+                ds = ds.mean(dim='time')
+#                StateMet = StateMet.mean(dim='lon')
+            else:
+                pass
+
+            # Store plotting data as a DataFrame
+            df = ds[[JScaleVar, PressVar]].to_dataframe()
+            PlotD[region] = df
+        # Store dictionary of dataframes for plotting
+        dfD[key] = PlotD
+
+        # Do some memory management...
+        gc.collect()
+
+    # Plot up
+#    sns.set_context(context)
+    savetitle = 'ARNA_vertical_Jscale'
+    pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
+    for region in regions:
+        fig, ax = plt.subplots()
+        print(region)
+
+        for key in RunDict.keys():
+
+            df = dfD[key][region]
+            #
+#            StateMet = StateD[key]
+            X = df[JScaleVar]
+            Y = df[PressVar]
+
+            # Limit plots to 10 km (~270 hPa)
+            __bool = Y>260.0
+            X = X[__bool]
+            Y = Y[__bool]
+
+            # Plot up
+            ax.plot(X, Y, label=key)
+#            ax = plt.gca()
+            ax.set_xlabel('Jscale (xJHNO3)')
+            ax.set_ylabel('Pressure (hPa)')
+            ax.invert_yaxis()
+
+        # Add a title and legend
+        plt.title('{}'.format(region))
+        plt.legend()
+
+        # Save to PDF
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+        plt.close()
+
+
+    # Save entire pdf
+    AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
+    plt.close('all')
 
 
 def plt_HO2_NO_branching_ratio_spatially(wd=None, RunDict=None,

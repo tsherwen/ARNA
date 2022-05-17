@@ -623,7 +623,7 @@ def explore_ARNA_period_with_acid_uptake():
                                        prefix=prefix)
 
 
-def plt_key_NOx_budget_terms():
+def plt_key_NOx_budget_terms(RunDict=None):
     """
     Make spatial plots of key tagged routes
     """
@@ -638,9 +638,10 @@ def plt_key_NOx_budget_terms():
 #    GC_version = 'v13.4'
     GC_version = 'v12.9'
     res = '4x5'
-    RunDict = ar.get_dict_of_GEOSChem_model_output(RunSet=RunSet,
-                                                   GC_version=GC_version,
-                                                   res=res)
+    if instance(RunDict, type(None)):
+        RunDict = ar.get_dict_of_GEOSChem_model_output(RunSet=RunSet,
+                                                       GC_version=GC_version,
+                                                       res=res)
     # Which runs to use?
     if RunSet == 'PostHONO':
         runs2use = ['Base', 'min4pptHONO', 'NIThv']
