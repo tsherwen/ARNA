@@ -914,6 +914,7 @@ def tag_GC_simulations():
     """
     # Diagnostics to use?
     d = get_tags_for_NOx_HONO()
+    tags = d.values()
     for key in d.keys():
         print('{} : {};'.format(key, d[key]))
     # Also print out just using "P" as the prefix.
@@ -929,23 +930,65 @@ def tag_GC_simulations():
     for key in d.keys():
         print(ptr_str.format(d[key], '{'+key+'}'))
 
+    ptr_str = 'P{:<10}= IGNORE; {}'
+    d = dict(zip(diags, tags))
+    for key in d.keys():
+        print(ptr_str.format(d[key], '{'+key+'}'))
 
-def get_tags_for_NOx_HONO():
+
+def get_tags_for_NOx_HONO(AllTags=False):
     """
     Function to store tags for NOx/HONO
     """
     diags = [
+        # Version 6 tags
         'ProdHNO2fromHvNIT', 'ProdHNO2fromHvNITs', 'ProdHNO2fromHvNITD1',
         'ProdHNO2fromHvNITD2', 'ProdHNO2fromHvNITD3', 'ProdHNO2fromHvNITD4',
         'ProdNO2fromHvNIT', 'ProdNO2fromHvNITs', 'ProdNO2fromHvNITD1',
         'ProdNO2fromHvNITD2', 'ProdNO2fromHvNITD3', 'ProdNO2fromHvNITD4',
         'ProdNO2fromHONO', 'ProdHNO2fromOHandNO', 'ProdHNO2fromHET',
         'ProdNOnHO2ChannelA', 'ProdNOnHO2ChannelB',
+        # Version 7 tags
+        'ProdHNO3fromNO2nOH','ProdNO3fromHNO3nOH',
+        'PhotNO2', 'PhotHNO3', 'PhotHNO2',
+        'ProdHNO3fromHetNO3', 'ProdNITfromHetNO3','ProdNITsfromHetNO3',
     ]
     prefix = 'TN{:0>3}'
     tags = [prefix.format(i+1) for i in range(len(diags))]
     # pair up numbering (so that runs with different diagnostics have same #s)?
     d = dict(zip(diags, tags))
+    # Include the automatic tagging of NOx
+    def mk_KPP_tag_from_rxn_str(rxn_str=None, search_str=None,
+                                prefix='ProdfromRXN', ):
+        """
+        Create a variable for reaction
+        """
+        reactants = rxn_str.split('=')[0]
+        reactants = reactants.replace(' + ', '_n_')
+        reactants = reactants.replace(' {+M} ', '_M_').strip()
+        products = rxn_str.split('=')[-1]
+        products = products.replace(' + ', '_n_')
+        products = products.replace(' {+M} ', '_M_').strip()
+        products = products.replace(' {+M}', '_M').strip()
+        products = products[:10]
+        # Return a new reaction string
+        return'{}_{}_{}_to_{}'.format(prefix, search_str, reactants, products)
+
+    if AllTags:
+        DataRoot = get_local_folder('DataRoot')
+        folder = '{}{}'.format(DataRoot, '/ARNA/Misc/')
+#        FName = 'Tagged_reactions_in_Standard_v12.9.1_ARNA_v8_POx_tagged.csv'
+        FName = 'Tagged_reactions_in_Standard_v12.9_ARNA_v9_PL_NOx_tagged.csv'
+        df = pd.read_csv(folder+FName)
+#        df['RxnName'] = df['rxn_str'].map(mk_KPP_tag_from_rxn_str)
+        df['RxnName'] = df.apply(lambda x:
+                                 mk_KPP_tag_from_rxn_str(rxn_str=x['rxn_str'],
+                                 search_str = x['search_str'], ),
+                                 axis=1)
+
+        # combine into main dictionary
+        d2 = dict(zip( df['RxnName'], df['tag'].values ) )
+        d = AC.merge_two_dicts(d, d2)
     return d
 
 
@@ -1091,13 +1134,16 @@ def get_DryDepAndWetDep_ds(wd=None, Specs=None, dates2use=None,
     return ds[vars2rtn]
 
 
-def get_NOx_budget_ds_dict_for_runs(limit_data_spatially=False,
+def get_NOx_budget_ds_dict_for_runs(ApplyMask=False,
                                     RunDict=None,
                                     RunSet='ACID', res='4x5',
                                     CoreRunsOnly=False,
                                     dates2use=None,
                                     trop_limit=False,
                                     ExtraConcVars=['NOx', 'NOy', 'NIT-all'],
+                                    MaskName='inflow_CVAO_area',
+                                    IncAllProdLossDiags=False,
+                                    ConvertProdLossUnits=True,
                                     debug=False):
     """
     Get a single dictionary of xr.Datasets for models runs (NOx budget vars)
@@ -1111,7 +1157,7 @@ def get_NOx_budget_ds_dict_for_runs(limit_data_spatially=False,
                                                     CoreRunsOnly=CoreRunsOnly,
                                                     folder4netCDF=True)
     # Retrieve tags for NOx budget and make an inverted dictionary
-    TagD = get_tags_for_NOx_HONO()
+    TagD = get_tags_for_NOx_HONO(AllTags=True)
     TagDr = {v: k for k, v in list(TagD.items())}
 
     # Get core species concentrations
@@ -1248,13 +1294,17 @@ def get_NOx_budget_ds_dict_for_runs(limit_data_spatially=False,
         try:
             ds = ProdD[key]
             Vars = list(ds.data_vars)
-            vars2use = [i for i in Vars if any(ii in i for ii in Specs)]
+            if IncAllProdLossDiags:
+                PLvars = ['Loss', 'Prod']
+                vars2use = [i for i in Vars if any(ii in i for ii in PLvars)]
+            else:
+                vars2use = [i for i in Vars if any(ii in i for ii in Specs)]
             ds = xr.merge([NOxD[key], ds[vars2use]])
             # Rename the tags to be more descriptive.
             prefix = 'Prod_'
-            vars2use = [i for i in vars2use if prefix+'TN' in i]
-            NewVarnames = [TagDr[i.split(prefix)[-1]] for i in vars2use]
-            ds = ds.rename(dict(zip(vars2use, NewVarnames)))
+            OldVarnames = [i for i in vars2use if prefix+'T' in i]
+            NewVarnames = [TagDr[i.split(prefix)[-1]] for i in OldVarnames]
+            ds = ds.rename(dict(zip(OldVarnames, NewVarnames)))
             # Add JNIT-all as a variable
             NewVar = 'ProdHNO2fromHvNIT-all'
             ds[NewVar] = ds[JNITvars[0]].copy()
@@ -1271,23 +1321,62 @@ def get_NOx_budget_ds_dict_for_runs(limit_data_spatially=False,
         # Get humidity and key variables from StateMet collection
 #        'Met_SPHU'
 
-
     del ds
     gc.collect()
 
-    # Reduce the focus of study to CVAO
-    if limit_data_spatially:
+    # Convert units or prod/loss
+    if ConvertProdLossUnits:
+        AVG = AC.constants('AVG') # Avogadros constant
+        PrtStr = "WARNING: No conversion for var ('{}') units ('{}')"
+        for key in RunDict.keys():
+            ds = NOxD[key]
+            # Select variables to use
+            vars2use = [i for i in ds.data_vars if 'Prod' in i]
+            vars2use += [i for i in ds.data_vars if 'Loss' in i]
+            for var in vars2use:
+                if debug:
+                    print(var)
+                attrs = ds[var].attrs
+                units = attrs['units']
+                data = ds[var].copy()
+                if debug:
+                    print(units)
+                if units == 'molec cm-3 s-1':
+                    # convert to kg (N) / s-1
+                    data = data / AVG * ds['Met_AIRVOL'] * 1E6 * 14 * 1E3
+                    units = 'kg N s-1'
+                    attrs['units'] = units
+                    ds[var] = data
+                    ds[var].attrs = attrs
+                elif (units == 'kg N s-1'):
+                    pass
+                elif (units == 'kg s-1'):
+                    # This is HNO3 loss oan sea-salt (are the units correct)
+                    #                if sum_data:
+                    pass
+                else:
+                    print(PrtStr.format(var, units))
+            NOxD[key] = ds
+
+
+    # Reduce the spatial focus of data to requested MaskName
+    if ApplyMask:
         # Set spatial extents
-        lowerlat = 0.0
-        higherlat = 34.0
-        lowerlon = -32.0
-        higherlon = 15.0
-        # Loop and reduce dataset scale
+        MaskDict = AC.GetMaskExtents(MaskName, )
+        lowerlat = MaskDict['lowerlat']
+        higherlat = MaskDict['higherlat']
+        lowerlon = MaskDict['lowerlon']
+        higherlon = MaskDict['higherlon']
+        # Loop and reduce dataset spatially extent
         for key in NOxD.keys():
-            #            for key in d.keys():
-            #
             ds = NOxD[key]
             # reduce area to CVAO...
+            bool1 = ((ds.lon >= lowerlon) & (ds.lon <= higherlon)).values
+            bool2 = ((ds.lat >= lowerlat) & (ds.lat <= higherlat)).values
+            # Cut by lon, then lat
+            ds = ds.isel(lon=bool1)
+            ds = ds.isel(lat=bool2)
+            NOxD[key] = ds
 
     # Limit the data to the troposphere
     if trop_limit:
@@ -1295,11 +1384,16 @@ def get_NOx_budget_ds_dict_for_runs(limit_data_spatially=False,
         for key in NOxD.keys():
             ds = NOxD[key]
             var2use = 'FracOfTimeInTrop'
+            # Get variables with lev coordinate
             vars2use = [i for i in ds.data_vars if i != var2use]
+            LevCoord4var = ['lev' in ds[i].coords for i in vars2use]
+            vars2use = np.array(vars2use)[LevCoord4var]
+            if debug:
+                print(vars2use)
+            # Mask subset of variables with boolean list
             __bool = ~(ds[var2use].values < 1)
-            ds = ds[vars2use].where(__bool.astype(bool))
+            for __var in vars2use:
+                ds[__var] = ds[__var].where(__bool.astype(bool))
             NOxD[key] = ds
-        #
-        print('WARNING: tropospheric masking not currently working - why?')
 
     return NOxD

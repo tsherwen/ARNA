@@ -486,7 +486,7 @@ def test_new_planeflight_Jrate_output():
 
     # - Get plane flight output
     RunRoot = ar.get_local_folder('RunRoot')
-    folder = RunRoot +'/geosfp_4x5_standard.v12.9.0.BASE.2019.2020.ARNA.BCs
+    folder = RunRoot +'/geosfp_4x5_standard.v12.9.0.BASE.2019.2020.ARNA.BCs'
     folder += '.TEST.PF_Jrates.REA.VI/'
     files2use = list(sorted(glob.glob(folder + '/TEST_1day/*plane*')))
     file2use = files2use[0]
@@ -847,7 +847,7 @@ def mk_comparisons_of_humidty():
     plt.close('all')
 
 
-def mk_vertical_comparisons_with_nirate():
+def mk_vertical_comparisons_with_nitrate():
     """
     """
 

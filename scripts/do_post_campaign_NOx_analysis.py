@@ -24,6 +24,11 @@ def main():
     plt_key_NOx_budget_terms()
     analyse_NOx_budget()
 
+    # Plot up the NOx budget against latitude
+    plt_NOx_routes_by_lat()
+
+    #
+
     # --- Misc NOx work during campaign
     # Get the core FAAM data
 #    ar.get_FAAM_core4flightnum()
@@ -635,6 +640,7 @@ def plt_key_NOx_budget_terms(RunDict=None):
 #    dates2use = [datetime.datetime(2018, i+1, 1) for i in range()]
     trop_limit = False
     RunSet = 'PostHONO'
+#    RunSet = 'IGACset'
 #    GC_version = 'v13.4'
     GC_version = 'v12.9'
     res = '4x5'
@@ -654,6 +660,11 @@ def plt_key_NOx_budget_terms(RunDict=None):
                 pass
             else:
                 del RunDict[key]
+    elif RunSet == 'IGACset':
+        runs2use = NOxD.keys()
+        DIFFrun = 'Iso.UnlimitedAll'
+        REF_list = ['Base']
+
     else:
     #    for run in ['Acid-4x5-J50']
     #    run2use = 'Acid-4x5-J50'
@@ -822,21 +833,68 @@ def plt_key_NOx_budget_terms(RunDict=None):
     plt.close('all')
 
 
-def analyse_NOx_budget():
+def analyse_NOx_budget(RunDict=None, trop_limit=True,):
     """
     Analyse NOx budget in tagged model runs
     """
-    #Â Local variables and switches
+    # Use the testing runs for func unless others provided
+    if isinstance(RunDict, type(None)):
+        DataRoot = ar.get_local_folder('RunRoot')
+        RunPrefix = 'geosfp_4x5_aciduptake.v12.9.0.ARNA.Isotherm.Diags.'
+        FullRootStr = '{}/{}{}/OutputDir/'
+        RunDict = {
+        'Iso.Unlimited': FullRootStr.format(DataRoot, RunPrefix,
+                                           'v9.Iso.UnlimitedAll'),
+        'Base': FullRootStr.format(DataRoot, RunPrefix, 'v9.Base'),
+        }
+
+    #ÊLocal variables and switches
     AVG = AC.constants('AVG') # Avogadros constant
-    dates2use = [datetime.datetime(2019, i+1, 1) for i in range(12)]
-    trop_limit = False
-    CoreRunsOnly = True
-    # Get NOx budget dictionary of objects
-    NOxD = ar.get_NOx_budget_ds_dict_for_runs(trop_limit=trop_limit,
-                                              dates2use=dates2use,
-                                              CoreRunsOnly=CoreRunsOnly)
+    if isinstance(dates2use, type(None)):
+#        dates2use = [datetime.datetime(2019, i+1, 1) for i in range(12)]
+        sdate = datetime.datetime(2019, 1, 1) # Beginning for analysis year
+        edate = datetime.datetime(2019, 3, 1) # 3 months into analysis year
+        dates2use = pd.date_range(sdate, edate, freq='1D')
+
+    trop_limit = True
+#    MaskName = None
+    MaskName = 'inflow_CVAO_area'
+#    ApplyMask = True
+    ApplyMask = False
+    LoadSavedNetCDFs = True
+
+    # Get NOx budget dictionary of objects (saved offline on extracted online)
+    if LoadSavedNetCDFs:
+        REF_str = 'ARNA_Testing'
+        for key in NOxD.keys():
+            print( key )
+            try:
+                pass
+            except:
+                print('WARNING')
+
+    else:
+        NOxD = ar.get_NOx_budget_ds_dict_for_runs(trop_limit=trop_limit,
+                                                  dates2use=dates2use,
+                                                  RunDict=RunDict,
+                                                  IncAllProdLossDiags=True,
+                                                  ApplyMask=ApplyMask,
+                                                  MaskName=MaskName,
+#                                              CoreRunsOnly=True,
+                                                  )
+
 
     # - - Now do analysis of the data - -
+    # Remove the prod/loss variables with non standard output
+    var2skip = [
+       'ProdCOfromNMVOC', 'ProdCOfromCH4', 'ProdSO4fromOxidationOnDust',
+       'ProdNITfromHNO3uptakeOnDust', 'ProdSO4fromUptakeOfH2SO4g',
+       'ProdSO4fromO3s', 'ProdSO4fromSRHObr', 'ProdSO4fromSRO3',
+       'ProdSO4fromHOBrInCloud', 'ProdSO4fromO3inSeaSalt',
+       'ProdSO4fromO3inCloud', 'ProdSO4fromO2inCloudMetal',
+       'ProdSO4fromH2O2inCloud', 'ProdOCPIfromOCPO', 'ProdBCPIfromBCPO',
+        ]
+
     # - Global (values in bottom X km) totals (or averages for s^-1 variables)
     df = pd.DataFrame()
     for key in NOxD.keys():
@@ -846,20 +904,23 @@ def analyse_NOx_budget():
         #
         NIU, NIU, Alt = AC.get_latlonalt4res(res='4x5', full_vert_grid=True)
         AltBool = Alt < 5
-        # Add the average surface value for Jvalues
-        lev2use = ds.lev.values[0]
-        vars2use = ['Jval_NO2', 'Jval_NO', 'Jval_NITD4', 'Jval_NITD3',
-                    'Jval_NITD2', 'Jval_NITD1', 'Jval_NITs', 'Jval_NIT',
-                    'Jval_HNO3', 'Jval_HNO2'
-                    ]
-        for var in vars2use:
-            data = ds[var].sel(lev=lev2use).mean(dim=('lat', 'lon', 'time'))
-            S[var] = data.values
+#         # Add the average surface value for Jvalues
+#         lev2use = ds.lev.values[0]
+#         vars2use = ['Jval_NO2', 'Jval_NO', 'Jval_NITD4', 'Jval_NITD3',
+#                     'Jval_NITD2', 'Jval_NITD1', 'Jval_NITs', 'Jval_NIT',
+#                     'Jval_HNO3', 'Jval_HNO2'
+#                     ]
+#         for var in vars2use:
+#             data = ds[var].sel(lev=lev2use).mean(dim=('lat', 'lon', 'time'))
+#             S[var] = data.values
 
         # Get the total (or average?) production via route
         # kg N s-1
         vars2use = [i for i in ds.data_vars if 'Prod' in i]
         vars2use += [i for i in ds.data_vars if 'Loss' in i]
+        # Exclude the non standard units
+        vars2use = [ i for i in vars2use if i not in var2skip]
+
         for var in vars2use:
             print(var)
             units = ds[var].units
@@ -880,27 +941,78 @@ def analyse_NOx_budget():
                 #                if sum_data:
                 data = data.sum()
             else:
-                print('WARNING: Units ({})'.format(units))
+                PrtStr = 'WARNING: No conversion setup for Units ({})'
+                print(PrtStr.format(units))
             S[var] = data.values
 
         # print to...
         df[key] = S
 
+
+    for var in var2del:
+        del df.T[var]
+
     # Get deposition sinks too
+    vars2use = [
+    'DryAndWetDep_NIT-all',
+    'DryAndWetDep_HNO3',
+    'DryAndWetDep_NO2',
+    'DryAndWetDep_NIT',
+    'DryAndWetDep_NITs',
+    ]
+    prefix = 'DryAndWetDep_'
 
-    # Get Emission sinks
+    for key in NOxD.keys():
+        ds = NOxD[key]
+        for __var in vars2use:
+            # Species RMM
+            Species = __var.split(prefix)[-1]
+            SpeciesRMM = AC.species_mass( Species )
+            # Convert kg (NO) /m2/s => kg (NO) /year
+            data = ds[__var] * ds['AREA'] *60.*60.*24*.365
+            # & convert kg X => Tg N
+            data = data / SpeciesRMM * 14. * 1E3 / 1E12
+            # all 12 months present?
+#            DsMonths = ds['time.month'].values
+#            if DsMonths == np.arange(1, 13):
+#            data = data.values.sum() / 12
+#            else:
+            data = data.mean(dim='time').sum().values
+            df.loc[ __var, key ] = data
+#             if debug:
+#                 print('WARNING: Assuming ')
 
-    # Print DataFrame and save to csv
+    # Get Emission sources
+    var2use = 'EmisNO_Total'
+    EmissD = {}
+    for key in NOxD.keys():
+        ds = AC.get_HEMCO_diags_as_ds(wd=RunDict[key],
+                                      dates2use=dates2use)
+        EmissD[key] = ds
+        # Convert kg (NO) /m2/s => kg (NO) /year
+        data = ds[var2use] * ds['AREA'] *60.*60.*24.*365.
+        # & convert kg NO => Tg N
+        data = data / 30.0 * 14. * 1E3 / 1E12
+        # Archive an average over time
+        data = data.mean(dim='time').sum().values
+        df.loc[var2use, key ] = data
+
+    # Print DataFrame and save full numbers to csv
     print(df)
-    df.to_csv('ARNA_NOx_HNO2.csv')
+    SaveName4CSV = 'ARNA_NOx_Budget_'
+    if ApplyMask:
+        SaveName4CSV += 'Masked_{}'.format(MaskName)
+    SaveName2Use = '{}.{}'.format(SaveName4CSV, 'csv')
+    df.to_csv(SaveName2Use)
 
     # Consider the values relative to the J00 run
     df2 = df.copy()
-    REF = 'Acid-4x5-J00'
+    REF = 'Base'
     for col in [i for i in df2.columns if i != REF]:
         df2.loc[:, col] = df2.loc[:, col] / df2[REF]
     print(df2)
-    df2.to_csv('ARNA_NOx_HNO2_REF_{}.csv'.format(REF))
+    SaveName2Use = '{}_REF_{}.{}'.format(SaveName4CSV, REF, 'csv')
+    df2.to_csv(SaveName2Use)
 
     # Consider the values relative to the J50 run
     df3 = df.copy()
@@ -908,9 +1020,202 @@ def analyse_NOx_budget():
     for col in [i for i in df3.columns if i != REF]:
         df3.loc[:, col] = df3.loc[:, col] / df3[REF]
     print(df3)
-    df3.to_csv('ARNA_NOx_HNO2_REF_{}.csv'.format(REF))
+    SaveName2Use = '{}_REF_{}.{}'.format(SaveName4CSV, REF, 'csv')
+    df3.to_csv(SaveName2Use)
 
     # Consider ...
+
+    # - Just consider the tagged PNOx reaction routes.
+    REF = 'Base'
+    DIFF = 'Iso.Unlimited'
+    prefix = 'ProdfromRXN_'
+    # select core routes
+    vars2use = [i for i in df.T.columns if prefix in i]
+    df4 = df.T[vars2use].T
+    # Add ratio as a column
+    RatioVar = '{}/{}'.format(DIFF, REF)
+    df4[RatioVar] = df4[DIFF]/df4[REF]
+    df4 = df4.sort_values(REF, ascending=False )
+    SaveName2Use = '{}_REF_{}_Descending.{}'.format(SaveName4CSV, REF, 'csv')
+    df4.to_csv(SaveName2Use)
+    # As above, but a version based on which ones have changed
+    df4.sort_values(RatioVar, ascending=False)
+
+
+    # Print out core values for NOx Budget diagram.
+    vars = [
+    'EmisNO_Total',
+    'DryAndWetDep_NIT-all',
+    'DryAndWetDep_HNO3',
+    ]
+
+    #
+
+
+
+
+
+
+
+def plt_NOx_routes_by_lat(NOxD=None, ):
+    """
+    Plot up NOx production routes by lat
+    """
+    # Function expects to be provided with the NOx dictionary of datasets
+    if isinstance(NOxD, type(None)):
+        NOxD = ar.get_NOx_budget_ds_dict_for_runs(trop_limit=trop_limit,
+                                                  dates2use=dates2use,
+                                                  RunDict=RunDict,
+                                                  IncAllProdLossDiags=True,
+                                                  ApplyMask=ApplyMask,
+                                                  MaskName=MaskName,
+#                                              CoreRunsOnly=True,
+                                                  )
+
+    # The unit conversions to Kg (N)/s have been done already
+    #  Convert to zonal values too
+    for key in NOxD.keys():
+        # Select the variables from the dataset
+        ds = NOxD[key]
+        vars2use = [i for i in ds.data_vars if 'Prod' in i]
+        vars2use += [i for i in ds.data_vars if 'Loss' in i]
+
+        # TODO: Add molecule weighting...
+        # temp average lon, time
+        ds = ds.mean(dim=('time',), keep_attrs=True)
+
+        # weight by molecules
+        for __var in vars2use:
+            attrs = ds[__var].attrs.copy()
+            ds[__var] = (ds[__var] * ds['Met_MOLES']).sum(dim='lon',)
+            ds[__var] = ds[__var] / ds['Met_MOLES'].sum(dim='lon',)
+            ds[__var].attrs = attrs
+
+        # sum over lev and update in dictionary of datasets
+        ds = ds.sum(dim=('lev'), keep_attrs=True)
+        NOxD[key] = ds
+
+    # - Plot up PNOx variables by lat
+    ColorList = AC.get_CB_color_cycle()
+    fig, ax = plt.subplots()
+#    keys2plot = list( NOxD.keys())
+    keys2plot = ['Iso.Unlimited']
+    for key in keys2plot:
+        ds = NOxD[key]
+
+        # plot total PNOx
+        PNOxVar = 'Prod_NOx'
+        var2plot = PNOxVar
+        units = 'molec cm-3 s-1'
+        Y = ds[var2plot].values
+        X = ds['lat'].values
+        plt.plot(X, Y, label=var2plot, color=ColorList[0])
+        plt.ylabel('{} ({})'.format(PNOxVar, units))
+        plt.xlabel('Latitude ($^{\circ}$N)')
+
+#        plt.legend()
+
+        # Underlay % NOx production from nitrate photolysis
+        # Twin y axis and show route contribution to PNOx
+        ax2 = ax.twinx()
+        var2plot =  'ProdHNO2fromHvNIT-all'
+        units = '%'
+        Y = ds[var2plot].values  / ds[PNOxVar].values *100
+        X = ds['lat'].values
+        plt.plot(X, Y, label=var2plot, color=ColorList[1])
+        plt.ylabel( '{} {}'.format(var2plot, units))
+#
+#        plt.legend()
+    # Beatify plot and save
+    fig.legend()
+    SaveTitle = 'ARNA_PNOx_vs_lat'
+    AC.save_plot(title=SaveTitle)
+    plt.close('all')
+
+
+    # - plot HNO2 key routes and total production
+    keys2plot = ['Iso.Unlimited']
+    for key in keys2plot:
+        ds = NOxD[key]
+
+        #
+        PHNO2var = 'Prod_HNO2'
+        var2plot = PHNO2var
+        units = ds[var2plot].units
+        Y = ds[var2plot].values
+        X = ds['lat'].values
+        plt.plot(X, Y, label=var2plot, color=ColorList[0])
+        plt.ylabel('{} ({})'.format(var2plot, units))
+        plt.xlabel('Latitude ($^{\circ}$N)')
+
+        # then plot a stack plot of the other routes?
+        vars2plot = ['ProdHNO2fromHvNIT-all', 'ProdHNO2fromHET',
+                     'ProdHNO2fromOHandNO'
+                     ]
+        ax2 = ax.twinx()
+        # Quick plot of lines individually
+        for var2plot in vars2plot:
+            print(var2plot)
+            units = '%'
+            Y = ds[var2plot].values  / ds[PHNO2var].values *100
+            print(Y)
+            X = ds['lat'].values
+            plt.plot(X, Y, label=var2plot, color=ColorList[1])
+            plt.ylabel( '{} {}'.format(var2plot, units))
+
+        #
+
+
+
+#        var2plot = 'ProdHNO2fromHET'
+
+
+#        var2plot = 'ProdHNO2fromOHandNO'
+
+    # Beatify plot and save
+    fig.legend()
+    SaveTitle = 'ARNA_PNO2_vs_lat'
+    AC.save_plot(title=SaveTitle)
+    plt.close('all')
+
+    # - Stacked area plot using plot
+    ColorList = AC.get_CB_color_cycle()
+    fig, ax = plt.subplots()
+
+    # Explore the data
+    ds_tmp = ds[vars2plot+[PHNO2var]].squeeze()
+    df = ds_tmp.to_dataframe()
+    RouteSumVar = 'Sum of routes'
+    df[RouteSumVar] = df[vars2plot].sum(axis=1)
+    df['% of total'] = df[RouteSumVar] / df[PHNO2var] *100
+
+    #
+    col2use = [i for i in df.columns if i != PHNO2var]
+    for col in col2use:
+        df[col] = df[col] /df[PHNO2var] *100
+
+    #
+    df[vars2plot].plot.area()
+    fig.legend()
+    plt.ylabel('{} ({})'.format('HONO via route', units))
+
+    # Add a x axis over the top to show the total
+    ax2 = ax.twinx()
+    #
+    PHNO2var = 'Prod_HNO2'
+    var2plot = PHNO2var
+    units = ds[var2plot].units
+    Y = ds[var2plot].values
+    X = ds['lat'].values
+    ax2.plot(X, Y, label=var2plot, color=ColorList[0])
+    plt.ylabel('{} ({})'.format(var2plot, units))
+    plt.xlabel('Latitude ($^{\circ}$N)')
+
+
+    SaveTitle = 'ARNA_PNO2_vs_lat_stacked_pcent'
+    AC.save_plot(title=SaveTitle)
+    plt.close('all')
+
 
 
 def plt_lightning_by_month(context='paper'):

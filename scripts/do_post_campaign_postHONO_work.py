@@ -7,7 +7,7 @@ import sys
 
 from AC_tools import GetSpeciesConcDataset, AddChemicalFamily2Dataset, species_mass, get_ref_spec, get_Gg_trop_burden, get_StateMet_ds, tra_unit, get_avg_2D_conc_of_X_weighted_by_Y, GC_var, get_ProdLoss_ds, add_molec_den2ds, rm_fractional_troposphere, constants, GetConcAfterChemDataset, get_StateMet_ds, get_DryDep_ds, get_WetLossConv_ds, get_WetLossLS_ds
 
-from arna import get_local_folder, get_tags_for_NOx_HONO
+from arna import get_local_folder, get_tags_for_NOx_HONO, get_DryDepAndWetDep_ds
 
 
 def main():
@@ -19,12 +19,12 @@ def main():
     res = '4x5'
     GC_version = 'v12.9'
 #    GC_version = 'v13.4'
-    sdate = datetime.datetime(2018, 1, 1) # Beginning for spin-up year
-#    sdate = datetime.datetime(2019, 1, 1) # Beginning for analysis year
-    edate = datetime.datetime(2018, 3, 1) # 3 months into spin-up
+#    sdate = datetime.datetime(2018, 1, 1) # Beginning for spin-up year
+    sdate = datetime.datetime(2019, 1, 1) # Beginning for analysis year
+#    edate = datetime.datetime(2018, 3, 1) # 3 months into spin-up
 #    edate = datetime.datetime(2018, 6, 1) # 6 months into spin-up
 #    edate = datetime.datetime(2018, 10, 1) # 10 months into spin-up
-#    edate = datetime.datetime(2019, 12, 31) # End of analysis year
+    edate = datetime.datetime(2019, 12, 31) # End of analysis year
 #    edate = datetime.datetime(2018, 12, 31) # End of spin=up year
     dates2use = pd.date_range(sdate, edate, freq='1D')
 #    dates2use = None
@@ -33,7 +33,8 @@ def main():
     REF1 = 'Base'
 #    DIFF = '4pptHONO'
 #    DIFF = 'min4pptHONO'
-    DIFF = 'Iso.Unlimited'
+#    DIFF = 'Iso.Delq.NoJCap'
+    DIFF = 'Iso.UnlimitedAll'
 
     # Get dictionary of model runs and their names (RunDict)
     RunDict = ar.get_dict_of_GEOSChem_model_output(RunSet=RunSet,
@@ -60,25 +61,35 @@ def main():
     RunStr9 = '{}{}{}/OutputDir/'.format(RunRoot, RunStr4, '.Ye2017online')
     RunStr10 = '{}{}{}/OutputDir/'.format(RunRoot, RunStr4, '.Ye2017.LL')
     RunStr11 = '{}{}{}/OutputDir/'.format(RunRoot, RunStr4,'.Iso.UnlimitedpH')
+    RunStr12 = '{}{}{}/OutputDir/'.format(RunRoot, RunStr4,'.Iso.UnlimitedAll')
+    RunStr13 = '{}{}{}/OutputDir/'.format(RunRoot, RunStr4,
+                                          '.Iso.UnlimitedAll.repeat')
 
     RunDict2 = {
     'Base':RunDict['Base'], 'min4pptHONO': RunDict['min4pptHONO'],
 #    'HO2+NOv2.1': RunStr1,
     'HO2+NO': RunStr5, # HO2+NO v5
-    'Iso.pH4.HO2+NO': RunStr6, # HO2+NO v5
+    'Iso.Delq.CapJ50.pH4.HO2+NO': RunStr6, # HO2+NO v5
 #    'Isov5.pH7': RunStr3, # Note, this is not the latest isotherm code.
 #    'Iso.HO2+NO': RunStr2, # WARNING: This is using HO2+NO code with a bug
-    'Iso.Unlimited.HO2+NO': RunStr7,
-    'Iso.Unlimited': RunStr11,
+    'Iso.Delq.NoJCap.HO2+NO': RunStr7,
+    'Iso.Delq.NoJCap': RunStr11,
     'Ye17': RunStr8,
     'Ye17.online': RunStr9,
     'Ye17.LL': RunStr10,
+    'Iso.UnlimitedAll.Base600': RunStr12,
+    'Iso.UnlimitedAll': RunStr13, # This has the
     }
 
     RunDict = RunDict2
 
     # Kludge: temp
-    keys2del = 'Ye17.online', 'Ye17', 'HO2+NOv2.1', 'min4pptHONO', 'HO2+NOv2.5'
+    keys2del = [
+    'Ye17.online', 'Ye17', 'Ye17.LL',
+    'HO2+NOv2.1',
+#    'min4pptHONO',
+    'HO2+NOv2.5',
+    ]
     for key in keys2del:
         try:
             del RunDict[key]
@@ -131,6 +142,8 @@ def main():
         variable_analyis4JNIT(REF1=REF1, DIFF=DIFF, NOxD=NOxD,
                               RunDict=RunDict, dates2use=dates2use)
 
+    # plot the masks being used here spatially
+    CheckMasksSpatially()
 
 
 def AddMask2Dataset(ds, MaskName=None, res=None):
@@ -158,6 +171,86 @@ def AddMask2Dataset(ds, MaskName=None, res=None):
     ds[MaskName].attrs = attrs
 
     return ds
+
+
+def CheckMasksSpatially(ds=None, ):
+    """
+    Plot up masks to check the spatial extents these
+    """
+    if isinstance(ds, type(None)):
+        print('WARNING')
+        sys.exit(0)
+
+    # which masks to test?
+    MaskNames = [
+            'global',
+            'local_CVAO_area', 'Cape_Verde_Flying', 'inflow_CVAO_area',
+            'CONUS',
+            'Ocean Tropics', 'Tropics', 'Ocean', 'Land',
+            ]
+    MaskNames = [
+    'tropics', 'Mid lats', 'south pole', 'north pole', 'Global', 'Ocean',
+    'Ocn. Trop.', 'Ex. Tropics', 'NH', 'SH', 'Ice', 'Land', 'lat40_2_40',
+    'Land Tropics', 'surface', 'Ocean Sur.', 'Land Sur.', 'Ice Sur.',
+    '50S-50N', 'Ocn. 50S-50N',
+#    'North Sea',  'Irish Sea', 'Black Sea', 'location',
+    'Mediterranean Sea',
+    'EU', 'Land Tropics Sur.',
+    'Boreal Land',
+#    'Alps',
+    'France', 'CONUS',
+     'Cape_Verde_Flying',
+    'local_CVAO_area', 'inflow_CVAO_area',
+    ]
+
+    # Get some basic data to use for masking tests
+#    get_surface_area()
+    if isinstance(wd, type(None)):
+        wd = '/users/ts551/scratch/GC/rundirs/P_ARNA/'
+        wd +='geosfp_4x5_aciduptake.v12.9.0.ARNA.Isotherm.Diags.v6.HO2nNOv2.5/'
+        wd += '/OutputDir/'
+
+    # Use ozone surface data
+    ds = AC.GetSpeciesConcDataset(wd=wd, dates2use=dates2use)
+    ds = ds.isel(lev=(ds.lev==ds.lev[0]))
+    ds = ds.mean(dim='time')
+    ds = ds.squeeze()
+
+#    get_surface_area
+    # Loop and apply masks
+    dsD = {}
+    for MaskName in MaskNames:
+        print(MaskName)
+        #
+        ds = AddMask2Dataset(ds.copy(), MaskName=MaskName, res=res)
+
+        # Also mask for bottom 10 km? - N/A for now
+
+        # Save masked array
+#        dsD[MaskName] = ds.copy() * ds[MaskName]
+        dsD[MaskName] = ds.copy().where(ds[MaskName] != 1.0)
+
+    # Loop and plot and save to a PDF
+    savetitle = 'Spatial_plots_of_masks_from_AC_Tools'
+    pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
+    var2plot = 'SpeciesConc_O3'
+    kwargs = {}
+    for MaskName in MaskNames:
+
+        ds = dsD[MaskName].copy()
+        #
+        AC.quick_map_plot(ds, var2plot=var2plot, verbose=verbose, **kwargs)
+        plt.title(MaskName)
+
+        # Save to PDF
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+        plt.close()
+
+    # Save entire pdf
+    AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
+    plt.close('all')
+    #
+
 
 
 def RetrieveMaskFromName(MaskName=None, res='4x5',
@@ -204,7 +297,8 @@ def variable_analyis4JNIT(dates2use=None, RunDict=None, NOxD=None,
         ExtraConcVars += [SCprefix+i for i in ['O3'] ]
         NOxD = ar.get_NOx_budget_ds_dict_for_runs(dates2use=dates2use,
                                                   RunDict=RunDict,
-                                                  ExtraConcVars=ExtraConcVars)
+                                                  ExtraConcVars=ExtraConcVars,
+                                                  debug=debug)
     # Set xr.Dataset to use
     if not isinstance(DIFF, type(None)):
         # Calculate difference
@@ -244,7 +338,6 @@ def variable_analyis4JNIT(dates2use=None, RunDict=None, NOxD=None,
 
 
     # What variables to get stats on?
-
 
 
     # Get Stats on the different
@@ -1144,7 +1237,9 @@ def do_analysis_of_4pptv_HONO_world(RunDict=None,
         'CH4-lifetime (years)', 'O3 burden (Tg)', 'O3 surface (ppbv)',
         'NOy burden (Tg)',
         'HNO2 surface (ppbv)', 'HNO2:NOx', 'NOy surface (ppbv)',
-        'OH surface (molec/cm3)', 'NIT-all burden (Tg)'
+        'OH surface (molec/cm3)', 'NIT-all burden (Tg)',
+        'HNO3:NOx', 'HNO2:NOx', 'NIT:NOx',
+
     ]
     OtherDiags = [i for i in df.columns if (i not in FirstDiags)]
     df = df[FirstDiags+OtherDiags]
@@ -1352,7 +1447,7 @@ def plt_spatial_changes_in_4pptv_HONO_world(pcent=True,
         ds = GetConcAfterChemDataset(wd=RunDict[key],
                                         dates2use=dates2use)
         # Add
-        ds = AC.add_HOx_to_CAC_ds(ds, UpdateHO2units=True, StateMet=StateMet)
+        ds = AC.add_HOx_to_CAC_ds(ds, UpdateHOxUnits=True, StateMet=StateMet)
         # Update CAC names
         NewNames = [i.split(CACsuffix)[0] for i in ds.data_vars]
         ds = ds.rename(name_dict=dict(zip(ds.data_vars, NewNames)) )
