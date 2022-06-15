@@ -60,13 +60,46 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625', folder4netCDF=False,
     if (res == '4x5') and (RunSet == 'PostHONO'):
         RunDict = get_RunDict_of_HONO_runs(RunSet=RunSet,
                                            GC_version=GC_version)
-        #
+        # Just return the core runs?
         if CoreRunsOnly:
             runs2use = ['Base', 'NIThv', 'NIThvCap']
             dNew = {}
             for run in runs2use:
                 dNew[run] = RunDict[run]
             RunDict = dNew
+
+
+    elif (res == '4x5') and (RunSet == 'IGACset'):
+        # Copy-paste dictionary from elsewhere for now
+        RunDict = {'Base': '/users/ts551/scratch/GC/rundirs/P_ARNA/geosfp_4x5_aciduptake.v12.9.0.BASE.2019.2020.ARNA.DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags.v2.J00.HourlyOutput.2018//OutputDir/',
+ 'min4pptHONO': '/users/ts551/scratch/GC/rundirs/P_ARNA/geosfp_4x5_aciduptake.v12.9.0.BASE.2019.2020.ARNA.DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags.v2.J00.HourlyOutput.HONO4pptv//OutputDir/',
+ 'HO2+NO': '/users/ts551/scratch/GC/rundirs/P_ARNA/geosfp_4x5_aciduptake.v12.9.0.ARNA.Isotherm.Diags.v6.HO2nNOv2.5/OutputDir/',
+ 'Iso.Delq.CapJ50.pH4.HO2+NO': '/users/ts551/scratch/GC/rundirs/P_ARNA/geosfp_4x5_aciduptake.v12.9.0.ARNA.Isotherm.Diags.v6.HO2nNOv2.5.IsopH4/OutputDir/',
+ 'Iso.Delq.NoJCap.HO2+NO': '/users/ts551/scratch/GC/rundirs/P_ARNA/geosfp_4x5_aciduptake.v12.9.0.ARNA.Isotherm.Diags.v6.HO2nNOv2.5.Iso.UnlimitedpH/OutputDir/',
+ 'Iso.Delq.NoJCap': '/users/ts551/scratch/GC/rundirs/P_ARNA/geosfp_4x5_aciduptake.v12.9.0.ARNA.Isotherm.Diags.v6.Iso.UnlimitedpH/OutputDir/',
+ 'Iso.UnlimitedAll': '/users/ts551/scratch/GC/rundirs/P_ARNA/geosfp_4x5_aciduptake.v12.9.0.ARNA.Isotherm.Diags.v6.Iso.UnlimitedAll.repeat/OutputDir/'
+        }
+
+        # Just return the core runs?
+        if CoreRunsOnly:
+            runs2use = ['Base',  'Iso.Delq.CapJ50.pH4.HO2+NO',
+                        'min4pptHONO', 'Iso.UnlimitedAll'
+                        ]
+            dNew = {}
+            for run in runs2use:
+                dNew[run] = RunDict[run]
+            RunDict = dNew
+
+
+    elif (res == '4x5') and (RunSet == 'IGACset.tagged'):
+#        DataRoot = get_local_folder('RunRoot')
+        RunPrefix = 'geosfp_4x5_aciduptake.v12.9.0.ARNA.Isotherm.Diags.'
+        FullRootStr = '{}/{}{}//'
+        RunDict = {
+        'Iso.Unlimited': FullRootStr.format(RunRoot, RunPrefix,
+                                           'v9.Iso.UnlimitedAll'),
+        'Base': FullRootStr.format(RunRoot, RunPrefix, 'v9.Base'),
+        }
 
     elif (res == '4x5') and (RunSet == 'MERRA2-0.5-initial'):
         CoreRunStrMERRA2 = 'merra2_4x5_standard.v12.9.0.BASE.2019.2020.'

@@ -853,7 +853,8 @@ def analyse_NOx_budget(RunDict=None, trop_limit=True,):
     if isinstance(dates2use, type(None)):
 #        dates2use = [datetime.datetime(2019, i+1, 1) for i in range(12)]
         sdate = datetime.datetime(2019, 1, 1) # Beginning for analysis year
-        edate = datetime.datetime(2019, 3, 1) # 3 months into analysis year
+#        edate = datetime.datetime(2019, 3, 1) # 3 months into analysis year
+        edate = datetime.datetime(2019, 12, 31) # 3 months into analysis year
         dates2use = pd.date_range(sdate, edate, freq='1D')
 
     trop_limit = True
@@ -862,6 +863,7 @@ def analyse_NOx_budget(RunDict=None, trop_limit=True,):
 #    ApplyMask = True
     ApplyMask = False
     LoadSavedNetCDFs = True
+    AvgOverTime = True
 
     # Get NOx budget dictionary of objects (saved offline on extracted online)
     if LoadSavedNetCDFs:
@@ -902,21 +904,13 @@ def analyse_NOx_budget(RunDict=None, trop_limit=True,):
         S = pd.Series()
         ds = NOxD[key]
         #
-        NIU, NIU, Alt = AC.get_latlonalt4res(res='4x5', full_vert_grid=True)
-        AltBool = Alt < 5
-#         # Add the average surface value for Jvalues
-#         lev2use = ds.lev.values[0]
-#         vars2use = ['Jval_NO2', 'Jval_NO', 'Jval_NITD4', 'Jval_NITD3',
-#                     'Jval_NITD2', 'Jval_NITD1', 'Jval_NITs', 'Jval_NIT',
-#                     'Jval_HNO3', 'Jval_HNO2'
-#                     ]
-#         for var in vars2use:
-#             data = ds[var].sel(lev=lev2use).mean(dim=('lat', 'lon', 'time'))
-#             S[var] = data.values
+#        NIU, NIU, Alt = AC.get_latlonalt4res(res='4x5', full_vert_grid=True)
+#        AltBool = Alt < 5
 
         # Get the total (or average?) production via route
         # kg N s-1
         vars2use = [i for i in ds.data_vars if 'Prod' in i]
+        vars2use += [i for i in ds.data_vars if 'Phot' in i]
         vars2use += [i for i in ds.data_vars if 'Loss' in i]
         # Exclude the non standard units
         vars2use = [ i for i in vars2use if i not in var2skip]
@@ -925,32 +919,37 @@ def analyse_NOx_budget(RunDict=None, trop_limit=True,):
             print(var)
             units = ds[var].units
             data = ds[var].copy()
-            data = data.isel(lev=AltBool)
+#            data = data.isel(lev=AltBool) # masking troposphere, so not needed
             if debug:
                 print(units)
             if units == 'molec cm-3 s-1':
-                # convert to kg (N) / s-1
+                # convert to kg (N) / s-1 (=>mol => *m2 (*1e6) => kg (*1E3) )
                 data = data / AVG * ds['Met_AIRVOL'] * 1E6 * 14 * 1E3
 #                if sum_data:
-                data = data.sum()
+                data = data.sum(dim=['lat', 'lon', 'lev'])
             elif (units == 'kg N s-1'):
                 #                if sum_data:
-                data = data.sum()
+                data = data.sum(dim=['lat', 'lon', 'lev'])
             elif (units == 'kg s-1'):
-                # This is HNO3 loss oan sea-salt (are the units correct)
+                # This is HNO3 loss oan sea-salt (are the units correct?)
                 #                if sum_data:
-                data = data.sum()
+                HNO3seasaltVar = 'Loss of HNO3 on sea salt aerosols'
+                if HNO3seasaltVar == ds[var].long_name:
+                    data = data / species_mass('HNO3') * 14.0
+                data = data.sum(dim=['lat', 'lon', 'lev'])
             else:
                 PrtStr = 'WARNING: No conversion setup for Units ({})'
                 print(PrtStr.format(units))
+            if AvgOverTime:
+                data = data.mean(dim='time')
             S[var] = data.values
 
         # print to...
         df[key] = S
 
 
-    for var in var2del:
-        del df.T[var]
+#    for var in var2del:
+#        del df.T[var]
 
     # Get deposition sinks too
     vars2use = [
@@ -968,10 +967,14 @@ def analyse_NOx_budget(RunDict=None, trop_limit=True,):
             # Species RMM
             Species = __var.split(prefix)[-1]
             SpeciesRMM = AC.species_mass( Species )
-            # Convert kg (NO) /m2/s => kg (NO) /year
-            data = ds[__var] * ds['AREA'] *60.*60.*24*.365
-            # & convert kg X => Tg N
-            data = data / SpeciesRMM * 14. * 1E3 / 1E12
+            # Convert kg (NO) /m2/s => kg (NO) /s
+            data = ds[__var] * ds['AREA']
+            # & convert kg X => Kg  N
+            data = data / SpeciesRMM * 14.
+            # Convert to Tg from kg?
+#            data = data * 1E3 / 1E12
+            # convert from /s => /year
+#            data = data *60.*60.*24*.365
             # all 12 months present?
 #            DsMonths = ds['time.month'].values
 #            if DsMonths == np.arange(1, 13):
@@ -989,10 +992,14 @@ def analyse_NOx_budget(RunDict=None, trop_limit=True,):
         ds = AC.get_HEMCO_diags_as_ds(wd=RunDict[key],
                                       dates2use=dates2use)
         EmissD[key] = ds
-        # Convert kg (NO) /m2/s => kg (NO) /year
-        data = ds[var2use] * ds['AREA'] *60.*60.*24.*365.
-        # & convert kg NO => Tg N
-        data = data / 30.0 * 14. * 1E3 / 1E12
+        # Convert kg (NO) /m2/s => kg (NO) /s
+        data = ds[var2use] * ds['AREA']
+        # & convert kg NO => Kg N
+        data = data / 30.0 * 14.
+        # convert kg (N) => Tg (N)
+#        data = data * 1E3 / 1E12
+        # convert from /s => /year
+#        data = data *60.*60.*24.*365.
         # Archive an average over time
         data = data.mean(dim='time').sum().values
         df.loc[var2use, key ] = data
@@ -1042,19 +1049,41 @@ def analyse_NOx_budget(RunDict=None, trop_limit=True,):
     df4.sort_values(RatioVar, ascending=False)
 
 
-    # Print out core values for NOx Budget diagram.
-    vars = [
+    # - Print out core values for NOx Budget diagram.
+    df_BACKUP = df.copy()
+    vars4plot = [
     'EmisNO_Total',
     'DryAndWetDep_NIT-all',
     'DryAndWetDep_HNO3',
     ]
 
+    # And chemistry routes?
+    vars4plot += [
+     'ProdHNO2fromHvNIT-all', # TN001-TN007
+     'ProdNITsfromHetNO3', # 'TN024',
+     'ProdNITfromHetNO3', # 'TN025',
+     'ProdHNO3fromHetNO3', # 'TN023',
+     'ProdNO3fromHNO3nOH' ,  # 'TN019',
+     'ProdHNO3fromNO2nOH',#  # 'TN018',
+     'ProdNOnHO2ChannelA', #  # 'TN016',
+     'ProdHNO2fromHET',  # 'TN015',
+     'ProdHNO2fromOHandNO',  # 'TN014',
+     'ProdNO2fromHONO',  # 'TN013',
+     'PhotNO2', #: 'TN020', # 'TN020',
+     'PhotHNO3', #: 'TN021', # 'TN021',
+     'PhotHNO2', #: 'TN022', # 'TN022',
+    ]
+
+    # Any extra reactions useful
+    vars4plot += [
+    'LossHNO3onSeaSalt',
+    'ProdNITfromHNO3uptakeOnDust',
+    ]
+
     #
-
-
-
-
-
+    df5 = df.T
+#    df5.T[vars4plot].T
+    df5[vars4plot].T.to_csv('ARNA_NOx_diagram_numbers.csv')
 
 
 def plt_NOx_routes_by_lat(NOxD=None, ):

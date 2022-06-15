@@ -178,6 +178,123 @@ def main():
     plt_seasonal_comparoisons_of_nitrate()
     mk_vertical_comparisons_with_nirate()
 
+    # Do the planeflight Jscale analysis
+    do_planeflight_campaign_Janalysis()
+
+
+def do_planeflight_campaign_Janalysis(flight_nums=[], run2use=None):
+    """
+    Analysis nitrate photolysis within model planeflight output
+    """
+    # local variables
+    CoreRunsOnly = True
+    RunSet = 'IGACset.tagged'
+    # Which run to do the full analysis for?
+    if isinstance(run2use, type(None)):
+#        run2use = 'Iso.UnlimitedAll'
+        run2use = 'Iso.Unlimited'
+
+    # Which flights to plot? - Just use non-transit ARNA flights
+    if len(flight_nums) == 0:
+        flight_nums = [218, 219, 220, 221, 222, 223, 224, 225, ]
+    flight_IDs = ['C{}'.format(i) for i in flight_nums]
+
+    # Retrieve GEOS-Chem planeflight data
+    dfs_mod_GC = {}
+    for flight_ID in flight_IDs:
+        dfs = ar.get_GEOSChem4flightnum(flight_ID=flight_ID,
+                                     res=res,
+                                     CoreRunsOnly=CoreRunsOnly,
+                                     RunSet=RunSet,)
+        for key in dfs.keys():
+            df = dfs[key]
+            df = ar.add_derived_FAAM_flags2df4flight(df=df,
+                                                  flight_ID=flight_ID)
+            df['flight_ID'] = flight_ID
+
+            dfs[key] = df
+        dfs_mod_GC[flight_ID] = dfs
+    dfs_mod = dfs_mod_GC
+
+    # Combine to a single dataframe (dictionary lists are by flight )
+    df_mod = pd.concat([dfs_mod[i][run2use] for i in dfs_mod.keys()], axis=0)
+    dfs_mod_ALL = {}
+    if len(dfs.keys()) > 1:
+        for key in dfs.keys():
+            ModByFlight = [dfs_mod[i][key] for i in dfs_mod.keys()]
+            dfs_mod_ALL[key] = pd.concat(ModByFlight, axis=0)
+
+    # Only consider data during SLRs?
+    if just_SLR:
+#        df_obs = df_obs.loc[df_obs['IS_SLR'] == True, :]
+        for key in dfs_mod_ALL.keys():
+            df_mod = dfs_mod_ALL[key]
+            df_mod = df_mod.loc[df_mod['IS_SLR'] == True, :]
+            dfs_mod_ALL[key] = df_mod
+        extr_str = '_JUST_SLR'
+    else:
+        extr_str = ''
+
+    # Update Name for JHNO2, JHNO3 and add JScale
+    # (Calculate the enhancement factor)
+    JHNO3var = 'JHNO3'
+    JHNO2var = 'JHNO2'
+    JNITvar = 'JNIT'
+    NITvar = 'NIT-all'
+    JScale = 'JScale'
+    NameDict = {'JVL_015': JHNO2var, 'JVL_016': JHNO3var,'JVL_132':JNITvar }
+    for key in list(dfs_mod_ALL.keys()):
+        df = dfs_mod_ALL[key]
+        df = df.rename(mapper=NameDict, axis=1)
+        df[JScale] = df[JNITvar] / df[JHNO3var]
+        dfs_mod_ALL[key] = df
+
+
+    # - Plot enhancement factor against pNO3
+    fig, ax = plt.subplots()
+    SaveName = 'ARNA_modelled_JScale_versus_NIT'
+
+    X = df[NITvar].values * 1E12
+    Y = df[JScale].values
+    plt.scatter(X, Y,)
+    ax.set_xlabel("[pNO$_3^-$]$_\mathrm{bulk}$ (pptv)")
+    ax.set_ylabel('JScale')#, fontsize=fontsize)
+
+    # Include a line for the isotherm?
+    no3 = np.arange(0.01, 10000, 0.01) # nmoles/m3
+    f11 = (100 *  19.48  * 0.43)   / (1. + ( 0.43 * no3 ) )
+    # convert no3 in nmoles/m3 to ppt (assuming air den)
+#    AIRDEN = AC.constants( 'AIRDEN' )  # g/cm3
+    AIRDEN = 0.001225  # g/cm3
+    RMM_air = AC.constants( 'RMM_air' )
+    #  (1/(g/mol)) = (mol/g) ; (mol/g) * (g/cm3) = mol/cm3
+    MOLS = (1/RMM_air) * AIRDEN
+    MOLS = MOLS * 1E6
+    no3_pptv = (no3 / 1E12) / MOLS *1E12
+#    plt.plot(no3_pptv, f11, label='Isotherm (v5)')
+#    plt.legend()
+
+    AC.save_plot(dpi=320, title='{}{}'.format(SaveName, extr_str))
+    plt.close()
+
+    # plot enhancement factor against JHNO3 * pNO3
+    fig, ax = plt.subplots()
+    SaveName = 'ARNA_modelled_JScale_versus_NITxJHNO3'
+
+    X = (df[JHNO3var].values*60.*60.) * (df[NITvar].values * 1E12)
+    Y =  df[JScale].values
+    plt.scatter(X, Y,)
+    label = r"$\it{j}_\mathrm{HNO_3}$ $\times$ "
+    label += r"[pNO$_3^-$]$_\mathrm{bulk}$ (ppt h$^{-1}$)"
+    ax.set_xlabel(label)#, fontsize=fontsize)
+    ax.set_ylabel('JScale')#, fontsize=fontsize)
+
+    # Include a line for the isotherm?
+
+    AC.save_plot(dpi=320, title='{}{}'.format(SaveName, extr_str))
+    plt.close()
+
+
 
 def explore_high_ozone_near_CVAO():
     """
