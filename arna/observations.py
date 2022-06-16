@@ -1135,7 +1135,8 @@ def read_FIREXAQ_files(path, folder='merge', var=''):
     """
     Read files of observational data from FIREX-AQ campaign
     """
-    df_list=[] ; flag_list=[]
+    df_list=[]
+    flag_list=[]
     for infile in sorted(glob.glob(f'{path}/{folder}/*{var}*.ict')):
         with open(infile) as thefile:
             try:
@@ -1143,17 +1144,20 @@ def read_FIREXAQ_files(path, folder='merge', var=''):
             except:
                 continue
             start = header[6].replace(',',' ').split()
-            start_date = datetime_( int( start[0] ),int( start[1] ),int( start[2] ))
-        for nskip in range(675,680): ## Find where the header ends and values begin - manually narrowed down
+            start_date = datetime_( int( start[0] ),
+                                    int( start[1] ),
+                                    int( start[2] ))
+        # Find where the header ends and values begin - manually narrowed down
+        for nskip in range(675,680):
             try:
-                fh=np.loadtxt(infile, skiprows=nskip, delimiter=',')
+                fh = np.loadtxt(infile, skiprows=nskip, delimiter=',')
                 break
             except:
                 continue
-        thefile=open(infile,'r')
+        thefile = open(infile,'r')
         c = thefile.readlines()
         column_names = c[nskip-1].replace(' ','').split(',')
-        df=pd.DataFrame(fh, index=fh[:,0], columns=column_names)
+        df = pd.DataFrame(fh, index=fh[:,0], columns=column_names)
         df = find_FIREXAQ_times(df, start_date)
         df_list.append(df)
     df = pd.concat(df_list)
@@ -1165,19 +1169,22 @@ def find_FIREXAQ_times(df, t0):
     Find FIREX-AQ times
     """
     tstamp = df[df.columns[1]]
-    timex=[]
+    timex = []
     for i in range(len(tstamp)):
         timex.append(t0 + timedelta(seconds=tstamp.values[i]))
     df.index = timex
     return df
 
 
-def get_FIREX_AQ_data(debug=False, RtnAllData=True):
+def get_FIREX_AQ_data(debug=False, RtnAllData=True,
+                      FilterPollutedAirMasses=True,
+                      RmFlaggedData=True,
+                      UpdateTimeeZone2LocalTime=True,
+                      FilterByTimeOfDay=True,
+                      stime='10:00', etime='15:00'):
     """
     Retrieve FIREX-AQ data as a pandas DataFrame
     """
-#    from species_dict import firex_vars
-#    keys = list(firex_vars.keys())[:]
     firex_vars = Get_FIREXAQ_variable_dict()
     keys = firex_vars.keys()
     # Read FIREX-AQ data
@@ -1185,14 +1192,20 @@ def get_FIREX_AQ_data(debug=False, RtnAllData=True):
     df0 = read_FIREXAQ_files(path, var='thru')
 
     # Convert timezone and apply restrictions on data
-    df0.index = df0.index.tz_localize('UTC').tz_convert('US/Pacific')
-    df0 = df0.between_time('10:00','15:00')
-    df0 = df0[df0['CO_DACOM_DISKIN'] < 100. ]   ## Filter out polluted air mass
-    df0 = df0[df0['MSL_GPS_Altitude_YANG'] > 0. ] ## Filter out flagged data
+    if UpdateTimeeZone2LocalTime:
+        df0.index = df0.index.tz_localize('UTC').tz_convert('US/Pacific')
+    if FilterByTimeOfDay:
+        df0 = df0.between_time(stime, etime)
+    # Filter out polluted air mass
+    if FilterPollutedAirMasses:
+        df0 = df0[df0['CO_DACOM_DISKIN'] < 100. ]
+    # Filter out flagged data?
+    if RmFlaggedData:
+        df0 = df0[df0['MSL_GPS_Altitude_YANG'] > 0. ]
 
     # Return entire dataset or just a single species?
     if RtnAllData:
-        df0
+        return df0
     else:
         for var in keys:
             print( var )
@@ -1206,11 +1219,10 @@ def get_FIREX_AQ_data(debug=False, RtnAllData=True):
             if debug:
                 print( df )
 
-            # save species
+            # Save species to dictionary
             dfs[var] = df.copy()
-        #
         print(df)
-#        return df
+
 
 
 def Get_FIREXAQ_variable_dict():

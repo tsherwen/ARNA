@@ -181,6 +181,14 @@ def main():
     # Do the planeflight Jscale analysis
     do_planeflight_campaign_Janalysis()
 
+    # Summarise the relevant deposition and emissions numbers
+    summarise_emissions4RunDict(RunDict=RunDict, dates2use=dates2use)
+    summarise_deposition4RunDict(RunDict=RunDict, dates2use=dates2use)
+
+    # - Plot up observational comparisons
+    plt_comp_with_NASA_Atom()
+    plt_comp_with_FIREX_AQ()
+
 
 def do_planeflight_campaign_Janalysis(flight_nums=[], run2use=None):
     """
@@ -293,6 +301,121 @@ def do_planeflight_campaign_Janalysis(flight_nums=[], run2use=None):
 
     AC.save_plot(dpi=320, title='{}{}'.format(SaveName, extr_str))
     plt.close()
+
+
+def summarise_emissions4RunDict(RunDict=None, dates2use=None):
+    """
+    Summarise the modelled emissions for provided runs
+    """
+    # Local variables and checking of variables provided
+    if isinstance(RunDict, type(None)):
+        print('WARNING: Dictionary of model output locations required')
+        sys.exit()
+
+    # Extract the emissions NetCDFs to xr.datasets
+    EmissD = {}
+    for key in RunDict.keys():
+        EmissD[key] = AC.get_HEMCO_diags_as_ds(wd=RunDict[key],
+                                               dates2use=dates2use)
+
+    # Convert values for NOx and return
+    df = pd.DataFrame()
+    for key in RunDict.keys():
+        ds = EmissD[key]
+
+        # Loop and store all NOx linked variables
+        vars2use = [i for i in ds.data_vars if 'NO' in i]
+        for __var in vars2use:
+
+            # Get species
+            Species = __var.split('_')[0].split('Emis')[-1]
+            dsMonths = ds['time.month'].values
+#            if dsMonths != np.arange(1,13):
+            if len(dsMonths) != 12:
+                Pstr = 'WARNING: 12 months not found in dataset ({}): {}'
+                print(Pstr.format(key, dsMonths))
+
+            # Sum over altitude if in code
+            if 'lev' in ds[var].coords:
+                ds = ds.sum(dim='lev')
+
+            # Convert numbers to Tg (N) / yr
+            data = ds['AREA'] * ds[__var] / AC.species_mass(Species) * 14.0
+
+            # Convert to annual numbers
+            data = data * 60.*60.*24.*365 / len(dsMonths)
+
+            # Save to DataFrame
+            df.loc[__var, key] = data.sum() * 1E3 / 1E12
+
+    # Save to csv
+    ExtStr = RunSet
+    SaveName = 'ARNA_Emissions_summary_{}.csv'.format(ExtStr)
+    df.to_csv(SaveName)
+
+
+def summarise_deposition4RunDict(RunDict=None, dates2use=None):
+    """
+    Summarise the modelled emissions for provided runs
+    """
+    from arna import get_DryDepAndWetDep_ds
+    # Local variables and checking of variables provided
+    if isinstance(RunDict, type(None)):
+        print('WARNING: Dictionary of model output locations required')
+        sys.exit()
+
+    # Extract the emissions NetCDFs to xr.datasets
+    Specs = ['NO2', 'HNO3', 'NIT', 'NITs', 'NIT-all']
+    DepD = {}
+    for key in RunDict.keys():
+        try:
+#            DepD[key] = AC.get_DryDepAndWetDep_ds(wd=RunDict[key],
+            DepD[key] = get_DryDepAndWetDep_ds(wd=RunDict[key], Specs=Specs,
+                                                    dates2use=dates2use,
+                                                    debug=True)
+        except AssertionError:
+            PrtStr = 'WARNING: No dry/wet dep diagnostics found for {}'
+            print(PrtStr.format(key))
+
+
+    # Convert values for NOx and return
+    df = pd.DataFrame()
+    prefix = 'DryAndWetDep_'
+    for key in DepD.keys():
+        ds = DepD[key]
+        #
+        if isinstance(ds, type(None)):
+            continue
+        # Loop and store all NOx linked variables
+        vars2use = [i for i in ds.data_vars if prefix in i]
+        print(vars2use)
+        for __var in vars2use:
+            # Get species
+            Species = __var.split(prefix)[-1]
+            dsMonths = ds['time.month'].values
+#            if dsMonths != np.arange(1,13):
+            if len(dsMonths) != 12:
+                Pstr = 'WARNING: 12 months not found in dataset ({}): {}'
+                print(Pstr.format(key, dsMonths))
+
+            # Sum over altitude if in code
+            if 'lev' in ds[__var].coords:
+                ds[__var] = ds[__var].sum(dim='lev')
+
+            # Convert numbers to Tg (N) / yr
+            data = ds['AREA'] * ds[__var] / AC.species_mass(Species) * 14.0
+
+            # Convert to annual numbers
+            data = data * 60.*60.*24.*365 / len(dsMonths)
+
+            # Save to DataFrame
+            df.loc[__var, key] = data.sum() * 1E3 / 1E12
+
+
+    # Save to csv
+    ExtStr = RunSet
+    SaveName = 'ARNA_deposition_summary_{}.csv'.format(ExtStr)
+    df.to_csv(SaveName)
 
 
 
@@ -1326,6 +1449,8 @@ def plt_bermuda_obs(debug=False):
 def plt_comp_with_NASA_Atom():
     """
     Plot up comparisons with NASA ATom data
+
+    NOTE: Analysis now in Prj_ATom_analysis.py
     """
     # Get lastest NASA ATom data and plot up
 
@@ -1334,6 +1459,82 @@ def plt_comp_with_NASA_Atom():
     #
 
     pass
+
+
+
+def plt_comp_with_FIREX_AQ(debug=False):
+    """
+    Plot up a quick comparison of
+    """
+    # Retrieve observational data
+    dfObs = ar.get_FIREX_AQ_data(RtnAllData=True,
+                                 FilterByTimeOfDay=False,
+                                 UpdateTimeeZone2LocalTime=False,)
+    LatVar = 'Latitude_YANG'
+    LonVar = 'Longitude_YANG'
+    AltVar = 'MSL_GPS_Altitude_YANG'
+    TimeVar = 'time'
+    dfObs[TimeVar] = dfObs.index.values
+    # Add in pressure and time columns to the DataFrame
+    PressVar = 'hPa'
+    dfObs[PressVar] = dfObs[AltVar] / 1E3
+    dfObs[PressVar] = dfObs[PressVar].map(AC.km2hPa)
+    # Check the comparability of the altitude variables
+    if debug:
+        vars2plot = [ PressVar, 'Pressure_Altitude_YANG']
+        for __var in vars2plot:
+            plt.plot( dfObs[AltVar], dfObs[__var])
+            plt.xlabel(AltVar)
+            plt.ylabel(__var)
+            #
+            SaveName = 'ARNA_FIREXAQ_Alt_Press_dim_{}_vs_{}'
+            AC.save_plot(SaveName.format(AltVar, __var))
+            plt.close('all')
+
+    #
+    dfsMod = {}
+    for key in RunDict.keys():
+        folder = RunDict[key]
+        dfMod = Get_GEOSChem4flighttracks(dfObs=dfObs,
+                                      Lonvar=Lonvar,
+                                      LatVar=LatVar,
+                                      PressVar=PressVar,
+                                      )
+        dfsMod[key] = dfMod
+
+    # Plot up vertical plots etc to compare
+
+
+def Get_GEOSChem4flighttracks(dfObs, folder=None,
+                              Lonvar='lat', Lonvar='lon',
+                              PressVar='hPa'):
+    """
+    Extract 3D data to retrieve modelled flight tracks for obs. locations
+    """
+    # Get 3D data from model (SpeciesConcSubset)
+    file_str='GEOSChem.SpeciesConcSubset.*.nc4'
+    ds = AC.get_GEOSChem_files_as_ds(wd=folder, file_str=file_str)
+
+    # Get stateMet
+    ds = AC.get_StateMet_ds(wd=folder)
+
+
+    # Calculate pressure
+#    PS = 1013. / 10 # in Pa (so hPa/10)
+    PS = ds['Met_PS1DRY']
+    pressure = ds['hyam'] * ds['P0'] + ds['hybm'] * PS
+
+
+
+
+    # Extract the nearest locations to the observations
+#    AC.calc_4D_idx_in_ds
+    df = AC.extract_ds4df_locs(ds=ds, df=dfObs, LonVar=LonVar, LatVar=LatVar,
+                               AltVar=PressVar)
+
+    return df
+
+
 
 
 if __name__ == "__main__":
