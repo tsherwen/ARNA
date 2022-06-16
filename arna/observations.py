@@ -12,6 +12,7 @@ import AC_tools as AC
 import pandas as pd
 from netCDF4 import Dataset
 from datetime import datetime as datetime_
+from datetime import timedelta
 import datetime as datetime
 import time
 from time import gmtime, strftime
@@ -1130,18 +1131,10 @@ def mk_planeflight_files4FAAM_campaigns(folder=None, testing_mode=False,
     gc.collect()
 
 
-def get_biomass_burning_flag_for_ARNA2(flight_ID='C225'):
+def read_FIREXAQ_files(path, folder='merge', var=''):
     """
-    Retrieve Biomass burning flag used for Lee et al 2021
+    Read files of observational data from FIREX-AQ campaign
     """
-    folder = get_local_folder('DataRoot') + '/Misc/BB_flag/'
-    files = glob.glob(folder + '*_bb_flag.csv')
-    dfs = [pd.read_csv(i)]
-    df = pd.concate(dfs)
-    return df
-
-
-def read_files(path, folder='merge', var=''):
     df_list=[] ; flag_list=[]
     for infile in sorted(glob.glob(f'{path}/{folder}/*{var}*.ict')):
         with open(infile) as thefile:
@@ -1150,7 +1143,7 @@ def read_files(path, folder='merge', var=''):
             except:
                 continue
             start = header[6].replace(',',' ').split()
-            start_date = datetime( int( start[0] ),int( start[1] ),int( start[2] ))
+            start_date = datetime_( int( start[0] ),int( start[1] ),int( start[2] ))
         for nskip in range(675,680): ## Find where the header ends and values begin - manually narrowed down
             try:
                 fh=np.loadtxt(infile, skiprows=nskip, delimiter=',')
@@ -1161,12 +1154,16 @@ def read_files(path, folder='merge', var=''):
         c = thefile.readlines()
         column_names = c[nskip-1].replace(' ','').split(',')
         df=pd.DataFrame(fh, index=fh[:,0], columns=column_names)
-        df = find_times(df, start_date)
+        df = find_FIREXAQ_times(df, start_date)
         df_list.append(df)
     df = pd.concat(df_list)
     return df
 
-def find_times(df, t0):
+
+def find_FIREXAQ_times(df, t0):
+    """
+    Find FIREX-AQ times
+    """
     tstamp = df[df.columns[1]]
     timex=[]
     for i in range(len(tstamp)):
@@ -1175,32 +1172,50 @@ def find_times(df, t0):
     return df
 
 
-def main():
-    from species_dict import firex_vars
-    keys = list(firex_vars.keys())[:]
+def get_FIREX_AQ_data(debug=False, RtnAllData=True):
+    """
+    Retrieve FIREX-AQ data as a pandas DataFrame
+    """
+#    from species_dict import firex_vars
+#    keys = list(firex_vars.keys())[:]
+    firex_vars = Get_FIREXAQ_variable_dict()
+    keys = firex_vars.keys()
+    # Read FIREX-AQ data
+    path = '/mnt/lustre/groups/chem-acm-2018/shared_data/FIREX-AQ'
+    df0 = read_FIREXAQ_files(path, var='thru')
 
-    ### FIREX data
-    path="../"
-    df0 = read_files(path, var='thru')
+    # Convert timezone and apply restrictions on data
     df0.index = df0.index.tz_localize('UTC').tz_convert('US/Pacific')
     df0 = df0.between_time('10:00','15:00')
     df0 = df0[df0['CO_DACOM_DISKIN'] < 100. ]   ## Filter out polluted air mass
-    df0=df0[df0['MSL_GPS_Altitude_YANG'] > 0. ] ## Filter out flagged data
+    df0 = df0[df0['MSL_GPS_Altitude_YANG'] > 0. ] ## Filter out flagged data
 
-    for var in keys:
-        print( var )
-        df = pd.concat([ df0[firex_vars[var]['firex']], df0['Latitude_YANG'],
-                         df0['Longitude_YANG'], df0['MSL_GPS_Altitude_YANG'] ],
-                         axis=1 )
-        df.columns = [var,'Latitude','Longitude','Altitude']
-        df=df[df[var] > 0. ]
+    # Return entire dataset or just a single species?
+    if RtnAllData:
+        df0
+    else:
+        for var in keys:
+            print( var )
+            df = pd.concat([ df0[firex_vars[var]['firex']],
+                             df0['Latitude_YANG'],
+                             df0['Longitude_YANG'],
+                             df0['MSL_GPS_Altitude_YANG'] ],
+                             axis=1 )
+            df.columns = [var,'Latitude','Longitude','Altitude']
+            df = df[ df[var] > 0. ]
+            if debug:
+                print( df )
 
-    print( df )
+            # save species
+            dfs[var] = df.copy()
+        #
+        print(df)
+#        return df
 
 
-
-def Get_FIREEX_variable_dict():
+def Get_FIREXAQ_variable_dict():
     """
+    Function to store variables for FIREX-AQ campaign
     """
     firex_vars = { 'EOH'  : {
                             'firex' : 'C2H5OH_TOGA_APEL',
