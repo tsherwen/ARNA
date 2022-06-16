@@ -1139,3 +1139,177 @@ def get_biomass_burning_flag_for_ARNA2(flight_ID='C225'):
     dfs = [pd.read_csv(i)]
     df = pd.concate(dfs)
     return df
+
+
+def read_files(path, folder='merge', var=''):
+    df_list=[] ; flag_list=[]
+    for infile in sorted(glob.glob(f'{path}/{folder}/*{var}*.ict')):
+        with open(infile) as thefile:
+            try:
+                header= np.array([next(thefile) for x in range(90) ])
+            except:
+                continue
+            start = header[6].replace(',',' ').split()
+            start_date = datetime( int( start[0] ),int( start[1] ),int( start[2] ))
+        for nskip in range(675,680): ## Find where the header ends and values begin - manually narrowed down
+            try:
+                fh=np.loadtxt(infile, skiprows=nskip, delimiter=',')
+                break
+            except:
+                continue
+        thefile=open(infile,'r')
+        c = thefile.readlines()
+        column_names = c[nskip-1].replace(' ','').split(',')
+        df=pd.DataFrame(fh, index=fh[:,0], columns=column_names)
+        df = find_times(df, start_date)
+        df_list.append(df)
+    df = pd.concat(df_list)
+    return df
+
+def find_times(df, t0):
+    tstamp = df[df.columns[1]]
+    timex=[]
+    for i in range(len(tstamp)):
+        timex.append(t0 + timedelta(seconds=tstamp.values[i]))
+    df.index = timex
+    return df
+
+
+def main():
+    from species_dict import firex_vars
+    keys = list(firex_vars.keys())[:]
+
+    ### FIREX data
+    path="../"
+    df0 = read_files(path, var='thru')
+    df0.index = df0.index.tz_localize('UTC').tz_convert('US/Pacific')
+    df0 = df0.between_time('10:00','15:00')
+    df0 = df0[df0['CO_DACOM_DISKIN'] < 100. ]   ## Filter out polluted air mass
+    df0=df0[df0['MSL_GPS_Altitude_YANG'] > 0. ] ## Filter out flagged data
+
+    for var in keys:
+        print( var )
+        df = pd.concat([ df0[firex_vars[var]['firex']], df0['Latitude_YANG'],
+                         df0['Longitude_YANG'], df0['MSL_GPS_Altitude_YANG'] ],
+                         axis=1 )
+        df.columns = [var,'Latitude','Longitude','Altitude']
+        df=df[df[var] > 0. ]
+
+    print( df )
+
+
+
+def Get_FIREEX_variable_dict():
+    """
+    """
+    firex_vars = { 'EOH'  : {
+                            'firex' : 'C2H5OH_TOGA_APEL',
+                            'gc'    : 'SpeciesConc_EOH',
+                            'conv'  : False,
+                            'scale' : 1e12},
+                   'CH4'  : {
+                            'firex' : 'CH4_DACOM_DISKIN',
+                            'gc'    : 'SpeciesConc_CH4',
+                            'conv'  : False,
+                            'scale' : 1e9},
+                   #'HNO3-NO3' : {
+                   #         'firex' : 'HNO3+submicron-NO3_SAGA_DIBB',
+                   #         'gc'    : ['HNO3','NIT','NITD1','NITD2'],
+                    #        'conv'  : False,
+                    #        'scale' : 1e12},
+                   'C2H6' : {
+                            'firex' : 'Ethane_WAS_BLAKE',
+                            'gc'    : 'SpeciesConc_C2H6',
+                            'conv'  : False,
+                            'scale' : 1e12},
+                   'C2H8' : {
+                            'firex' : 'Propane_WAS_BLAKE',
+                            'gc'    : 'SpeciesConc_C3H8',
+                            'conv'  : False,
+                            'scale' : 1e12},
+                   'Benzene' : {
+                            'firex' : 'Benzene_WAS_BLAKE',
+                            'gc'    : 'SpeciesConc_BENZ',
+                            'conv'  : False,
+                            'scale' : 1e12},
+                   'Toluene' : {
+                            'firex' : 'Toluene_WAS_BLAKE',
+                            'gc'    : 'SpeciesConc_TOLU',
+                            'conv'  : False,
+                            'scale' : 1e12},
+                   'HNO2' : {
+                            'firex' : 'HNO2_NOAACIMS_VERES',
+                            'gc'    : 'SpeciesConc_HNO2',
+                            'conv'  : False,
+                            'scale' : 1e12 },
+                   'NH4' : {
+                            'firex' : 'NH4_ug/m3_DIBB',
+                            'gc'    : 'SpeciesConc_NH4',
+                            'conv'  : True,
+                            'scale' : 1e12,
+                            'mm'    : 18.04},
+                   'SO4' : {
+                            'firex' : 'SO4_ug/m3_DIBB',
+                            'gc'    : 'SpeciesConc_SO4',
+                            'conv'  : True,
+                            'scale' : 1e9,
+                            'mm'    : 96.06},
+                   'NO3' : {
+                            'firex' : 'NO3_ug/m3_DIBB',
+                            'gc'    : ['NIT','NITs','NITD1','NITD2','NITD3','NITD4'],
+                            'conv'    : True,
+                            'scale'  : 1e9,
+                            'mm' : 62.0049 },
+                   'NO3f' : {
+                            'firex' : 'NO3_ug/m3_DIBB',
+                            'gc'    : ['NIT','NITD1','NITD2'],
+                            'conv'    : True,
+                            'scale'  : 1e9,
+                            'mm'  : 62.0049},
+    #               'HNO2' : {
+    #                        'firex' : 'HNO2_NOAACIMS_VERES',
+    #                        'gc'    : 'SpeciesConc_HNO2',
+    #                        'conv'    : False,
+    #                        'scale'  : 1e12 },
+                   'NH3' : {
+                            'firex' : 'NH3_UIOPTR_ppbV_WISTHALER',
+                            'gc'    : 'SpeciesConc_NH3',
+                            'conv'    : False,
+                            'scale'  : 1e9 },
+                    'HNO3' : {
+                            'firex' : 'HNO3-1Hz_CIT_WENNBERG',
+                            'gc'    : 'SpeciesConc_HNO3' ,
+                            'conv'    : False,
+                            'scale'  : 1e12 },
+                    'O3' : {
+                            'firex' : 'O3_CL_RYERSON',
+                            'gc'    : 'SpeciesConc_O3' ,
+                            'conv'    : False,
+                            'scale'  : 1e9 },
+                    'NO' : {
+                            'firex' : 'NO_CL_RYERSON',
+                            'gc'    : 'SpeciesConc_NO' ,
+                            'conv'    : False,
+                            'scale'  : 1e9 },
+                    'NO2' : {
+                            'firex' : 'NO2_CL_RYERSON',
+                            'gc'    : 'SpeciesConc_NO2' ,
+                            'conv'    : False,
+                            'scale'  : 1e9 }
+                    }
+    '''
+    firex_vars = { 'NOy' : {
+                            'firex' : 'NOy_CL_RYERSON',
+                            'gc'    : ['NO', 'NO2', 'PAN', 'HNO3',  'PPN', 'R4N2', 'N2O5', 'HNO4', 'BrNO2',
+                                       'BrNO3', 'MPN', 'PROPNN', 'NO3', 'HNO2', 'IONO', 'IONO2',
+                                       'INO', 'ClNO2', 'ClNO3'] ,
+                            'conv'    : False,
+                            'scale'  : 1e9 },
+                    'CO' : {
+                            'firex' : 'CO_DACOM_DISKIN',
+                            'gc'    : 'SpeciesConc_CO' ,
+                            'conv'    : False,
+                            'scale'  : 1e9 }
+            }
+    '''
+    return firex_vars
