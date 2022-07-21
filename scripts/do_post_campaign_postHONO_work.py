@@ -19,13 +19,13 @@ def main():
     res = '4x5'
     GC_version = 'v12.9'
 #    GC_version = 'v13.4'
-    sdate = datetime.datetime(2018, 1, 1) # Beginning for spin-up year
-#    sdate = datetime.datetime(2019, 1, 1) # Beginning for analysis year
+#    sdate = datetime.datetime(2018, 1, 1) # Beginning for spin-up year
+    sdate = datetime.datetime(2019, 1, 1) # Beginning for analysis year
 #    edate = datetime.datetime(2018, 3, 1) # 3 months into spin-up
 #    edate = datetime.datetime(2018, 6, 1) # 6 months into spin-up
 #    edate = datetime.datetime(2018, 10, 1) # 10 months into spin-up
-#    edate = datetime.datetime(2019, 12, 31) # End of analysis year
-    edate = datetime.datetime(2018, 12, 31) # End of spin-up year
+    edate = datetime.datetime(2019, 12, 31) # End of analysis year
+#    edate = datetime.datetime(2018, 12, 31) # End of spin-up year
     dates2use = pd.date_range(sdate, edate, freq='1D')
 #    dates2use = None
 
@@ -73,7 +73,7 @@ def main():
 #    'Isov5.pH7': RunStr3, # Note, this is not the latest isotherm code.
 #    'Iso.HO2+NO': RunStr2, # WARNING: This is using HO2+NO code with a bug
     'Iso.Delq.NoJCap.HO2+NO': RunStr7,
-    'Iso.Delq.NoJCap': RunStr11,
+#    'Iso.Delq.NoJCap': RunStr11, # This has missing months in analysis year
     'Ye17': RunStr8,
     'Ye17.online': RunStr9,
     'Ye17.LL': RunStr10,

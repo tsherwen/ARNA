@@ -188,6 +188,7 @@ def main():
     # - Plot up observational comparisons
     plt_comp_with_NASA_Atom()
     plt_comp_with_FIREX_AQ()
+    plt_obs_based_FIREX_analysis()
 
 
 def do_planeflight_campaign_Janalysis(flight_nums=[], run2use=None):
@@ -1525,8 +1526,6 @@ def Get_GEOSChem4flighttracks(dfObs, folder=None,
     pressure = ds['hyam'] * ds['P0'] + ds['hybm'] * PS
 
 
-
-
     # Extract the nearest locations to the observations
 #    AC.calc_4D_idx_in_ds
     df = AC.extract_ds4df_locs(ds=ds, df=dfObs, LonVar=LonVar, LatVar=LatVar,
@@ -1535,6 +1534,297 @@ def Get_GEOSChem4flighttracks(dfObs, folder=None,
     return df
 
 
+def plt_obs_based_FIREX_analysis():
+    """
+
+    """
+    # Retrieve observational data
+    dfObs = ar.get_FIREX_AQ_data(RtnAllData=True,
+                                 FilterByTimeOfDay=False,
+                                 UpdateTimeeZone2LocalTime=False,
+                                 FilterPollutedAirMasses=True,
+                                 RmFlaggedData=True,
+                                 )
+
+    #
+
+
+
+def testing_v13_implimentation():
+    """
+    Do
+    """
+    # Local settings
+    RunSet = 'v13.4.1month'
+    res = '4x5'
+    GC_version = 'v13.4'
+    #
+    RunDict = get_dict_of_GEOSChem_model_output(RunSet=RunSet, res=res,
+                                                GC_version=GC_version,
+                                                folder4netCDF=True)
+
+    # Dates to use for the test run? - assume 1 month output
+    if isinstance(dates2use, type(None)):
+        sdate = datetime.datetime(2018, 6, 1) # Beginning for spin up (6months)
+        edate = datetime.datetime(2018, 6, 30) # 3 months into analysis year
+        dates2use = pd.date_range(sdate, edate, freq='1D')
+
+    # Get basic stats
+    ExtraSpecs = ['HNO3', 'HNO2', 'NIT', 'NITs',
+#                  'NITD1', 'NITD2', 'NITD3', 'NITD4'
+                  ]
+    df = AC.get_stats4RunDict_as_df(RunDict=RunDict,
+                                        extra_burden_specs=ExtraSpecs,
+                                        extra_surface_specs=ExtraSpecs,
+                                        dates2use=dates2use,
+                                        REF_wd=RunDict['4pptHONO'],
+                                        use_REF_wd4Met=True )
+
+    # Check the Jscale values and related checks
+    # Use exiting in do_post_campaign_NOx_analysis.py
+#    explore_JVALS_in_JNITs_runs()
+
+    #
+
+
+def update_restart_file_dates(sdate, folder='./',
+                              FileName='GEOSChem.Restart.20180701_0000z.nc4'):
+    """
+    Update the restart time variable and filename
+    """
+    # open the current NetCDF file
+    ds = xr.open_dataset('{}{}'.format(folder, FileName) )
+
+    # Use a default value if a start date not provided
+    if isinstance(sdate, type(None)):
+        sdate = datetime.datetime(2018, 6, 1)
+    # Assign the new values
+    ds = ds.assign( {'time': [sdate]} )
+    # Save out NetCDF
+    SaveNameStr = 'GEOSChem.Restart.{}{:0>2}{:0>2}_0000z.nc4'
+    SaveName = SaveNameStr.format(sdate.year, sdate.month, sdate.day)
+    ds.to_netcdf( '{}{}'.format(folder, SaveName) )
+
+
+def Add_NITD_to_restart_file(folder='./',
+                             FileName='GEOSChem.Restart.20180701_0000z.nc4'):
+    """
+    Manually add dust uptake variables to the restart file
+
+    Notes
+    ---
+     - The shipped restart file doens't have NITD in it. So add this by copying
+     another file
+    """
+    # Template NetCDF with values to transfer to restart file
+    RunRoot = '/mnt/lustre/users/ts551/GC/rundirs/P_ARNA/'
+    folder = 'geosfp_4x5_aciduptake.v12.9.0.ARNA.Isotherm.Diags.v9.Base'
+    FileName = 'GEOSChem.SpeciesConc.20190601_0000z.nc4'
+    PathStr = '{}/{}/OutputDir/{}'
+    dsT = xr.open_dataset(PathStr.format(RunRoot, folder, FileName) )
+    SCprefix = 'SpeciesConc_'
+
+    # Restart file to update values in
+    folder = 'gc_4x5_47L_merra2_fullchem_aciduptake.v13.4.1.ARNA.Test/'
+    FileName = 'GEOSChem.Restart.20180601_0000z.nc4.BACKUP_UPDATED_DATES'
+    dsR = xr.open_dataset('{}/{}/{}'.format(RunRoot, folder, FileName) )
+    prefix = 'SpeciesRst_'
+    dsRdata_varsList = dsR.data_vars
+    dsRdata_varsList = [i for i in dsRdata_varsList if prefix in i ]
+    dsR_SpeciesList = [i.split(prefix)[-1] for i in ds2data_varsList ]
+
+    # Update Restart value to "well spin up" values
+    TemplateVar = 'SpeciesRst_NIT'
+    Pstr = "NOTE: Updating species ('{}') in dsR with values from template ds"
+    for data_var in dsT.data_vars:
+        if SCprefix in data_var:
+            Species = data_var.split(SCprefix)[-1]
+
+            if Species not in dsR_SpeciesList:
+                print(Pstr.format(Species))
+
+                # Setup new species
+                NewVar = '{}{}'.format(prefix, Species)
+                dsR[NewVar] = dsR[TemplateVar].copy()
+                # Copy across attributes within restart file and update
+                attrs = dsR[TemplateVar].attrs.copy()
+                long_name = 'Dry mixing ratio of species {}'.format(Species)
+                attrs['long_name'] = long_name
+                dsR[NewVar].attrs = attrs
+
+                # Update the values in the restart object with the spun up ones
+                SpunUpVar = '{}{}'.format(SCprefix, Species)
+                dsR[NewVar].values = dsT[SpunUpVar].values
+
+    # Save to netCDF
+    FileName = 'GEOSChem.Restart.20180601_0000z.nc4.UPDATED'
+    dsR.to_netcdf('{}/{}/{}'.format(RunRoot, folder, FileName) )
+
+
+def check_values_in_GC_Restart_file(ds=None,  prefix='SpeciesRst_',
+                                    vars2plot=[], dpi=320):
+    """
+    Check values in GEOS-Chem restart file
+    """
+    # Have a check
+    if isinstance(ds, type(None)):
+        FileName = 'GEOSChem.Restart.20180601_0000z.nc4'
+        folder = 'gc_4x5_47L_merra2_fullchem_aciduptake.v13.4.1.ARNA.Test/'
+        FileName = 'GEOSChem.Restart.20180601_0000z.nc4.BACKUP_UPDATED_DATES'
+        ds = xr.open_dataset('{}/{}/{}'.format(RunRoot, folder, FileName) )
+
+    # Which variables to check(var2check)?
+    # Which species are these (species2check)?
+    if isinstance(vars2check, type(None)):
+        vars2check = ds.data_vars
+        vars2check = [i for i in vars2check if prefix in i ]
+        species2check = [i.split(prefix)[-1] for i in vars2check ]
+
+    # Check if max values are within 4 orders of magnitude or background values
+    # Use the yaml file for this.
+    dfG = pd.DataFrame() # Global values
+    dfS = pd.DataFrame() # Surface values
+    # loop first and check species values
+    for n, __var in enumerate( vars2check ):
+        Species = species2check[n]
+        print(n, __var, Species)
+
+        # Get stats on surface concentrations
+        data = ds[__var].isel(lev=(ds.lev==ds.lev[0]))
+        dfS[Species] = pd.Series(data.values.flatten()).describe()
+
+        # Get Global statistics
+        data = ds[__var]
+        dfG[Species] = pd.Series(data.values.flatten()).describe()
+
+    SaveName = 'ARNA_Restartfile_check_global_values.csv'
+    dfG.to_csv(SaveName)
+    SaveName = 'ARNA_Restartfile_check_surface_values.csv'
+    dfS.to_csv(SaveName)
+
+
+    # Check surface concentrations against background values?
+    # Check for large differences between surface and global (3D) values?
+
+    # -
+    # Species to plot?
+    if len(vars2plot) == 0:
+        vars2plot = ['O3', 'NO2', 'NO', 'CO', 'NIT', 'NITs']
+        vars2plot += ['SO4D{}'.format(i) for i in range(1,5)]
+        vars2plot += ['NITD{}'.format(i) for i in range(1,5)]
+        vars2plot += ['DSTAL{}'.format(i) for i in range(1,5)]
+        vars2plot += ['DST{}'.format(i) for i in range(1,5)]
+    # Setup PDF to save values too
+    savetitle = 'RestartFile_plotted_value_check_v13_4_1'
+    pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
+
+    # Loop and plot requested species
+    ds2plot = ds.copy().mean(dim='time').isel(lev=(ds.lev==ds.lev[0]))
+    ds2plot = ds2plot.squeeze()
+    for __var in vars2plot:
+        var2plot = '{}{}'.format(prefix, __var)
+
+        # Apply any unit conversions etc if possible
+
+        # plot surface
+        kwargs = {}
+        AC.quick_map_plot(ds2plot, var2plot=var2plot, verbose=verbose,
+                          **kwargs)
+
+        TitleStr = "Surface [{}] in Restart file"
+        plt.title(TitleStr.format(var2plot))
+
+        # Save to PDF
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+        plt.close()
+
+    # plot zonal
+    ds2plot = ds.copy().mean(dim='time')
+#    SMfolder = '/mnt/lustre/users/ts551/GC/rundirs/P_ARNA/'
+#    SMfolder += 'gc_4x5_47L_merra2_fullchem.v13.4.1.ARNA.Test/OutputDir/'
+#    StateMet = AC.get_StateMet_ds(wd=SMfolder, dates2use=dates2use)
+#    StateMet = StateMet.mean(dim='time')
+    for __var in vars2plot:
+        var2plot = '{}{}'.format(prefix, __var)
+
+        fig, ax = plt.subplots()
+        im = AC.ds2zonal_plot(ds2plot, var2plot=var2plot, StateMet=StateMet,
+                              fig=fig, ax=ax, **kwargs)
+        TitleStr = "Zonal [{}] in Restart file"
+        plt.title(TitleStr.format(var2plot))
+
+        # Add a colourbar
+#        kwargs = {'extend':'both'}
+        fig.colorbar(im, orientation="horizontal", pad=0.2, extend='both',
+                     **kwargs)
+#                     format=format, label=units)
+        # Save to PDF
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+        plt.close()
+
+
+    # Save entire pdf
+    AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
+    plt.close('all')
+
+
+def check_Ye17_output_log_file_values():
+    """
+    Check the range of JScale values
+    """
+
+    # Location and name of log file to check
+    folder = '/users/ts551/scratch/GC/rundirs/P_ARNA/'
+    folder += 'gc_4x5_47L_merra2_fullchem_aciduptake.v13.4.1.ARNAv11/'
+    filename = 'GC.geos.log'
+
+    # Compile data from prefixed lines in log file.
+#    DebugStr = '@@@ Ye Jscale + NO3_CONC III:'
+#    DebugStr = '@@@ Applied Jscale (for NO3_CONC):'
+    DebugStr = '@@@ Used Jscale (+ [NO3]):'
+#    DebugStr = '@@@ NO3_CONC III (nM/m^3) - NIT(s)+NITD1-4'
+    with open(folder+filename, 'r') as OpenedFile:
+        lines = [i for i in OpenedFile if DebugStr in i ]
+#    lines = [i for i in lines if (DebugStr in i)]
+    data = [i.split(DebugStr)[-1].strip().split() for i in lines]
+    Jscale = np.array(data)[:, 0].astype(np.float)
+    NO3_CONC = np.array(data)[:, 1].astype(np.float)
+#    NO3_CONC = np.array(data)[:, 0].astype(np.float)
+    df = pd.DataFrame()
+    df['NO3_CONC'] = NO3_CONC
+
+    #
+    df['Jscale'] = Jscale
+
+
+    df.describe()
+
+
+    # - plot up
+    # Convert nitrate from nmoles/m3 => ug/M3 (hash lines out if not)
+    def ug_m3_2nmoles_m3(x):
+        return x / 1e-9 / (14.+16.+16.+16.) / 1e6
+    def nmoles_m3_2ug_m3(x):
+        return x * 1e-9 * (14.+16.+16.+16.) * 1e6
+
+
+    fig, ax1 = plt.subplots(dpi=320)
+#    no3 = np.arange(0.01, 10000, 0.01) # nmoles/m3
+
+    plt.scatter( NO3_CONC, Jscale, )
+    units = 'nmoles m$^{-3}$'
+    plt.xlabel('bulk [NO$_{3}^{-}$]'+' ({})'.format(units))
+    plt.ylabel('JScale')
+
+    # Set scaling to loglog
+    ax = plt.gca()
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+    TitleSuffix = '1CPU'
+    TitleStr = 'Jscale calculated online with Ye17 param on {}'
+    plt.title( TitleStr.format(TitleSuffix) )
+    title = 'ARNA_online_Ye17_check_{}'.format(TitleSuffix)
+    AC.save_plot(title=title)
 
 
 if __name__ == "__main__":

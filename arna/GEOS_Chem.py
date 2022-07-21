@@ -92,13 +92,28 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625', folder4netCDF=False,
 
 
     elif (res == '4x5') and (RunSet == 'IGACset.tagged'):
-#        DataRoot = get_local_folder('RunRoot')
         RunPrefix = 'geosfp_4x5_aciduptake.v12.9.0.ARNA.Isotherm.Diags.'
         FullRootStr = '{}/{}{}//'
         RunDict = {
         'Iso.Unlimited': FullRootStr.format(RunRoot, RunPrefix,
                                            'v9.Iso.UnlimitedAll'),
         'Base': FullRootStr.format(RunRoot, RunPrefix, 'v9.Base'),
+        }
+
+    elif (res == '4x5') and (RunSet == 'v13.4.1month'):
+        RunPrefix1 = 'gc_4x5_47L_geosfp_fullchem.v13.4.0-rc.2.orig.'
+        RunPrefix2 = 'gc_4x5_47L_merra2_fullchem_aciduptake.v13.4.1.ARNAv10.'
+        FullRootStr = '{}/{}{}//'
+        RunDict = {
+        'Base.v13.4': FullRootStr.format(RunRoot, RunPrefix1, '1monthTest'),
+        '4pptHONO': FullRootStr.format(RunRoot, RunPrefix1,
+#                                       '.1monthTestHONO.4pptv/'),
+                                       'ARNA.HONO.4pptv'),
+        'Base.v13.4.1': FullRootStr.format(RunRoot, RunPrefix2, 'ARNA'),
+        'Ye17': FullRootStr.format(RunRoot, RunPrefix2, 'ARNA.Ye17'),
+        'J50*': FullRootStr.format(RunRoot, RunPrefix2, 'ARNA.J50star'),
+        'JScale.Test': FullRootStr.format(RunRoot, RunPrefix2,
+                                'ARNA.Test_NITD_Jscale/'),
         }
 
     elif (res == '4x5') and (RunSet == 'MERRA2-0.5-initial'):

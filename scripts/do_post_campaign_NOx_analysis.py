@@ -833,6 +833,15 @@ def plt_key_NOx_budget_terms(RunDict=None):
     plt.close('all')
 
 
+# def calculate_NIT_production_totals(RunDict=None, trop_limit=True,):
+#     """
+#     Calculate the global nitrate production routes.
+#     """
+#
+#     pass
+
+
+
 def analyse_NOx_budget(RunDict=None, trop_limit=True,):
     """
     Analyse NOx budget in tagged model runs
@@ -889,8 +898,10 @@ def analyse_NOx_budget(RunDict=None, trop_limit=True,):
     # - - Now do analysis of the data - -
     # Remove the prod/loss variables with non standard output
     var2skip = [
-       'ProdCOfromNMVOC', 'ProdCOfromCH4', 'ProdSO4fromOxidationOnDust',
-       'ProdNITfromHNO3uptakeOnDust', 'ProdSO4fromUptakeOfH2SO4g',
+       'ProdCOfromNMVOC', 'ProdCOfromCH4',
+       'ProdSO4fromOxidationOnDust',
+       'ProdNITfromHNO3uptakeOnDust',
+       'ProdSO4fromUptakeOfH2SO4g',
        'ProdSO4fromO3s', 'ProdSO4fromSRHObr', 'ProdSO4fromSRO3',
        'ProdSO4fromHOBrInCloud', 'ProdSO4fromO3inSeaSalt',
        'ProdSO4fromO3inCloud', 'ProdSO4fromO2inCloudMetal',
@@ -944,7 +955,19 @@ def analyse_NOx_budget(RunDict=None, trop_limit=True,):
                 data = data.mean(dim='time')
             S[var] = data.values
 
-        # print to...
+        # Also include calculations for NIT production
+        # (and convert to average flux... )
+        var2use = 'ProdNITfromHNO3uptakeOnDust'
+        data = ds[var2use].copy()
+        data = data.sum(dim=['lat', 'lon', 'lev'])
+        if AvgOverTime:
+            data = data.mean(dim='time')
+
+        # Already in dataframe
+#        var2use = 'LossHNO3onSeaSalt'
+#        ds[var2use]
+
+        # Store in the dataframe
         df[key] = S
 
 
@@ -1084,6 +1107,9 @@ def analyse_NOx_budget(RunDict=None, trop_limit=True,):
     df5 = df.T
 #    df5.T[vars4plot].T
     df5[vars4plot].T.to_csv('ARNA_NOx_diagram_numbers.csv')
+
+
+
 
 
 def plt_NOx_routes_by_lat(NOxD=None, ):
@@ -1310,9 +1336,9 @@ def explore_JVALS_in_JNITs_runs():
     folder += 'OutputDir/'
     # Species to use?
     TRAs = ['HNO3', 'NIT', 'NITs', 'NITD1', 'NITD2', 'NITD3', 'NITD4']
-    prefix = 'Jval_'
-    vars2use = [prefix+i for i in TRAs]
-    dates2use = None
+    Jprefix = 'Jval_'
+    vars2use = [Jprefix+i for i in TRAs]
+#    dates2use = None
     # Get photolysis data
     dsP = AC.GetJValuesDataset(wd=folder, dates2use=dates2use)
     dsP = dsP[vars2use]
@@ -1333,28 +1359,32 @@ def explore_JVALS_in_JNITs_runs():
             ds2plot = dsP[[var]].mean(dim='time').isel(lev=lvl_idx)
 
             # Plot up the photolysis rates
+            title = "Average '{}' @ {:.1f}km".format(var, lvl_dict[lvl_idx])
             AC.quick_map_plot(ds2plot, var2plot=var, title=title,
                               save_plot=False)
-            title = "Average '{}' @ {:.1f}km".format(var, lvl_dict[lvl_idx])
-            plt.title(title)
+#            plt.title(title)
             # Save to PDF
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
             plt.close()
 
             # Plot up the photolysis rates (as a fraction of JHNO3)
-            REF = ds[[prefix+'HNO3']].mean(dim='time').isel(lev=lvl_idx)
-            AC.quick_map_plot(ds2plot/REF, var2plot=var, title=title,
-                              save_plot=False)
+            REF = dsP[[Jprefix+'HNO3']].mean(dim='time').isel(lev=lvl_idx)
+            NewVarName = 'JScale'
+            ds2plot[NewVarName] = ds2plot[var].copy()
+            ds2plot[NewVarName] = ds2plot[NewVarName] / REF[Jprefix+'HNO3']
             TitleStr = "Ratio of '{}':JHNO3 @ {:.1f}km"
-            plt.title(TitleStr.format(var, lvl_dict[lvl_idx]))
+            title = TitleStr.format(var, lvl_dict[lvl_idx])
+            AC.quick_map_plot(ds2plot, var2plot=NewVarName, title=title,
+                              save_plot=False)
+
             # Save to PDF
             AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
             plt.close()
             del ds2plot
 
     # Also plot up the average surface concentrations of related species
-    prefix = 'SpeciesConc_'
-    vars2use = [prefix+i for i in TRAs]
+    SCprefix = 'SpeciesConc_'
+    vars2use = [SCprefix+i for i in TRAs]
     for var in vars2use:
         #        for lvl_idx in [1, 13, 21]:
         for lvl_idx in [13]:
@@ -1373,6 +1403,205 @@ def explore_JVALS_in_JNITs_runs():
 #    if close_pdf:
     AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
     plt.close('all')
+
+    # Make a quick summary of the Jscale by NIT species
+    REF = 'Jval_HNO3'
+    df =  pd.DataFrame()
+    for __var in dsP.data_vars:
+        S = pd.Series( (dsP[__var] / dsP[REF]).values.flatten() ).describe()
+        df[__var] = S
+    df.to_csv( '{}.csv'.format(savetitle) )
+
+    # Make a quick summary of the dust update
+    df2 = pd.DataFrame()
+    dfs = {}
+    for dsMonth in dsS['time.month'].values:
+        ds = dsS.isel(time=dsS['time.month'] == dsMonth).mean(dim='time')
+        for __var in TRAs:
+            dsVarName = '{}{}'.format(SCprefix, __var)
+            S = pd.Series(ds[ dsVarName ].values.flatten()).describe()
+            df2[__var] = S
+            dfs[dsMonth] = df2
+
+
+def explore_Jscale_offline():
+    """
+    Explore resulting Jscale values from Andersen2022 parameterisation
+    """
+
+    # Get data to explore parameter space with
+    sdate = datetime.datetime(2018, 6, 1) # Beginning for spin up (6months)
+    edate = datetime.datetime(2019, 6, 1) # 12 months into model run
+    dates2use = pd.date_range(sdate, edate, freq='1D')
+    folder = '/users/ts551/scratch/GC/rundirs/P_ARNA/'
+    folder += 'gc_4x5_47L_merra2_fullchem_aciduptake.v13.4.1.ARNAv10/'
+    folder += 'OutputDir/'
+    ds = AC.GetSpeciesConcDataset(wd=folder, dates2use=dates2use )
+
+    # Setup ancillary data for conversions
+    MolecVar = 'Met_MOLECS'
+    StateMet = AC.get_StateMet_ds(wd=folder, dates2use=dates2use)
+    StateMet = AC.add_molec_den2ds(StateMet, MolecVar=MolecVar)
+    AVG = AC.constants( 'AVG' )
+
+    # Add a total nitrate variable
+    NO3Var = 'NIT-all'
+    ds = AC.AddChemicalFamily2Dataset(ds, fam=NO3Var)
+    SALVar = 'SAL-all'
+    ds = AC.AddChemicalFamily2Dataset(ds, fam=SALVar)
+
+    # Update names
+    SCprefix = 'SpeciesConc_'
+    VarNames = ds.data_vars
+    NewNames = [i.split(SCprefix)[-1] for i in VarNames]
+    ds = ds.rename( dict(zip(VarNames, NewNames)) )
+
+    # Convert values to moles /m3
+    # v/v => molecs/cm3 => mol/cm3 =>  mol/m3 => nmol/m3
+    for __var in [NO3Var, SALVar]:
+        data = ds[__var] * StateMet[MolecVar] / AVG
+        data = data * 1E6 * 1E9
+        ds[__var].values = data
+
+
+    # Calculate the resultant Jscale for these values
+    # Andersen22a
+    Andersen22aVar = 'Andersen22a'
+    no3 = ds[NO3Var]
+    ds[Andersen22aVar] = ((8.6E2 * np.log(1. + (0.94*no3) ) ) / (no3) ) - 38.1
+
+    # Andersen22b
+    Andersen22bVar = 'Andersen22b'
+    FACvar = 'NO3/Cl'
+    ds[FACvar] =  ds[NO3Var] / ds[SALVar]
+    ds[Andersen22bVar] = ( 31.65 * np.log(1. + 6.34 * ds[FACvar])) / ds[FACvar]
+
+    # Also include the inverse chloride to nitrate ratio.
+    FACvar_r = 'Cl/NO3'
+    ds[FACvar_r] =   ds[SALVar] / ds[NO3Var]
+
+
+    # print out statistics
+
+
+#    NITspecies = ['NIT', 'NITs', 'NITD1', 'NITD2', 'NITD3', 'NITD4']
+#    ds =
+
+
+    # Loop and plot values of interest
+    vars2plot = NO3Var, SALVar, FACvar, FACvar_r, Andersen22aVar, Andersen22bVar
+
+    ds2plot = ds.copy().mean(dim='time')
+    ds2plot = ds2plot.isel(lev=(ds.lev==ds.lev[0])).squeeze()
+
+
+    savetitle = 'ARNA_chloride_nitrate_ratios'
+    pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
+
+    # plot surface
+    for __var in vars2plot:
+
+        kwargs = {}
+        AC.quick_map_plot(ds2plot, var2plot=__var, verbose=verbose,
+                          **kwargs)
+        TitleStr = "Average surface '{}' ".format(__var)
+        plt.title(TitleStr.format(__var))
+
+        # Save to PDF
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+        plt.close()
+
+    # Also plot up a limited version of the Cl/NO3 ratio
+    __var = FACvar
+    kwargs = {'vmin':0, 'vmax':25, 'extend': 'both'}
+    AC.quick_map_plot(ds2plot, var2plot=__var, verbose=verbose,
+                      **kwargs)
+    TitleStr = "Average surface '{}' limited (0-25)".format(__var)
+    plt.title(TitleStr.format(__var))
+
+    # Also plot up a limited version of the NO3/Cl ratio
+    __var = FACvar_r
+    kwargs = {'vmin':0, 'vmax':37, 'extend': 'both'}
+    AC.quick_map_plot(ds2plot, var2plot=__var, verbose=verbose,
+                      **kwargs)
+    TitleStr = "Average surface '{}' limited (0-37)".format(__var)
+    plt.title(TitleStr.format(__var))
+
+    # Save to PDF
+    AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+    plt.close()
+
+    # zonal plot of these values too.
+    ds2plot = ds.copy().mean(dim='time')
+    StateMet2use = StateMet.copy().mean(dim='time')
+
+    for __var in vars2plot:
+        var2plot = __var
+
+        fig, ax = plt.subplots()
+        kwargs = {}
+        im = AC.ds2zonal_plot(ds2plot, var2plot=var2plot,
+                              StateMet=StateMet2use,
+                              fig=fig, ax=ax, **kwargs)
+        TitleStr = "Zonal [{}] in Restart file"
+        plt.title(TitleStr.format(var2plot))
+
+        # Add a colourbar
+#        kwargs = {'extend':'both'}
+        fig.colorbar(im, orientation="horizontal", pad=0.2, extend='both',
+                     **kwargs)
+#                     format=format, label=units)
+        # Save to PDF
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+        plt.close()
+
+
+    # Save entire pdf
+    AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
+    plt.close('all')
+
+
+def plot_weighted_nitrate_Jscale()
+    """
+    """
+
+    # - Kas22
+
+
+    # - Ye17
+
+
+
+    # - Shah22
+
+
+    # - Andersen22
+
+
+    # --- Plot up values at the surface
+
+
+
+    # --- Plot up values zonally
+
+
+
+
+
+
+
+def consider_stats_():
+    """
+    TEMP function -
+    """
+    #
+#    folder = '/users/ts551/scratch/GC/rundirs/P_ARNA/'
+
+
+
+
+    pass
+
 
 
 def explore_print_statement_debug_of_aciduptake_photolysis():
