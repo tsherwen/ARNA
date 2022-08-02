@@ -1796,7 +1796,6 @@ def check_Ye17_output_log_file_values():
     #
     df['Jscale'] = Jscale
 
-
     df.describe()
 
 
@@ -1820,7 +1819,7 @@ def check_Ye17_output_log_file_values():
     ax = plt.gca()
     ax.set_xscale('log')
     ax.set_yscale('log')
-    TitleSuffix = '1CPU'
+    TitleSuffix = '2CPU'
     TitleStr = 'Jscale calculated online with Ye17 param on {}'
     plt.title( TitleStr.format(TitleSuffix) )
     title = 'ARNA_online_Ye17_check_{}'.format(TitleSuffix)

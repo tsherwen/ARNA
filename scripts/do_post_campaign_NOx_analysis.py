@@ -1563,19 +1563,155 @@ def explore_Jscale_offline():
 
 def plot_weighted_nitrate_Jscale()
     """
+    Plot the nitrate weighted Jscale
     """
+    # - TEMP - setup a local dictionary for data to use
+    # Update below as available.
+    RunDict = {}
+    RunDict['Kas18'] = '/users/ts551/scratch/GC/rundirs/P_ARNA/gc_4x5_47L_merra2_fullchem_aciduptake.v13.4.1.ARNAv10.ARNA.Test_NITD_Jscale.remakeKPPnModel.II.Kas18.FullRun/'
+    RunDict['Shah22'] = '/users/ts551/scratch/GC/rundirs/P_ARNA/gc_4x5_47L_merra2_fullchem_aciduptake.v13.4.1.ARNAv10.ARNA.Test_NITD_Jscale.remakeKPPnModel.II.Shah22.FullRun/'
+
+    RunDict['Ye17'] = '/users/ts551/scratch/GC/rundirs/P_ARNA/gc_4x5_47L_merra2_fullchem_aciduptake.v13.4.1.ARNAv11.Ye17.1Hour'
+    RunDict['Andersen22a'] = '/users/ts551/scratch/GC/rundirs/P_ARNA/gc_4x5_47L_merra2_fullchem_aciduptake.v13.4.1.ARNAv11.Andersen22a.1Hour/'
+    RunDict['Andersen22b'] = '/users/ts551/scratch/GC/rundirs/P_ARNA/gc_4x5_47L_merra2_fullchem_aciduptake.v13.4.1.ARNAv12.Andersen22b.1day'
+
+    # Point to the OutputDir
+    for key in RunDict.keys():
+        RunDict[key] = RunDict[key] + '/OutputDir/'
+
+    # DAtes to use
+    sdate = datetime.datetime(2019, 1, 1) # Beginning for analysis year
+#    edate = datetime.datetime(2018, 3, 1) # 3 months into spin-up
+#    edate = datetime.datetime(2018, 6, 1) # 6 months into spin-up
+#    edate = datetime.datetime(2018, 10, 1) # 10 months into spin-up
+    edate = datetime.datetime(2019, 6, 30) # End of analysis year
+#    edate = datetime.datetime(2018, 12, 31) # End of spin-up year
+    dates2use = pd.date_range(sdate, edate, freq='1D')
+
+    # - local variables
+    #
+    TotalJNITeffVar = 'JscaleEffNIT-all'
+    JscaleNITvar = 'JscaleNIT'
+    JscaleNITsvar = 'JscaleNITs'
+    JscaleNITD1var = 'JscaleNITD1'
+    JscaleNITD2var = 'JscaleNITD2'
+    JscaleNITD3var = 'JscaleNITD3'
+    JscaleNITD4var = 'JscaleNITD3'
+    #
+    NO3Var = 'NIT-all'
+    SCprefix = 'SpeciesConc_'
+    dsD = {}
 
     # - Kas22
+    key = 'Kas18'
+    folder = RunDict[key]
+    # Get data and use average value over time for now
+    ds = AC.GetSpeciesConcDataset(wd=folder) #, dates2use=dates2use )
+    ds = ds.mean(dim='time')
+    # Add a total nitrate variable
+    ds = AC.AddChemicalFamily2Dataset(ds, fam=NO3Var)
+    #
+    dsJ = AC.GetJValuesDataset(wd=folder)
+    dsJ = dsJ.mean(dim='time')
+
+    # Jscale on NIT? * [NIT?]
+    dsJ[JscaleNITvar] = dsJ['Jval_NIT'] / dsJ['Jval_HNO3']
+    dsJ[JscaleNITsvar] = dsJ['Jval_NITs'] / dsJ['Jval_HNO3']
+
+    # Sum the NIT? Jscales * [NIT], then devide by total
+    dsJ[TotalJNITeffVar] = dsJ[JscaleNITvar] * ds['SpeciesConc_NIT']
+    dsJ[TotalJNITeffVar] += dsJ[JscaleNITsvar] * ds['SpeciesConc_NITs']
+    dsJ[TotalJNITeffVar] = dsJ[TotalJNITeffVar] / ds[SCprefix+NO3Var]
+
+    # Save to a dictionary of datasets to plot
+    dsD[key] = dsJ[[TotalJNITeffVar, JscaleNITvar, JscaleNITsvar]]
+
+    # - Shah22
+    # applied on NIT and NITs, not NITD1-4
+    key = 'Shah22'
+    folder = RunDict[key]
+    # Get data and use average value over time for now
+    ds = AC.GetSpeciesConcDataset(wd=folder) #, dates2use=dates2use )
+    ds = ds.mean(dim='time')
+    # Add a total nitrate variable
+    ds = AC.AddChemicalFamily2Dataset(ds, fam=NO3Var)
+    #
+
+    dsJ = AC.GetJValuesDataset(wd=folder)
+    dsJ = dsJ.mean(dim='time')
+
+    dsJ[JscaleNITvar] = dsJ['Jval_NIT'] / dsJ['Jval_HNO3']
+    dsJ[JscaleNITsvar] = dsJ['Jval_NITs'] / dsJ['Jval_HNO3']
+
+    # Sum the NIT? Jscales * [NIT], then devide by total
+    dsJ[TotalJNITeffVar] = dsJ[JscaleNITvar] * ds['SpeciesConc_NIT']
+    dsJ[TotalJNITeffVar] += dsJ[JscaleNITsvar] * ds['SpeciesConc_NITs']
+    dsJ[TotalJNITeffVar] = dsJ[TotalJNITeffVar] / ds[SCprefix+NO3Var]
+
+    # Save to a dictionary of datasets to plot
+    dsD[key] = dsJ[[TotalJNITeffVar, JscaleNITvar, JscaleNITsvar]]
 
 
     # - Ye17
+    # applied on NIT and NITs, not NITD1-4
+    key = 'Ye17'
+    folder = RunDict[key]
+    # Get data and use average value over time for now
+    ds = AC.GetSpeciesConcDataset(wd=folder) #, dates2use=dates2use )
+    ds = ds.mean(dim='time')
+    # Add a total nitrate variable
+    ds = AC.AddChemicalFamily2Dataset(ds, fam=NO3Var)
+    #
+    dsJ = AC.GetJValuesDataset(wd=folder)
+    dsJ = dsJ.mean(dim='time')
+
+    dsJ[JscaleNITvar] = dsJ['Jval_NIT'] / dsJ['Jval_HNO3']
+    dsJ[JscaleNITsvar] = dsJ['Jval_NITs'] / dsJ['Jval_HNO3']
+
+    # Sum the NIT? Jscales * [NIT], then devide by total
+    dsJ[TotalJNITeffVar] = dsJ[JscaleNITvar] * ds['SpeciesConc_NIT']
+    dsJ[TotalJNITeffVar] += dsJ[JscaleNITsvar] * ds['SpeciesConc_NITs']
+    dsJ[TotalJNITeffVar] = dsJ[TotalJNITeffVar] / ds[SCprefix+NO3Var]
+
+    # Save to a dictionary of datasets to plot
+    dsD[key] = dsJ[[TotalJNITeffVar, JscaleNITvar, JscaleNITsvar]]
 
 
 
-    # - Shah22
 
 
     # - Andersen22
+    # applied on NIT and NITs, not NITD1-4
+    key = 'Andersen22a'
+    folder = RunDict[key]
+    # Get data and use average value over time for now
+    ds = AC.GetSpeciesConcDataset(wd=folder) #, dates2use=dates2use )
+    ds = ds.mean(dim='time')
+    # Add a total nitrate variable
+    ds = AC.AddChemicalFamily2Dataset(ds, fam=NO3Var)
+    #
+    dsJ = AC.GetJValuesDataset(wd=folder)
+    dsJ = dsJ.mean(dim='time')
+
+    dsJ[JscaleNITvar] = dsJ['Jval_NIT'] / dsJ['Jval_HNO3']
+    dsJ[JscaleNITsvar] = dsJ['Jval_NITs'] / dsJ['Jval_HNO3']
+#    dsJ[JscaleNITD1svar] = dsJ['Jval_NITD1'] / dsJ['Jval_HNO3']
+#    dsJ[JscaleNITD2svar] = dsJ['Jval_NITD2'] / dsJ['Jval_HNO3']
+#    dsJ[JscaleNITD3svar] = dsJ['Jval_NITD3'] / dsJ['Jval_HNO3']
+#    dsJ[JscaleNITD4svar] = dsJ['Jval_NITD4'] / dsJ['Jval_HNO3']
+
+    # Sum the NIT? Jscales * [NIT], then devide by total
+    dsJ[TotalJNITeffVar] = dsJ[JscaleNITvar] * ds['SpeciesConc_NIT']
+    dsJ[TotalJNITeffVar] += dsJ[JscaleNITsvar] * ds['SpeciesConc_NITs']
+#    dsJ[TotalJNITeffVar] += dsJ[JscaleNITD1svar] * ds['SpeciesConc_NITD1']
+#    dsJ[TotalJNITeffVar] += dsJ[JscaleNITD2svar] * ds['SpeciesConc_NITD2']
+#    dsJ[TotalJNITeffVar] += dsJ[JscaleNITD3svar] * ds['SpeciesConc_NITD3']
+#    dsJ[TotalJNITeffVar] += dsJ[JscaleNITD4svar] * ds['SpeciesConc_NITD4']
+    dsJ[TotalJNITeffVar] = dsJ[TotalJNITeffVar] / ds[SCprefix+NO3Var]
+
+    # Save to a dictionary of datasets to plot
+    dsD[key] = dsJ[[TotalJNITeffVar, JscaleNITvar, JscaleNITsvar]]
+
 
 
     # --- Plot up values at the surface
@@ -1586,7 +1722,7 @@ def plot_weighted_nitrate_Jscale()
 
 
 
-
+    pass
 
 
 
