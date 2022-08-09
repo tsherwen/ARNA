@@ -1587,25 +1587,6 @@ def testing_v13_implimentation():
     #
 
 
-def update_restart_file_dates(sdate, folder='./',
-                              FileName='GEOSChem.Restart.20180701_0000z.nc4'):
-    """
-    Update the restart time variable and filename
-    """
-    # open the current NetCDF file
-    ds = xr.open_dataset('{}{}'.format(folder, FileName) )
-
-    # Use a default value if a start date not provided
-    if isinstance(sdate, type(None)):
-        sdate = datetime.datetime(2018, 6, 1)
-    # Assign the new values
-    ds = ds.assign( {'time': [sdate]} )
-    # Save out NetCDF
-    SaveNameStr = 'GEOSChem.Restart.{}{:0>2}{:0>2}_0000z.nc4'
-    SaveName = SaveNameStr.format(sdate.year, sdate.month, sdate.day)
-    ds.to_netcdf( '{}{}'.format(folder, SaveName) )
-
-
 def Add_NITD_to_restart_file(folder='./',
                              FileName='GEOSChem.Restart.20180701_0000z.nc4'):
     """
