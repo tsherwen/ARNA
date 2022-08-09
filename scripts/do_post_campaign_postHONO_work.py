@@ -5,6 +5,9 @@ Driver for analysis of "4 pptv HONO world" following the ARNA campaign
 import arna as ar
 import sys
 
+from matplotlib.colors import LogNorm
+
+
 from AC_tools import GetSpeciesConcDataset, AddChemicalFamily2Dataset, species_mass, get_ref_spec, get_Gg_trop_burden, get_StateMet_ds, tra_unit, get_avg_2D_conc_of_X_weighted_by_Y, GC_var, get_ProdLoss_ds, add_molec_den2ds, rm_fractional_troposphere, constants, GetConcAfterChemDataset, get_StateMet_ds, get_DryDep_ds, get_WetLossConv_ds, get_WetLossLS_ds
 
 from arna import get_local_folder, get_tags_for_NOx_HONO, get_DryDepAndWetDep_ds
@@ -1559,13 +1562,168 @@ def mk_figure2_HONO_surface_conc():
     var2plot = 'SpeciesConc_HNO2'
     scale = 1E12
     units = 'pptv'
-    kwargs = {'log': True}
+    vmin = 0.1
+    vmax = 1000
+    norm = LogNorm(vmin=vmin, vmax=vmax)
+    kwargs = {'norm': norm}
+    #    kwargs = {'log': True}
     ds = ds[[var2plot]].sum(dim='lev') * scale
     # TODO: make plot logarithmic, clear colour bar axis
     AC.quick_map_plot(ds, var2plot='SpeciesConc_HNO2', show_plot=False,
                       savename=savename,
                       #                      save_plot=False,
                       verbose=verbose, kwargs=kwargs)
+
+
+
+def plot_SpecSubsetConc_comparisons()
+    """
+    """
+
+    # --- Datasets to use?
+    RunDict = {}
+    RunDict['Iso.Unlimited']  = '/mnt/lustre/users/ts551/GC/rundirs/P_ARNA/geosfp_4x5_aciduptake.v12.9.0.ARNA.Isotherm.Diags.v9.Iso.UnlimitedAll/OutputDir/'
+
+    RunDict['Base'] = '/mnt/lustre/users/ts551/GC/rundirs/P_ARNA/geosfp_4x5_aciduptake.v12.9.0.ARNA.Isotherm.Diags.v9.Base/OutputDir/'
+
+
+    # --- ARNA
+    dsD = {}
+    for key in RunDict.keys():
+        folder = RunDict[ key ]
+
+        # Get the data of species to plot
+        # HNO2, NOx, NO, NO2, CO, ozone,
+        data = get_model_noon_vertical_conc(folder)
+
+        dsD[key] = data
+
+
+    # Setup a PDF to store values
+    savetitle = 'ARNA_SpecConcSub_Noon_mean'
+    pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
+
+
+    # Units to use?
+    units_d = {
+        'CO': 'ppbv', 'O3': 'ppbv', 'NO2': 'pptv', 'NO': 'pptv', 'NOx': 'pptv',
+        'HNO2': 'pptv', 'HONO': 'pptv',
+        'NIT': 'pptv', 'NITs': 'pptv', 'SO4s': 'pptv', 'SO4': 'pptv',
+        'NH4': 'pptv',
+        'SO4-all': 'pptv', 'NIT-all': 'pptv',
+    }
+
+    # Plot up
+    vars2plot = 'HNO2', 'NOx', 'NO', 'NO2', 'CO'
+    for var2plot in vars2plot:
+
+        # Loop model data
+        for key in dsD.keys():
+            # Get units and scaling
+            units = units_d[var2plot]
+            scaleby = AC.get_unit_scaling(units)
+
+            # Select data to plot
+            X = dsD[key][var2plot] * scaleby
+            Y = dsD[key].lev
+
+            # plot up
+            plt.plot(X, Y, label=key)
+
+        # Beautify plot
+        plt.title( var2plot)
+
+        # Save to PDF
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+        plt.close()
+
+    # Save entire pdf
+    AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
+    plt.close('all')
+
+
+def get_model_noon_vertical_conc( folder=None ):
+    """
+    Retrieve the vertical noon concentration
+    """
+
+    # Location or area? (could average a lat/lon extent or select location)
+
+    # Select the dates to extract vertical profile for
+    campaign = 'ARNA'
+    if campaign == 'ARNA':
+        dates2use = [datetime.datetime(2020, 2, 4)]
+        dates2use += [datetime.datetime(2020, 2, 5)]
+        dates2use += [datetime.datetime(2020, 2, 6)]
+        dates2use += [datetime.datetime(2020, 2, 7)]
+        dates2use += [datetime.datetime(2020, 2, 8)]
+        dates2use += [datetime.datetime(2020, 2, 11)]
+        dates2use += [datetime.datetime(2020, 2, 12)]
+        dates2use += [datetime.datetime(2020, 2, 13)]
+
+    # open just the dates of the campaign
+    file_str='GEOSChem.SpeciesConcSubset.*.nc4'
+    ds = AC.get_GEOSChem_files_as_ds(file_str=file_str, dates2use=dates2use,
+                                     wd=folder)
+
+    # Select the average noon profiles
+    if campaign == 'ARNA':
+        TZ = -1
+    dt = AC.dt64_2_dt( ds.time.values  )
+    dt = [AC.add_hrs(i, TZ ) for i in dt]
+    ds = ds.assign( {'time': dt} )
+    __bool = ds['time.hour'] == 12
+    ds = ds.isel(time=__bool).mean(dim='time')
+
+    # Select the location
+    d = ar.get_analysis_region('Cape_Verde_Flying')
+    x0, x1, y0, y1 = d['x0'], d['x1'], d['y0'], d['y1']
+    # Set values region
+    bool1 = ((ds.lon >= x0) & (ds.lon <= x1)).values
+    bool2 = ((ds.lat >= y0) & (ds.lat <= y1)).values
+    # Cut by lon, then lat
+    ds = ds.isel(lon=bool1)
+    ds = ds.isel(lat=bool2)
+    # Average over location
+    ds = ds.mean(dim=('lat', 'lon'))
+
+    # Add in families afterwards
+    ds = AC.AddChemicalFamily2Dataset(ds, fam='NOx')
+    ds = AC.AddChemicalFamily2Dataset(ds, fam='NIT-all')
+
+    # remove prefix
+    SCprefix = 'SpeciesConc_'
+    variables = [i for i in ds.data_vars if SCprefix in i]
+    species = [i.split(SCprefix)[-1] for i in variables]
+    name_dict = dict(zip(variables, species))
+    ds = ds.rename( name_dict=name_dict )
+    ds = ds[species] # Only return species
+
+
+    # return the dataset
+    return ds
+
+
+def calc_pressure_feild4ds():
+    """
+    Calculate offline the pressure using the NetCDF core variables
+
+    Notes
+    ---
+     - The calculation to perform to get box top or bottom pressure
+
+     Pbot = ( hyai(L  ) * PS(I,J) ) + hybi(L  )
+     Ptop = ( hyai(L+1) * PS(I,J) ) + hybi(L+1)
+
+     - More detail on the pressure calculation  http://wiki.seas.harvard.edu/geos-chem/index.php/Overview_of_History_diagnostics
+    """
+
+    pass
+
+
+
+
+
 
 
 if __name__ == "__main__":
