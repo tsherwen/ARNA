@@ -930,6 +930,14 @@ def get_analysis_region(RegionName):
                               'y1': 21.1},
         # FIREX-AQ
         'CONUS' : {'x0': -125, 'x1': -54, 'y0': 23, 'y1': 60},
+        'FIREX-AQ-I' : {'x0': -120., 'x1': -115., 'y0': 34., 'y1': 50.},
+        'FIREX-AQ-II' : {'x0': -100., 'x1': -85., 'y0': 30., 'y1': 42.},
+#     if FIREX_region==1:
+#         ds = ds.where( ds.lat <=50.  ).where( ds.lat >=34.  ).mean(dim='lat')
+#         ds = ds.where( ds.lon <=-115.).where( ds.lon >=-120.).mean(dim='lon')
+#     elif FIREX_region==2:
+#         ds = ds.where( ds.lat <=42.  ).where( ds.lat >=30.  ).mean(dim='lat')
+#         ds = ds.where( ds.lon <=-85.).where( ds.lon >=-100.).mean(dim='lon')
         #
         'Atlantic' :{'x0': -70, 'x1': 20, 'y0': -80, 'y1': 80},
 #     df.loc[bool_, region_var] = 'Pacific'

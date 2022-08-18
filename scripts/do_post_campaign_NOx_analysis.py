@@ -1616,9 +1616,11 @@ def plot_weighted_nitrate_Jscale()
 #         else:
 #             sdate = datetime.datetime(2019, 1, 1)
 #             edate = datetime.datetime(2019, 12, 30)
-        sdate = datetime.datetime(2019, 1, 1)
-        edate = datetime.datetime(2019, 12, 30)
-        dates2use = pd.date_range(sdate, edate, freq='1D')
+
+        # Temp - hash out dates
+#        sdate = datetime.datetime(2019, 1, 1)
+#        edate = datetime.datetime(2019, 12, 30)
+#        dates2use = pd.date_range(sdate, edate, freq='1D')
 #        dates2use = None
 
         # Get data and use average value over time for now

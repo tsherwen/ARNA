@@ -6877,7 +6877,7 @@ def mk_Andersen2021_figure_02(dpi=720, figsize=(7, 3), aspect=None, ms=None,
     AC.save_plot('ARNA_Andersen_figure_02', dpi=dpi, tight=tight)
 
 
-def plt_seasonal_comparoisons_of_nitrate():
+def plt_seasonal_comparisons_of_nitrate():
     """
     Make a plot of seasonal nitrate at CVAO
     """

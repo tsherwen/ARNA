@@ -2,14 +2,20 @@
 """
 Driver for analysis of "4 pptv HONO world" following the ARNA campaign
 """
-import arna as ar
 import sys
-
+import datetime as datetime
+import numpy as np
+from time import gmtime, strftime
+import time
+import glob
+import AC_tools as AC
+import pandas as pd
 from matplotlib.colors import LogNorm
 
 
 from AC_tools import GetSpeciesConcDataset, AddChemicalFamily2Dataset, species_mass, get_ref_spec, get_Gg_trop_burden, get_StateMet_ds, tra_unit, get_avg_2D_conc_of_X_weighted_by_Y, GC_var, get_ProdLoss_ds, add_molec_den2ds, rm_fractional_troposphere, constants, GetConcAfterChemDataset, get_StateMet_ds, get_DryDep_ds, get_WetLossConv_ds, get_WetLossLS_ds
 
+import arna as ar
 from arna import get_local_folder, get_tags_for_NOx_HONO, get_DryDepAndWetDep_ds
 
 
@@ -18,7 +24,8 @@ def main():
     Main driver for 4 pptv HONO world analysis
     """
     # --- Local settings to pass to all analysis/plotting functions
-    RunSet = 'PostHONO'
+#    RunSet = 'PostHONO'
+    RunSet = 'IGAC.ARNAv14'
     res = '4x5'
     GC_version = 'v12.9'
 #    GC_version = 'v13.4'
@@ -27,17 +34,20 @@ def main():
 #    edate = datetime.datetime(2018, 3, 1) # 3 months into spin-up
 #    edate = datetime.datetime(2018, 6, 1) # 6 months into spin-up
 #    edate = datetime.datetime(2018, 10, 1) # 10 months into spin-up
-    edate = datetime.datetime(2019, 12, 31) # End of analysis year
+#    edate = datetime.datetime(2019, 12, 31) # End of analysis year
+    edate = datetime.datetime(2019, 9, 1) # 9 months of spun up analysis
 #    edate = datetime.datetime(2018, 12, 31) # End of spin-up year
     dates2use = pd.date_range(sdate, edate, freq='1D')
 #    dates2use = None
 
     # Base for analysis and then perturbation
-    REF1 = 'Base'
+#    REF1 = 'Base'
+    REF1 = 'J00'
 #    DIFF = '4pptHONO'
 #    DIFF = 'min4pptHONO'
 #    DIFF = 'Iso.Delq.NoJCap'
-    DIFF = 'Iso.UnlimitedAll'
+#    DIFF = 'Iso.UnlimitedAll'
+    DIFF = 'Andersen22b'
 
     # Get dictionary of model runs and their names (RunDict)
     RunDict = ar.get_dict_of_GEOSChem_model_output(RunSet=RunSet,
@@ -45,59 +55,59 @@ def main():
                                                    res=res,
                                                    folder4netCDF=True)
 
-    # TEMP: mannual set to use v6 diags and HO2+NOv2 here
-    RunRoot = ar.get_local_folder('RunRoot')
-    RunBaseStr1 = 'geosfp_4x5_aciduptake.v12.9.0'
-    RunStr1 = RunBaseStr1 + '.ARNA.Isotherm.Diags.v6.HO2nNOv2.1'
-    RunStr2 = '{}{}{}/OutputDir/'.format(RunRoot, RunStr1, '.IsopH4')
-    RunStr1 = '{}{}{}/OutputDir/'.format(RunRoot, RunStr1, '')
-    RunStr3 = RunBaseStr1 + '.BASE.2019.2020.ARNA.DustUptake.'
-    RunStr3 += 'JNIT.Isotherm.BCs.repeat.ON.II.diags.v5.0.H2O.AcidII.100HONO'
-    RunStr3 = '{}{}{}/OutputDir/'.format(RunRoot, RunStr3, '.2018.pH7')
-    RunStr4 = RunBaseStr1 + '.ARNA.Isotherm.Diags.v6'
-    BaseRunStr5 =  RunStr4 +  '.HO2nNOv2.5'
-    RunStr5 = '{}{}{}/OutputDir/'.format(RunRoot, BaseRunStr5, '')
-    RunStr6 = '{}{}{}/OutputDir/'.format(RunRoot, BaseRunStr5, '.IsopH4')
-    RunStr7 = '{}{}{}/OutputDir/'.format(RunRoot, BaseRunStr5,
-                                          '.Iso.UnlimitedpH')
-    RunStr8 = '{}{}{}/OutputDir/'.format(RunRoot, RunStr4, '.Ye2017')
-    RunStr9 = '{}{}{}/OutputDir/'.format(RunRoot, RunStr4, '.Ye2017online')
-    RunStr10 = '{}{}{}/OutputDir/'.format(RunRoot, RunStr4, '.Ye2017.LL')
-    RunStr11 = '{}{}{}/OutputDir/'.format(RunRoot, RunStr4,'.Iso.UnlimitedpH')
-    RunStr12 = '{}{}{}/OutputDir/'.format(RunRoot, RunStr4,'.Iso.UnlimitedAll')
-    RunStr13 = '{}{}{}/OutputDir/'.format(RunRoot, RunStr4,
-                                          '.Iso.UnlimitedAll.repeat')
-
-    RunDict2 = {
-    'Base':RunDict['Base'], 'min4pptHONO': RunDict['min4pptHONO'],
-#    'HO2+NOv2.1': RunStr1,
-    'HO2+NO': RunStr5, # HO2+NO v5
-    'Iso.Delq.CapJ50.pH4.HO2+NO': RunStr6, # HO2+NO v5
-#    'Isov5.pH7': RunStr3, # Note, this is not the latest isotherm code.
-#    'Iso.HO2+NO': RunStr2, # WARNING: This is using HO2+NO code with a bug
-    'Iso.Delq.NoJCap.HO2+NO': RunStr7,
-#    'Iso.Delq.NoJCap': RunStr11, # This has missing months in analysis year
-    'Ye17': RunStr8,
-    'Ye17.online': RunStr9,
-    'Ye17.LL': RunStr10,
-#    'Iso.UnlimitedAll.Base600': RunStr12,
-    'Iso.UnlimitedAll': RunStr13, # This has the
-    }
-
-    RunDict = RunDict2
-
-    # Kludge: temp
-    keys2del = [
-    'Ye17.online', 'Ye17', 'Ye17.LL',
-    'HO2+NOv2.1',
-#    'min4pptHONO',
-    'HO2+NOv2.5',
-    ]
-    for key in keys2del:
-        try:
-            del RunDict[key]
-        except KeyError:
-            print("WARNING: key not dropped from RunDict ('{}')".format(key))
+#     # TEMP: mannual set to use v6 diags and HO2+NOv2 here
+#     RunRoot = ar.get_local_folder('RunRoot')
+#     RunBaseStr1 = 'geosfp_4x5_aciduptake.v12.9.0'
+#     RunStr1 = RunBaseStr1 + '.ARNA.Isotherm.Diags.v6.HO2nNOv2.1'
+#     RunStr2 = '{}{}{}/OutputDir/'.format(RunRoot, RunStr1, '.IsopH4')
+#     RunStr1 = '{}{}{}/OutputDir/'.format(RunRoot, RunStr1, '')
+#     RunStr3 = RunBaseStr1 + '.BASE.2019.2020.ARNA.DustUptake.'
+#     RunStr3 += 'JNIT.Isotherm.BCs.repeat.ON.II.diags.v5.0.H2O.AcidII.100HONO'
+#     RunStr3 = '{}{}{}/OutputDir/'.format(RunRoot, RunStr3, '.2018.pH7')
+#     RunStr4 = RunBaseStr1 + '.ARNA.Isotherm.Diags.v6'
+#     BaseRunStr5 =  RunStr4 +  '.HO2nNOv2.5'
+#     RunStr5 = '{}{}{}/OutputDir/'.format(RunRoot, BaseRunStr5, '')
+#     RunStr6 = '{}{}{}/OutputDir/'.format(RunRoot, BaseRunStr5, '.IsopH4')
+#     RunStr7 = '{}{}{}/OutputDir/'.format(RunRoot, BaseRunStr5,
+#                                           '.Iso.UnlimitedpH')
+#     RunStr8 = '{}{}{}/OutputDir/'.format(RunRoot, RunStr4, '.Ye2017')
+#     RunStr9 = '{}{}{}/OutputDir/'.format(RunRoot, RunStr4, '.Ye2017online')
+#     RunStr10 = '{}{}{}/OutputDir/'.format(RunRoot, RunStr4, '.Ye2017.LL')
+#     RunStr11 = '{}{}{}/OutputDir/'.format(RunRoot, RunStr4,'.Iso.UnlimitedpH')
+#     RunStr12 = '{}{}{}/OutputDir/'.format(RunRoot, RunStr4,'.Iso.UnlimitedAll')
+#     RunStr13 = '{}{}{}/OutputDir/'.format(RunRoot, RunStr4,
+#                                           '.Iso.UnlimitedAll.repeat')
+#
+#     RunDict2 = {
+#     'Base':RunDict['Base'], 'min4pptHONO': RunDict['min4pptHONO'],
+# #    'HO2+NOv2.1': RunStr1,
+#     'HO2+NO': RunStr5, # HO2+NO v5
+#     'Iso.Delq.CapJ50.pH4.HO2+NO': RunStr6, # HO2+NO v5
+# #    'Isov5.pH7': RunStr3, # Note, this is not the latest isotherm code.
+# #    'Iso.HO2+NO': RunStr2, # WARNING: This is using HO2+NO code with a bug
+#     'Iso.Delq.NoJCap.HO2+NO': RunStr7,
+# #    'Iso.Delq.NoJCap': RunStr11, # This has missing months in analysis year
+#     'Ye17': RunStr8,
+#     'Ye17.online': RunStr9,
+#     'Ye17.LL': RunStr10,
+# #    'Iso.UnlimitedAll.Base600': RunStr12,
+#     'Iso.UnlimitedAll': RunStr13, # This has the
+#     }
+#
+#     RunDict = RunDict2
+#
+#     # Kludge: temp
+#     keys2del = [
+#     'Ye17.online', 'Ye17', 'Ye17.LL',
+#     'HO2+NOv2.1',
+# #    'min4pptHONO',
+#     'HO2+NOv2.5',
+#     ]
+#     for key in keys2del:
+#         try:
+#             del RunDict[key]
+#         except KeyError:
+#             print("WARNING: key not dropped from RunDict ('{}')".format(key))
 
 #
 # 'geosfp_4x5_aciduptake.v12.9.0.BASE.2019.2020.ARNA.DustUptake.JNIT.Isotherm.BCs.repeat.ON.II.diags.v2.J00.HourlyOutput.2018.HO2andNOv2.BetaStandard.1day'
@@ -114,39 +124,40 @@ def main():
                                          RunDict=RunDict)
 
     # plot up key changes
-    plt_spatial_changes_in_4pptv_HONO_world(pcent=True, REF1=REF1, DIFF=DIFF,
+    plt_spatial_changes_in_4pptv_HONO_world(pcent=False, REF1=REF1, DIFF=DIFF,
                                             dates2use=dates2use,
                                             RunDict=RunDict)
-    plt_spatial_changes_in_4pptv_HONO_world(pcent=False, REF1=REF1, DIFF=DIFF,
+    plt_spatial_changes_in_4pptv_HONO_world(pcent=True, REF1=REF1, DIFF=DIFF,
                                             dates2use=dates2use,
                                             RunDict=RunDict)
     # Plot up all variables changes (in percent)
     plt_spatial_changes_in_4pptv_HONO_world(pcent=True, dates2use=dates2use,
+                                            REF1=REF1, DIFF=DIFF,
                                             PltAllVars=True,
                                             RunDict=RunDict)
 
     # Plot up the JScale changes
-    plt_JScale_analysis(RunDict=RunDict, dates2use=dates2use)
+#    plt_JScale_analysis(RunDict=RunDict, dates2use=dates2use)
 
     # Plot up HONO production routes - N/A
     # See functions in do_post_campaign_NOx_analysis.py
     # (e.g.'plt_key_NOx_budget_terms' )
-    plt_HO2_NO_branching_ratio_spatially()
+#    plt_HO2_NO_branching_ratio_spatially()
 
     # Plot up the NO + HO2 + H2O => HNO3 channel
-    plt_NO_HO2_channel_verues_H2O()
+#    plt_NO_HO2_channel_verues_H2O()
     # And the OH + NO2 channel...
-    plt_OH_NO2_channel_verues_H2O()
+#    plt_OH_NO2_channel_verues_H2O()
 
 
     # Do a full analysis of variables for JNIT run
-    DIFF = None
-    for REF1 in RunDict.keys():
-        variable_analyis4JNIT(REF1=REF1, DIFF=DIFF, NOxD=NOxD,
-                              RunDict=RunDict, dates2use=dates2use)
+#     DIFF = None
+#     for REF1 in RunDict.keys():
+#         variable_analyis4JNIT(REF1=REF1, DIFF=DIFF, NOxD=NOxD,
+#                               RunDict=RunDict, dates2use=dates2use)
 
     # plot the masks being used here spatially
-    CheckMasksSpatially()
+#    CheckMasksSpatially()
 
 
 def AddMask2Dataset(ds, MaskName=None, res=None):
@@ -399,11 +410,11 @@ def plt_JScale_analysis(RunDict=None, dates2use=None):
     RunStr += 'geosfp_4x5_aciduptake.v12.9.0.BASE.2019.2020.ARNA.'
     J100 = 'DustUptake.JNITx100.BCs/OutputDir/'
 #    J50 = 'DustUptake.JNITx50.BCs/OutputDir/'
-    RunDict['J100'] = J100
+#    RunDict['J100'] = J100
 #    RunDict['J50'] = J50
 
     # - Vertical
-    plt_vertical_JScale_analysis()
+    plt_vertical_JScale_analysis(RunDict=RunDict, dates2use=dates2use)
 
 
     # -  Surface
@@ -447,8 +458,8 @@ def plt_vertical_JScale_analysis(RunDict=None, dates2use=None):
             ds = AC.GetJValuesDataset(wd=RunDict[key],
                                               dates2use=dates2use)
             # Add JScale variable?
-
-            ds[JScaleVar] = ds['Jval_NIT'].copy()
+#            ds[JScaleVar] = ds['Jval_NIT'].copy()
+            ds[JScaleVar] = ds['Jval_NITs'].copy()
             ds[JScaleVar] = ds[JScaleVar] / ds['Jval_HNO3']
             JValD[key] = ds
 
@@ -1174,19 +1185,29 @@ def do_analysis_of_4pptv_HONO_world(RunDict=None,
     """
     Do general analysis of a model world where HONO is a minimum of 4 pptv
     """
+    # Set dates to use (as model run progresses)
+    # Dates to use?
+    if isinstance(dates2use, type(None)):
+    #    GC_version = 'v13.4'
+    #    sdate = datetime.datetime(2018, 1, 1) # Beginning for spin-up year
+        sdate = datetime.datetime(2019, 1, 1) # Beginning for analysis year
+    #    edate = datetime.datetime(2018, 3, 1) # 3 months into spin-up
+    #    edate = datetime.datetime(2018, 6, 1) # 6 months into spin-up
+    #    edate = datetime.datetime(2018, 10, 1) # 10 months into spin-up
+        edate = datetime.datetime(2019, 12, 31) # End of analysis year
+    #    edate = datetime.datetime(2018, 12, 31) # End of spin-up year
+        dates2use = pd.date_range(sdate, edate, freq='1D')
+#        dates2use = [
+        # First month of spin up
+#        datetime.datetime(2018, 1, 1),  # Initial month of spin up
+#        ]
+
     # Model runs to use?
     if isinstance(RunDict, type(None)):
         RunDict = ar.get_dict_of_GEOSChem_model_output(RunSet=RunSet,
                                                        GC_version=GC_version,
                                                        res=res,
                                                        folder4netCDF=True)
-    # Set dates to use (as model run progresses)
-    if isinstance(dates2use, type(None)):
-        dates2use = [
-        # First month of spin up
-        datetime.datetime(2018, 1, 1),  # Initial month of spin up
-        ]
-
     # -- Stats on model runs
     # Get generic stats
     extra_burden_specs = ['NOx', 'NIT-all', 'HNO2',  'NOy', 'HNO3', ]
@@ -1402,7 +1423,8 @@ def plt_spatial_changes_in_4pptv_HONO_world(pcent=True,
                                             dates2use=None,
                                             GC_version='v12.9',
                                             RunDict=None,
-                                            PltAllVars=False):
+                                            PltAllVars=False,
+                                            dpi=320):
     """
     Plot up changes in key metrics spatially and zonally
     """
@@ -1440,7 +1462,7 @@ def plt_spatial_changes_in_4pptv_HONO_world(pcent=True,
         dsD[key] = ds
 
     # Get MetState object
-    StateMet = AC.get_StateMet_ds(wd=RunDict[REF1])
+    StateMet = AC.get_StateMet_ds(wd=RunDict[REF1], dates2use=dates2use)
 
     # Get HOx values as xr.Dataset too
     CACsuffix = 'concAfterChem'
@@ -1576,8 +1598,9 @@ def mk_figure2_HONO_surface_conc():
 
 
 
-def plot_SpecSubsetConc_comparisons()
+def plot_SpecSubsetConc_comparisons():
     """
+    Plot up comparisons with hourly vertical SpecConcSubset data
     """
 
     # --- Datasets to use?
@@ -1586,21 +1609,36 @@ def plot_SpecSubsetConc_comparisons()
 
     RunDict['Base'] = '/mnt/lustre/users/ts551/GC/rundirs/P_ARNA/geosfp_4x5_aciduptake.v12.9.0.ARNA.Isotherm.Diags.v9.Base/OutputDir/'
 
+    # Get IGAC runs
+    res = '4x5'
+    GC_version ='v13.4'
+    RunSet = 'IGAC.ARNAv12.72L'
+    folder4netCDF = True
+    RunDict = ar.get_dict_of_GEOSChem_model_output(RunSet=RunSet,
+                                                   GC_version=GC_version,
+                                                   res=res,
+                                                   folder4netCDF=folder4netCDF)
 
     # --- ARNA
+    campaign = 'ARNA'
     dsD = {}
     for key in RunDict.keys():
         folder = RunDict[ key ]
-
+        print(key, folder)
         # Get the data of species to plot
         # HNO2, NOx, NO, NO2, CO, ozone,
-        data = get_model_noon_vertical_conc(folder)
+        data = get_model_noon_vertical_conc(folder=folder, campaign=campaign)
 
         dsD[key] = data
 
 
     # Setup a PDF to store values
-    savetitle = 'ARNA_SpecConcSub_Noon_mean'
+#    savetitle = 'ARNA_SpecConcSub_Noon_mean'
+    savetitle = 'ARNA_SpecConcSub_daytime_mean'
+    if campaign == 'FIREX-AQ' :
+        savetitle = 'ARNA_FIREXAQ_SpecConcSub_daytime_mean'
+#        savetitle = 'ARNA_FIREXAQ_SpecConcSub_noon_mean'
+
     pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
 
 
@@ -1610,11 +1648,11 @@ def plot_SpecSubsetConc_comparisons()
         'HNO2': 'pptv', 'HONO': 'pptv',
         'NIT': 'pptv', 'NITs': 'pptv', 'SO4s': 'pptv', 'SO4': 'pptv',
         'NH4': 'pptv',
-        'SO4-all': 'pptv', 'NIT-all': 'pptv',
+        'SO4-all': 'pptv', 'NIT-all': 'pptv', 'SAL-all': 'pptv',
     }
 
     # Plot up
-    vars2plot = 'HNO2', 'NOx', 'NO', 'NO2', 'CO'
+    vars2plot = 'O3', 'HNO2', 'NOx', 'NO', 'NO2', 'CO', 'SAL-all', 'NIT-all'
     for var2plot in vars2plot:
 
         # Loop model data
@@ -1625,10 +1663,29 @@ def plot_SpecSubsetConc_comparisons()
 
             # Select data to plot
             X = dsD[key][var2plot] * scaleby
-            Y = dsD[key].lev
+
+#            Y = dsD[key].lev
+            PressVar = 'Met_PMID'
+            Y = dsD[key][PressVar].values
+            Y = AC.hPa_to_Km(Y)
 
             # plot up
             plt.plot(X, Y, label=key)
+
+
+            # invert y axis
+            ax = plt.gca()
+#            ax.invert_yaxis()
+
+            # Set x scale as log
+            ax.set_xscale('log')
+
+            # Add a second axis in kilometres?
+#            AC.hPa2Km
+
+
+            # plot
+            plt.legend()
 
         # Beautify plot
         plt.title( var2plot)
@@ -1642,7 +1699,7 @@ def plot_SpecSubsetConc_comparisons()
     plt.close('all')
 
 
-def get_model_noon_vertical_conc( folder=None ):
+def get_model_noon_vertical_conc(campaign='ARNA', folder=None ):
     """
     Retrieve the vertical noon concentration
     """
@@ -1650,33 +1707,93 @@ def get_model_noon_vertical_conc( folder=None ):
     # Location or area? (could average a lat/lon extent or select location)
 
     # Select the dates to extract vertical profile for
-    campaign = 'ARNA'
+
     if campaign == 'ARNA':
-        dates2use = [datetime.datetime(2020, 2, 4)]
-        dates2use += [datetime.datetime(2020, 2, 5)]
-        dates2use += [datetime.datetime(2020, 2, 6)]
-        dates2use += [datetime.datetime(2020, 2, 7)]
-        dates2use += [datetime.datetime(2020, 2, 8)]
-        dates2use += [datetime.datetime(2020, 2, 11)]
-        dates2use += [datetime.datetime(2020, 2, 12)]
-        dates2use += [datetime.datetime(2020, 2, 13)]
+        region = 'Cape_Verde_Flying'
+        TZ = -1 # Cape Verde timezone
+#        Year = 2020 # campaign year
+        Year = 2019 # analysis year
+#        Month = 1 # temp year
+        Month = 2 # temp month
+
+        dates2use = [datetime.datetime(Year, Month, 4)]
+        dates2use += [datetime.datetime(Year, Month, 5)]
+        dates2use += [datetime.datetime(Year, Month, 6)]
+        dates2use += [datetime.datetime(Year, Month, 7)]
+        dates2use += [datetime.datetime(Year, Month, 8)]
+        dates2use += [datetime.datetime(Year, Month, 11)]
+        dates2use += [datetime.datetime(Year, Month, 12)]
+        dates2use += [datetime.datetime(Year, Month, 13)]
+
+        StateMet_dates = [datetime.datetime(Year, Month, 1)]
+    if campaign == 'FIREX-AQ':
+        TZ = -4 # Southwestern timezone
+        region = 'CONUS'
+        Year = 2019 # analysis year
+#        Month = 2 # temp month
+        dates2use = [datetime.datetime(Year, 7, 15)]
+        dates2use += [datetime.datetime(Year, 7, 16)]
+        dates2use += [datetime.datetime(Year, 7, 27)]
+        dates2use += [datetime.datetime(Year, 7, 22)]
+        dates2use += [datetime.datetime(Year, 7, 24)]
+        dates2use += [datetime.datetime(Year, 7, 25)]
+        dates2use += [datetime.datetime(Year, 7, 29)]
+        dates2use += [datetime.datetime(Year, 7, 30)]
+        dates2use += [datetime.datetime(Year, 8, 2)]
+        dates2use += [datetime.datetime(Year, 8, 3)]
+        dates2use += [datetime.datetime(Year, 8, 6)]
+        dates2use += [datetime.datetime(Year, 8, 7)]
+        dates2use += [datetime.datetime(Year, 8, 8)]
+        dates2use += [datetime.datetime(Year, 8, 12)]
+        dates2use += [datetime.datetime(Year, 8, 13)]
+        dates2use += [datetime.datetime(Year, 8, 15)]
+        dates2use += [datetime.datetime(Year, 8, 16)]
+        dates2use += [datetime.datetime(Year, 8, 19)]
+        dates2use += [datetime.datetime(Year, 8, 21)]
+        dates2use += [datetime.datetime(Year, 8, 23)]
+        dates2use += [datetime.datetime(Year, 8, 26)]
+        dates2use += [datetime.datetime(Year, 8, 29)]
+        dates2use += [datetime.datetime(Year, 8, 30)]
+        dates2use += [datetime.datetime(Year, 8, 31)]
+        dates2use += [datetime.datetime(Year, 9, 3)]
+        dates2use += [datetime.datetime(Year, 9, 5)]
+
+
+        StateMet_dates = [datetime.datetime(Year, 7, 1),
+                          datetime.datetime(Year, 8, 1)]
+
 
     # open just the dates of the campaign
-    file_str='GEOSChem.SpeciesConcSubset.*.nc4'
+    file_str = 'GEOSChem.SpeciesConcSubset.*.nc4'
+#    file_str = 'GEOSChem.SpeciesConc.*.nc4'
+    dates2use = StateMet_dates
     ds = AC.get_GEOSChem_files_as_ds(file_str=file_str, dates2use=dates2use,
                                      wd=folder)
 
     # Select the average noon profiles
-    if campaign == 'ARNA':
-        TZ = -1
-    dt = AC.dt64_2_dt( ds.time.values  )
-    dt = [AC.add_hrs(i, TZ ) for i in dt]
-    ds = ds.assign( {'time': dt} )
-    __bool = ds['time.hour'] == 12
-    ds = ds.isel(time=__bool).mean(dim='time')
+#    if campaign == 'ARNA':
+#    select_daytime_values = False
+    select_daytime_values = True
+    if select_daytime_values:
+        dt = AC.dt64_2_dt( ds.time.values  )
+        dt = [AC.add_hrs(i, TZ ) for i in dt]
+        ds = ds.assign( {'time': dt} )
+#        __bool = (ds['time.hour'] >= 9) & (ds['time.hour'] <= 17) # daytime
+        __bool = (ds['time.hour'] >= 11) & (ds['time.hour'] <= 13) # Noon
+        ds = ds.isel(time=__bool).mean(dim='time')
+    else:
+        ds = ds.mean(dim='time')
+
+
+    # Get the vertical dimension
+#    key2use = list(RunDict.keys())[0]
+    StateMet = AC.get_StateMet_ds(wd=folder,
+                                  dates2use=StateMet_dates)
+    PressVar = 'Met_PMID'
+    ds[PressVar] = StateMet[PressVar].mean(dim='time')
 
     # Select the location
-    d = ar.get_analysis_region('Cape_Verde_Flying')
+    d = ar.get_analysis_region(region)
     x0, x1, y0, y1 = d['x0'], d['x1'], d['y0'], d['y1']
     # Set values region
     bool1 = ((ds.lon >= x0) & (ds.lon <= x1)).values
@@ -1690,6 +1807,7 @@ def get_model_noon_vertical_conc( folder=None ):
     # Add in families afterwards
     ds = AC.AddChemicalFamily2Dataset(ds, fam='NOx')
     ds = AC.AddChemicalFamily2Dataset(ds, fam='NIT-all')
+    ds = AC.AddChemicalFamily2Dataset(ds, fam='SAL-all')
 
     # remove prefix
     SCprefix = 'SpeciesConc_'
@@ -1697,8 +1815,7 @@ def get_model_noon_vertical_conc( folder=None ):
     species = [i.split(SCprefix)[-1] for i in variables]
     name_dict = dict(zip(variables, species))
     ds = ds.rename( name_dict=name_dict )
-    ds = ds[species] # Only return species
-
+    ds = ds[ species + [PressVar] ] # Only return species
 
     # return the dataset
     return ds
@@ -1719,6 +1836,10 @@ def calc_pressure_feild4ds():
     """
 
     pass
+
+
+
+
 
 
 
