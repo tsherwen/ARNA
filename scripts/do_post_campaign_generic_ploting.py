@@ -55,12 +55,16 @@ def main():
 
     # Output the same bulk plots for the ACID runs
     flight_nums = []
-    RunSet = 'PostHONO'
+#    RunSet = 'PostHONO'
+    RunSet = 'IGAC.ARNAv14'
     res = '4x5'
+    GC_version='v12.9'
     NOxAsLog = True
     CoreRunsOnly = True
     savetitle = 'ARNA_altitude_binned_combined_file_{}_{}'
     savetitle = savetitle.format(res, RunSet)
+    if CoreRunsOnly:
+        savetitle += '_CoreRunsOnly'
     ar.plt_comp_by_alt_4ARNA_together(context=context,
                                       res=res, RunSet=RunSet,
                                       flight_nums=flight_nums,
@@ -159,8 +163,8 @@ def main():
     ar.plt_ts_comp4ARNA_flights_PHYSICAL_VARS(context=context,
                                               just_plot_GEOS_Chem=True,
                                               inc_GEOSChem=True,
-                                              res='0..25x0.3125',
-                                              RunSet='FP-Nest')
+                                              res=res,
+                                              RunSet=RunSet)
     # Plot up the temperature data from Hannah Price
     # N/A? this is only for 2019. Data to be worked up for 2020.
 
@@ -186,29 +190,32 @@ def main():
 #     ar.plt_ts_comp4MOYA_flights_PHYSICAL_VARS()
 
     # Plot seasonal and vertical comparisons of nitrate (CVAO)
-    ar.plt_seasonal_comparisons_of_nitrate()
-    ar.mk_vertical_comparisons_with_nitrate()
+#    ar.plt_seasonal_comparisons_of_nitrate()
+#    ar.mk_vertical_comparisons_with_nitrate()
 
     # Do the planeflight Jscale analysis
-    do_planeflight_campaign_Janalysis()
+#    do_planeflight_campaign_Janalysis()
 
     # Summarise the relevant deposition and emissions numbers
     summarise_emissions4RunDict(RunDict=RunDict, dates2use=dates2use)
     summarise_deposition4RunDict(RunDict=RunDict, dates2use=dates2use)
 
     # - Plot up observational comparisons
-    plt_comp_with_NASA_Atom()
-    plt_comp_with_FIREX_AQ()
-    plt_obs_based_FIREX_analysis()
+#    plt_comp_with_NASA_Atom()
+#    plt_comp_with_FIREX_AQ()
+#    plt_obs_based_FIREX_analysis()
 
 
-def do_planeflight_campaign_Janalysis(flight_nums=[], run2use=None):
+def do_planeflight_campaign_Janalysis(flight_nums=[], run2use=None,
+                                      RunSet='IGACset.tagged',
+                                      CoreRunsOnly=True,
+                                      ):
     """
     Analysis nitrate photolysis within model planeflight output
     """
     # local variables
-    CoreRunsOnly = True
-    RunSet = 'IGACset.tagged'
+
+
     # Which run to do the full analysis for?
     if isinstance(run2use, type(None)):
 #        run2use = 'Iso.UnlimitedAll'
@@ -1474,7 +1481,11 @@ def plt_comp_with_NASA_Atom():
 
 
 
-def plt_comp_with_FIREX_AQ(debug=False):
+def plt_comp_with_FIREX_AQ(debug=False, RunDict=None,
+                           RunSet='IGAC.ARNAv14',
+                           res='4x5',
+                           GC_version='v12.9',
+                           ):
     """
     Plot up a comparison of of various species
     """
@@ -1486,7 +1497,8 @@ def plt_comp_with_FIREX_AQ(debug=False):
                                  FilterByTimeOfDay=False,
                                  UpdateTimeeZone2LocalTime=False,
                                  FilterPollutedAirMasses=True,
-                                 RmFlaggedData=True,
+                                 RmObsBelowGround=True,
+                                 SetFlaggedDataToNaN=True,
                                  )
 
     LatVar = 'Latitude_YANG'
@@ -1494,6 +1506,62 @@ def plt_comp_with_FIREX_AQ(debug=False):
     AltVar = 'MSL_GPS_Altitude_YANG'
     TimeVar = 'datetime'
     dfObs[TimeVar] = dfObs.index.values
+    # Add families to observation dataframe
+    # NOTE: this needs to do done after rm'd flagged values removed.
+    def __add_fams2dfObs(df):
+        FlagValue = -999999.000000
+        NOvar = 'NO_CL_RYERSON'
+        NO2var = 'NO2_CL_RYERSON'
+        NOxVar = 'NOx'
+        # removed flagged values
+        df.loc[ df[NOvar] == FlagValue, NOvar] = np.NaN
+        df.loc[ df[NO2var] == FlagValue, NO2var] = np.NaN
+        # Combine NO and NO2
+        df[NOxVar] = df[NOvar] + df[NO2var]
+        # Set where values for NO or NO2 not finite
+        df.loc[ ~np.isfinite(df[NOvar]), NOxVar] = np.NaN
+        df.loc[ ~np.isfinite(df[NO2var]), NOxVar] = np.NaN
+        return df
+    dfObs = __add_fams2dfObs(dfObs)
+    # Convert the aerosol data to be plotted to pptv
+    def __AddObsAerosolInPPTV2df(df):
+        """
+        Convert the observations of aerosols being plotted
+        """
+        # Local variables
+        TempVar = 'Static_Air_Temp_YANG'
+        PressVar = 'Static_Pressure_YANG'
+        # Which variables to use?
+        Vars2Convert =  [ i for i in df.columns if 'ug/m3' in i.lower() ]
+        Specs = [i.split('_')[0] for i in Vars2Convert]
+        # Loop and add converted species
+        for NVar, __var in enumerate( Vars2Convert ):
+            NewVar = __var.replace('ug/m3', 'pptv')
+            __spec = Specs[NVar]
+            print(__var, NewVar)
+            #
+            df_tmp = df[[TempVar, PressVar, __var]].copy()
+            # Ensure values are finite before conversion
+            for col in df_tmp.columns:
+                df_tmp.loc[ (df_tmp[col].values)<0., col] = np.NaN
+            df_tmp = df_tmp.dropna()
+            # Use existing function to do conversion.
+            T = df_tmp[TempVar].values
+            press = df_tmp[PressVar].values
+            data = df_tmp[__var].values
+            data = AC.convert_spec_v_v_2_ugm3(spec=__spec,
+                                           data=data,
+                                           press=press,
+                                           T=T,
+                                           explicitly_calc=True,
+                                           reverse=True)
+            # Convert to pptv
+            data = data * 1E12
+            df_tmp[NewVar] = data
+            # Merge the new variable back into the DataFrame and return
+            df = pd.concat([df, df_tmp[[NewVar]]], axis=1)
+        return df
+    dfObs = __AddObsAerosolInPPTV2df(dfObs)
     # Add in pressure and time columns to the DataFrame
     PressVar = 'hPa'
     dfObs[PressVar] = dfObs[AltVar] / 1E3
@@ -1513,9 +1581,6 @@ def plt_comp_with_FIREX_AQ(debug=False):
 
     # which model runs to use?
     if isinstance(RunDict, type(None)):
-        RunSet = 'IGAC.ARNAv14'
-        res = '4x5'
-        GC_version='v12.9'
         RunDict = ar.get_dict_of_GEOSChem_model_output(res=res, RunSet=RunSet,
                                                        GC_version=GC_version,
                                                        folder4netCDF=True)
@@ -1524,7 +1589,8 @@ def plt_comp_with_FIREX_AQ(debug=False):
     DataRoot = '/users/ts551/scratch/data/ARNA/FIREX_AQ/'
     dfsMod = {}
     keys2use = list(sorted(RunDict.keys()))
-#    keys2use =  'Andersen22b.TEMPII' ,  'J00'
+    keys2use =  'Andersen22b' ,  'J00'
+#    keys2use =  'Andersen22b' ,  'Base'
     for key in keys2use:
         folder = RunDict[key]
 
@@ -1588,10 +1654,14 @@ def plt_comp_with_FIREX_AQ(debug=False):
                     dfMod['SavedIndex'] = dfMod.index.values
                     dfMod.to_csv(path4GC+csv_savename)
 
-            #
-            dfModAll = pd.concat([dfModAll, dfMod])
+            # Add families into dataset by combing existing variables
+            dfMod = AC.AddChemicalFamily2Dataset(dfMod, fam='NIT-all')
+            dfMod = AC.AddChemicalFamily2Dataset(dfMod, fam='NITa')
+            dfMod = AC.AddChemicalFamily2Dataset(dfMod, fam='NOx')
 
-            #
+            # Combine dataframe for this flight
+            dfModAll = pd.concat([dfModAll, dfMod])
+            # ... then archive in module dictionary
             dfsMod[key] = dfModAll
 
     # Plot up vertical plots etc to compare on a per species basis
@@ -1605,32 +1675,145 @@ def plt_comp_with_FIREX_AQ(debug=False):
     SCprefix = 'SpeciesConc_'
     xlabel = 'HONO (pptv)'
     bins = np.arange(1, 11)
+    TitleStr = 'FIREX_AQ_{}_quick_plot_v9_extra'
 #    num_of_datasets = 3
     num_of_datasets = len(dfsMod.keys()) + 1
+    # Extra update of labels for legend on plot
+    label_dict = {
+    'Andersen22b.TEMPII': 'Andersen22b',
+    'Andersen22b': 'Andersen22b',
+    'Shah22': 'Shah22',
+    'J00': 'Base',
+    'Base': 'Base',
+    'Ye17': 'Ye17',
+    'Kas18':'Kas18',
+    }
 
-    # --- Quick plot of the data binned into
+    # --- Quick plot of the HNO2 data binned into 1 km bins
     vars2plot = ['HNO2', ]
+    var2plot  = 'HNO2'
+#    [HNO2_CIMS, ]
+#    for var2plot in vars2plot:
+    df2plot = dfObs
+#        var2plot = HONO_SAGA
+    # Select observation variable
+    ObsVar = HNO2_CIMS
+    color = 'k'
+#        label = 'HNO2 ({})'.format(ObsVar)
+    label = 'NOAA CIMS'
+    # drop NaNs / flagged data
+    FlagValue = -999999.000000
+    df2plot.loc[ df2plot[ObsVar] == FlagValue, : ] = np.NaN
+    df2plot.loc[ df2plot[ObsVar] < 0.0, : ] = np.NaN
+
+    df2plot = df2plot[ [ObsVar, AltVar] ].dropna()
+    # Update metres to kilometres
+    df2plot[ AltVar ] = df2plot[ AltVar ].values / 1E3
+
+    # Setup plot and title
+    fig, ax = plt.subplots()
+    title = TitleStr.format(var2plot)
+
+    AC.binned_boxplots_by_altitude(df=df2plot, fig=fig, ax=ax,
+                                   var2bin_by=AltVar,
+                                   label=label, xlabel=xlabel,
+                                   binned_var=ObsVar,
+                                   num_of_datasets=num_of_datasets,
+                                   bins=bins,
+                                   widths=0.15,
+                                   dataset_num=1,
+                                   color=color)
+
+    # Add model values to the plot
+#        keys2use = list(sorted(dfsMod.keys()))
+    keys2use = [ 'Andersen22b', 'J00' ]
+    colors2use = AC.get_CB_color_cycle()
+    color_dict = dict(zip(keys2use, colors2use))
+    for nkey, key in enumerate( keys2use ):
+        df2plot = dfsMod[key]
+        ModVar = '{}{}'.format(SCprefix, var2plot)
+        # Use the observed altitude that was extracted for now
+        df2plot[ AltVar ] = dfObs[AltVar].copy()
+        # Update metres to kilometres
+        df2plot[ AltVar ] = df2plot[ AltVar ].values / 1E3
+
+        # drop NaNs / flagged data
+        df2plot = df2plot[ [ModVar, AltVar] ].dropna()
+
+        # Update units for HNO2
+        df2plot.loc[:, ModVar] = df2plot.loc[:, ModVar] * 1E12
+
+        label = '{}'.format(label_dict[key])
+        #
+        AC.binned_boxplots_by_altitude(df=df2plot, fig=fig, ax=ax,
+                                       var2bin_by=AltVar,
+                                       label=label, xlabel=xlabel,
+                                       binned_var=ModVar,
+                                       num_of_datasets=num_of_datasets,
+                                       bins=bins,
+                                       widths=0.15,
+                                       dataset_num=1+(nkey+1),
+                                       color=color_dict[key])
+
+    # Beautify plot
+    plt.legend()
+
+    # Save the plot
+    AC.save_plot(title)
+    plt.close('all')
+
+    # ---- Plot up more FIREX-AQ comparisons
+    # elephants
+    # plot up available species from observations.
+    ObsVarDict = ar.Get_FIREXAQ_variable_dict() # This is now in ARNA mod
+    # Update aerosol species to use pptv values.
+#    ObsVarDict['NIT-all']['firex'] = 'NO3_pptv_DIBB'
+#    ObsVarDict['NITa']['firex'] = 'NO3_pptv_DIBB'
+#    ObsVarDict['SO4']['firex'] = 'SO4_pptv_DIBB'
+#    ObsVarDict['NH4']['firex'] = 'NH4_pptv_DIBB'
+
+    vars2plot = list(ObsVarDict.keys())
+    aerosol_specs = 'SO4', 'NH4', 'NIT', 'NIT-all', 'NITa',
+#    vars2plot = ['HNO2', 'NIT-all', 'O3', 'HNO3', 'CO',  ]
+    # Setup a PDF to save the plots to
+    savetitle = 'FIREX_AQ_verical_comparison_more_variables'
+    pdff = AC.plot2pdfmulti(title=savetitle, open=True, dpi=dpi)
+
+    # Which variables to plot?
+    AltVar = 'MSL_GPS_Altitude_YANG'
+    HNO2_CIMS = 'HNO2_NOAACIMS_VERES'
+#    HNO2_ACES = 'HNO2_ACES_WOMACK'
+#    HONO_SAGA = 'HONO_SAGA_DIBB'
+    # Shared plotting variables
+    SCprefix = 'SpeciesConc_'
+    # plotting settings
+#    num_of_datasets = 1
+    num_of_datasets = len(dfsMod.keys()) + 1
+
+    bins = np.arange(1, 11)
+
+
 #    [HNO2_CIMS, ]
     for var2plot in vars2plot:
-        df2plot = dfObs
-#        var2plot = HONO_SAGA
-        # Select observation variable
-        ObsVar = HNO2_CIMS
+        print(var2plot)
+        # Setup plot for var2plot to be saved to PDF
+        fig, ax = plt.subplots()
+        # Use the observational DataFrame
+        df2plot = dfObs.copy()
+        # Select observation variable and the scaling for this
+        scale = ObsVarDict[var2plot]['scale']
+        ObsVar = ObsVarDict[var2plot]['firex']
         color = 'k'
-#        label = 'HNO2 ({})'.format(ObsVar)
-        label = 'NOAA CIMS'
+        label = '{} ({})'.format(var2plot, ObsVar)
+#        label = 'NOAA CIMS'
+        xlabel = var2plot
         # drop NaNs / flagged data
         FlagValue = -999999.000000
         df2plot.loc[ df2plot[ObsVar] == FlagValue, : ] = np.NaN
         df2plot.loc[ df2plot[ObsVar] < 0.0, : ] = np.NaN
-
         df2plot = df2plot[ [ObsVar, AltVar] ].dropna()
         # Update metres to kilometres
         df2plot[ AltVar ] = df2plot[ AltVar ].values / 1E3
-
-        # Setup plot and title
-        fig, ax = plt.subplots()
-        title = 'FIREX_AQ_{}_quick_plot_v9_extra'.format(var2plot)
 
         AC.binned_boxplots_by_altitude(df=df2plot, fig=fig, ax=ax,
                                        var2bin_by=AltVar,
@@ -1642,35 +1825,51 @@ def plt_comp_with_FIREX_AQ(debug=False):
                                        dataset_num=1,
                                        color=color)
 
-        # Extra update of labels
-        label_dict = {
-        'Andersen22b.TEMPII': 'Andersen22b',
-        'Andersen22b': 'Andersen22b',
-        'Shah22': 'Shah22',
-        'J00': 'Base',
-        'Ye17': 'Ye17',
-        'Kas18':'Kas18',
-        }
-
         # Add model values to the plot
 #        keys2use = list(sorted(dfsMod.keys()))
+#        keys2use = [ 'Andersen22b', 'Base' ]
         keys2use = [ 'Andersen22b', 'J00' ]
         colors2use = AC.get_CB_color_cycle()
         color_dict = dict(zip(keys2use, colors2use))
         for nkey, key in enumerate( keys2use ):
-            df2plot = dfsMod[key]
+            df2plot = dfsMod[key].copy()
+            # Select model variable to use.
+#            special_case = ['NO3f']
+
             ModVar = '{}{}'.format(SCprefix, var2plot)
             # Use the observed altitude that was extracted for now
             df2plot[ AltVar ] = dfObs[AltVar].copy()
             # Update metres to kilometres
             df2plot[ AltVar ] = df2plot[ AltVar ].values / 1E3
+            # Update units and/or scale model to observational units
+            if (var2plot in aerosol_specs):
+                # Do the conversion of the model data using observed T & press
+                TempVar = 'Static_Air_Temp_YANG'
+                PressVar = 'Static_Pressure_YANG'
+                df2plot[ TempVar ] = dfObs[TempVar].copy() - 273.14 # T (Kelvin)
+                df2plot[ PressVar ] = dfObs[PressVar].copy()
 
-            # drop NaNs / flagged data
-            df2plot = df2plot[ [ModVar, AltVar] ].dropna()
+                AerosolVars2Keep = [ModVar, AltVar, TempVar, PressVar]
+                df2plot = df2plot[ AerosolVars2Keep ].dropna()
+                data = df2plot.loc[:, ModVar].values
+                press = df2plot[PressVar].values
+                T = df2plot[TempVar].values
+                data = AC.convert_spec_v_v_2_ugm3(spec=var2plot,
+                                               data=data,
+                                               T=T,
+                                               press=press,
+                                               explicitly_calc=False,
+                                               reverse=False )
+#                df2plot.loc[:, ModVar] = data * scale
+#                df2plot.loc[:, ModVar] = data * 1E12 # set all aerosols as pptv
+                df2plot.loc[:, ModVar] = data
 
-            # Update units for HNO2
-            df2plot.loc[:, ModVar] = df2plot.loc[:, ModVar] * 1E12
-
+            else:
+                # drop NaNs / flagged data
+                df2plot = df2plot[ [ModVar, AltVar] ].dropna()
+                # Scale v/v to pptv/ppbv etc
+                df2plot.loc[:, ModVar] = df2plot.loc[:, ModVar] * scale
+            # Setup a label for the legend
             label = '{}'.format(label_dict[key])
             #
             AC.binned_boxplots_by_altitude(df=df2plot, fig=fig, ax=ax,
@@ -1686,9 +1885,13 @@ def plt_comp_with_FIREX_AQ(debug=False):
         # Beautify plot
         plt.legend()
 
-        # Save the plot
-        AC.save_plot(title)
-        plt.close('all')
+        # Save to PDF
+        AC.plot2pdfmulti(pdff, savetitle, dpi=dpi, tight=True)
+        plt.close()
+
+    # Save entire pdf
+    AC.plot2pdfmulti(pdff, savetitle, close=True, dpi=dpi)
+    plt.close('all')
 
 
 def add_dsLev_idx_from_dsLev_value(df=None, folder=None,

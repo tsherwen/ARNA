@@ -1295,9 +1295,10 @@ def read_FIREX_ICT_file(path, FileName):
 
 def get_FIREX_AQ_data(debug=False, RtnAllData=True,
                       FilterPollutedAirMasses=True,
-                      RmFlaggedData=True,
+                      RmObsBelowGround=True,
                       UpdateTimeeZone2LocalTime=True,
                       FilterByTimeOfDay=True,
+                      SetFlaggedDataToNaN=True,
                       stime='10:00', etime='15:00'):
     """
     Retrieve FIREX-AQ data as a pandas DataFrame
@@ -1325,8 +1326,13 @@ def get_FIREX_AQ_data(debug=False, RtnAllData=True,
     if FilterPollutedAirMasses:
         df0 = df0[df0['CO_DACOM_DISKIN'] < 100. ]
     # Filter out flagged data?
-    if RmFlaggedData:
+    if RmObsBelowGround:
         df0 = df0[df0['MSL_GPS_Altitude_YANG'] > 0. ]
+    # Flag the data here that
+    if SetFlaggedDataToNaN:
+        FlagValue = -999999.000000
+        for col in df0.columns:
+            df0.loc[ df0[col] == FlagValue, col] = np.NaN
 
     # Return entire dataset or just a single species?
     if RtnAllData:
@@ -1378,17 +1384,17 @@ def Get_FIREXAQ_variable_dict():
                             'gc'    : 'SpeciesConc_C2H6',
                             'conv'  : False,
                             'scale' : 1e12},
-                   'C2H8' : {
+                   'C3H8' : {
                             'firex' : 'Propane_WAS_BLAKE',
                             'gc'    : 'SpeciesConc_C3H8',
                             'conv'  : False,
                             'scale' : 1e12},
-                   'Benzene' : {
+                   'BENZ' : {
                             'firex' : 'Benzene_WAS_BLAKE',
                             'gc'    : 'SpeciesConc_BENZ',
                             'conv'  : False,
                             'scale' : 1e12},
-                   'Toluene' : {
+                   'TOLU' : {
                             'firex' : 'Toluene_WAS_BLAKE',
                             'gc'    : 'SpeciesConc_TOLU',
                             'conv'  : False,
@@ -1410,13 +1416,13 @@ def Get_FIREXAQ_variable_dict():
                             'conv'  : True,
                             'scale' : 1e9,
                             'mm'    : 96.06},
-                   'NO3' : {
+                   'NIT-all' : {
                             'firex' : 'NO3_ug/m3_DIBB',
                             'gc'    : ['NIT','NITs','NITD1','NITD2','NITD3','NITD4'],
                             'conv'    : True,
                             'scale'  : 1e9,
                             'mm' : 62.0049 },
-                   'NO3f' : {
+                   'NITa' : {
                             'firex' : 'NO3_ug/m3_DIBB',
                             'gc'    : ['NIT','NITD1','NITD2'],
                             'conv'    : True,
@@ -1451,7 +1457,12 @@ def Get_FIREXAQ_variable_dict():
                             'firex' : 'NO2_CL_RYERSON',
                             'gc'    : 'SpeciesConc_NO2' ,
                             'conv'    : False,
-                            'scale'  : 1e9 }
+                            'scale'  : 1e9 },
+                    'NOx' : {
+                            'firex' : 'NOx',
+                            'gc'    : 'NOx' ,
+                            'conv'    : False,
+                            'scale'  : 1e9 },
                     }
     '''
     firex_vars = { 'NOy' : {

@@ -134,7 +134,7 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625', folder4netCDF=False,
         RunDict = {
         'Shah22': FullRootStr.format(RunRoot, RunPrefix, '.Shah22.FullRun'),
         'Kas18': FullRootStr.format(RunRoot, RunPrefix, '.Kas18.FullRun'),
-        'J00': FullRootStr.format(RunRoot, RunPrefix, '.J00.FullRun'),
+        'Base': FullRootStr.format(RunRoot, RunPrefix, '.J00.FullRun'),
         'Ye17': FullRootStr.format(RunRoot, RunPrefix, '.Ye17.FullRun'),
         'Andersen22b': FullRootStr.format(RunRoot, RunPrefix,
                                           '.Andersen22b.FullRun'),
@@ -142,8 +142,11 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625', folder4netCDF=False,
         }
         # Just return the core runs?
         if CoreRunsOnly:
-            runs2use = ['Andersen22b', 'Shah22','Kas18', 'Ye17',
-#                        'min4pptHONO', 'Base'
+            runs2use = ['Andersen22b',
+                        'Base',
+#                        'J00'
+#                        'Shah22','Kas18', 'Ye17',
+#                        'min4pptHONO',
                         ]
             dNew = {}
             for run in runs2use:

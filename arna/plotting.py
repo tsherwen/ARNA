@@ -1930,6 +1930,7 @@ def plt_comp_by_alt_4ARNA_all(dpi=320, just_SLR=True, show_plot=False,
 
     # What bins should be used?
     bins = [0.5*i for i in np.arange(15)]
+    # Now loop and plot by altitude
     for var2plot in vars2plot:
         fig = plt.figure()
         ax = plt.gca()

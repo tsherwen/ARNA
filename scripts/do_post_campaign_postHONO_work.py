@@ -34,15 +34,15 @@ def main():
 #    edate = datetime.datetime(2018, 3, 1) # 3 months into spin-up
 #    edate = datetime.datetime(2018, 6, 1) # 6 months into spin-up
 #    edate = datetime.datetime(2018, 10, 1) # 10 months into spin-up
-#    edate = datetime.datetime(2019, 12, 31) # End of analysis year
-    edate = datetime.datetime(2019, 9, 1) # 9 months of spun up analysis
+    edate = datetime.datetime(2019, 12, 31) # End of analysis year
+#    edate = datetime.datetime(2019, 9, 1) # 9 months of spun up analysis
 #    edate = datetime.datetime(2018, 12, 31) # End of spin-up year
     dates2use = pd.date_range(sdate, edate, freq='1D')
 #    dates2use = None
 
     # Base for analysis and then perturbation
-#    REF1 = 'Base'
-    REF1 = 'J00'
+    REF1 = 'Base'
+#    REF1 = 'J00'
 #    DIFF = '4pptHONO'
 #    DIFF = 'min4pptHONO'
 #    DIFF = 'Iso.Delq.NoJCap'
@@ -122,7 +122,6 @@ def main():
     df = do_analysis_of_4pptv_HONO_world(dates2use=dates2use,
                                          REF1=REF1, DIFF=DIFF,
                                          RunDict=RunDict)
-
     # plot up key changes
     plt_spatial_changes_in_4pptv_HONO_world(pcent=False, REF1=REF1, DIFF=DIFF,
                                             dates2use=dates2use,
@@ -138,6 +137,8 @@ def main():
 
     # Plot up the JScale changes
 #    plt_JScale_analysis(RunDict=RunDict, dates2use=dates2use)
+    plt_vertical_JScale_analysis(RunDict=RunDict, dates2use=dates2use)
+
 
     # Plot up HONO production routes - N/A
     # See functions in do_post_campaign_NOx_analysis.py
@@ -1424,7 +1425,9 @@ def plt_spatial_changes_in_4pptv_HONO_world(pcent=True,
                                             GC_version='v12.9',
                                             RunDict=None,
                                             PltAllVars=False,
-                                            dpi=320):
+                                            dpi=320,
+                                            debug=False,
+                                            verbose=False,):
     """
     Plot up changes in key metrics spatially and zonally
     """
