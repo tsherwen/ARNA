@@ -1134,65 +1134,209 @@ def mk_planeflight_files4FAAM_campaigns(folder=None, testing_mode=False,
 def read_FIREXAQ_files(path, folder='merge', var=''):
     """
     Read files of observational data from FIREX-AQ campaign
+
+    Notes
+    ----
+     - Original function credit: Matt Rowlinson
     """
-    df_list=[] ; flag_list=[]
-    for infile in sorted(glob.glob(f'{path}/{folder}/*{var}*.ict')):
+    df_list=[]
+    flag_list=[]
+    files2use = sorted(glob.glob(f'{path}/{folder}/*{var}*.ict'))
+    for infileN, infile in enumerate( files2use ):
         with open(infile) as thefile:
             try:
                 header= np.array([next(thefile) for x in range(90) ])
             except:
                 continue
             start = header[6].replace(',',' ').split()
-            start_date = datetime_( int( start[0] ),int( start[1] ),int( start[2] ))
-        for nskip in range(675,680): ## Find where the header ends and values begin - manually narrowed down
+            start_date = datetime_( int( start[0] ),
+                                    int( start[1] ),
+                                    int( start[2] ))
+        # Find where the header ends and values begin - manually narrowed down
+        for nskip in range(675,680):
             try:
-                fh=np.loadtxt(infile, skiprows=nskip, delimiter=',')
+                fh = np.loadtxt(infile, skiprows=nskip, delimiter=',')
                 break
             except:
                 continue
-        thefile=open(infile,'r')
+        thefile = open(infile,'r')
         c = thefile.readlines()
         column_names = c[nskip-1].replace(' ','').split(',')
-        df=pd.DataFrame(fh, index=fh[:,0], columns=column_names)
-        df = find_FIREXAQ_times(df, start_date)
+        df = pd.DataFrame(fh, index=fh[:,0], columns=column_names)
+
+        # Use a different approach for
+        if (var=='thru'):
+            df = find_FIREXAQ_times(df, start_date, UseTimeStart=True)
+        else:
+            df = find_FIREXAQ_times(df, start_date, UseTimeStart=False)
+        # Include the RF from the file name #
+        # NOTE: research flight (RF) ID not included in filename or files,
+        #       so using filenumber instead. This will not work if reading
+        #       merge file (var = 'thru').
+        df['FileNumber'] = infileN
+
         df_list.append(df)
     df = pd.concat(df_list)
     return df
 
 
-def find_FIREXAQ_times(df, t0):
+def find_FIREXAQ_times(df, t0, UseTimeStart=False):
     """
     Find FIREX-AQ times
+
+    Notes
+    ----
+     - Original function credit: Matt Rowlinson
     """
-    tstamp = df[df.columns[1]]
-    timex=[]
-    for i in range(len(tstamp)):
-        timex.append(t0 + timedelta(seconds=tstamp.values[i]))
+    timex = []
+    # Only will work for unmerged files.
+    if UseTimeStart:
+#        tstamp = df[df.columns[1]]
+        tstamp = df['Time_Start']
+        for nDate in range(len(tstamp)):
+            # If using 'Time_Start' (in seconds)
+            timex.append(t0 + timedelta(seconds=tstamp.values[nDate]))
+
+    else:
+        # NOTE: units are fractional days, not seconds.
+        # Subtract int of first day
+        tstamp = df['Fractional_Day']
+        day0 = int(tstamp.values[0] )
+        days_since_t0 = tstamp.values - day0
+        # If using fractional day
+        timex = [ AC.add_days(t0, i) for i in days_since_t0 ]
+#        for nDate in range(len(tstamp)):
+#            timex.append(AC.add_days(t0, days_since_t0[nDate]))
     df.index = timex
     return df
 
 
-def get_FIREX_AQ_data(debug=False, RtnAllData=True):
+def get_FIREX_AQ_from_ICT_files(UseMergeFile=False):
+    """
+    Extract the merge file for FIREX-AQ
+    """
+    # Local variables
+#    Folder = '/users/ts551/scratch/data/ARNA/TOMAS_FIREX/merge/'
+#    FileName = 'firexaq-mrg60-dc8_merge_20190722_R1_thru20190905.ict'
+    path = '/mnt/lustre/groups/chem-acm-2018/shared_data/FIREX-AQ/merge/'
+    #
+    if UseMergeFile:
+        FileName = 'firexaq-mrg60-dc8_merge_20190722_R1_thru20190905.ict'
+        # NOTE: below needs to be updated to use merged file
+        dfM = read_FIREX_ICT_file(path, FileName)
+    # Load files induvidually and merge these into a single file to use
+    else:
+        files2use = sorted(glob.glob('{}/*.ict*'.format(path)))
+        # Skip the merge file
+        files2use = [i for i in files2use if 'thru' not in i]
+
+        # Loop files and combine into a single dataframe
+        for nfile2use, file2use in enumerate(files2use):
+            FileName = file2use.split(path)[-1]
+            print(file2use, FileName)
+            df = read_FIREX_ICT_file(path, FileName,)
+            # Save the filename as a proxy for research flight number
+            df['FileNumber'] = nfile2use + 1
+            # Merge with the other dataframes
+            if nfile2use == 0:
+                dfM = df
+            else:
+                dfM = pd.concat([dfM,df])#,ignore_index=True)
+    return dfM
+
+
+def read_FIREX_ICT_file(path, FileName):
+    """
+    Read and return ICT files as DataFrames
+    """
+    # Setup a manual file reader for the ICT files.
+    file2use = '{}/{}'.format(path, FileName)
+    # Local variables
+    HeaderLineStarts = 'Time_Start, Time_Stop, Day_Of_Year_YANG, Latitude_YANG'
+    Year = 2019
+    FirstDayOfYear = datetime.datetime(Year, 1, 1)
+    DOYvar = 'Day_Of_Year_YANG'
+    StartVar = 'Time_Start'
+    # Extract file by reading line by line
+    with open( file2use, 'r') as OpenedFile:
+
+        # Read data after the head line has been read
+        ReadDataHereOnwards = False
+        data = []
+        for line in OpenedFile:
+            line = line.strip()
+            # Extract data after header
+            if ReadDataHereOnwards:
+                data += [line.split(',')]
+            # skip lines until header for data found
+            if line.startswith(HeaderLineStarts):
+                header = line.split(',')
+                header = [i.strip() for i in header]
+                ReadDataHereOnwards = True
+
+        # Compile data and header into a pd.DataFrame
+        df = pd.DataFrame(data, columns=header)
+        # convert columns to floats where possible
+        for col in df.columns:
+            df.loc[:, col] = pd.to_numeric(df[col])
+
+        # Update the index to be in datetime
+        dates = []
+        days = df[DOYvar].values
+        for idx in df.index:
+            day = df.loc[idx, DOYvar]
+            seconds = df.loc[idx, StartVar]
+            date = FirstDayOfYear + datetime.timedelta(int(day) - 1.0)
+            date = AC.add_secs(date, seconds)
+            dates += [date]
+        df.index = dates
+    return df
+
+
+def get_FIREX_AQ_data(debug=False, RtnAllData=True,
+                      FilterPollutedAirMasses=True,
+                      RmObsBelowGround=True,
+                      UpdateTimeeZone2LocalTime=True,
+                      FilterByTimeOfDay=True,
+                      SetFlaggedDataToNaN=True,
+                      stime='10:00', etime='15:00'):
     """
     Retrieve FIREX-AQ data as a pandas DataFrame
+
+    Notes
+    ----
+     - Original function credit: Matt Rowlinson
     """
-#    from species_dict import firex_vars
-#    keys = list(firex_vars.keys())[:]
     firex_vars = Get_FIREXAQ_variable_dict()
     keys = firex_vars.keys()
     # Read FIREX-AQ data
     path = '/mnt/lustre/groups/chem-acm-2018/shared_data/FIREX-AQ'
-    df0 = read_FIREXAQ_files(path, var='thru')
+    # NOTE: if the merge file will be read if var='thru'
+#    df0 = read_FIREXAQ_files(path, var='thru')
+    df0 = get_FIREX_AQ_from_ICT_files(UseMergeFile=False)
 
     # Convert timezone and apply restrictions on data
-    df0.index = df0.index.tz_localize('UTC').tz_convert('US/Pacific')
-    df0 = df0.between_time('10:00','15:00')
-    df0 = df0[df0['CO_DACOM_DISKIN'] < 100. ]   ## Filter out polluted air mass
-    df0 = df0[df0['MSL_GPS_Altitude_YANG'] > 0. ] ## Filter out flagged data
+    if UpdateTimeeZone2LocalTime:
+        df0.index = df0.index.tz_localize('UTC').tz_convert('US/Pacific')
+    if FilterByTimeOfDay:
+        if not UpdateTimeeZone2LocalTime:
+            print('WARNING: Selecting time of day in UTC, not local time')
+        df0 = df0.between_time(stime, etime)
+    # Filter out polluted air mass
+    if FilterPollutedAirMasses:
+        df0 = df0[df0['CO_DACOM_DISKIN'] < 100. ]
+    # Filter out flagged data?
+    if RmObsBelowGround:
+        df0 = df0[df0['MSL_GPS_Altitude_YANG'] > 0. ]
+    # Flag the data here that
+    if SetFlaggedDataToNaN:
+        FlagValue = -999999.000000
+        for col in df0.columns:
+            df0.loc[ df0[col] == FlagValue, col] = np.NaN
 
     # Return entire dataset or just a single species?
     if RtnAllData:
-        df0
+        return df0
     else:
         for var in keys:
             print( var )
@@ -1206,16 +1350,19 @@ def get_FIREX_AQ_data(debug=False, RtnAllData=True):
             if debug:
                 print( df )
 
-            # save species
+            # Save species to dictionary
             dfs[var] = df.copy()
-        #
         print(df)
-#        return df
+
 
 
 def Get_FIREXAQ_variable_dict():
     """
     Function to store variables for FIREX-AQ campaign
+
+    Notes
+    ----
+     - Original function credit: Matt Rowlinson
     """
     firex_vars = { 'EOH'  : {
                             'firex' : 'C2H5OH_TOGA_APEL',
@@ -1237,17 +1384,17 @@ def Get_FIREXAQ_variable_dict():
                             'gc'    : 'SpeciesConc_C2H6',
                             'conv'  : False,
                             'scale' : 1e12},
-                   'C2H8' : {
+                   'C3H8' : {
                             'firex' : 'Propane_WAS_BLAKE',
                             'gc'    : 'SpeciesConc_C3H8',
                             'conv'  : False,
                             'scale' : 1e12},
-                   'Benzene' : {
+                   'BENZ' : {
                             'firex' : 'Benzene_WAS_BLAKE',
                             'gc'    : 'SpeciesConc_BENZ',
                             'conv'  : False,
                             'scale' : 1e12},
-                   'Toluene' : {
+                   'TOLU' : {
                             'firex' : 'Toluene_WAS_BLAKE',
                             'gc'    : 'SpeciesConc_TOLU',
                             'conv'  : False,
@@ -1269,13 +1416,13 @@ def Get_FIREXAQ_variable_dict():
                             'conv'  : True,
                             'scale' : 1e9,
                             'mm'    : 96.06},
-                   'NO3' : {
+                   'NIT-all' : {
                             'firex' : 'NO3_ug/m3_DIBB',
                             'gc'    : ['NIT','NITs','NITD1','NITD2','NITD3','NITD4'],
                             'conv'    : True,
                             'scale'  : 1e9,
                             'mm' : 62.0049 },
-                   'NO3f' : {
+                   'NITa' : {
                             'firex' : 'NO3_ug/m3_DIBB',
                             'gc'    : ['NIT','NITD1','NITD2'],
                             'conv'    : True,
@@ -1310,7 +1457,12 @@ def Get_FIREXAQ_variable_dict():
                             'firex' : 'NO2_CL_RYERSON',
                             'gc'    : 'SpeciesConc_NO2' ,
                             'conv'    : False,
-                            'scale'  : 1e9 }
+                            'scale'  : 1e9 },
+                    'NOx' : {
+                            'firex' : 'NOx',
+                            'gc'    : 'NOx' ,
+                            'conv'    : False,
+                            'scale'  : 1e9 },
                     }
     '''
     firex_vars = { 'NOy' : {

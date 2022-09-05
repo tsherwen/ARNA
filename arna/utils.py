@@ -924,7 +924,6 @@ def get_analysis_region(RegionName):
         'model_nest_area': {'x0': -32, 'x1': 15, 'y0': 0, 'y1': 34},
         # Cape Verde "local" perspective
         'local_CVAO_area': {'x0': -30, 'x1': -10, 'y0': 0, 'y1': 25},
-
         # Cape Verde flying area for ARNA
         'Cape_Verde_Flying': {'x0': -29.1, 'x1': -15.9, 'y0': 11.9,
                               'y1': 21.1},
@@ -957,12 +956,12 @@ def add_deriv_vars2df(df):
         df['Br2+HOBr'] = df['Br2']+df['HOBr']
     except KeyError:
         print("Derived variable not added to dataframe ('Br2+HOBr')")
-    # total SO4
+    # Total SO4
     try:
         df['SO4.total'] = df['SO4']+df['SO4s']
     except KeyError:
         print("Derived variable not added to dataframe ('SO4.total')")
-    # total NIT
+    # Total NIT
     try:
         df['NIT.total'] = df['NIT']+df['NITs']
     except KeyError:
@@ -973,6 +972,10 @@ def add_deriv_vars2df(df):
 def get_local_folder(key, host=None, rtn_dict=False):
     """
     Hold folders in a dictionary and return specific variables or a dictionary
+
+    Notes
+    --- 
+     - TODO: Use an offline .rc file to hold the user server/specific paths
     """
     import platform
     # Get the host

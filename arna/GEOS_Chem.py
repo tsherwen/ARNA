@@ -90,15 +90,83 @@ def get_dict_of_GEOSChem_model_output(res='0.5x0.625', folder4netCDF=False,
                 dNew[run] = RunDict[run]
             RunDict = dNew
 
+    elif (res == '4x5') and (RunSet =='IGAC.ARNAv12.72L'):
+        #
+        RunPrefix = 'gc_4x5_merra2_fullchem_aciduptake_72L.v13.4.1.JNIT'
+        FullRootStr = '{}/{}{}//'
+        RunDict = {
+        'Base': FullRootStr.format(RunRoot, RunPrefix,
+                                          '.ARNAv12.J00.FullRun/'),
+        'Andersen22b': FullRootStr.format(RunRoot, RunPrefix,
+                                          '.ARNAv12.Andersen22b.FullRun/'),
+        'Shah22': FullRootStr.format(RunRoot, RunPrefix,
+                                     '.ARNAv12.Shah22.FullRun/'),
+         'Kas18': FullRootStr.format(RunRoot, RunPrefix,
+                                     '.ARNAv12.Kas18.FullRun/'),
+         'Ye17': FullRootStr.format(RunRoot, RunPrefix,
+                                     '.ARNAv12.Ye17.FullRun/'),
+         'min4pptHONO': FullRootStr.format(RunRoot, RunPrefix,
+                                     '.ARNAv12.4pptvHONO/'),
+         }
+        # Just return the core runs?
+        if CoreRunsOnly:
+            runs2use = ['Base',  'Andersen22b', 'Shah22',
+                        'Kas18', 'Ye17',
+#                        'min4pptHONO',
+                        ]
+            dNew = {}
+            for run in runs2use:
+                dNew[run] = RunDict[run]
+            RunDict = dNew
 
     elif (res == '4x5') and (RunSet == 'IGACset.tagged'):
-#        DataRoot = get_local_folder('RunRoot')
         RunPrefix = 'geosfp_4x5_aciduptake.v12.9.0.ARNA.Isotherm.Diags.'
-        FullRootStr = '{}/{}{}//'
+        FullRootStr = '{}/{}{}/'
         RunDict = {
         'Iso.Unlimited': FullRootStr.format(RunRoot, RunPrefix,
                                            'v9.Iso.UnlimitedAll'),
         'Base': FullRootStr.format(RunRoot, RunPrefix, 'v9.Base'),
+        }
+
+    elif (res=='4x5') and (GC_version=='v12.9') and (RunSet=='IGAC.ARNAv14'):
+        RunPrefix = 'geosfp_4x5_aciduptake.v12.9.0.ARNAv14.Diags'
+        FullRootStr = '{}/{}{}/'
+        RunDict = {
+        'Shah22': FullRootStr.format(RunRoot, RunPrefix, '.Shah22.FullRun'),
+        'Kas18': FullRootStr.format(RunRoot, RunPrefix, '.Kas18.FullRun'),
+        'Base': FullRootStr.format(RunRoot, RunPrefix, '.J00.FullRun'),
+        'Ye17': FullRootStr.format(RunRoot, RunPrefix, '.Ye17.FullRun'),
+        'Andersen22b': FullRootStr.format(RunRoot, RunPrefix,
+                                          '.Andersen22b.FullRun'),
+#        'min4pptHONO',
+        }
+        # Just return the core runs?
+        if CoreRunsOnly:
+            runs2use = ['Andersen22b',
+                        'Base',
+#                        'J00'
+#                        'Shah22','Kas18', 'Ye17',
+#                        'min4pptHONO',
+                        ]
+            dNew = {}
+            for run in runs2use:
+                dNew[run] = RunDict[run]
+            RunDict = dNew
+
+    elif (res == '4x5') and (RunSet == 'v13.4.1month'):
+        RunPrefix1 = 'gc_4x5_47L_geosfp_fullchem.v13.4.0-rc.2.orig.'
+        RunPrefix2 = 'gc_4x5_47L_merra2_fullchem_aciduptake.v13.4.1.ARNAv10.'
+        FullRootStr = '{}/{}{}//'
+        RunDict = {
+        'Base.v13.4': FullRootStr.format(RunRoot, RunPrefix1, '1monthTest'),
+        '4pptHONO': FullRootStr.format(RunRoot, RunPrefix1,
+#                                       '.1monthTestHONO.4pptv/'),
+                                       'ARNA.HONO.4pptv'),
+        'Base.v13.4.1': FullRootStr.format(RunRoot, RunPrefix2, 'ARNA'),
+        'Ye17': FullRootStr.format(RunRoot, RunPrefix2, 'ARNA.Ye17'),
+        'J50*': FullRootStr.format(RunRoot, RunPrefix2, 'ARNA.J50star'),
+        'JScale.Test': FullRootStr.format(RunRoot, RunPrefix2,
+                                'ARNA.Test_NITD_Jscale/'),
         }
 
     elif (res == '4x5') and (RunSet == 'MERRA2-0.5-initial'):

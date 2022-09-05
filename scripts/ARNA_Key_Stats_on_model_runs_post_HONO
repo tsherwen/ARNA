@@ -1,0 +1,45 @@
+variable
+CH4-lifetime (years)
+O3 burden (Tg)
+O3 surface (ppbv)
+NOy burden (Tg)
+HNO2 surface (ppbv)
+HNO2:NOx
+NOy surface (ppbv)
+OH surface (molec/cm3)
+NIT-all burden (Tg)
+HNO3:NOx
+HNO2:NOx
+NIT:NOx
+CH4 burden (Tg)
+CO burden (Tg)
+CO surface (ppbv)
+CO-lifetime (days)
+Cl-trop-avg (ppbv)
+HNO2 burden (Tg)
+HNO2-lifetime (s)
+HNO2-trop-avg (ppbv)
+HNO2:HNO3
+HNO3 burden (Tg)
+HNO3 surface (ppbv)
+HNO3:NO2
+HO2 surface (molec/cm3)
+HOx surface (molec/cm3)
+Loss_Ox (Tg/year)
+N2O5 surface (pptv)
+NIT burden (Tg)
+NIT-all surface (ppbv)
+NIT:HNO3
+NO burden (Tg)
+NO surface (pptv)
+NO2 burden (Tg)
+NO2 surface (ppbv)
+NO2-lifetime (days)
+NO:NO2
+NOx burden (Tg)
+NOx surface (ppbv)
+NOx-lifetime (days)
+NOx-trop-avg (ppbv)
+OH-lifetime (s)
+POx-LOx (Tg/year)
+Prod_Ox (Tg/year)

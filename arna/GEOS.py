@@ -1109,7 +1109,7 @@ def download_GEOSCF_fcast_data4date(dt=None, ds=None, mode='fcast',
 
 def when_should_GEOSCF_have_last_run_from():
     """
-    GEOS-CF is run every midnight
+    GEOS-CF is run every day at midnight midnight
     """
     # Time now (GMT)
     TNow = AC.time2datetime([gmtime()])[0]
@@ -1162,7 +1162,7 @@ def is_GEOSCF_data_in_folder(folder):
     """
     check if GEOS-CF data is in the folder
     """
-    # TODO - write a checker for GEOS-CF
+    # TODO - write a check for if GEOS-CF data is in folder
     return False
 
 
@@ -1363,7 +1363,6 @@ def extract_GEOS54all_ARNA_surface_dates(testing_mode=False, debug=True):
 #            dfE = extract_ds4df_locs(ds=dsGCF, df=df,)
         #
         # Add date column to dataframe
-
         def datetime2date(x):
             return datetime.datetime(x.year, x.month, x.day)
         df['date'] = df.index.map(datetime2date)

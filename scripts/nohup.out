@@ -1662,3 +1662,1328 @@ WARNING: TODO setup to plot multiple model runs
 pdf is still open @: ./ARNA_altitude_binned_combined_file_4x5_ACID.pdf
 pdf is still open @: ./ARNA_altitude_binned_combined_file_4x5_ACID.pdf
 ('PDF saved & Closed as/at: ', './ARNA_altitude_binned_combined_file_4x5_ACID.pdf')
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2761: DtypeWarning: Columns (4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_all(just_SLR=just_SLR, context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2761: DtypeWarning: Columns (4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_all(just_SLR=just_SLR, context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2761: DtypeWarning: Columns (4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_all(just_SLR=just_SLR, context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2761: DtypeWarning: Columns (4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_all(just_SLR=just_SLR, context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2761: DtypeWarning: Columns (4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_all(just_SLR=just_SLR, context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2761: DtypeWarning: Columns (4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_all(just_SLR=just_SLR, context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2761: DtypeWarning: Columns (4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_all(just_SLR=just_SLR, context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2761: DtypeWarning: Columns (4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_all(just_SLR=just_SLR, context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2779: DtypeWarning: Columns (4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_all(just_SLR=just_SLR, context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2779: DtypeWarning: Columns (4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_all(just_SLR=just_SLR, context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2779: DtypeWarning: Columns (4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_all(just_SLR=just_SLR, context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2779: DtypeWarning: Columns (4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_all(just_SLR=just_SLR, context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2779: DtypeWarning: Columns (4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_all(just_SLR=just_SLR, context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2779: DtypeWarning: Columns (4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_all(just_SLR=just_SLR, context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2779: DtypeWarning: Columns (4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_all(just_SLR=just_SLR, context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2779: DtypeWarning: Columns (4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_all(just_SLR=just_SLR, context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2011: MatplotlibDeprecationWarning: Support for uppercase single-letter colors is deprecated since Matplotlib 3.1 and will be removed in 3.3; please use lowercase instead.
+  plt.scatter(dfP[PointVar].values, dfP[AltVar].values/1E3,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2797: DtypeWarning: Columns (4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_CIMS_all_DUST(context=context,
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2797: DtypeWarning: Columns (4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_CIMS_all_DUST(context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2797: DtypeWarning: Columns (4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_CIMS_all_DUST(context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2797: DtypeWarning: Columns (4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_CIMS_all_DUST(context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2797: DtypeWarning: Columns (4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_CIMS_all_DUST(context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2797: DtypeWarning: Columns (4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_CIMS_all_DUST(context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2797: DtypeWarning: Columns (4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_CIMS_all_DUST(context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2797: DtypeWarning: Columns (4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_CIMS_all_DUST(context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:2797: DtypeWarning: Columns (4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92) have mixed types.Specify dtype option on import or set low_memory=False.
+  plt_comp_by_alt_4ARNA_CIMS_all_DUST(context=context,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:4556: DtypeWarning: Columns (4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92) have mixed types.Specify dtype option on import or set low_memory=False.
+  DataList = get_derived_total_NOy4flights(flight_nums=flight_nums,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:4556: DtypeWarning: Columns (4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92) have mixed types.Specify dtype option on import or set low_memory=False.
+  DataList = get_derived_total_NOy4flights(flight_nums=flight_nums,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:4556: DtypeWarning: Columns (4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92) have mixed types.Specify dtype option on import or set low_memory=False.
+  DataList = get_derived_total_NOy4flights(flight_nums=flight_nums,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:4556: DtypeWarning: Columns (4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92) have mixed types.Specify dtype option on import or set low_memory=False.
+  DataList = get_derived_total_NOy4flights(flight_nums=flight_nums,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:4556: DtypeWarning: Columns (4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92) have mixed types.Specify dtype option on import or set low_memory=False.
+  DataList = get_derived_total_NOy4flights(flight_nums=flight_nums,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:4556: DtypeWarning: Columns (4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92) have mixed types.Specify dtype option on import or set low_memory=False.
+  DataList = get_derived_total_NOy4flights(flight_nums=flight_nums,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:4556: DtypeWarning: Columns (4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92) have mixed types.Specify dtype option on import or set low_memory=False.
+  DataList = get_derived_total_NOy4flights(flight_nums=flight_nums,
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3977: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  Filtersdf[NOyVar] = Filtersdf[SpeciesVar].copy()
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/pandas/core/indexing.py:966: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  self.obj[item] = s
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+/users/ts551/scratch/conda_local/envs/py3_TMS_v2_1_1/lib/python3.8/site-packages/xarray/core/nanops.py:142: RuntimeWarning: Mean of empty slice
+  return np.nanmean(a, axis=axis, dtype=dtype)
+do_post_campaign_generic_ploting.py:163: DtypeWarning: Columns (4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92) have mixed types.Specify dtype option on import or set low_memory=False.
+  ar.plt_ts_comp4ARNA_flights_PHYSICAL_VARS(context=context,
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:5470: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:5509: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:5470: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:5509: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:5470: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:5509: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:5470: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:5509: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:5470: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:5509: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:5470: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:5509: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:5470: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:5509: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:5470: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:5509: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:5470: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:5509: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+/mnt/lustre/users/ts551/labbook/ARNA/arna/plotting.py:3286: MatplotlibDeprecationWarning: Automatic legend placement (loc='best') not implemented for figure legend. Falling back on 'upper right'. This will raise an exception in 3.3.
+  fig.legend(loc='best', bbox_to_anchor=(1, 1),
+NOTE: Plotting RunSet: 'IGAC.ARNAv14' @ res. of: '4x5' (CoreRunsOnly?: True)
+pdf opened @: ./ARNA_altitude_binned_combined_file_4x5_IGAC.ARNAv14_CoreRunsOnly.pdf
+WARNING: failed to add H2O to flight C218
+WARNING: failed to add H2O to flight C219
+WARNING: failed to add H2O to flight C220
+WARNING: failed to add H2O to flight C221
+WARNING: failed to add H2O to flight C222
+WARNING: failed to add H2O to flight C223
+WARNING: failed to add H2O to flight C224
+WARNING: failed to add H2O to flight C225
+WARNING: failed to add H2O to flight C218
+WARNING: failed to add H2O to flight C219
+WARNING: failed to add H2O to flight C220
+WARNING: failed to add H2O to flight C221
+WARNING: failed to add H2O to flight C222
+WARNING: failed to add H2O to flight C223
+WARNING: failed to add H2O to flight C224
+WARNING: failed to add H2O to flight C225
+WARNING: failed to add H2O to flight C218
+WARNING: failed to add H2O to flight C218
+WARNING: failed to add H2O to flight C219
+WARNING: failed to add H2O to flight C219
+WARNING: failed to add H2O to flight C220
+WARNING: failed to add H2O to flight C220
+WARNING: failed to add H2O to flight C221
+WARNING: failed to add H2O to flight C221
+WARNING: failed to add H2O to flight C222
+WARNING: failed to add H2O to flight C222
+WARNING: failed to add H2O to flight C223
+WARNING: failed to add H2O to flight C223
+WARNING: failed to add H2O to flight C224
+WARNING: failed to add H2O to flight C224
+WARNING: failed to add H2O to flight C225
+WARNING: failed to add H2O to flight C225
+TEMP DEBUG: dict_keys(['C218', 'C219', 'C220', 'C221', 'C222', 'C223', 'C224', 'C225']) dict_keys(['C218', 'C219', 'C220', 'C221', 'C222', 'C223', 'C224', 'C225']) dict_keys(['Andersen22b', 'Base'])
+dict_keys(['C218', 'C219', 'C220', 'C221', 'C222', 'C223', 'C224', 'C225'])
+C218
+{'Andersen22b':                        LAT    LON        PRESS  ...  IS_DUST  IS_SLR  flight_ID
+2020-02-05 10:18:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:19:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:20:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:21:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:22:00    NaN    NaN          NaN  ...    False   False       C218
+...                    ...    ...          ...  ...      ...     ...        ...
+2020-02-05 18:38:00  16.83 -25.06  1011.476000  ...    False    True       C218
+2020-02-05 18:39:00  16.83 -25.06  1011.460000  ...    False    True       C218
+2020-02-05 18:40:00  16.83 -25.06  1011.465500  ...    False    True       C218
+2020-02-05 18:41:00  16.83 -25.06  1011.479167  ...    False    True       C218
+2020-02-05 18:42:00  16.83 -25.06  1011.488780  ...    False    True       C218
+
+[505 rows x 366 columns], 'Base':                        LAT    LON        PRESS  ...  IS_DUST  IS_SLR  flight_ID
+2020-02-05 10:18:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:19:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:20:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:21:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:22:00    NaN    NaN          NaN  ...    False   False       C218
+...                    ...    ...          ...  ...      ...     ...        ...
+2020-02-05 18:38:00  16.83 -25.06  1011.476000  ...    False    True       C218
+2020-02-05 18:39:00  16.83 -25.06  1011.460000  ...    False    True       C218
+2020-02-05 18:40:00  16.83 -25.06  1011.465500  ...    False    True       C218
+2020-02-05 18:41:00  16.83 -25.06  1011.479167  ...    False    True       C218
+2020-02-05 18:42:00  16.83 -25.06  1011.488780  ...    False    True       C218
+
+[505 rows x 366 columns]}
+                       LAT    LON        PRESS  ...  IS_DUST  IS_SLR  flight_ID
+2020-02-05 10:18:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:19:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:20:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:21:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:22:00    NaN    NaN          NaN  ...    False   False       C218
+...                    ...    ...          ...  ...      ...     ...        ...
+2020-02-05 18:38:00  16.83 -25.06  1011.476000  ...    False    True       C218
+2020-02-05 18:39:00  16.83 -25.06  1011.460000  ...    False    True       C218
+2020-02-05 18:40:00  16.83 -25.06  1011.465500  ...    False    True       C218
+2020-02-05 18:41:00  16.83 -25.06  1011.479167  ...    False    True       C218
+2020-02-05 18:42:00  16.83 -25.06  1011.488780  ...    False    True       C218
+
+[505 rows x 366 columns]
+                     LAT  LON  PRESS  ...  IS_DUST  IS_SLR  flight_ID
+2020-02-05 10:18:00  NaN  NaN    NaN  ...    False   False       C218
+2020-02-05 10:19:00  NaN  NaN    NaN  ...    False   False       C218
+2020-02-05 10:20:00  NaN  NaN    NaN  ...    False   False       C218
+2020-02-05 10:21:00  NaN  NaN    NaN  ...    False   False       C218
+2020-02-05 10:22:00  NaN  NaN    NaN  ...    False   False       C218
+
+[5 rows x 366 columns]
+TEMP DEBUG:                        LAT    LON        PRESS  ...  IS_DUST  IS_SLR  flight_ID
+2020-02-05 10:18:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:19:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:20:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:21:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:22:00    NaN    NaN          NaN  ...    False   False       C218
+...                    ...    ...          ...  ...      ...     ...        ...
+2020-02-12 18:23:00  16.84 -25.06  1011.050833  ...    False    True       C225
+2020-02-12 18:24:00  16.84 -25.06  1011.048000  ...    False    True       C225
+2020-02-12 18:25:00  16.84 -25.06  1011.049833  ...    False    True       C225
+2020-02-12 18:26:00  16.84 -25.06  1011.049833  ...    False    True       C225
+2020-02-12 18:27:00  16.84 -25.06  1011.050000  ...    False    True       C225
+
+[4526 rows x 366 columns]
+pdf is still open @: ./ARNA_altitude_binned_combined_file_4x5_IGAC.ARNAv14_CoreRunsOnly.pdf
+WARNING: Kludged below to only plot GEOS-Chem alt var
+['Andersen22b', 'Base', 'Obs.']
+['CO', 'O3', 'NOx', 'NO2', 'NO', 'HNO2']
+Index(['SOL_AZIM', 'SOL_AZIM_FLAG', 'SOL_ZEN', 'SOL_ZEN_FLAG', 'IAS_RVSM',
+       'IAS_RVSM_FLAG', 'TAS_RVSM', 'TAS_RVSM_FLAG', 'PA_TURB', 'PA_TURB_FLAG',
+       ...
+       'flight_ID', 'O3_2BTECH', 'O3_2BTECH_FLAG', 'PSAP_LOG', 'PSAP_LOG_FLAG',
+       'PSAP_TRA', 'PSAP_TRA_FLAG', 'PSAP_LIN', 'PSAP_LIN_FLAG',
+       'Altitude (km)'],
+      dtype='object', length=163)
+0 Andersen22b CO
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                       CO  Altitude (km)
+2020-02-05 13:38:00  76.6       0.001341
+2020-02-05 13:39:00  76.6       0.001507
+2020-02-05 13:40:00  76.6       0.000732
+2020-02-05 13:41:00  76.6       0.001038
+2020-02-05 13:42:00  76.6       0.001608
+1 Base CO
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                        CO  Altitude (km)
+2020-02-05 13:38:00  88.96       0.001341
+2020-02-05 13:39:00  88.96       0.001507
+2020-02-05 13:40:00  88.96       0.000732
+2020-02-05 13:41:00  88.96       0.001038
+2020-02-05 13:42:00  88.96       0.001608
+2 Obs. CO
+WANRING dropped values - shape (3381, 2)=>(2117, 2) (-37.39)
+                             CO  Altitude (km)
+2020-02-05 13:38:00  103.855507       0.054956
+2020-02-05 13:39:00  104.210968       0.054909
+2020-02-05 13:40:00  103.983795       0.054891
+2020-02-05 13:41:00  105.498817       0.054868
+2020-02-05 13:42:00  105.241241       0.054863
+pdf is still open @: ./ARNA_altitude_binned_combined_file_4x5_IGAC.ARNAv14_CoreRunsOnly.pdf
+0 Andersen22b O3
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                        O3  Altitude (km)
+2020-02-05 13:38:00  41.26       0.001341
+2020-02-05 13:39:00  41.26       0.001507
+2020-02-05 13:40:00  41.26       0.000732
+2020-02-05 13:41:00  41.26       0.001038
+2020-02-05 13:42:00  41.26       0.001608
+1 Base O3
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                        O3  Altitude (km)
+2020-02-05 13:38:00  31.25       0.001341
+2020-02-05 13:39:00  31.25       0.001507
+2020-02-05 13:40:00  31.25       0.000732
+2020-02-05 13:41:00  31.25       0.001038
+2020-02-05 13:42:00  31.25       0.001608
+2 Obs. O3
+WANRING dropped values - shape (3381, 2)=>(1908, 2) (-43.57)
+                            O3  Altitude (km)
+2020-02-05 14:04:00  37.863998       0.116525
+2020-02-05 14:05:00  36.937168       0.555122
+2020-02-05 14:06:00  44.587833       0.929980
+2020-02-05 14:07:00  62.946999       1.411080
+2020-02-05 14:08:00  70.835503       1.628298
+pdf is still open @: ./ARNA_altitude_binned_combined_file_4x5_IGAC.ARNAv14_CoreRunsOnly.pdf
+0 Andersen22b NOx
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                        NOx  Altitude (km)
+2020-02-05 13:38:00  131.74       0.001341
+2020-02-05 13:39:00  131.74       0.001507
+2020-02-05 13:40:00  131.74       0.000732
+2020-02-05 13:41:00  131.74       0.001038
+2020-02-05 13:42:00  131.74       0.001608
+1 Base NOx
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                        NOx  Altitude (km)
+2020-02-05 13:38:00  21.765       0.001341
+2020-02-05 13:39:00  21.765       0.001507
+2020-02-05 13:40:00  21.765       0.000732
+2020-02-05 13:41:00  21.765       0.001038
+2020-02-05 13:42:00  21.765       0.001608
+2 Obs. NOx
+WANRING dropped values - shape (3381, 2)=>(1555, 2) (-54.01)
+                            NOx  Altitude (km)
+2020-02-05 14:05:00  697.301019       0.555122
+2020-02-05 14:06:00   61.523557       0.929980
+2020-02-05 14:07:00   99.579418       1.411080
+2020-02-05 14:08:00  149.083837       1.628298
+2020-02-05 14:09:00  161.856584       1.631753
+pdf is still open @: ./ARNA_altitude_binned_combined_file_4x5_IGAC.ARNAv14_CoreRunsOnly.pdf
+0 Andersen22b NO2
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                       NO2  Altitude (km)
+2020-02-05 13:38:00  98.35       0.001341
+2020-02-05 13:39:00  98.35       0.001507
+2020-02-05 13:40:00  98.35       0.000732
+2020-02-05 13:41:00  98.35       0.001038
+2020-02-05 13:42:00  98.35       0.001608
+1 Base NO2
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                       NO2  Altitude (km)
+2020-02-05 13:38:00  15.75       0.001341
+2020-02-05 13:39:00  15.75       0.001507
+2020-02-05 13:40:00  15.75       0.000732
+2020-02-05 13:41:00  15.75       0.001038
+2020-02-05 13:42:00  15.75       0.001608
+2 Obs. NO2
+WANRING dropped values - shape (3381, 2)=>(1555, 2) (-54.01)
+                            NO2  Altitude (km)
+2020-02-05 14:05:00  464.845371       0.555122
+2020-02-05 14:06:00   24.636601       0.929980
+2020-02-05 14:07:00   69.416525       1.411080
+2020-02-05 14:08:00  111.831809       1.628298
+2020-02-05 14:09:00  121.345375       1.631753
+pdf is still open @: ./ARNA_altitude_binned_combined_file_4x5_IGAC.ARNAv14_CoreRunsOnly.pdf
+0 Andersen22b NO
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                        NO  Altitude (km)
+2020-02-05 13:38:00  33.39       0.001341
+2020-02-05 13:39:00  33.39       0.001507
+2020-02-05 13:40:00  33.39       0.000732
+2020-02-05 13:41:00  33.39       0.001038
+2020-02-05 13:42:00  33.39       0.001608
+1 Base NO
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                        NO  Altitude (km)
+2020-02-05 13:38:00  6.015       0.001341
+2020-02-05 13:39:00  6.015       0.001507
+2020-02-05 13:40:00  6.015       0.000732
+2020-02-05 13:41:00  6.015       0.001038
+2020-02-05 13:42:00  6.015       0.001608
+2 Obs. NO
+WANRING dropped values - shape (3381, 2)=>(1556, 2) (-53.98)
+                             NO  Altitude (km)
+2020-02-05 14:05:00  232.455648       0.555122
+2020-02-05 14:06:00   36.886956       0.929980
+2020-02-05 14:07:00   30.162893       1.411080
+2020-02-05 14:08:00   37.252028       1.628298
+2020-02-05 14:09:00   40.511209       1.631753
+pdf is still open @: ./ARNA_altitude_binned_combined_file_4x5_IGAC.ARNAv14_CoreRunsOnly.pdf
+0 Andersen22b HNO2
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                      HNO2  Altitude (km)
+2020-02-05 13:38:00  9.832       0.001341
+2020-02-05 13:39:00  9.832       0.001507
+2020-02-05 13:40:00  9.832       0.000732
+2020-02-05 13:41:00  9.832       0.001038
+2020-02-05 13:42:00  9.832       0.001608
+1 Base HNO2
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                       HNO2  Altitude (km)
+2020-02-05 13:38:00  0.1766       0.001341
+2020-02-05 13:39:00  0.1766       0.001507
+2020-02-05 13:40:00  0.1766       0.000732
+2020-02-05 13:41:00  0.1766       0.001038
+2020-02-05 13:42:00  0.1766       0.001608
+2 Obs. HNO2
+WANRING dropped values - shape (3381, 2)=>(1563, 2) (-53.77)
+                           HNO2  Altitude (km)
+2020-02-05 14:04:00  579.361238       0.116525
+2020-02-05 14:05:00  -78.270929       0.555122
+2020-02-05 14:06:00   41.493985       0.929980
+2020-02-05 14:07:00   53.279356       1.411080
+2020-02-05 14:08:00   43.288980       1.628298
+pdf is still open @: ./ARNA_altitude_binned_combined_file_4x5_IGAC.ARNAv14_CoreRunsOnly.pdf
+WARNING: failed to add H2O to flight C218
+WARNING: failed to add H2O to flight C219
+WARNING: failed to add H2O to flight C220
+WARNING: failed to add H2O to flight C221
+WARNING: failed to add H2O to flight C222
+WARNING: failed to add H2O to flight C223
+WARNING: failed to add H2O to flight C224
+WARNING: failed to add H2O to flight C225
+WARNING: failed to add H2O to flight C218
+WARNING: failed to add H2O to flight C219
+WARNING: failed to add H2O to flight C220
+WARNING: failed to add H2O to flight C221
+WARNING: failed to add H2O to flight C222
+WARNING: failed to add H2O to flight C223
+WARNING: failed to add H2O to flight C224
+WARNING: failed to add H2O to flight C225
+WARNING: failed to add H2O to flight C218
+WARNING: failed to add H2O to flight C218
+WARNING: failed to add H2O to flight C219
+WARNING: failed to add H2O to flight C219
+WARNING: failed to add H2O to flight C220
+WARNING: failed to add H2O to flight C220
+WARNING: failed to add H2O to flight C221
+WARNING: failed to add H2O to flight C221
+WARNING: failed to add H2O to flight C222
+WARNING: failed to add H2O to flight C222
+WARNING: failed to add H2O to flight C223
+WARNING: failed to add H2O to flight C223
+WARNING: failed to add H2O to flight C224
+WARNING: failed to add H2O to flight C224
+WARNING: failed to add H2O to flight C225
+WARNING: failed to add H2O to flight C225
+TEMP DEBUG: dict_keys(['C218', 'C219', 'C220', 'C221', 'C222', 'C223', 'C224', 'C225']) dict_keys(['C218', 'C219', 'C220', 'C221', 'C222', 'C223', 'C224', 'C225']) dict_keys(['Andersen22b', 'Base'])
+dict_keys(['C218', 'C219', 'C220', 'C221', 'C222', 'C223', 'C224', 'C225'])
+C218
+{'Andersen22b':                        LAT    LON        PRESS  ...  IS_DUST  IS_SLR  flight_ID
+2020-02-05 10:18:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:19:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:20:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:21:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:22:00    NaN    NaN          NaN  ...    False   False       C218
+...                    ...    ...          ...  ...      ...     ...        ...
+2020-02-05 18:38:00  16.83 -25.06  1011.476000  ...    False    True       C218
+2020-02-05 18:39:00  16.83 -25.06  1011.460000  ...    False    True       C218
+2020-02-05 18:40:00  16.83 -25.06  1011.465500  ...    False    True       C218
+2020-02-05 18:41:00  16.83 -25.06  1011.479167  ...    False    True       C218
+2020-02-05 18:42:00  16.83 -25.06  1011.488780  ...    False    True       C218
+
+[505 rows x 366 columns], 'Base':                        LAT    LON        PRESS  ...  IS_DUST  IS_SLR  flight_ID
+2020-02-05 10:18:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:19:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:20:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:21:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:22:00    NaN    NaN          NaN  ...    False   False       C218
+...                    ...    ...          ...  ...      ...     ...        ...
+2020-02-05 18:38:00  16.83 -25.06  1011.476000  ...    False    True       C218
+2020-02-05 18:39:00  16.83 -25.06  1011.460000  ...    False    True       C218
+2020-02-05 18:40:00  16.83 -25.06  1011.465500  ...    False    True       C218
+2020-02-05 18:41:00  16.83 -25.06  1011.479167  ...    False    True       C218
+2020-02-05 18:42:00  16.83 -25.06  1011.488780  ...    False    True       C218
+
+[505 rows x 366 columns]}
+                       LAT    LON        PRESS  ...  IS_DUST  IS_SLR  flight_ID
+2020-02-05 10:18:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:19:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:20:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:21:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:22:00    NaN    NaN          NaN  ...    False   False       C218
+...                    ...    ...          ...  ...      ...     ...        ...
+2020-02-05 18:38:00  16.83 -25.06  1011.476000  ...    False    True       C218
+2020-02-05 18:39:00  16.83 -25.06  1011.460000  ...    False    True       C218
+2020-02-05 18:40:00  16.83 -25.06  1011.465500  ...    False    True       C218
+2020-02-05 18:41:00  16.83 -25.06  1011.479167  ...    False    True       C218
+2020-02-05 18:42:00  16.83 -25.06  1011.488780  ...    False    True       C218
+
+[505 rows x 366 columns]
+                     LAT  LON  PRESS  ...  IS_DUST  IS_SLR  flight_ID
+2020-02-05 10:18:00  NaN  NaN    NaN  ...    False   False       C218
+2020-02-05 10:19:00  NaN  NaN    NaN  ...    False   False       C218
+2020-02-05 10:20:00  NaN  NaN    NaN  ...    False   False       C218
+2020-02-05 10:21:00  NaN  NaN    NaN  ...    False   False       C218
+2020-02-05 10:22:00  NaN  NaN    NaN  ...    False   False       C218
+
+[5 rows x 366 columns]
+TEMP DEBUG:                        LAT    LON        PRESS  ...  IS_DUST  IS_SLR  flight_ID
+2020-02-05 10:18:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:19:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:20:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:21:00    NaN    NaN          NaN  ...    False   False       C218
+2020-02-05 10:22:00    NaN    NaN          NaN  ...    False   False       C218
+...                    ...    ...          ...  ...      ...     ...        ...
+2020-02-12 18:23:00  16.84 -25.06  1011.050833  ...    False    True       C225
+2020-02-12 18:24:00  16.84 -25.06  1011.048000  ...    False    True       C225
+2020-02-12 18:25:00  16.84 -25.06  1011.049833  ...    False    True       C225
+2020-02-12 18:26:00  16.84 -25.06  1011.049833  ...    False    True       C225
+2020-02-12 18:27:00  16.84 -25.06  1011.050000  ...    False    True       C225
+
+[4526 rows x 366 columns]
+WARNING: Kludged below to only plot GEOS-Chem alt var
+['Andersen22b', 'Base', 'Obs.']
+['NIT-all', 'SO4-all', 'NH4']
+Index(['SOL_AZIM', 'SOL_AZIM_FLAG', 'SOL_ZEN', 'SOL_ZEN_FLAG', 'IAS_RVSM',
+       'IAS_RVSM_FLAG', 'TAS_RVSM', 'TAS_RVSM_FLAG', 'PA_TURB', 'PA_TURB_FLAG',
+       ...
+       'flight_ID', 'O3_2BTECH', 'O3_2BTECH_FLAG', 'PSAP_LOG', 'PSAP_LOG_FLAG',
+       'PSAP_TRA', 'PSAP_TRA_FLAG', 'PSAP_LIN', 'PSAP_LIN_FLAG',
+       'Altitude (km)'],
+      dtype='object', length=163)
+0 Andersen22b NIT-all
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                       NIT-all  Altitude (km)
+2020-02-05 13:38:00  321.42257       0.001341
+2020-02-05 13:39:00  321.42257       0.001507
+2020-02-05 13:40:00  321.42257       0.000732
+2020-02-05 13:41:00  321.42257       0.001038
+2020-02-05 13:42:00  321.42257       0.001608
+1 Base NIT-all
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                      NIT-all  Altitude (km)
+2020-02-05 13:38:00  401.5464       0.001341
+2020-02-05 13:39:00  401.5464       0.001507
+2020-02-05 13:40:00  401.5464       0.000732
+2020-02-05 13:41:00  401.5464       0.001038
+2020-02-05 13:42:00  401.5464       0.001608
+pdf is still open @: ./ARNA_altitude_binned_combined_file_4x5_IGAC.ARNAv14_CoreRunsOnly.pdf
+0 Andersen22b SO4-all
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                     SO4-all  Altitude (km)
+2020-02-05 13:38:00    153.3       0.001341
+2020-02-05 13:39:00    153.3       0.001507
+2020-02-05 13:40:00    153.3       0.000732
+2020-02-05 13:41:00    153.3       0.001038
+2020-02-05 13:42:00    153.3       0.001608
+1 Base SO4-all
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                     SO4-all  Altitude (km)
+2020-02-05 13:38:00    159.0       0.001341
+2020-02-05 13:39:00    159.0       0.001507
+2020-02-05 13:40:00    159.0       0.000732
+2020-02-05 13:41:00    159.0       0.001038
+2020-02-05 13:42:00    159.0       0.001608
+pdf is still open @: ./ARNA_altitude_binned_combined_file_4x5_IGAC.ARNAv14_CoreRunsOnly.pdf
+0 Andersen22b NH4
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                       NH4  Altitude (km)
+2020-02-05 13:38:00  2.285       0.001341
+2020-02-05 13:39:00  2.285       0.001507
+2020-02-05 13:40:00  2.285       0.000732
+2020-02-05 13:41:00  2.285       0.001038
+2020-02-05 13:42:00  2.285       0.001608
+1 Base NH4
+WANRING dropped values - shape (4526, 2)=>(3326, 2) (-26.51)
+                      NH4  Altitude (km)
+2020-02-05 13:38:00  4.01       0.001341
+2020-02-05 13:39:00  4.01       0.001507
+2020-02-05 13:40:00  4.01       0.000732
+2020-02-05 13:41:00  4.01       0.001038
+2020-02-05 13:42:00  4.01       0.001608
+pdf is still open @: ./ARNA_altitude_binned_combined_file_4x5_IGAC.ARNAv14_CoreRunsOnly.pdf
+WARNING: failed to include CIMS HNO3 data for 'C217' in df
+WARNING: No NOx/HONO data for C217
+WARNING: failed to add NOx to flight C217
+WARNING: failed to add NOx to flight C217
+WARNING: failed to add H2O to flight C217
+Derived variable not added to dataframe (IS_DUST)
+WARNING: failed to add H2O to flight C218
+WARNING: failed to add H2O to flight C219
+WARNING: failed to add H2O to flight C220
+WARNING: failed to add H2O to flight C221
+WARNING: failed to add H2O to flight C222
+WARNING: failed to include CIMS HNO3 data for 'C223' in df
+WARNING: failed to add H2O to flight C223
+WARNING: failed to add H2O to flight C224
+WARNING: failed to include CIMS HNO3 data for 'C225' in df
+WARNING: failed to add H2O to flight C225
+WARNING: No NOx/HONO data for C217
+WARNING: failed to add NOx to flight C217
+WARNING: failed to add NOx to flight C217
+WARNING: failed to add H2O to flight C217
+Derived variable not added to dataframe (IS_DUST)
+WARNING: failed to add H2O to flight C218
+WARNING: failed to add H2O to flight C219
+WARNING: failed to add H2O to flight C220
+WARNING: failed to add H2O to flight C221
+WARNING: failed to add H2O to flight C222
+WARNING: failed to add H2O to flight C223
+WARNING: failed to add H2O to flight C224
+WARNING: failed to add H2O to flight C225
+WARNING: No NOx/HONO data for C217
+WARNING: failed to add NOx to flight C217
+WARNING: failed to add NOx to flight C217
+WARNING: failed to add H2O to flight C217
+Derived variable not added to dataframe (IS_DUST)
+WARNING: No NOx/HONO data for C217
+WARNING: failed to add NOx to flight C217
+WARNING: failed to add NOx to flight C217
+WARNING: failed to add H2O to flight C217
+Derived variable not added to dataframe (IS_DUST)
+WARNING: failed to add H2O to flight C218
+WARNING: failed to add H2O to flight C218
+WARNING: failed to add H2O to flight C219
+WARNING: failed to add H2O to flight C219
+WARNING: failed to add H2O to flight C220
+WARNING: failed to add H2O to flight C220
+WARNING: failed to add H2O to flight C221
+WARNING: failed to add H2O to flight C221
+WARNING: failed to add H2O to flight C222
+WARNING: failed to add H2O to flight C222
+WARNING: failed to add H2O to flight C223
+WARNING: failed to add H2O to flight C223
+WARNING: failed to add H2O to flight C224
+WARNING: failed to add H2O to flight C224
+WARNING: failed to add H2O to flight C225
+WARNING: failed to add H2O to flight C225
+TEMP DEBUG:                        LAT    LON        PRESS  ...  IS_DUST  IS_SLR  flight_ID
+2020-02-04 09:15:00    NaN    NaN          NaN  ...    False   False       C217
+2020-02-04 09:16:00    NaN    NaN          NaN  ...    False   False       C217
+2020-02-04 09:17:00    NaN    NaN          NaN  ...    False   False       C217
+2020-02-04 09:18:00    NaN    NaN          NaN  ...    False   False       C217
+2020-02-04 09:19:00    NaN    NaN          NaN  ...    False   False       C217
+...                    ...    ...          ...  ...      ...     ...        ...
+2020-02-12 18:23:00  16.84 -25.06  1011.050833  ...    False    True       C225
+2020-02-12 18:24:00  16.84 -25.06  1011.048000  ...    False    True       C225
+2020-02-12 18:25:00  16.84 -25.06  1011.049833  ...    False    True       C225
+2020-02-12 18:26:00  16.84 -25.06  1011.049833  ...    False    True       C225
+2020-02-12 18:27:00  16.84 -25.06  1011.050000  ...    False    True       C225
+
+[5019 rows x 366 columns]
+TEMP DEBUG:                        LAT    LON        PRESS  ...  IS_DUST  IS_SLR  flight_ID
+2020-02-04 09:15:00    NaN    NaN          NaN  ...    False   False       C217
+2020-02-04 09:16:00    NaN    NaN          NaN  ...    False   False       C217
+2020-02-04 09:17:00    NaN    NaN          NaN  ...    False   False       C217
+2020-02-04 09:18:00    NaN    NaN          NaN  ...    False   False       C217
+2020-02-04 09:19:00    NaN    NaN          NaN  ...    False   False       C217
+...                    ...    ...          ...  ...      ...     ...        ...
+2020-02-12 18:23:00  16.84 -25.06  1011.050833  ...    False    True       C225
+2020-02-12 18:24:00  16.84 -25.06  1011.048000  ...    False    True       C225
+2020-02-12 18:25:00  16.84 -25.06  1011.049833  ...    False    True       C225
+2020-02-12 18:26:00  16.84 -25.06  1011.049833  ...    False    True       C225
+2020-02-12 18:27:00  16.84 -25.06  1011.050000  ...    False    True       C225
+
+[5019 rows x 366 columns]
+WARNING: Kludged below to only plot GEOS-Chem alt var
+dict_keys(['Obs.', 'Andersen22b', 'Base'])
+['HNO3', 'HNO2', 'BrO']
+Index(['HCN', 'IS_DUST', 'IS_SLR', 'flight_ID', 'ALT_GIN', 'LAT_GIN',
+       'LON_GIN', 'O3_TECO (ppb)', 'CO_AERO (ppb)', 'BrO', 'Br2+HOBr', 'HONO',
+       'HNO3', 'PS_RVSM', 'Altitude (km)'],
+      dtype='object')
+0 Obs. HNO3
+       HNO3  Altitude (km)
+count   0.0    1055.000000
+mean    NaN       1.857827
+std     NaN       1.899474
+min     NaN      -6.144990
+25%     NaN       0.126094
+50%     NaN       1.475704
+75%     NaN       2.298903
+max     NaN       7.503112
+WANRING dropped values - shape (1782, 2)=>(0, 2) (-100.00 %)
+1 Andersen22b HNO3
+               HNO3  Altitude (km)
+count  3.651000e+03    3651.000000
+mean   1.873148e-10       1.798512
+std    3.361043e-10       1.813880
+min    1.572000e-22      -0.069130
+25%    3.412458e-12       0.152722
+50%    5.890000e-11       1.397639
+75%    1.323000e-10       2.331996
+max    1.768000e-09       7.536347
+WANRING dropped values - shape (5019, 2)=>(3651, 2) (-27.26 %)
+2 Base HNO3
+               HNO3  Altitude (km)
+count  3.651000e+03    3651.000000
+mean   2.004344e-10       1.798512
+std    3.215239e-10       1.813880
+min    1.485000e-22      -0.069130
+25%    3.147000e-11       0.152722
+50%    9.263000e-11       1.397639
+75%    1.537000e-10       2.331996
+max    1.723000e-09       7.536347
+WANRING dropped values - shape (5019, 2)=>(3651, 2) (-27.26 %)
+pdf is still open @: ./ARNA_altitude_binned_combined_file_4x5_IGAC.ARNAv14_CoreRunsOnly.pdf
+0 Obs. HNO2
+             HNO2  Altitude (km)
+count  900.000000    1055.000000
+mean     4.774665       1.857827
+std      6.670795       1.899474
+min      0.000000      -6.144990
+25%      2.040878       0.126094
+50%      3.650976       1.475704
+75%      5.634710       2.298903
+max     97.994217       7.503112
+WANRING dropped values - shape (1782, 2)=>(713, 2) (-59.99 %)
+1 Andersen22b HNO2
+               HNO2  Altitude (km)
+count  3.651000e+03    3651.000000
+mean   5.959143e-12       1.798512
+std    6.419273e-12       1.813880
+min    8.480000e-14      -0.069130
+25%    6.800000e-13       0.152722
+50%    3.244000e-12       1.397639
+75%    9.830000e-12       2.331996
+max    2.532467e-11       7.536347
+WANRING dropped values - shape (5019, 2)=>(3651, 2) (-27.26 %)
+2 Base HNO2
+               HNO2  Altitude (km)
+count  3.651000e+03    3651.000000
+mean   2.507218e-13       1.798512
+std    2.844308e-13       1.813880
+min    1.364050e-14      -0.069130
+25%    7.611000e-14       0.152722
+50%    1.460000e-13       1.397639
+75%    3.326000e-13       2.331996
+max    1.742000e-12       7.536347
+WANRING dropped values - shape (5019, 2)=>(3651, 2) (-27.26 %)
+pdf is still open @: ./ARNA_altitude_binned_combined_file_4x5_IGAC.ARNAv14_CoreRunsOnly.pdf
+0 Obs. BrO
+              BrO  Altitude (km)
+count  916.000000    1055.000000
+mean     0.065153       1.857827
+std      0.056825       1.899474
+min     -0.260070      -6.144990
+25%      0.030015       0.126094
+50%      0.068210       1.475704
+75%      0.096550       2.298903
+max      0.272521       7.503112
+WANRING dropped values - shape (1782, 2)=>(916, 2) (-48.60 %)
+1 Andersen22b BrO
+                BrO  Altitude (km)
+count  3.651000e+03    3651.000000
+mean   4.204404e-13       1.798512
+std    6.498060e-13       1.813880
+min    6.742000e-16      -0.069130
+25%    8.201733e-14       0.152722
+50%    1.732000e-13       1.397639
+75%    3.439000e-13       2.331996
+max    3.455000e-12       7.536347
+WANRING dropped values - shape (5019, 2)=>(3651, 2) (-27.26 %)
+2 Base BrO
+                BrO  Altitude (km)
+count  3.651000e+03    3651.000000
+mean   6.227258e-13       1.798512
+std    1.087451e-12       1.813880
+min    1.188933e-15      -0.069130
+25%    8.831000e-14       0.152722
+50%    1.835000e-13       1.397639
+75%    4.059000e-13       2.331996
+max    6.791500e-12       7.536347
+WANRING dropped values - shape (5019, 2)=>(3651, 2) (-27.26 %)
+pdf is still open @: ./ARNA_altitude_binned_combined_file_4x5_IGAC.ARNAv14_CoreRunsOnly.pdf
+WARNING: failed to add H2O to flight C219
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C219
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C220
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C220
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C221
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C221
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C222
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C222
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C223
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C223
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C224
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C224
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C225
+Derived variable not added to dataframe ('SO4.total')
+WARNING: failed to add H2O to flight C225
+Derived variable not added to dataframe ('SO4.total')
+WARNING: TODO setup to plot multiple model runs
+WARNING: failed to add H2O to flight C219
+WARNING: failed to add H2O to flight C220
+WARNING: failed to add H2O to flight C221
+WARNING: failed to add H2O to flight C222
+WARNING: failed to include CIMS HNO3 data for 'C223' in df
+WARNING: failed to add H2O to flight C223
+WARNING: failed to add H2O to flight C224
+WARNING: failed to include CIMS HNO3 data for 'C225' in df
+WARNING: failed to add H2O to flight C225
+WARNING: failed to add H2O to flight C219
+WARNING: failed to add H2O to flight C220
+WARNING: failed to add H2O to flight C221
+WARNING: failed to add H2O to flight C222
+WARNING: failed to add H2O to flight C223
+WARNING: failed to add H2O to flight C224
+WARNING: failed to add H2O to flight C225
+WARNING: 'HONO' not added to 'NOy' variable for flight 'C221'
+WARNING: 'HNO3' not added to 'NOy' variable for flight 'C223'
+WARNING: 'HNO3' not added to 'NOy' variable for flight 'C225'
+WARNING: TODO setup to plot multiple model runs
+WARNING: TODO setup to plot multiple model runs
+WARNING: TODO setup to plot multiple model runs
+WARNING: TODO setup to plot multiple model runs
+WARNING: TODO setup to plot multiple model runs
+WARNING: TODO setup to plot multiple model runs
+WARNING: TODO setup to plot multiple model runs
+WARNING: TODO setup to plot multiple model runs
+pdf is still open @: ./ARNA_altitude_binned_combined_file_4x5_IGAC.ARNAv14_CoreRunsOnly.pdf
+pdf is still open @: ./ARNA_altitude_binned_combined_file_4x5_IGAC.ARNAv14_CoreRunsOnly.pdf
+('PDF saved & Closed as/at: ', './ARNA_altitude_binned_combined_file_4x5_IGAC.ARNAv14_CoreRunsOnly.pdf')
+WARNING: No NOx/HONO data for C217
+WARNING: failed to add NOx to flight C217
+WARNING: failed to add NOx to flight C217
+WARNING: failed to add H2O to flight C217
+Derived variable not added to dataframe (IS_DUST)
+WARNING: failed to add H2O to flight C218
+WARNING: failed to add H2O to flight C219
+WARNING: failed to add H2O to flight C220
+WARNING: failed to add H2O to flight C221
+WARNING: failed to add H2O to flight C222
+WARNING: failed to add H2O to flight C223
+WARNING: failed to add H2O to flight C224
+WARNING: failed to add H2O to flight C225
+C217
+pdf opened @: ./ARNA_timeseries_flighttrack_C217_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C217_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C217_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C217_PHYSICAL_VARS.pdf
+Failed to plot PCAS
+Failed to plot PCASP (total surface area)
+Failed to plot CDP (total surface area)
+pdf is still open @: ./ARNA_timeseries_flighttrack_C217_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C217_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C217_PHYSICAL_VARS.pdf
+Failed to plot Latitude
+Failed to plot Longitude
+pdf is still open @: ./ARNA_timeseries_flighttrack_C217_PHYSICAL_VARS.pdf
+('PDF saved & Closed as/at: ', './ARNA_timeseries_flighttrack_C217_PHYSICAL_VARS.pdf')
+C218
+pdf opened @: ./ARNA_timeseries_flighttrack_C218_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C218_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C218_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C218_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C218_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C218_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C218_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C218_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C218_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C218_PHYSICAL_VARS.pdf
+Failed to plot Latitude
+Failed to plot Longitude
+pdf is still open @: ./ARNA_timeseries_flighttrack_C218_PHYSICAL_VARS.pdf
+('PDF saved & Closed as/at: ', './ARNA_timeseries_flighttrack_C218_PHYSICAL_VARS.pdf')
+C219
+pdf opened @: ./ARNA_timeseries_flighttrack_C219_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C219_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C219_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C219_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C219_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C219_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C219_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C219_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C219_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C219_PHYSICAL_VARS.pdf
+Failed to plot Latitude
+Failed to plot Longitude
+pdf is still open @: ./ARNA_timeseries_flighttrack_C219_PHYSICAL_VARS.pdf
+('PDF saved & Closed as/at: ', './ARNA_timeseries_flighttrack_C219_PHYSICAL_VARS.pdf')
+C220
+pdf opened @: ./ARNA_timeseries_flighttrack_C220_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C220_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C220_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C220_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C220_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C220_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C220_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C220_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C220_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C220_PHYSICAL_VARS.pdf
+Failed to plot Latitude
+Failed to plot Longitude
+pdf is still open @: ./ARNA_timeseries_flighttrack_C220_PHYSICAL_VARS.pdf
+('PDF saved & Closed as/at: ', './ARNA_timeseries_flighttrack_C220_PHYSICAL_VARS.pdf')
+C221
+pdf opened @: ./ARNA_timeseries_flighttrack_C221_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C221_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C221_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C221_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C221_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C221_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C221_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C221_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C221_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C221_PHYSICAL_VARS.pdf
+Failed to plot Latitude
+Failed to plot Longitude
+pdf is still open @: ./ARNA_timeseries_flighttrack_C221_PHYSICAL_VARS.pdf
+('PDF saved & Closed as/at: ', './ARNA_timeseries_flighttrack_C221_PHYSICAL_VARS.pdf')
+C222
+pdf opened @: ./ARNA_timeseries_flighttrack_C222_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C222_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C222_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C222_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C222_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C222_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C222_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C222_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C222_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C222_PHYSICAL_VARS.pdf
+Failed to plot Latitude
+Failed to plot Longitude
+pdf is still open @: ./ARNA_timeseries_flighttrack_C222_PHYSICAL_VARS.pdf
+('PDF saved & Closed as/at: ', './ARNA_timeseries_flighttrack_C222_PHYSICAL_VARS.pdf')
+C223
+pdf opened @: ./ARNA_timeseries_flighttrack_C223_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C223_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C223_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C223_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C223_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C223_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C223_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C223_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C223_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C223_PHYSICAL_VARS.pdf
+Failed to plot Latitude
+Failed to plot Longitude
+pdf is still open @: ./ARNA_timeseries_flighttrack_C223_PHYSICAL_VARS.pdf
+('PDF saved & Closed as/at: ', './ARNA_timeseries_flighttrack_C223_PHYSICAL_VARS.pdf')
+C224
+pdf opened @: ./ARNA_timeseries_flighttrack_C224_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C224_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C224_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C224_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C224_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C224_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C224_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C224_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C224_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C224_PHYSICAL_VARS.pdf
+Failed to plot Latitude
+Failed to plot Longitude
+pdf is still open @: ./ARNA_timeseries_flighttrack_C224_PHYSICAL_VARS.pdf
+('PDF saved & Closed as/at: ', './ARNA_timeseries_flighttrack_C224_PHYSICAL_VARS.pdf')
+C225
+pdf opened @: ./ARNA_timeseries_flighttrack_C225_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C225_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C225_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C225_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C225_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C225_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C225_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C225_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C225_PHYSICAL_VARS.pdf
+pdf is still open @: ./ARNA_timeseries_flighttrack_C225_PHYSICAL_VARS.pdf
+Failed to plot Latitude
+Failed to plot Longitude
+pdf is still open @: ./ARNA_timeseries_flighttrack_C225_PHYSICAL_VARS.pdf
+('PDF saved & Closed as/at: ', './ARNA_timeseries_flighttrack_C225_PHYSICAL_VARS.pdf')
+Traceback (most recent call last):
+  File "do_post_campaign_generic_ploting.py", line 2292, in <module>
+    main()
+  File "do_post_campaign_generic_ploting.py", line 200, in main
+    summarise_emissions4RunDict(RunDict=RunDict, dates2use=dates2use)
+NameError: name 'RunDict' is not defined

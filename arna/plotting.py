@@ -1930,6 +1930,7 @@ def plt_comp_by_alt_4ARNA_all(dpi=320, just_SLR=True, show_plot=False,
 
     # What bins should be used?
     bins = [0.5*i for i in np.arange(15)]
+    # Now loop and plot by altitude
     for var2plot in vars2plot:
         fig = plt.figure()
         ax = plt.gca()
@@ -6877,7 +6878,7 @@ def mk_Andersen2021_figure_02(dpi=720, figsize=(7, 3), aspect=None, ms=None,
     AC.save_plot('ARNA_Andersen_figure_02', dpi=dpi, tight=tight)
 
 
-def plt_seasonal_comparoisons_of_nitrate():
+def plt_seasonal_comparisons_of_nitrate():
     """
     Make a plot of seasonal nitrate at CVAO
     """
