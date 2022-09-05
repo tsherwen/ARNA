@@ -1842,13 +1842,5 @@ def calc_pressure_feild4ds():
 
 
 
-
-
-
-
-
-
-
-
 if __name__ == "__main__":
     main()

@@ -243,8 +243,8 @@ def regrid_files_then_do_core_plots(dt=None, plt_in_parallel=False):
         else:
             mk_core_plts4fcast_GEOSCF_GEOS5(None, dt=dt)
     else:
-        # Print a waring to screen if case failed.
-        pstr = 'WARNING: NO REGRID./PLOTTING AS ALL FILES NOT PRESENT/CORRECT!'
+        # Print a warning to screen if case failed.
+        pstr = 'WARNING: NO REGRID/PLOTTING AS ALL FILES NOT PRESENT/CORRECT!'
         print(pstr)
         print(dt)
 

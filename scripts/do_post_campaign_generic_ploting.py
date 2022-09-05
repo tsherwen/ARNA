@@ -317,7 +317,6 @@ def do_planeflight_campaign_Janalysis(flight_nums=[], run2use=None,
     ax.set_ylabel('JScale')#, fontsize=fontsize)
 
     # Include a line for the isotherm?
-
     AC.save_plot(dpi=320, title='{}{}'.format(SaveName, extr_str))
     plt.close()
 
@@ -435,7 +434,6 @@ def summarise_deposition4RunDict(RunDict=None, dates2use=None):
     ExtStr = RunSet
     SaveName = 'ARNA_deposition_summary_{}.csv'.format(ExtStr)
     df.to_csv(SaveName)
-
 
 
 def explore_high_ozone_near_CVAO():
