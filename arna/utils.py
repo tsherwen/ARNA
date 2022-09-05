@@ -924,20 +924,11 @@ def get_analysis_region(RegionName):
         'model_nest_area': {'x0': -32, 'x1': 15, 'y0': 0, 'y1': 34},
         # Cape Verde "local" perspective
         'local_CVAO_area': {'x0': -30, 'x1': -10, 'y0': 0, 'y1': 25},
-
         # Cape Verde flying area for ARNA
         'Cape_Verde_Flying': {'x0': -29.1, 'x1': -15.9, 'y0': 11.9,
                               'y1': 21.1},
         # FIREX-AQ
         'CONUS' : {'x0': -125, 'x1': -54, 'y0': 23, 'y1': 60},
-        'FIREX-AQ-I' : {'x0': -120., 'x1': -115., 'y0': 34., 'y1': 50.},
-        'FIREX-AQ-II' : {'x0': -100., 'x1': -85., 'y0': 30., 'y1': 42.},
-#     if FIREX_region==1:
-#         ds = ds.where( ds.lat <=50.  ).where( ds.lat >=34.  ).mean(dim='lat')
-#         ds = ds.where( ds.lon <=-115.).where( ds.lon >=-120.).mean(dim='lon')
-#     elif FIREX_region==2:
-#         ds = ds.where( ds.lat <=42.  ).where( ds.lat >=30.  ).mean(dim='lat')
-#         ds = ds.where( ds.lon <=-85.).where( ds.lon >=-100.).mean(dim='lon')
         #
         'Atlantic' :{'x0': -70, 'x1': 20, 'y0': -80, 'y1': 80},
 #     df.loc[bool_, region_var] = 'Pacific'
@@ -965,12 +956,12 @@ def add_deriv_vars2df(df):
         df['Br2+HOBr'] = df['Br2']+df['HOBr']
     except KeyError:
         print("Derived variable not added to dataframe ('Br2+HOBr')")
-    # total SO4
+    # Total SO4
     try:
         df['SO4.total'] = df['SO4']+df['SO4s']
     except KeyError:
         print("Derived variable not added to dataframe ('SO4.total')")
-    # total NIT
+    # Total NIT
     try:
         df['NIT.total'] = df['NIT']+df['NITs']
     except KeyError:
@@ -981,6 +972,10 @@ def add_deriv_vars2df(df):
 def get_local_folder(key, host=None, rtn_dict=False):
     """
     Hold folders in a dictionary and return specific variables or a dictionary
+
+    Notes
+    --- 
+     - TODO: Use an offline .rc file to hold the user server/specific paths
     """
     import platform
     # Get the host
